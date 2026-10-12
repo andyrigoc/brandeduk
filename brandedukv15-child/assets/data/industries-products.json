@@ -1,6 +1,6 @@
 {
- "generatedAt": "2026-10-11T18:50:40.467Z",
- "missingCheckedAt": "2026-10-11T18:56:03.890Z",
+ "generatedAt": "2026-10-12T09:46:14.623Z",
+ "missingCheckedAt": "2026-10-12T09:46:14.624Z",
  "api": "https://api.brandeduk.com",
  "missing": [
   {
@@ -898,7 +898,17 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Hi Vis"
+   "productType": "Hi Vis",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "YK002": {
    "code": "YK002",
@@ -1018,7 +1028,17 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Hi Vis"
+   "productType": "Hi Vis",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "YK107": {
    "code": "YK107",
@@ -1058,7 +1078,15 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Hi Vis"
+   "productType": "Hi Vis",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+   ]
   },
   "PW002": {
    "code": "PW002",
@@ -1078,7 +1106,12 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Hi Vis"
+   "productType": "Hi Vis",
+   "sizes": [
+    "2XL/3XL",
+    "L/XL",
+    "S/M"
+   ]
   },
   "R200X": {
    "code": "R200X",
@@ -1150,7 +1183,13 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Hi Vis"
+   "productType": "Hi Vis",
+   "sizes": [
+    "XS",
+    "2XL",
+    "L/XL",
+    "S/M"
+   ]
   },
   "RG465": {
    "code": "RG465",
@@ -1174,7 +1213,15 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Hi Vis"
+   "productType": "Hi Vis",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+   ]
   },
   "UC801": {
    "code": "UC801",
@@ -1198,7 +1245,17 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Hi Vis"
+   "productType": "Hi Vis",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "UC802": {
    "code": "UC802",
@@ -1222,7 +1279,16 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Hi Vis"
+   "productType": "Hi Vis",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ]
   },
   "YK043": {
    "code": "YK043",
@@ -1254,7 +1320,18 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Jackets"
+   "productType": "Jackets",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL",
+    "6XL"
+   ]
   },
   "YK045": {
    "code": "YK045",
@@ -1278,7 +1355,18 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Jackets"
+   "productType": "Jackets",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL",
+    "6XL"
+   ]
   },
   "YK048": {
    "code": "YK048",
@@ -1302,7 +1390,15 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Jackets"
+   "productType": "Jackets",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+   ]
   },
   "PW001": {
    "code": "PW001",
@@ -1330,7 +1426,18 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Jackets"
+   "productType": "Jackets",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL",
+    "6XL"
+   ]
   },
   "RG477": {
    "code": "RG477",
@@ -1354,7 +1461,16 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Jackets"
+   "productType": "Jackets",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ]
   },
   "UC803": {
    "code": "UC803",
@@ -1378,7 +1494,18 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Jackets"
+   "productType": "Jackets",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "UC804": {
    "code": "UC804",
@@ -1402,7 +1529,16 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Jackets"
+   "productType": "Jackets",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ]
   },
   "YK020": {
    "code": "YK020",
@@ -1434,7 +1570,17 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Polos"
+   "productType": "Polos",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "YK030": {
    "code": "YK030",
@@ -1474,7 +1620,15 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Sweatshirts"
+   "productType": "Sweatshirts",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+   ]
   },
   "YK012": {
    "code": "YK012",
@@ -1514,7 +1668,15 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Hoodies"
+   "productType": "Hoodies",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+   ]
   },
   "YK025": {
    "code": "YK025",
@@ -1546,7 +1708,18 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "T-shirts"
+   "productType": "T-shirts",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL",
+    "6XL"
+   ]
   },
   "RG476": {
    "code": "RG476",
@@ -1570,7 +1743,16 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Polos"
+   "productType": "Polos",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ]
   },
   "RG488": {
    "code": "RG488",
@@ -1594,7 +1776,16 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Hoodies"
+   "productType": "Hoodies",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ]
   },
   "UC808": {
    "code": "UC808",
@@ -1618,7 +1809,17 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Polos"
+   "productType": "Polos",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "UC810": {
    "code": "UC810",
@@ -1642,7 +1843,17 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "T-shirts"
+   "productType": "T-shirts",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "YK073": {
    "code": "YK073",
@@ -1662,7 +1873,30 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Trousers"
+   "productType": "Trousers",
+   "sizes": [
+    "28 Reg",
+    "30 Long",
+    "30 Reg",
+    "32 Long",
+    "32 Reg",
+    "34 Long",
+    "34 Reg",
+    "36 Long",
+    "36 Reg",
+    "38 Long",
+    "38 Reg",
+    "40 Long",
+    "40 Reg",
+    "42 Long",
+    "42 Reg",
+    "44 Long",
+    "44 Reg",
+    "46 Long",
+    "46 Reg",
+    "48 Long",
+    "48 Reg"
+   ]
   },
   "R308X": {
    "code": "R308X",
@@ -1694,7 +1928,24 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Trousers"
+   "productType": "Trousers",
+   "sizes": [
+    "2XL Long",
+    "2XL Reg",
+    "3XL Long",
+    "3XL Reg",
+    "4XL Reg",
+    "5XL Reg",
+    "L Long",
+    "L Reg",
+    "M Long",
+    "M Reg",
+    "S Long",
+    "S Reg",
+    "XL Long",
+    "XL Reg",
+    "XS Reg"
+   ]
   },
   "PW123": {
    "code": "PW123",
@@ -1722,7 +1973,20 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Trousers"
+   "productType": "Trousers",
+   "sizes": [
+    "28 Reg",
+    "30 Reg",
+    "32 Reg",
+    "34 Reg",
+    "36 Reg",
+    "38 Reg",
+    "40 Reg",
+    "42 Reg",
+    "44 Reg",
+    "46 Reg",
+    "48 Reg"
+   ]
   },
   "RG170": {
    "code": "RG170",
@@ -1746,7 +2010,39 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Trousers"
+   "productType": "Trousers",
+   "sizes": [
+    "28 Long",
+    "28 Reg",
+    "28 Short",
+    "30 Long",
+    "30 Reg",
+    "30 Short",
+    "32 Long",
+    "32 Reg",
+    "32 Short",
+    "34 Long",
+    "34 Reg",
+    "34 Short",
+    "36 Long",
+    "36 Reg",
+    "36 Short",
+    "38 Long",
+    "38 Reg",
+    "38 Short",
+    "40 Long",
+    "40 Reg",
+    "40 Short",
+    "42 Long",
+    "42 Reg",
+    "42 Short",
+    "44 Long",
+    "44 Reg",
+    "44 Short",
+    "46 Long",
+    "46 Reg",
+    "46 Short"
+   ]
   },
   "SH056": {
    "code": "SH056",
@@ -1770,7 +2066,27 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Trousers"
+   "productType": "Trousers",
+   "sizes": [
+    "28 Reg",
+    "28 Short",
+    "30 Reg",
+    "30 Short",
+    "32 Long",
+    "32 Reg",
+    "32 Short",
+    "34 Long",
+    "34 Reg",
+    "34 Short",
+    "36 Long",
+    "36 Reg",
+    "36 Short",
+    "38 Long",
+    "38 Reg",
+    "38 Short",
+    "40 Long",
+    "40 Reg"
+   ]
   },
   "PW065": {
    "code": "PW065",
@@ -1798,7 +2114,23 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Coveralls"
+   "productType": "Coveralls",
+   "sizes": [
+    "2XL Reg",
+    "2XL Tall",
+    "3XL Reg",
+    "3XL Tall",
+    "4XL Reg",
+    "5XL Reg",
+    "L Reg",
+    "L Tall",
+    "M Reg",
+    "M Tall",
+    "S Reg",
+    "S Tall",
+    "XL Reg",
+    "XL Tall"
+   ]
   },
   "R321X": {
    "code": "R321X",
@@ -1826,7 +2158,18 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Coveralls"
+   "productType": "Coveralls",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "UC807": {
    "code": "UC807",
@@ -1850,7 +2193,18 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Trousers"
+   "productType": "Trousers",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "UC903": {
    "code": "UC903",
@@ -1878,7 +2232,8 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Trousers"
+   "productType": "Trousers",
+   "sizes": []
   },
   "UC904": {
    "code": "UC904",
@@ -1906,7 +2261,8 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Trousers"
+   "productType": "Trousers",
+   "sizes": []
   },
   "UC906": {
    "code": "UC906",
@@ -1942,7 +2298,8 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Trousers"
+   "productType": "Trousers",
+   "sizes": []
   },
   "GR91": {
    "code": "GR91R",
@@ -1970,7 +2327,8 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Trousers"
+   "productType": "Trousers",
+   "sizes": []
   },
   "R231M": {
    "code": "R231M",
@@ -2026,7 +2384,16 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Softshells"
+   "productType": "Softshells",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ]
   },
   "RG150": {
    "code": "RG150",
@@ -2066,7 +2433,17 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Softshells"
+   "productType": "Softshells",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "PW135": {
    "code": "PW135",
@@ -2102,7 +2479,15 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Softshells"
+   "productType": "Softshells",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+   ]
   },
   "R330X": {
    "code": "R330X",
@@ -2126,7 +2511,18 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Fleece"
+   "productType": "Fleece",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "RG473": {
    "code": "RG473",
@@ -2150,7 +2546,16 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Softshells"
+   "productType": "Softshells",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ]
   },
   "UC612": {
    "code": "UC612",
@@ -2178,7 +2583,19 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Softshells"
+   "productType": "Softshells",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL",
+    "6XL"
+   ]
   },
   "UX10": {
    "code": "UX10",
@@ -2218,7 +2635,18 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Softshells"
+   "productType": "Softshells",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "UC601": {
    "code": "UC601",
@@ -2262,7 +2690,17 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Fleece"
+   "productType": "Fleece",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ]
   },
   "YK105": {
    "code": "YK105",
@@ -2290,7 +2728,15 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Gilets & Body Warmers"
+   "productType": "Gilets & Body Warmers",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+   ]
   },
   "BC045": {
    "code": "BC045",
@@ -2586,7 +3032,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Beanies"
+   "productType": "Beanies",
+   "sizes": [
+    "One size"
+   ]
   },
   "R147X": {
    "code": "R147X",
@@ -2614,7 +3063,12 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Gloves"
+   "productType": "Gloves",
+   "sizes": [
+    "2XL",
+    "L/XL",
+    "S/M"
+   ]
   },
   "UC640": {
    "code": "UC640",
@@ -2638,7 +3092,15 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Gilets & Body Warmers"
+   "productType": "Gilets & Body Warmers",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+   ]
   },
   "UC619": {
    "code": "UC619",
@@ -2666,7 +3128,19 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Gilets & Body Warmers"
+   "productType": "Gilets & Body Warmers",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL",
+    "6XL"
+   ]
   },
   "UC410": {
    "code": "UC410",
@@ -2722,7 +3196,8 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Caps"
+   "productType": "Caps",
+   "sizes": []
   },
   "PR171": {
    "code": "PR171",
@@ -2790,7 +3265,15 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Tabards"
+   "productType": "Tabards",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+   ]
   },
   "PR172": {
    "code": "PR172",
@@ -2818,7 +3301,13 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Tabards"
+   "productType": "Tabards",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL"
+   ]
   },
   "PR177": {
    "code": "PR177",
@@ -2842,7 +3331,11 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Tunics"
+   "productType": "Tunics",
+   "sizes": [
+    "L/XL",
+    "S/M"
+   ]
   },
   "PR174": {
    "code": "PR174",
@@ -2862,7 +3355,11 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Tunics"
+   "productType": "Tunics",
+   "sizes": [
+    "L/XL",
+    "S/M"
+   ]
   },
   "PR603": {
    "code": "PR603",
@@ -2882,7 +3379,19 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Jackets"
+   "productType": "Jackets",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL",
+    "XXS"
+   ]
   },
   "UC920": {
    "code": "UC920",
@@ -2914,7 +3423,14 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Tabards"
+   "productType": "Tabards",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL"
+   ]
   },
   "UC921": {
    "code": "UC921",
@@ -2978,7 +3494,17 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Polos"
+   "productType": "Polos",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ]
   },
   "PR630": {
    "code": "PR630",
@@ -3054,7 +3580,18 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Polos"
+   "productType": "Polos",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL",
+    "6XL"
+   ]
   },
   "PR616": {
    "code": "PR616",
@@ -3134,7 +3671,15 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Polos"
+   "productType": "Polos",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL"
+   ]
   },
   "KK400": {
    "code": "KK400",
@@ -3182,7 +3727,18 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Polos"
+   "productType": "Polos",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "GD001": {
    "code": "GD001",
@@ -3410,7 +3966,18 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "T-shirts"
+   "productType": "T-shirts",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "UC127": {
    "code": "UC127",
@@ -3446,7 +4013,18 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Polos"
+   "productType": "Polos",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "UC128": {
    "code": "UC128",
@@ -3482,7 +4060,16 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Polos"
+   "productType": "Polos",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+   ]
   },
   "UC321": {
    "code": "UC321",
@@ -3522,7 +4109,19 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "T-shirts"
+   "productType": "T-shirts",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL",
+    "6XL"
+   ]
   },
   "NN500": {
    "code": "NN500",
@@ -3562,7 +4161,21 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Trousers"
+   "productType": "Trousers",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "2XL Long",
+    "3XL Long",
+    "L Long",
+    "M Long",
+    "S Long",
+    "XL Long"
+   ]
   },
   "NN600": {
    "code": "NN600",
@@ -3606,7 +4219,18 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Trousers"
+   "productType": "Trousers",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "RG232": {
    "code": "RG232",
@@ -3634,7 +4258,39 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Trousers"
+   "productType": "Trousers",
+   "sizes": [
+    "28 Long",
+    "28 Reg",
+    "28 Short",
+    "30 Long",
+    "30 Reg",
+    "30 Short",
+    "32 Long",
+    "32 Reg",
+    "32 Short",
+    "34 Long",
+    "34 Reg",
+    "34 Short",
+    "36 Long",
+    "36 Reg",
+    "36 Short",
+    "38 Long",
+    "38 Reg",
+    "38 Short",
+    "40 Long",
+    "40 Reg",
+    "40 Short",
+    "42 Long",
+    "42 Reg",
+    "42 Short",
+    "44 Long",
+    "44 Reg",
+    "44 Short",
+    "46 Long",
+    "46 Reg",
+    "46 Short"
+   ]
   },
   "UC905": {
    "code": "UC905",
@@ -3658,7 +4314,13 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Trousers"
+   "productType": "Trousers",
+   "sizes": [
+    "14",
+    "16",
+    "18",
+    "20"
+   ]
   },
   "UC901": {
    "code": "UC901",
@@ -3682,7 +4344,8 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Trousers"
+   "productType": "Trousers",
+   "sizes": []
   },
   "PR115": {
    "code": "PR115",
@@ -3730,7 +4393,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR165": {
    "code": "PR165",
@@ -3770,7 +4436,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
   },
   "UC940": {
    "code": "UC940",
@@ -3806,7 +4475,8 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": []
   },
   "R114X": {
    "code": "R114X",
@@ -3854,7 +4524,16 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Fleece"
+   "productType": "Fleece",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+   ]
   },
   "PR830": {
    "code": "PR830",
@@ -3882,7 +4561,17 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Fleece"
+   "productType": "Fleece",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "R231F": {
    "code": "R231F",
@@ -3934,7 +4623,15 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Softshells"
+   "productType": "Softshells",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL"
+   ]
   },
   "UC609": {
    "code": "UC609",
@@ -3966,7 +4663,19 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Fleece"
+   "productType": "Fleece",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL",
+    "6XL"
+   ]
   },
   "UC618": {
    "code": "UC618",
@@ -3994,7 +4703,19 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Gilets & Body Warmers"
+   "productType": "Gilets & Body Warmers",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL",
+    "6XL"
+   ]
   },
   "PR102": {
    "code": "PR102",
@@ -4090,7 +4811,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR110": {
    "code": "PR110",
@@ -4118,7 +4842,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR112": {
    "code": "PR112",
@@ -4138,7 +4865,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR113": {
    "code": "PR113",
@@ -4166,7 +4896,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR120": {
    "code": "PR120",
@@ -4202,7 +4935,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR121": {
    "code": "PR121",
@@ -4234,7 +4970,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR123": {
    "code": "PR123",
@@ -4266,7 +5005,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR126": {
    "code": "PR126",
@@ -4290,7 +5032,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR127": {
    "code": "PR127",
@@ -4314,7 +5059,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR129": {
    "code": "PR129",
@@ -4362,7 +5110,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR130": {
    "code": "PR130",
@@ -4410,7 +5161,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR132": {
    "code": "PR132",
@@ -4442,7 +5196,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR134": {
    "code": "PR134",
@@ -4466,7 +5223,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR136": {
    "code": "PR136",
@@ -4498,7 +5258,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR144": {
    "code": "PR144",
@@ -4534,7 +5297,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR150": {
    "code": "PR150",
@@ -4798,7 +5564,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR154": {
    "code": "PR154",
@@ -5014,7 +5783,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR159": {
    "code": "PR159",
@@ -5070,7 +5842,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR181": {
    "code": "PR181",
@@ -5102,7 +5877,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR182": {
    "code": "PR182",
@@ -5142,7 +5920,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR024": {
    "code": "PR024",
@@ -5166,7 +5947,11 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "L/XL",
+    "S/M"
+   ]
   },
   "PX150": {
    "code": "PX150",
@@ -5190,7 +5975,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "XL"
+   ]
   },
   "WM364": {
    "code": "WM364",
@@ -5218,7 +6006,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR122": {
    "code": "PR122",
@@ -5246,7 +6037,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR162": {
    "code": "PR162",
@@ -5278,7 +6072,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR105": {
    "code": "PR105",
@@ -5298,7 +6095,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR114": {
    "code": "PR114",
@@ -5318,7 +6118,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR125": {
    "code": "PR125",
@@ -5342,7 +6145,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR128": {
    "code": "PR128",
@@ -5366,7 +6172,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR135": {
    "code": "PR135",
@@ -5398,7 +6207,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR137": {
    "code": "PR137",
@@ -5446,7 +6258,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR138": {
    "code": "PR138",
@@ -5478,7 +6293,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR141": {
    "code": "PR141",
@@ -5518,7 +6336,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR151": {
    "code": "PR151",
@@ -5678,7 +6499,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR155": {
    "code": "PR155",
@@ -5810,7 +6634,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR158": {
    "code": "PR158",
@@ -5922,7 +6749,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR023": {
    "code": "PR023",
@@ -5958,7 +6788,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR190": {
    "code": "PR190",
@@ -6014,7 +6847,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR191": {
    "code": "PR191",
@@ -6110,7 +6946,33 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Aprons"
+   "productType": "Aprons",
+   "sizes": [
+    "One size"
+   ]
+  },
+  "DE124": {
+   "code": "DDP33",
+   "name": "Dennys Wrap Over Waist Apron",
+   "brand": "Dennys",
+   "price": 13.23,
+   "image": "https://www.absoluteapparel.co.uk/productimage/p-img-900x1200-36453",
+   "colors": [
+    {
+     "name": "Black",
+     "image": "https://www.absoluteapparel.co.uk/productimage/p-img-900x1200-36452"
+    }
+   ],
+   "customization": [
+    "embroidery",
+    "print"
+   ],
+   "isBestSeller": false,
+   "isRecommended": false,
+   "productType": "Aprons",
+   "sizes": [
+    "OS"
+   ]
   },
   "PR656": {
    "code": "PR656",
@@ -6138,7 +7000,18 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Chef Jackets"
+   "productType": "Chef Jackets",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "PR657": {
    "code": "PR657",
@@ -6166,7 +7039,18 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Chef Jackets"
+   "productType": "Chef Jackets",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "PR660": {
    "code": "PR660",
@@ -6190,7 +7074,16 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Chef Jackets"
+   "productType": "Chef Jackets",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+   ]
   },
   "PR664": {
    "code": "PR664",
@@ -6214,7 +7107,18 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Chef Jackets"
+   "productType": "Chef Jackets",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "PR665": {
    "code": "PR665",
@@ -6238,7 +7142,18 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Chef Jackets"
+   "productType": "Chef Jackets",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "PR670": {
    "code": "PR670",
@@ -6258,7 +7173,15 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Chef Jackets"
+   "productType": "Chef Jackets",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL"
+   ]
   },
   "PR671": {
    "code": "PR671",
@@ -6278,7 +7201,15 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Chef Jackets"
+   "productType": "Chef Jackets",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL"
+   ]
   },
   "PR900": {
    "code": "PR900",
@@ -6302,7 +7233,18 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Chef Jackets"
+   "productType": "Chef Jackets",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "PR901": {
    "code": "PR901",
@@ -6326,7 +7268,18 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Chef Jackets"
+   "productType": "Chef Jackets",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "PR902": {
    "code": "PR902",
@@ -6350,7 +7303,17 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Chef Jackets"
+   "productType": "Chef Jackets",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ]
   },
   "PR903": {
    "code": "PR903",
@@ -6374,7 +7337,17 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Chef Jackets"
+   "productType": "Chef Jackets",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ]
   },
   "PR906": {
    "code": "PR906",
@@ -6402,7 +7375,15 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Chef Jackets"
+   "productType": "Chef Jackets",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL"
+   ]
   },
   "PR646": {
    "code": "PR646",
@@ -6426,7 +7407,17 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Shirts"
+   "productType": "Shirts",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ]
   },
   "PR647": {
    "code": "PR647",
@@ -6450,7 +7441,17 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Shirts"
+   "productType": "Shirts",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ]
   },
   "PR649": {
    "code": "PR649",
@@ -6474,7 +7475,18 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "T-shirts"
+   "productType": "T-shirts",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "PR904": {
    "code": "PR904",
@@ -6498,7 +7510,16 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Chef Jackets"
+   "productType": "Chef Jackets",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+   ]
   },
   "PR552": {
    "code": "PR552",
@@ -6518,7 +7539,15 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Trousers"
+   "productType": "Trousers",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL"
+   ]
   },
   "PR553": {
    "code": "PR553",
@@ -6542,7 +7571,18 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Trousers"
+   "productType": "Trousers",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "PR554": {
    "code": "PR554",
@@ -6562,7 +7602,15 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Trousers"
+   "productType": "Trousers",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL"
+   ]
   },
   "PR555": {
    "code": "PR555",
@@ -6582,7 +7630,18 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Trousers"
+   "productType": "Trousers",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "PR556": {
    "code": "PR556",
@@ -6606,7 +7665,15 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Sweatpants"
+   "productType": "Sweatpants",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL"
+   ]
   },
   "PR557": {
    "code": "PR557",
@@ -6626,7 +7693,15 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Trousers"
+   "productType": "Trousers",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+   ]
   },
   "PR648": {
    "code": "PR648",
@@ -6650,7 +7725,13 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Hats"
+   "productType": "Hats",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL"
+   ]
   },
   "PR653": {
    "code": "PR653",
@@ -6694,7 +7775,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Hats"
+   "productType": "Hats",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR658": {
    "code": "PR658",
@@ -6718,7 +7802,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Hats"
+   "productType": "Hats",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR910": {
    "code": "PR910",
@@ -6738,7 +7825,14 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Shoes"
+   "productType": "Shoes",
+   "sizes": [
+    "10/11 Years",
+    "3/4 years",
+    "5/6 years",
+    "7/8 years",
+    "9/10 Years"
+   ]
   },
   "PR200": {
    "code": "PR200",
@@ -6818,7 +7912,23 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Shirts"
+   "productType": "Shirts",
+   "sizes": [
+    "14.5",
+    "15",
+    "15.5",
+    "16",
+    "16.5",
+    "17",
+    "17.5",
+    "18",
+    "18.5",
+    "19",
+    "20",
+    "21",
+    "22",
+    "23"
+   ]
   },
   "PR202": {
    "code": "PR202",
@@ -6898,7 +8008,23 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Shirts"
+   "productType": "Shirts",
+   "sizes": [
+    "14.5",
+    "15",
+    "15.5",
+    "16",
+    "16.5",
+    "17",
+    "17.5",
+    "18",
+    "18.5",
+    "19",
+    "20",
+    "21",
+    "22",
+    "23"
+   ]
   },
   "PR300": {
    "code": "PR300",
@@ -6982,7 +8108,22 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Blouses"
+   "productType": "Blouses",
+   "sizes": [
+    "Wom 10",
+    "Wom 12",
+    "Wom 14",
+    "Wom 16",
+    "Wom 18",
+    "Wom 20",
+    "Wom 22",
+    "Wom 24",
+    "Wom 26",
+    "Wom 28",
+    "Wom 30",
+    "Wom 6",
+    "Wom 8"
+   ]
   },
   "PR302": {
    "code": "PR302",
@@ -7066,7 +8207,22 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Blouses"
+   "productType": "Blouses",
+   "sizes": [
+    "Wom 10",
+    "Wom 12",
+    "Wom 14",
+    "Wom 16",
+    "Wom 18",
+    "Wom 20",
+    "Wom 22",
+    "Wom 24",
+    "Wom 26",
+    "Wom 28",
+    "Wom 30",
+    "Wom 6",
+    "Wom 8"
+   ]
   },
   "PR234": {
    "code": "PR234",
@@ -7094,7 +8250,23 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Shirts"
+   "productType": "Shirts",
+   "sizes": [
+    "14.5",
+    "15",
+    "15.5",
+    "16",
+    "16.5",
+    "17",
+    "17.5",
+    "18",
+    "18.5",
+    "19",
+    "20.0",
+    "21.0",
+    "22.0",
+    "23.0"
+   ]
   },
   "PR258": {
    "code": "PR258",
@@ -7118,7 +8290,16 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Shirts"
+   "productType": "Shirts",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+   ]
   },
   "PR220": {
    "code": "PR220",
@@ -7150,7 +8331,16 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Shirts"
+   "productType": "Shirts",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+   ]
   },
   "PR320": {
    "code": "PR320",
@@ -7182,7 +8372,16 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Shirts"
+   "productType": "Shirts",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+   ]
   },
   "PR222": {
    "code": "PR222",
@@ -7206,7 +8405,16 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Shirts"
+   "productType": "Shirts",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+   ]
   },
   "PR622": {
    "code": "PR622",
@@ -7226,7 +8434,19 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Waistcoats"
+   "productType": "Waistcoats",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL",
+    "XXS"
+   ]
   },
   "PR623": {
    "code": "PR623",
@@ -7246,7 +8466,16 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Waistcoats"
+   "productType": "Waistcoats",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "XXS"
+   ]
   },
   "PR694": {
    "code": "PR694",
@@ -7274,7 +8503,19 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Knitted Jumpers"
+   "productType": "Knitted Jumpers",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL",
+    "XXS"
+   ]
   },
   "PR696": {
    "code": "PR696",
@@ -7302,7 +8543,18 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Knitted Jumpers"
+   "productType": "Knitted Jumpers",
+   "sizes": [
+    "Wom 10",
+    "Wom 12",
+    "Wom 14",
+    "Wom 16",
+    "Wom 18",
+    "Wom 20",
+    "Wom 22",
+    "Wom 24",
+    "Wom 8"
+   ]
   },
   "PR700": {
    "code": "PR700",
@@ -7342,7 +8594,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Ties"
+   "productType": "Ties",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR710": {
    "code": "PR710",
@@ -7382,7 +8637,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Ties"
+   "productType": "Ties",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR750": {
    "code": "PR750",
@@ -7550,7 +8808,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Ties"
+   "productType": "Ties",
+   "sizes": [
+    "One size"
+   ]
   },
   "PR615": {
    "code": "PR615",
@@ -7630,7 +8891,17 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Polos"
+   "productType": "Polos",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "UC101": {
    "code": "UC101",
@@ -7714,7 +8985,19 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Polos"
+   "productType": "Polos",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL",
+    "6XL"
+   ]
   },
   "UC106": {
    "code": "UC106",
@@ -7798,7 +9081,17 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Polos"
+   "productType": "Polos",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ]
   },
   "UC108": {
    "code": "UC108",
@@ -7870,7 +9163,21 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Polos"
+   "productType": "Polos",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL",
+    "6XL",
+    "7XL",
+    "8XL"
+   ]
   },
   "UC922": {
    "code": "UC922",
@@ -7934,7 +9241,17 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Trousers"
+   "productType": "Trousers",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ]
   },
   "NN200": {
    "code": "NN200",
@@ -7974,7 +9291,16 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Tunics"
+   "productType": "Tunics",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ]
   },
   "NN300": {
    "code": "NN300",
@@ -8018,7 +9344,18 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Tunics"
+   "productType": "Tunics",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "NN310": {
    "code": "NN310",
@@ -8062,7 +9399,18 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Tunics"
+   "productType": "Tunics",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "PR681": {
    "code": "PR681",
@@ -8082,7 +9430,19 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Tunics"
+   "productType": "Tunics",
+   "sizes": [
+    "Wom 10",
+    "Wom 12",
+    "Wom 14",
+    "Wom 16",
+    "Wom 18",
+    "Wom 20",
+    "Wom 22",
+    "Wom 24",
+    "Wom 6",
+    "Wom 8"
+   ]
   },
   "PR682": {
    "code": "PR682",
@@ -8126,7 +9486,19 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Tunics"
+   "productType": "Tunics",
+   "sizes": [
+    "Wom 10",
+    "Wom 12",
+    "Wom 14",
+    "Wom 16",
+    "Wom 18",
+    "Wom 20",
+    "Wom 22",
+    "Wom 24",
+    "Wom 6",
+    "Wom 8"
+   ]
   },
   "PR683": {
    "code": "PR683",
@@ -8170,7 +9542,19 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Tunics"
+   "productType": "Tunics",
+   "sizes": [
+    "Wom 10",
+    "Wom 12",
+    "Wom 14",
+    "Wom 16",
+    "Wom 18",
+    "Wom 20",
+    "Wom 22",
+    "Wom 24",
+    "Wom 6",
+    "Wom 8"
+   ]
   },
   "PR686": {
    "code": "PR686",
@@ -8190,7 +9574,19 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Tunics"
+   "productType": "Tunics",
+   "sizes": [
+    "Wom 10",
+    "Wom 12",
+    "Wom 14",
+    "Wom 16",
+    "Wom 18",
+    "Wom 20",
+    "Wom 22",
+    "Wom 24",
+    "Wom 6",
+    "Wom 8"
+   ]
   },
   "UC923": {
    "code": "UC923",
@@ -8250,7 +9646,19 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Polos"
+   "productType": "Polos",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL",
+    "6XL"
+   ]
   },
   "UC924": {
    "code": "UC924",
@@ -8310,7 +9718,19 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Polos"
+   "productType": "Polos",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL",
+    "6XL"
+   ]
   },
   "NN610": {
    "code": "NN610",
@@ -8354,7 +9774,18 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Sweatpants"
+   "productType": "Sweatpants",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "NN270": {
    "code": "NN270",
@@ -8386,7 +9817,15 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Baselayers"
+   "productType": "Baselayers",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+   ]
   },
   "NN370": {
    "code": "NN370",
@@ -8418,7 +9857,16 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Baselayers"
+   "productType": "Baselayers",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+   ]
   },
   "HB475": {
    "code": "HB475",
@@ -8558,7 +10006,19 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Polos"
+   "productType": "Polos",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL",
+    "XXS"
+   ]
   },
   "HB476": {
    "code": "HB476",
@@ -8650,7 +10110,16 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Polos"
+   "productType": "Polos",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+   ]
   },
   "UC125": {
    "code": "UC125",
@@ -8694,7 +10163,16 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Polos"
+   "productType": "Polos",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+   ]
   },
   "UC126": {
    "code": "UC126",
@@ -8738,7 +10216,15 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Polos"
+   "productType": "Polos",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL"
+   ]
   },
   "PR697": {
    "code": "PR697",
@@ -8766,7 +10252,18 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Cardigans"
+   "productType": "Cardigans",
+   "sizes": [
+    "Wom 10",
+    "Wom 12",
+    "Wom 14",
+    "Wom 16",
+    "Wom 18",
+    "Wom 20",
+    "Wom 22",
+    "Wom 24",
+    "Wom 8"
+   ]
   },
   "HB718": {
    "code": "HB718",
@@ -8790,7 +10287,17 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Cardigans"
+   "productType": "Cardigans",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "XXS"
+   ]
   },
   "NN800": {
    "code": "NN800",
@@ -8818,7 +10325,16 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Fleece"
+   "productType": "Fleece",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ]
   },
   "NN802": {
    "code": "NN802",
@@ -8846,7 +10362,18 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Fleece"
+   "productType": "Fleece",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "UC207": {
    "code": "UC207",
@@ -8898,7 +10425,8 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Polos"
+   "productType": "Polos",
+   "sizes": []
   },
   "PW175": {
    "code": "PW175",
@@ -8926,7 +10454,19 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Jackets"
+   "productType": "Jackets",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL",
+    "XXS"
+   ]
   },
   "PR116": {
    "code": "PR116",
@@ -8950,7 +10490,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Gowns"
+   "productType": "Gowns",
+   "sizes": [
+    "One size"
+   ]
   },
   "HB590": {
    "code": "HB590",
@@ -8974,7 +10517,16 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Shirts"
+   "productType": "Shirts",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ]
   },
   "HB591": {
    "code": "HB591",
@@ -8998,7 +10550,17 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Shirts"
+   "productType": "Shirts",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ]
   },
   "HB595": {
    "code": "HB595",
@@ -9022,7 +10584,16 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Shirts"
+   "productType": "Shirts",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ]
   },
   "HB596": {
    "code": "HB596",
@@ -9046,7 +10617,17 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Shirts"
+   "productType": "Shirts",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ]
   },
   "YK009": {
    "code": "YK009",
@@ -9114,7 +10695,13 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Tabards"
+   "productType": "Tabards",
+   "sizes": [
+    "2XL/3XL",
+    "Child",
+    "L/XL",
+    "S/M"
+   ]
   },
   "YK044": {
    "code": "YK044",
@@ -9138,7 +10725,15 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Jackets"
+   "productType": "Jackets",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+   ]
   },
   "YK042": {
    "code": "YK042",
@@ -9170,7 +10765,15 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Fleece"
+   "productType": "Fleece",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+   ]
   },
   "RG466": {
    "code": "RG466",
@@ -9194,7 +10797,15 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Sweatshirts"
+   "productType": "Sweatshirts",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+   ]
   },
   "RX710": {
    "code": "RX710",
@@ -9218,7 +10829,17 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Polos"
+   "productType": "Polos",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "PW334": {
    "code": "PW334",
@@ -9242,7 +10863,23 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Trousers"
+   "productType": "Trousers",
+   "sizes": [
+    "30 Reg",
+    "30 Tall",
+    "32 Reg",
+    "32 Tall",
+    "34 Reg",
+    "34 Tall",
+    "36 Reg",
+    "36 Tall",
+    "38 Reg",
+    "38 Tall",
+    "40 Reg",
+    "40 Tall",
+    "42 Reg",
+    "42 Tall"
+   ]
   },
   "R309X": {
    "code": "R309X",
@@ -9270,7 +10907,17 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Shorts"
+   "productType": "Shorts",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ]
   },
   "RX760": {
    "code": "RX760",
@@ -9298,7 +10945,25 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Trousers"
+   "productType": "Trousers",
+   "sizes": [
+    "2XL Long",
+    "2XL Reg",
+    "3XL Long",
+    "3XL Reg",
+    "4XL Long",
+    "4XL Reg",
+    "5XL Long",
+    "5XL Reg",
+    "L Long",
+    "L Reg",
+    "M Long",
+    "M Reg",
+    "S Long",
+    "S Reg",
+    "XL Long",
+    "XL Reg"
+   ]
   },
   "UC902": {
    "code": "UC902",
@@ -9326,7 +10991,8 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Trousers"
+   "productType": "Trousers",
+   "sizes": []
   },
   "UC907": {
    "code": "UC907",
@@ -9350,7 +11016,8 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Shorts"
+   "productType": "Shorts",
+   "sizes": []
   },
   "RG122": {
    "code": "RG122",
@@ -9398,7 +11065,18 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Fleece"
+   "productType": "Fleece",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "R220X": {
    "code": "R220X",
@@ -9442,7 +11120,16 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Fleece"
+   "productType": "Fleece",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+   ]
   },
   "UC604": {
    "code": "UC604",
@@ -9486,7 +11173,19 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Fleece"
+   "productType": "Fleece",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL",
+    "6XL"
+   ]
   },
   "R208X": {
    "code": "R208X",
@@ -9522,7 +11221,16 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Gilets & Body Warmers"
+   "productType": "Gilets & Body Warmers",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+   ]
   },
   "KK105": {
    "code": "KK105",
@@ -9570,7 +11278,26 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Shirts"
+   "productType": "Shirts",
+   "sizes": [
+    "13.5",
+    "14",
+    "14.5",
+    "15",
+    "15.5",
+    "16",
+    "16.5",
+    "17",
+    "17.5",
+    "18",
+    "18.5",
+    "19",
+    "19.5",
+    "20",
+    "21",
+    "22",
+    "23"
+   ]
   },
   "KK104": {
    "code": "KK104",
@@ -9602,7 +11329,22 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Shirts"
+   "productType": "Shirts",
+   "sizes": [
+    "14.5",
+    "15",
+    "15.5",
+    "16",
+    "16.5",
+    "17",
+    "17.5",
+    "18",
+    "18.5",
+    "19",
+    "19.5",
+    "20",
+    "21"
+   ]
   },
   "KK701": {
    "code": "KK701",
@@ -9642,7 +11384,128 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Blouses"
+   "productType": "Blouses",
+   "sizes": [
+    "Wom 10",
+    "Wom 12",
+    "Wom 14",
+    "Wom 16",
+    "Wom 18",
+    "Wom 20",
+    "Wom 22",
+    "Wom 24",
+    "Wom 26",
+    "Wom 28",
+    "Wom 6",
+    "Wom 8"
+   ]
+  },
+  "932M": {
+   "code": "J932M",
+   "name": "Long sleeve easycare Oxford shirt",
+   "brand": "Russell Athletic Collection",
+   "price": 30.19,
+   "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/cba509d4/69296ba65fa5b59a3a6b9264/J932M_LS00_2026.jpg",
+   "colors": [
+    {
+     "name": "Black",
+     "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d321fe89/5c5c3e3deb9f5b1c75ce3b0c0b5840b7.jpg"
+    },
+    {
+     "name": "Bright Navy",
+     "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d321fe89/5c5c3e3deb9f5b1c75ce3b0d265c39c8.jpg"
+    },
+    {
+     "name": "Bright Royal",
+     "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d321fe89/5c5c3e3deb9f5b1c75ce3b0ec55881fc.jpg"
+    },
+    {
+     "name": "Oxford Blue",
+     "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d321fe89/5c5c3e3deb9f5b1c75ce3b199873df98.jpg"
+    },
+    {
+     "name": "Silver",
+     "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d321fe89/5c5c3e3deb9f5b1c75ce3b1a03b1dcc9.jpg"
+    },
+    {
+     "name": "White",
+     "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d321fe89/5c5c3e3deb9f5b1c75ce3b1be70deff9.jpg"
+    }
+   ],
+   "customization": [
+    "embroidery",
+    "print"
+   ],
+   "isBestSeller": false,
+   "isRecommended": false,
+   "productType": "Shirts",
+   "sizes": [
+    "14.5",
+    "15",
+    "15.5",
+    "16",
+    "16.5",
+    "17",
+    "17.5",
+    "18",
+    "18.5",
+    "19",
+    "19.5",
+    "20",
+    "21"
+   ]
+  },
+  "932F": {
+   "code": "J932F",
+   "name": "Women's long sleeve easycare Oxford shirt",
+   "brand": "Russell Athletic Collection",
+   "price": 29.62,
+   "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/78adc44d/692972855fa5b59a3a6ca2b3/J932F_LS00_2026.jpg",
+   "colors": [
+    {
+     "name": "Black",
+     "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d321fe89/5c5c3e3deb9f5b1c75ce3afbff2f1712.jpg"
+    },
+    {
+     "name": "Bright Navy",
+     "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d321fe89/5c5c3e3deb9f5b1c75ce3afcb13bf94a.jpg"
+    },
+    {
+     "name": "Bright Royal",
+     "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d321fe89/5c5c3e3deb9f5b1c75ce3afde74c191f.jpg"
+    },
+    {
+     "name": "Oxford Blue",
+     "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d321fe89/5c5c3e3deb9f5b1c75ce3b08ea356dca.jpg"
+    },
+    {
+     "name": "Silver",
+     "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d321fe89/5c5c3e3deb9f5b1c75ce3b091f06717b.jpg"
+    },
+    {
+     "name": "White",
+     "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d321fe89/5c5c3e3deb9f5b1c75ce3b0aea0806a6.jpg"
+    }
+   ],
+   "customization": [
+    "embroidery",
+    "print"
+   ],
+   "isBestSeller": false,
+   "isRecommended": false,
+   "productType": "Shirts",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL",
+    "6XL"
+   ]
   },
   "HB400": {
    "code": "HB400",
@@ -9714,7 +11577,18 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Polos"
+   "productType": "Polos",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "HB401": {
    "code": "HB401",
@@ -9754,7 +11628,16 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Polos"
+   "productType": "Polos",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+   ]
   },
   "KK403": {
    "code": "KK403",
@@ -9882,7 +11765,19 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Polos"
+   "productType": "Polos",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL",
+    "6XL"
+   ]
   },
   "KK703": {
    "code": "KK703",
@@ -9954,7 +11849,19 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Polos"
+   "productType": "Polos",
+   "sizes": [
+    "Wom 10",
+    "Wom 12",
+    "Wom 14",
+    "Wom 16",
+    "Wom 18",
+    "Wom 20",
+    "Wom 22",
+    "Wom 24",
+    "Wom 6",
+    "Wom 8"
+   ]
   },
   "UC112": {
    "code": "UC112",
@@ -9994,7 +11901,17 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Polos"
+   "productType": "Polos",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ]
   },
   "HB729": {
    "code": "HB729",
@@ -10026,7 +11943,17 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Knitted Jumpers"
+   "productType": "Knitted Jumpers",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ]
   },
   "KK254": {
    "code": "KK254",
@@ -10054,7 +11981,17 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Knitted Jumpers"
+   "productType": "Knitted Jumpers",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ]
   },
   "RG151": {
    "code": "RG151",
@@ -10078,7 +12015,17 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Softshells"
+   "productType": "Softshells",
+   "sizes": [
+    "Wom 10",
+    "Wom 12",
+    "Wom 14",
+    "Wom 16",
+    "Wom 18",
+    "Wom 20",
+    "Wom 22",
+    "Wom 8"
+   ]
   },
   "RG340": {
    "code": "RG340",
@@ -10114,7 +12061,15 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Gilets & Body Warmers"
+   "productType": "Gilets & Body Warmers",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+   ]
   },
   "PR811": {
    "code": "PR811",
@@ -10138,7 +12093,16 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Gilets & Body Warmers"
+   "productType": "Gilets & Body Warmers",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ]
   },
   "UC611": {
    "code": "UC611",
@@ -10166,7 +12130,17 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Softshells"
+   "productType": "Softshells",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ]
   },
   "UC613": {
    "code": "UC613",
@@ -10194,7 +12168,15 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Softshells"
+   "productType": "Softshells",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL"
+   ]
   },
   "SS402": {
    "code": "SS402",
@@ -10274,7 +12256,17 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Polos"
+   "productType": "Polos",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "SS212": {
    "code": "SS212",
@@ -10334,7 +12326,15 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Polos"
+   "productType": "Polos",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL"
+   ]
   },
   "GD072": {
    "code": "GD072",
@@ -10410,7 +12410,15 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "T-shirts"
+   "productType": "T-shirts",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+   ]
   },
   "UC103": {
    "code": "UC103",
@@ -10474,7 +12482,8 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Polos"
+   "productType": "Polos",
+   "sizes": []
   },
   "UC306": {
    "code": "UC306",
@@ -10526,7 +12535,8 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "T-shirts"
+   "productType": "T-shirts",
+   "sizes": []
   },
   "JH030": {
    "code": "JH030",
@@ -10814,7 +12824,18 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Sweatshirts"
+   "productType": "Sweatshirts",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "JH001": {
    "code": "JH001",
@@ -11234,7 +13255,18 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Hoodies"
+   "productType": "Hoodies",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "JH01F": {
    "code": "JH01F",
@@ -11350,7 +13382,15 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Hoodies"
+   "productType": "Hoodies",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL"
+   ]
   },
   "GD056": {
    "code": "GD056",
@@ -11478,7 +13518,17 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Sweatshirts"
+   "productType": "Sweatshirts",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "SS200": {
    "code": "SS200",
@@ -11562,7 +13612,17 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Sweatshirts"
+   "productType": "Sweatshirts",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "UC203": {
    "code": "UC203",
@@ -11638,7 +13698,19 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Sweatshirts"
+   "productType": "Sweatshirts",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL",
+    "6XL"
+   ]
   },
   "UC202": {
    "code": "UC202",
@@ -11698,7 +13770,8 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Sweatshirts"
+   "productType": "Sweatshirts",
+   "sizes": []
   },
   "UC206": {
    "code": "UC206",
@@ -11750,7 +13823,8 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Sweatshirts"
+   "productType": "Sweatshirts",
+   "sizes": []
   },
   "UC502": {
    "code": "UC502",
@@ -11854,7 +13928,19 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Hoodies"
+   "productType": "Hoodies",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL",
+    "6XL"
+   ]
   },
   "UC503": {
    "code": "UC503",
@@ -11954,7 +14040,8 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Hoodies"
+   "productType": "Hoodies",
+   "sizes": []
   },
   "RG138": {
    "code": "RG138",
@@ -11990,7 +14077,16 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Fleece"
+   "productType": "Fleece",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ]
   },
   "RG140": {
    "code": "RG140",
@@ -12018,7 +14114,15 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Fleece"
+   "productType": "Fleece",
+   "sizes": [
+    "Wom 10",
+    "Wom 12",
+    "Wom 14",
+    "Wom 16",
+    "Wom 18",
+    "Wom 20"
+   ]
   },
   "UC603": {
    "code": "UC603",
@@ -12058,7 +14162,8 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Fleece"
+   "productType": "Fleece",
+   "sizes": []
   },
   "WM101": {
    "code": "WM101",
@@ -12266,7 +14371,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Bags"
+   "productType": "Bags",
+   "sizes": [
+    "One size"
+   ]
   },
   "WM110": {
    "code": "WM110",
@@ -12366,7 +14474,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Bags"
+   "productType": "Bags",
+   "sizes": [
+    "One size"
+   ]
   },
   "UC806": {
    "code": "UC806",
@@ -12390,7 +14501,8 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Polos"
+   "productType": "Polos",
+   "sizes": []
   },
   "UC521": {
    "code": "UC521",
@@ -12418,7 +14530,8 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Sweatpants"
+   "productType": "Sweatpants",
+   "sizes": []
   },
   "SS430": {
    "code": "SS430",
@@ -12542,7 +14655,17 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "T-shirts"
+   "productType": "T-shirts",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "UC301": {
    "code": "UC301",
@@ -12638,7 +14761,19 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "T-shirts"
+   "productType": "T-shirts",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL",
+    "6XL"
+   ]
   },
   "UC318": {
    "code": "UC318",
@@ -12714,7 +14849,15 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "T-shirts"
+   "productType": "T-shirts",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL"
+   ]
   },
   "R116X": {
    "code": "R116X",
@@ -12758,7 +14901,16 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Gilets & Body Warmers"
+   "productType": "Gilets & Body Warmers",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+   ]
   },
   "TR011": {
    "code": "TR011",
@@ -12798,7 +14950,15 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "T-shirts"
+   "productType": "T-shirts",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+   ]
   },
   "LV290": {
    "code": "LV290",
@@ -12842,7 +15002,16 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "T-shirts"
+   "productType": "T-shirts",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+   ]
   },
   "LV370": {
    "code": "LV370",
@@ -12914,7 +15083,18 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Polos"
+   "productType": "Polos",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL"
+   ]
   },
   "PA438": {
    "code": "PA438",
@@ -12954,7 +15134,14 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "T-shirts"
+   "productType": "T-shirts",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL"
+   ]
   },
   "PA439": {
    "code": "PA439",
@@ -12986,7 +15173,13 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "T-shirts"
+   "productType": "T-shirts",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL"
+   ]
   },
   "UC123": {
    "code": "UC123",
@@ -13014,7 +15207,13 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Polos"
+   "productType": "Polos",
+   "sizes": [
+    "XS",
+    "XL",
+    "2XL",
+    "3XL"
+   ]
   },
   "TR110": {
    "code": "TR110",
@@ -13058,7 +15257,15 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Sports Overtops"
+   "productType": "Sports Overtops",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+   ]
   },
   "TR120": {
    "code": "TR120",
@@ -13102,7 +15309,14 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Sports Overtops"
+   "productType": "Sports Overtops",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL"
+   ]
   },
   "LV871": {
    "code": "LV871",
@@ -13174,7 +15388,19 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Trackwear"
+   "productType": "Trackwear",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL",
+    "XXS"
+   ]
   },
   "LV881": {
    "code": "LV881",
@@ -13246,7 +15472,19 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Trackwear"
+   "productType": "Trackwear",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL",
+    "5XL",
+    "XXS"
+   ]
   },
   "JH006": {
    "code": "JH006",
@@ -13290,7 +15528,15 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Hoodies"
+   "productType": "Hoodies",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+   ]
   },
   "TR112": {
    "code": "TR112",
@@ -13318,7 +15564,15 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Hoodies"
+   "productType": "Hoodies",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+   ]
   },
   "UC501": {
    "code": "UC501",
@@ -13350,7 +15604,17 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Hoodies"
+   "productType": "Hoodies",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ]
   },
   "UC213": {
    "code": "UC213",
@@ -13378,7 +15642,17 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Sweatshirts"
+   "productType": "Sweatshirts",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ]
   },
   "TR052": {
    "code": "TR052",
@@ -13398,7 +15672,14 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Shorts"
+   "productType": "Shorts",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL"
+   ]
   },
   "S279M": {
    "code": "S279M",
@@ -13430,7 +15711,17 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Shorts"
+   "productType": "Shorts",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ]
   },
   "TR054": {
    "code": "TR054",
@@ -13450,7 +15741,14 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Sweatpants"
+   "productType": "Sweatpants",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL"
+   ]
   },
   "UX9": {
    "code": "UX9",
@@ -13482,7 +15780,15 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Sweatpants"
+   "productType": "Sweatpants",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL"
+   ]
   },
   "BC171": {
    "code": "BC171",
@@ -13542,7 +15848,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Caps"
+   "productType": "Caps",
+   "sizes": [
+    "One size"
+   ]
   },
   "B195R": {
    "code": "B195R",
@@ -13586,7 +15895,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Caps"
+   "productType": "Caps",
+   "sizes": [
+    "One size"
+   ]
   },
   "BC183": {
    "code": "BC183",
@@ -13614,7 +15926,10 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Caps"
+   "productType": "Caps",
+   "sizes": [
+    "One size"
+   ]
   },
   "UC402": {
    "code": "UC402",
@@ -13650,107 +15965,16 @@
    ],
    "isBestSeller": false,
    "isRecommended": false,
-   "productType": "Rugby Shirts"
-  },
-  "DE124": {
-   "code": "DDP33",
-   "name": "Dennys Wrap Over Waist Apron",
-   "brand": "Dennys",
-   "price": 13.23,
-   "image": "https://www.absoluteapparel.co.uk/productimage/p-img-900x1200-36453",
-   "colors": [
-    {
-     "name": "Black",
-     "image": "https://www.absoluteapparel.co.uk/productimage/p-img-900x1200-36452"
-    }
-   ],
-   "customization": [
-    "embroidery",
-    "print"
-   ],
-   "isBestSeller": false,
-   "isRecommended": false,
-   "productType": "Aprons"
-  },
-  "932M": {
-   "code": "J932M",
-   "name": "Long sleeve easycare Oxford shirt",
-   "brand": "Russell Athletic Collection",
-   "price": 30.19,
-   "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/cba509d4/69296ba65fa5b59a3a6b9264/J932M_LS00_2026.jpg",
-   "colors": [
-    {
-     "name": "Black",
-     "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d321fe89/5c5c3e3deb9f5b1c75ce3b0c0b5840b7.jpg"
-    },
-    {
-     "name": "Bright Navy",
-     "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d321fe89/5c5c3e3deb9f5b1c75ce3b0d265c39c8.jpg"
-    },
-    {
-     "name": "Bright Royal",
-     "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d321fe89/5c5c3e3deb9f5b1c75ce3b0ec55881fc.jpg"
-    },
-    {
-     "name": "Oxford Blue",
-     "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d321fe89/5c5c3e3deb9f5b1c75ce3b199873df98.jpg"
-    },
-    {
-     "name": "Silver",
-     "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d321fe89/5c5c3e3deb9f5b1c75ce3b1a03b1dcc9.jpg"
-    },
-    {
-     "name": "White",
-     "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d321fe89/5c5c3e3deb9f5b1c75ce3b1be70deff9.jpg"
-    }
-   ],
-   "customization": [
-    "embroidery",
-    "print"
-   ],
-   "isBestSeller": false,
-   "isRecommended": false,
-   "productType": "Shirts"
-  },
-  "932F": {
-   "code": "J932F",
-   "name": "Women's long sleeve easycare Oxford shirt",
-   "brand": "Russell Athletic Collection",
-   "price": 29.62,
-   "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/78adc44d/692972855fa5b59a3a6ca2b3/J932F_LS00_2026.jpg",
-   "colors": [
-    {
-     "name": "Black",
-     "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d321fe89/5c5c3e3deb9f5b1c75ce3afbff2f1712.jpg"
-    },
-    {
-     "name": "Bright Navy",
-     "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d321fe89/5c5c3e3deb9f5b1c75ce3afcb13bf94a.jpg"
-    },
-    {
-     "name": "Bright Royal",
-     "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d321fe89/5c5c3e3deb9f5b1c75ce3afde74c191f.jpg"
-    },
-    {
-     "name": "Oxford Blue",
-     "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d321fe89/5c5c3e3deb9f5b1c75ce3b08ea356dca.jpg"
-    },
-    {
-     "name": "Silver",
-     "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d321fe89/5c5c3e3deb9f5b1c75ce3b091f06717b.jpg"
-    },
-    {
-     "name": "White",
-     "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d321fe89/5c5c3e3deb9f5b1c75ce3b0aea0806a6.jpg"
-    }
-   ],
-   "customization": [
-    "embroidery",
-    "print"
-   ],
-   "isBestSeller": false,
-   "isRecommended": false,
-   "productType": "Shirts"
+   "productType": "Rugby Shirts",
+   "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+   ]
   }
  }
 }

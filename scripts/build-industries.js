@@ -6,6 +6,7 @@
  *   node --use-system-ca scripts/build-industries.js --fetch   refresh the product snapshot from the API, then build
  *   node scripts/build-industries.js                           rebuild the HTML from the saved snapshot
  *   node --use-system-ca scripts/build-industries.js --fetch-missing   only re-check codes the last fetch did not find
+ *   node --use-system-ca scripts/build-industries.js --fetch-sectors   only refresh the API sector products + filter values
  *
  * Every PDF code the API returns is shown, whatever the PDF says about its site status.
  *   --on-site-only              only show codes the PDF marks "On site"
@@ -34,7 +35,7 @@ const HUB_FILE = path.join(ROOT, 'industries.html');
 
 const API = 'https://api.brandeduk.com';
 const SITE = 'https://www.brandeduk.com';
-const ASSET_VERSION = '20261011-ind2';
+const ASSET_VERSION = '20261012-ind5';
 const HIDDEN_BRAND_NAMES = ['absolute', 'ralawise'];
 const ON_SITE_ONLY = process.argv.includes('--on-site-only');
 const MISSING_REPORT_DIR = (() => {
@@ -45,6 +46,51 @@ const SUPPLIER_ORDER = ['Ralawise 2026', 'PenCarrie 2026', 'Uneek 2026'];
 const ISSUE_NOT_IN_API = 'Not in API';
 const ISSUE_INCOMPLETE = 'In API but no price/sizes';
 const SECTOR_ORDER = ['construction', 'cleaning', 'hospitality', 'healthcare', 'logistics', 'corporate', 'education', 'retail', 'sports'];
+const SECTORS_FILE = path.join(ROOT, 'brandedukv15-child/assets/data/industries-sectors.json');
+const CLIENT_DATA_DIR = path.join(ROOT, 'brandedukv15-child/assets/data/industries');
+const CLIENT_DATA_URL = '/brandedukv15-child/assets/data/industries';
+
+/* Our industries -> the API "Product Sector" values (GET /api/filters/sectors, same as the shop's Related Sector filter).
+   The API has no cleaning, healthcare or retail sector, so those use the product-type queries in SOURCE_QUERIES. */
+const API_SECTORS = {
+    construction: { sectors: ['safety'], more: 'More construction workwear' },
+    cleaning: { sectors: ['type-tabards', 'type-tunics'], more: 'More cleaning tabards & tunics' },
+    hospitality: { sectors: ['hospitality'], more: 'More hospitality workwear' },
+    healthcare: { sectors: ['type-tunics'], more: 'More healthcare tunics' },
+    logistics: { sectors: ['safety'], more: 'More logistics & warehouse workwear' },
+    corporate: { sectors: ['corporate'], more: 'More corporate workwear' },
+    education: { sectors: ['school'], more: 'More school & education wear' },
+    retail: { sectors: ['corporate-retail'], more: 'More retail staff uniforms' },
+    sports: { sectors: ['sport'], more: 'More sports teamwear' }
+};
+/* Sources that are not an API sector; anything else is fetched as sector[]=<key>. */
+const RETAIL_TYPES = ['polos', 'shirts', 'blouses', 'fleece', 'softshells', 'aprons'];
+const SOURCE_QUERIES = {
+    'type-tabards': 'productType[]=tabards',
+    'type-tunics': 'productType[]=tunics',
+    'corporate-retail': 'sector[]=corporate&' + RETAIL_TYPES.map((type) => `productType[]=${type}`).join('&')
+};
+
+function sourceQuery(key) {
+    return (SOURCE_QUERIES[key] || `sector[]=${encodeURIComponent(key)}`) + '&sort=best';
+}
+
+/* Sidebar filters, in the shop's FILTER_CONFIG order. "api" facets are read from the API per value
+   (GET /api/products?<key>[]=<slug>); the others come from the product list fields. */
+const FILTERS = [
+    { key: 'gender', title: 'Gender', api: true },
+    { key: 'ageGroup', title: 'Age Group', api: true },
+    { key: 'brand', title: 'Brand', searchable: true, expanded: true },
+    { key: 'productType', title: 'Product Type', searchable: true, expanded: true },
+    { key: 'sleeve', title: 'Sleeve', api: true },
+    { key: 'neckline', title: 'Neckline', api: true },
+    { key: 'primaryColour', title: 'Primary Colour', api: true, swatch: true },
+    { key: 'size', title: 'Size', searchable: true },
+    { key: 'fabric', title: 'Fabric', api: true, searchable: true },
+    { key: 'weight', title: 'Weight (GSM)', api: true }
+];
+const FILTER_VISIBLE_LIMIT = 8;
+const MORE_BATCH = 24;
 
 /* ------------------------------------------------------------------ helpers */
 
@@ -119,7 +165,8 @@ function toCard(product) {
         customization: normaliseMethods(product.customization),
         isBestSeller: product.is_best_seller === true || product.is_best_seller === 'true' || product.is_best_seller === 1,
         isRecommended: product.is_recommended === true || product.is_recommended === 'true' || product.is_recommended === 1,
-        productType: product.productType || product.product_type || ''
+        productType: product.productType || product.product_type || '',
+        sizes: Array.isArray(product.sizes) ? product.sizes.map(String) : []
     };
 }
 
@@ -204,6 +251,71 @@ async function fetchSnapshot(data, previous) {
     writeFile(SNAPSHOT_FILE, JSON.stringify(snapshot, null, 1) + '\n');
     console.log(`Snapshot saved: ${Object.keys(products).length} products, ${missing.length} PDF codes not in the API.`);
     return snapshot;
+}
+
+async function fetchAllPages(query) {
+    const items = [];
+    for (let page = 1; ; page++) {
+        const result = await apiGet(`${API}/api/products?${query}&limit=200&page=${page}`);
+        const list = (result && result.items) || [];
+        items.push(...list);
+        if (!list.length || page * 200 >= (Number(result.total) || 0)) break;
+        await sleep(150);
+    }
+    return items;
+}
+
+/* Every product in the mapped API sectors (shop "Best Sellers" order) plus the facet values used by the
+   sidebar filters, for those products and the curated ones. */
+async function fetchSectorData(snapshot) {
+    const apiSectors = Array.from(new Set(Object.values(API_SECTORS).flatMap((entry) => entry.sectors)));
+    const sectors = {};
+    const products = {};
+    for (const apiSector of apiSectors) {
+        const items = await fetchAllPages(sourceQuery(apiSector));
+        sectors[apiSector] = [];
+        for (const item of items) {
+            const card = toCard(item);
+            if (!card.code || sectors[apiSector].includes(card.code)) continue;
+            sectors[apiSector].push(card.code);
+            products[card.code] = card;
+        }
+        console.log(`sector ${apiSector}: ${sectors[apiSector].length} products`);
+        await sleep(150);
+    }
+
+    const wanted = new Set(Object.keys(products));
+    Object.values(snapshot.products).forEach((card) => wanted.add(card.code));
+
+    const definitions = (await apiGet(`${API}/api/products/filters`)).filters || {};
+    const facetValues = {};
+    const attributes = {};
+    for (const filter of FILTERS.filter((entry) => entry.api)) {
+        const seen = new Set();
+        facetValues[filter.key] = [];
+        for (const value of definitions[filter.key] || []) {
+            if (!value.slug || seen.has(value.slug)) continue;
+            seen.add(value.slug);
+            const items = await fetchAllPages(`${filter.key}[]=${encodeURIComponent(value.slug)}`);
+            let members = 0;
+            for (const item of items) {
+                const code = item.code || item.style_code;
+                if (!wanted.has(code)) continue;
+                const entry = attributes[code] = attributes[code] || {};
+                (entry[filter.key] = entry[filter.key] || []);
+                if (!entry[filter.key].includes(value.slug)) entry[filter.key].push(value.slug);
+                members++;
+            }
+            if (members) facetValues[filter.key].push({ slug: value.slug, name: value.name || value.slug });
+            await sleep(150);
+        }
+        console.log(`facet ${filter.key}: ${facetValues[filter.key].length} values used`);
+    }
+
+    const sectorData = { generatedAt: new Date().toISOString(), api: API, sectors, facetValues, attributes, products };
+    writeFile(SECTORS_FILE, JSON.stringify(sectorData) + '\n');
+    console.log(`Sector data saved: ${Object.keys(products).length} sector products, ${Object.keys(attributes).length} with facet values.`);
+    return sectorData;
 }
 
 /* ------------------------------------------------------------------ brand logos (reuse the shop map) */
@@ -337,7 +449,12 @@ function mobileBar(backHref, label) {
     <header class="site-header"></header>`;
 }
 
-function pageEnd() {
+function pageEnd(options) {
+    const filterButton = options && options.filters ? `
+        <button type="button" class="nav-item nav-item--filter" data-ind-open-filters aria-controls="filtersDropup" aria-expanded="false">
+            ${FILTER_ICON}
+            <span class="nav-item-label">Filter</span>
+        </button>` : '';
     return `    <div data-pc-footer></div>
     <div data-mobile-footer></div>
 
@@ -355,7 +472,7 @@ function pageEnd() {
         <a href="/shop.html" class="nav-item">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg>
             <span class="nav-item-label">Shop</span>
-        </a>
+        </a>${filterButton}
         <a href="/basket.html#orderSummary" class="nav-item">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
             <span class="nav-item-label">Basket</span>
@@ -429,9 +546,153 @@ function productCard(card, logoMap) {
                 </article>`;
 }
 
+/* ------------------------------------------------------------------ filters + client data */
+
+const IMAGE_BASE = 'https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/';
+const LETTER_SIZES = ['XXS', '2XS', 'XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', '6XL', '7XL', '8XL'];
+
+function sizeName(raw) {
+    let value = String(raw || '').trim().replace(/\s+(relaxed|classic|reg|regular|slim|long|tall|short|petite)$/i, '').trim();
+    if (!value) return '';
+    if (/^\d+\.0$/.test(value)) value = value.replace(/\.0$/, '');
+    if (/^one[\s-]?size$|^os$/i.test(value)) return 'One size';
+    const upper = value.toUpperCase().replace(/^XXXL$/, '3XL').replace(/^XXL$/, '2XL');
+    return LETTER_SIZES.includes(upper) ? upper : value;
+}
+
+function sizeRank(name) {
+    const letter = LETTER_SIZES.indexOf(name);
+    if (letter > -1) return letter;
+    const women = name.match(/^wom\w*\s+(\d+)/i);
+    if (women) return 100 + Number(women[1]);
+    if (/^\d+(\.\d+)?$/.test(name)) return 200 + Number(name);
+    const age = name.match(/^(\d+)/);
+    if (age) return 400 + Number(age[1]);
+    if (name === 'One size') return 900;
+    return 1000;
+}
+
+function compactImage(url) {
+    return url && url.startsWith(IMAGE_BASE) ? '~' + url.slice(IMAGE_BASE.length) : url;
+}
+
+function methodFlags(card) {
+    return (card.isBestSeller ? 1 : 0) | (card.isRecommended ? 2 : 0)
+        | (card.customization.includes('embroidery') ? 4 : 0) | (card.customization.includes('print') ? 8 : 0);
+}
+
+/* Facet values for one product, keyed like the sidebar filters. */
+function productFacets(card, sectorData, names) {
+    const facets = {};
+    const add = (key, name) => {
+        const slug = slugify(name);
+        if (!slug) return;
+        names[key] = names[key] || {};
+        if (!names[key][slug]) names[key][slug] = name;
+        (facets[key] = facets[key] || []);
+        if (!facets[key].includes(slug)) facets[key].push(slug);
+    };
+    if (card.brand) add('brand', card.brand);
+    if (card.productType) add('productType', card.productType);
+    const sizes = card.sizes && card.sizes.length ? card.sizes : ((sectorData.products[card.code] || {}).sizes || []);
+    sizes.map(sizeName).filter(Boolean).forEach((name) => add('size', name));
+    const attributes = sectorData.attributes[card.code] || {};
+    for (const filter of FILTERS.filter((entry) => entry.api)) {
+        if (attributes[filter.key] && attributes[filter.key].length) facets[filter.key] = attributes[filter.key].slice();
+    }
+    return facets;
+}
+
+function filterOptions(records, sectorData, names) {
+    const options = [];
+    for (const filter of FILTERS) {
+        const counts = {};
+        for (const record of records) for (const slug of record.f[filter.key] || []) counts[slug] = (counts[slug] || 0) + 1;
+        let values;
+        if (filter.api) {
+            values = (sectorData.facetValues[filter.key] || []).filter((value) => counts[value.slug])
+                .map((value) => ({ slug: value.slug, name: value.name, count: counts[value.slug] }));
+            if (filter.key === 'primaryColour' || filter.key === 'fabric') values.sort((a, b) => b.count - a.count);
+        } else {
+            values = Object.keys(counts).map((slug) => ({ slug, name: names[filter.key][slug], count: counts[slug] }));
+            if (filter.key === 'size') values.sort((a, b) => sizeRank(a.name) - sizeRank(b.name) || a.name.localeCompare(b.name));
+            else values.sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+        }
+        if (values.length > 1) options.push({ ...filter, values });
+    }
+    return options;
+}
+
+function filterSection(option) {
+    const id = `ind-filter-${option.key}`;
+    const items = option.values.map((value, index) => {
+        const hiddenByLimit = !option.swatch && index >= FILTER_VISIBLE_LIMIT ? ' is-hidden-by-limit' : '';
+        return option.swatch
+            ? `<label class="color-swatch-item" data-color="${esc(value.slug)}" data-filter-option title="${esc(value.name)}"><input type="checkbox" value="${esc(value.slug)}" data-filter-key="${option.key}"><span class="color-swatch-circle"></span><span class="color-swatch-name">${esc(value.name)}</span><span class="count">${value.count}</span></label>`
+            : `<label class="filter-checkbox-item${hiddenByLimit}" data-filter-option><input type="checkbox" value="${esc(value.slug)}" data-filter-key="${option.key}"><span>${esc(value.name)}</span><span class="count">(${value.count})</span></label>`;
+    }).join('\n                        ');
+    const more = !option.swatch && option.values.length > FILTER_VISIBLE_LIMIT;
+    return `
+                <div class="filter-expandable-row${option.expanded ? ' expanded' : ''}" data-filter-row="${option.key}" role="button" tabindex="0" aria-expanded="${option.expanded ? 'true' : 'false'}" aria-controls="${id}">
+                    <div class="filter-title-wrap"><h4>${esc(option.title)}</h4><span class="filter-selection-count" hidden>0</span></div>
+                    <div class="filter-row-actions"><button type="button" class="filter-section-clear" data-filter-clear="${option.key}" hidden>Clear</button><span class="filter-expandable-arrow" aria-hidden="true"></span></div>
+                </div>
+                <div class="filter-expandable-content" id="${id}">${option.searchable && more ? `
+                    <input type="search" class="filter-list-search" placeholder="Search ${esc(option.title.toLowerCase())}" aria-label="Search ${esc(option.title.toLowerCase())}" data-filter-search="${option.key}">` : ''}
+                    <div class="${option.swatch ? 'filter-color-swatches' : 'filter-checkbox-list'}">
+                        ${items}
+                    </div>${more ? `
+                    <button type="button" class="filter-list-toggle" data-filter-toggle aria-expanded="false">Show more</button>` : ''}
+                </div>`;
+}
+
+function filtersBody(options, priceMin, priceMax) {
+    return `<div class="ind-filters__body" data-ind-filters>
+                <div class="filter-group">
+                    <h4>Search products</h4>
+                    <input type="search" class="filter-search" placeholder="Search these styles" aria-label="Search these styles" data-ind-search>
+                </div>
+                <div class="price-range-section expanded" data-price-min="${priceMin}" data-price-max="${priceMax}">
+                    <div class="price-range-header" role="button" tabindex="0" aria-expanded="true">
+                        <h4>Price Range</h4>
+                        <span class="price-range-arrow" aria-hidden="true"></span>
+                    </div>
+                    <div class="price-range-display" data-price-display>${money(priceMin)} &ndash; ${money(priceMax)}</div>
+                    <div class="price-range-slider-container">
+                        <div class="price-range-track"></div>
+                        <div class="price-range-selected" data-price-selected></div>
+                        <input type="range" class="price-slider" min="${priceMin}" max="${priceMax}" step="1" value="${priceMin}" aria-label="Minimum price" data-price-slider="min">
+                        <input type="range" class="price-slider" min="${priceMin}" max="${priceMax}" step="1" value="${priceMax}" aria-label="Maximum price" data-price-slider="max">
+                    </div>
+                    <div class="price-range-inputs">
+                        <div class="price-input-group"><label for="indPriceMin">Min</label><input type="number" class="price-input" id="indPriceMin" min="0" step="1" value="${priceMin}" inputmode="numeric" data-price-input="min"></div>
+                        <div class="price-input-group"><label for="indPriceMax">Max</label><input type="number" class="price-input" id="indPriceMax" min="0" step="1" value="${priceMax}" inputmode="numeric" data-price-input="max"></div>
+                    </div>
+                </div>${options.map(filterSection).join('')}
+            </div>`;
+}
+
+const FILTER_ICON = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="6" y1="21" x2="6" y2="3"></line><line x1="12" y1="21" x2="12" y2="3"></line><line x1="18" y1="21" x2="18" y2="3"></line><circle cx="6" cy="8" r="2"></circle><circle cx="12" cy="14" r="2"></circle><circle cx="18" cy="10" r="2"></circle></svg>';
+
+function filtersDrawer() {
+    return `    <div class="filters-overlay" id="filtersOverlay" data-ind-close-filters></div>
+    <div class="filters-dropup ind-filters-drawer" id="filtersDropup" role="dialog" aria-modal="true" aria-label="Filter products" inert>
+        <div class="filters-dropup__header">
+            <h2 class="filters-dropup__title">Filter By</h2>
+            <button type="button" class="filters-dropup__clear" data-ind-clear>Clear All</button>
+            <button type="button" class="filters-dropup__close" data-ind-close-filters aria-label="Close filters">&times;</button>
+        </div>
+        <div class="filters-dropup__body" data-ind-drawer-body></div>
+        <div class="ind-drawer-foot">
+            <button type="button" class="ind-btn ind-btn--primary" data-ind-close-filters>Show <span data-ind-visible-count></span> styles</button>
+        </div>
+    </div>
+`;
+}
+
 /* ------------------------------------------------------------------ sector page */
 
-function buildSector(slug, sector, data, snapshot, logoMap, report) {
+function buildSector(slug, sector, data, snapshot, sectorData, logoMap, report) {
     const pageUrl = `${SITE}/industries/${slug}`;
     const groups = [];
     const shownCodes = [];
@@ -461,7 +722,54 @@ function buildSector(slug, sector, data, snapshot, logoMap, report) {
     }
 
     const shownCount = groups.reduce((sum, group) => sum + group.cards.length, 0);
-    report.push({ slug, title: sector.title, pdfTotal: sector.pdfTotal, shown: shownCount, hidden, missing });
+
+    /* Curated cards stay in the HTML; the rest of the API sector is rendered client-side from the JSON. */
+    const mapping = API_SECTORS[slug] || { sectors: [] };
+    const curatedCards = [];
+    const curatedCodes = new Set();
+    for (const group of groups) {
+        for (const card of group.cards) {
+            if (curatedCodes.has(card.code)) continue;
+            curatedCodes.add(card.code);
+            curatedCards.push(card);
+        }
+    }
+    const extras = [];
+    const extraCodes = new Set();
+    for (const apiSector of mapping.sectors) {
+        for (const code of sectorData.sectors[apiSector] || []) {
+            const card = sectorData.products[code];
+            if (!card || curatedCodes.has(code) || extraCodes.has(code) || !card.image || !(card.price > 0)) continue;
+            extraCodes.add(code);
+            extras.push(card);
+        }
+    }
+    const moreId = 'more';
+    const moreTitle = mapping.more || '';
+    const names = {};
+    const records = curatedCards.map((card) => ({ c: card.code, n: card.name, p: card.price, f: productFacets(card, sectorData, names) }))
+        .concat(extras.map((card) => {
+            const colors = card.colors.length ? card.colors : [{ name: 'Default', image: card.image }];
+            return {
+                c: card.code, n: card.name, p: card.price, f: productFacets(card, sectorData, names), x: 1,
+                b: card.brand, i: compactImage(card.image), m: methodFlags(card),
+                k: colors.map((color) => [color.name, compactImage(color.image)])
+            };
+        }));
+    const options = filterOptions(records, sectorData, names);
+    const prices = records.map((record) => record.p);
+    const priceMin = Math.floor(Math.min(...prices));
+    const priceMax = Math.ceil(Math.max(...prices));
+    const logos = {};
+    for (const card of extras) {
+        const logo = card.brand && brandLogoFor(logoMap, card.brand);
+        if (logo) logos[card.brand] = '/' + logo;
+    }
+    const clientData = { version: ASSET_VERSION, imageBase: IMAGE_BASE, batch: MORE_BATCH, logos, products: records };
+    writeFile(path.join(CLIENT_DATA_DIR, slug + '.json'), JSON.stringify(clientData));
+    const totalStyles = curatedCards.length + extras.length;
+
+    report.push({ slug, title: sector.title, pdfTotal: sector.pdfTotal, shown: shownCount, curated: curatedCards.length, extra: extras.length, total: totalStyles, apiSectors: mapping.sectors, hidden, missing });
 
     const breadcrumb = {
         '@type': 'BreadcrumbList',
@@ -491,16 +799,33 @@ function buildSector(slug, sector, data, snapshot, logoMap, report) {
     const jsonLd = JSON.stringify({ '@context': 'https://schema.org', '@graph': [breadcrumb, collection] }, null, 2).replace(/</g, '\\u003c');
 
     const quoteMessage = `Hi, I would like a bulk quote for ${sector.title.toLowerCase()}.`;
-    const jumpLinks = groups.map((group) => `<a href="/industries/${slug}#${group.id}">${esc(group.name)} <span>${group.cards.length}</span></a>`).join('\n                ');
+    const styles = (count) => `${count} ${count === 1 ? 'style' : 'styles'}`;
+    const jumpLinks = groups.map((group) => `<a href="/industries/${slug}#${group.id}" data-ind-chip="${group.id}">${esc(group.name)} <span>${group.cards.length}</span></a>`)
+        .concat(extras.length ? [`<a href="/industries/${slug}#${moreId}" data-ind-chip="${moreId}">${esc(moreTitle)} <span>${extras.length}</span></a>`] : [])
+        .join('\n                    ');
     const sections = groups.map((group) => `
-        <section class="ind-group" id="${group.id}" aria-labelledby="${group.id}-title">
-            <div class="ind-group__head">
-                <h2 id="${group.id}-title">${esc(group.name)}</h2>
-                <span class="ind-group__count">${group.cards.length} ${group.cards.length === 1 ? 'style' : 'styles'}</span>
-            </div>
-            <div class="products-grid">${group.cards.map((card) => productCard(card, logoMap)).join('')}
-            </div>
-        </section>`).join('\n');
+            <section class="ind-group" id="${group.id}" aria-labelledby="${group.id}-title" data-ind-group>
+                <div class="ind-group__head">
+                    <h2 id="${group.id}-title">${esc(group.name)}</h2>
+                    <span class="ind-group__count" data-ind-group-count>${styles(group.cards.length)}</span>
+                </div>
+                <div class="products-grid">${group.cards.map((card) => productCard(card, logoMap)).join('')}
+                </div>
+            </section>`).join('\n');
+    const moreSection = extras.length ? `
+            <section class="ind-group ind-more" id="${moreId}" aria-labelledby="${moreId}-title" data-ind-more>
+                <div class="ind-group__head">
+                    <h2 id="${moreId}-title">${esc(moreTitle)}</h2>
+                    <span class="ind-group__count" data-ind-group-count>${styles(extras.length)}</span>
+                </div>
+                <p class="ind-more__intro">More styles from our ${esc(sector.title.toLowerCase())} range, best sellers first.</p>
+                <div class="products-grid" data-ind-more-grid aria-live="polite"></div>
+                <div class="ind-more__actions">
+                    <p class="ind-more__status" data-ind-more-status>Loading styles&hellip;</p>
+                    <button type="button" class="ind-btn ind-btn--ghost" data-ind-more-btn hidden>Show more</button>
+                </div>
+            </section>` : '';
+    const filterBody = filtersBody(options, priceMin, priceMax);
 
     const others = SECTOR_ORDER.filter((other) => other !== slug)
         .map((other) => `<a href="/industries/${other}">${esc(data.sectors[other].title)}</a>`).join('\n                ');
@@ -522,7 +847,7 @@ ${jsonLd}
     </script>
 ${headAssets()}
 </head>
-<body class="ind-page" data-sector="${slug}">
+<body class="ind-page ind-page--sector" data-sector="${slug}" data-ind-data="${CLIENT_DATA_URL}/${slug}.json?v=${ASSET_VERSION}">
 ${mobileBar('/industries', sector.title)}
 
     <main class="ind-main">
@@ -535,7 +860,7 @@ ${mobileBar('/industries', sector.title)}
                 <p class="ind-eyebrow">Shop by industry</p>
                 <h1>${esc(sector.title)}</h1>
                 <p class="ind-intro">${esc(sector.intro)}</p>
-                <p class="ind-meta">${shownCount} ${shownCount === 1 ? 'style' : 'styles'} &middot; Prices shown <span data-ind-vat-label>ex VAT</span> &middot; Standard production 7&ndash;10 working days after artwork approval</p>
+                <p class="ind-meta">${styles(totalStyles)} &middot; Prices shown <span data-ind-vat-label>ex VAT</span> &middot; Standard production 7&ndash;10 working days after artwork approval</p>
                 <div class="ind-cta-row">
                     <a class="ind-btn ind-btn--primary" href="/bulk-orders" data-open-contact="1" data-contact-message="${esc(quoteMessage)}">Get a bulk quote</a>
                     <a class="ind-btn ind-btn--ghost" href="/industries">All industries</a>
@@ -546,12 +871,38 @@ ${mobileBar('/industries', sector.title)}
             </div>
         </section>
 
-        <nav class="ind-jump" aria-label="${esc(sector.title)} categories">
-            <div class="ind-jump__inner">
-                ${jumpLinks}
-            </div>
-        </nav>
+        <div class="ind-shop">
+            <aside class="ind-filters filters-sidebar" aria-label="Filter products" data-ind-sidebar>
+                <div class="filters-header">
+                    <h3>Filter By</h3>
+                    <button type="button" class="clear-all-btn" data-ind-clear>Clear All</button>
+                </div>
+            ${filterBody}
+            </aside>
+
+            <div class="ind-results">
+                <nav class="ind-jump" aria-label="${esc(sector.title)} categories" data-ind-jump>
+                    <button type="button" class="ind-jump__arrow ind-jump__arrow--prev" aria-label="Scroll categories left" data-ind-jump-prev hidden>&lsaquo;</button>
+                    <div class="ind-jump__inner" data-ind-jump-row>
+                    ${jumpLinks}
+                    </div>
+                    <button type="button" class="ind-jump__arrow ind-jump__arrow--next" aria-label="Scroll categories right" data-ind-jump-next hidden>&rsaquo;</button>
+                </nav>
+
+                <div class="ind-toolbar">
+                    <button type="button" class="ind-filter-btn" data-ind-open-filters aria-controls="filtersDropup" aria-expanded="false">${FILTER_ICON}<span>Filters</span><span class="ind-filter-btn__count" data-ind-active-count hidden></span></button>
+                    <p class="ind-results-count" aria-live="polite"><span data-ind-visible-count>${totalStyles}</span> of ${styles(totalStyles)}</p>
+                    <div class="ind-active-filters" data-ind-active-filters></div>
+                </div>
+                <div class="ind-empty" data-ind-empty hidden>
+                    <h2>No styles match these filters</h2>
+                    <p>Try removing a filter, or ask us for a bulk quote and we will find the right style for you.</p>
+                    <button type="button" class="ind-btn ind-btn--ghost" data-ind-clear>Clear all filters</button>
+                </div>
 ${sections}
+${moreSection}
+            </div>
+        </div>
 
         <section class="ind-quote">
             <div>
@@ -569,7 +920,8 @@ ${sections}
         </nav>
     </main>
 
-${pageEnd()}`;
+${filtersDrawer()}
+${pageEnd({ filters: true })}`;
 
     writeFile(path.join(OUT_DIR, slug + '.html'), html);
 }
@@ -580,7 +932,7 @@ function buildHub(data, report) {
     const pageUrl = `${SITE}/industries`;
     const title = 'Workwear & Uniforms by Industry | BrandedUK';
     const description = 'Find branded workwear and uniforms chosen for your sector: construction, cleaning, hospitality, healthcare, logistics, corporate, education, retail and sports.';
-    const counts = Object.fromEntries(report.map((row) => [row.slug, row.shown]));
+    const counts = Object.fromEntries(report.map((row) => [row.slug, row.total]));
 
     const cards = SECTOR_ORDER.map((slug) => {
         const sector = data.sectors[slug];
@@ -675,18 +1027,22 @@ async function main() {
     } else {
         snapshot = readJson(SNAPSHOT_FILE);
     }
+    const sectorData = process.argv.includes('--fetch') || process.argv.includes('--fetch-sectors') || !fs.existsSync(SECTORS_FILE)
+        ? await fetchSectorData(snapshot)
+        : readJson(SECTORS_FILE);
 
     const logoMap = loadBrandLogoMap();
     const report = [];
     for (const slug of SECTOR_ORDER) {
-        buildSector(slug, data.sectors[slug], data, snapshot, logoMap, report);
+        buildSector(slug, data.sectors[slug], data, snapshot, sectorData, logoMap, report);
     }
     buildHub(data, report);
 
-    console.log('\nsector        PDF total  shown  not in API  incomplete  hidden (--on-site-only)');
+    console.log('\nsector        PDF total  shown  not in API  incomplete  curated  API sector         extra  total');
     for (const row of report) {
         const count = (issue) => row.missing.filter((item) => item.issue === issue).length;
-        console.log(`${row.slug.padEnd(13)} ${String(row.pdfTotal).padStart(9)}  ${String(row.shown).padStart(5)}  ${String(count(ISSUE_NOT_IN_API)).padStart(10)}  ${String(count(ISSUE_INCOMPLETE)).padStart(10)}  ${String(row.hidden).padStart(6)}`);
+        const apiSectors = row.apiSectors.length ? row.apiSectors.map((name) => `${name} (${(sectorData.sectors[name] || []).length})`).join(', ') : '-';
+        console.log(`${row.slug.padEnd(13)} ${String(row.pdfTotal).padStart(9)}  ${String(row.shown).padStart(5)}  ${String(count(ISSUE_NOT_IN_API)).padStart(10)}  ${String(count(ISSUE_INCOMPLETE)).padStart(10)}  ${String(row.curated).padStart(7)}  ${apiSectors.padEnd(17)}  ${String(row.extra).padStart(5)}  ${String(row.total).padStart(5)}`);
     }
 
     if (MISSING_REPORT_DIR) writeMissingReport(data, snapshot, report);

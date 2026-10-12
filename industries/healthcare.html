@@ -336,7 +336,7 @@
     <link rel="stylesheet" href="/mobile/css/mobile.css?v=20260923-home-nav">
     <link rel="stylesheet" href="/mobile/footer/footer.css?v=20260409B">
     <link rel="stylesheet" href="/footer-dev/pc-footer.css?v=20261009-phones">
-    <link rel="stylesheet" href="/brandedukv15-child/assets/css/pages/industries.css?v=20261011-ind2">
+    <link rel="stylesheet" href="/brandedukv15-child/assets/css/pages/industries.css?v=20261012-ind5">
     <script src="/brandedukv15-child/assets/js/shared-config.js?v=20261005-megafit"></script>
     <script src="/brandedukv15-child/assets/js/pc-header-template.js?v=20261005-megafit"></script>
     <script src="/brandedukv15-child/assets/js/pc-header.js?v=20261008-searchleaf1"></script>
@@ -348,7 +348,7 @@
     <script src="/brandedukv15-child/assets/js/cart-lottie-icon.js?v=20260927-cartlottie2" data-header-cart></script>
     <script src="/footer-dev/pc-footer.js?v=20261009-phones" defer></script>
 </head>
-<body class="ind-page" data-sector="healthcare">
+<body class="ind-page ind-page--sector" data-sector="healthcare" data-ind-data="/brandedukv15-child/assets/data/industries/healthcare.json?v=20261012-ind5">
     <header class="ind-mobile-bar">
         <a class="ind-back" href="/industries" aria-label="Back">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -372,7 +372,7 @@
                 <p class="ind-eyebrow">Shop by industry</p>
                 <h1>Healthcare Uniforms</h1>
                 <p class="ind-intro">Tunics, stretch trousers, polos, layers and reception shirts for clinics, care settings, salons and spas. Add your organisation’s logo for a smart, recognisable team uniform.</p>
-                <p class="ind-meta">37 styles &middot; Prices shown <span data-ind-vat-label>ex VAT</span> &middot; Standard production 7&ndash;10 working days after artwork approval</p>
+                <p class="ind-meta">39 styles &middot; Prices shown <span data-ind-vat-label>ex VAT</span> &middot; Standard production 7&ndash;10 working days after artwork approval</p>
                 <div class="ind-cta-row">
                     <a class="ind-btn ind-btn--primary" href="/bulk-orders" data-open-contact="1" data-contact-message="Hi, I would like a bulk quote for healthcare uniforms.">Get a bulk quote</a>
                     <a class="ind-btn ind-btn--ghost" href="/industries">All industries</a>
@@ -383,24 +383,243 @@
             </div>
         </section>
 
-        <nav class="ind-jump" aria-label="Healthcare Uniforms categories">
-            <div class="ind-jump__inner">
-                <a href="/industries/healthcare#scrubs">Scrubs <span>2</span></a>
-                <a href="/industries/healthcare#tunics">Tunics <span>9</span></a>
-                <a href="/industries/healthcare#trousers-and-baselayers">Trousers &amp; baselayers <span>6</span></a>
-                <a href="/industries/healthcare#polos">Polos <span>6</span></a>
-                <a href="/industries/healthcare#layers">Layers <span>8</span></a>
-                <a href="/industries/healthcare#lab-coats-and-salon-gowns">Lab coats &amp; salon gowns <span>2</span></a>
-                <a href="/industries/healthcare#reception-and-admin-shirts">Reception &amp; admin shirts <span>4</span></a>
+        <div class="ind-shop">
+            <aside class="ind-filters filters-sidebar" aria-label="Filter products" data-ind-sidebar>
+                <div class="filters-header">
+                    <h3>Filter By</h3>
+                    <button type="button" class="clear-all-btn" data-ind-clear>Clear All</button>
+                </div>
+            <div class="ind-filters__body" data-ind-filters>
+                <div class="filter-group">
+                    <h4>Search products</h4>
+                    <input type="search" class="filter-search" placeholder="Search these styles" aria-label="Search these styles" data-ind-search>
+                </div>
+                <div class="price-range-section expanded" data-price-min="9" data-price-max="31">
+                    <div class="price-range-header" role="button" tabindex="0" aria-expanded="true">
+                        <h4>Price Range</h4>
+                        <span class="price-range-arrow" aria-hidden="true"></span>
+                    </div>
+                    <div class="price-range-display" data-price-display>£9.00 &ndash; £31.00</div>
+                    <div class="price-range-slider-container">
+                        <div class="price-range-track"></div>
+                        <div class="price-range-selected" data-price-selected></div>
+                        <input type="range" class="price-slider" min="9" max="31" step="1" value="9" aria-label="Minimum price" data-price-slider="min">
+                        <input type="range" class="price-slider" min="9" max="31" step="1" value="31" aria-label="Maximum price" data-price-slider="max">
+                    </div>
+                    <div class="price-range-inputs">
+                        <div class="price-input-group"><label for="indPriceMin">Min</label><input type="number" class="price-input" id="indPriceMin" min="0" step="1" value="9" inputmode="numeric" data-price-input="min"></div>
+                        <div class="price-input-group"><label for="indPriceMax">Max</label><input type="number" class="price-input" id="indPriceMax" min="0" step="1" value="31" inputmode="numeric" data-price-input="max"></div>
+                    </div>
+                </div>
+                <div class="filter-expandable-row" data-filter-row="gender" role="button" tabindex="0" aria-expanded="false" aria-controls="ind-filter-gender">
+                    <div class="filter-title-wrap"><h4>Gender</h4><span class="filter-selection-count" hidden>0</span></div>
+                    <div class="filter-row-actions"><button type="button" class="filter-section-clear" data-filter-clear="gender" hidden>Clear</button><span class="filter-expandable-arrow" aria-hidden="true"></span></div>
+                </div>
+                <div class="filter-expandable-content" id="ind-filter-gender">
+                    <div class="filter-checkbox-list">
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="unisex" data-filter-key="gender"><span>Unisex</span><span class="count">(12)</span></label>
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="male" data-filter-key="gender"><span>Male</span><span class="count">(10)</span></label>
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="female" data-filter-key="gender"><span>Female</span><span class="count">(17)</span></label>
+                    </div>
+                </div>
+                <div class="filter-expandable-row" data-filter-row="ageGroup" role="button" tabindex="0" aria-expanded="false" aria-controls="ind-filter-ageGroup">
+                    <div class="filter-title-wrap"><h4>Age Group</h4><span class="filter-selection-count" hidden>0</span></div>
+                    <div class="filter-row-actions"><button type="button" class="filter-section-clear" data-filter-clear="ageGroup" hidden>Clear</button><span class="filter-expandable-arrow" aria-hidden="true"></span></div>
+                </div>
+                <div class="filter-expandable-content" id="ind-filter-ageGroup">
+                    <div class="filter-checkbox-list">
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="adult" data-filter-key="ageGroup"><span>Adult</span><span class="count">(30)</span></label>
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="kids" data-filter-key="ageGroup"><span>Kids</span><span class="count">(1)</span></label>
+                    </div>
+                </div>
+                <div class="filter-expandable-row expanded" data-filter-row="brand" role="button" tabindex="0" aria-expanded="true" aria-controls="ind-filter-brand">
+                    <div class="filter-title-wrap"><h4>Brand</h4><span class="filter-selection-count" hidden>0</span></div>
+                    <div class="filter-row-actions"><button type="button" class="filter-section-clear" data-filter-clear="brand" hidden>Clear</button><span class="filter-expandable-arrow" aria-hidden="true"></span></div>
+                </div>
+                <div class="filter-expandable-content" id="ind-filter-brand">
+                    <div class="filter-checkbox-list">
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="premier" data-filter-key="brand"><span>Premier</span><span class="count">(11)</span></label>
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="onna-by-premier" data-filter-key="brand"><span>Onna by Premier</span><span class="count">(10)</span></label>
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="henbury" data-filter-key="brand"><span>Henbury</span><span class="count">(7)</span></label>
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="portwest" data-filter-key="brand"><span>Portwest</span><span class="count">(1)</span></label>
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="result-core" data-filter-key="brand"><span>Result Core</span><span class="count">(1)</span></label>
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="uneek-clothing" data-filter-key="brand"><span>Uneek Clothing</span><span class="count">(1)</span></label>
+                    </div>
+                </div>
+                <div class="filter-expandable-row expanded" data-filter-row="productType" role="button" tabindex="0" aria-expanded="true" aria-controls="ind-filter-productType">
+                    <div class="filter-title-wrap"><h4>Product Type</h4><span class="filter-selection-count" hidden>0</span></div>
+                    <div class="filter-row-actions"><button type="button" class="filter-section-clear" data-filter-clear="productType" hidden>Clear</button><span class="filter-expandable-arrow" aria-hidden="true"></span></div>
+                </div>
+                <div class="filter-expandable-content" id="ind-filter-productType">
+                    <input type="search" class="filter-list-search" placeholder="Search product type" aria-label="Search product type" data-filter-search="productType">
+                    <div class="filter-checkbox-list">
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="polos" data-filter-key="productType"><span>Polos</span><span class="count">(10)</span></label>
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="tunics" data-filter-key="productType"><span>Tunics</span><span class="count">(9)</span></label>
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="fleece" data-filter-key="productType"><span>Fleece</span><span class="count">(5)</span></label>
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="shirts" data-filter-key="productType"><span>Shirts</span><span class="count">(4)</span></label>
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="trousers" data-filter-key="productType"><span>Trousers</span><span class="count">(4)</span></label>
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="baselayers" data-filter-key="productType"><span>Baselayers</span><span class="count">(2)</span></label>
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="cardigans" data-filter-key="productType"><span>Cardigans</span><span class="count">(2)</span></label>
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="gowns" data-filter-key="productType"><span>Gowns</span><span class="count">(1)</span></label>
+                        <label class="filter-checkbox-item is-hidden-by-limit" data-filter-option><input type="checkbox" value="jackets" data-filter-key="productType"><span>Jackets</span><span class="count">(1)</span></label>
+                        <label class="filter-checkbox-item is-hidden-by-limit" data-filter-option><input type="checkbox" value="sweatpants" data-filter-key="productType"><span>Sweatpants</span><span class="count">(1)</span></label>
+                    </div>
+                    <button type="button" class="filter-list-toggle" data-filter-toggle aria-expanded="false">Show more</button>
+                </div>
+                <div class="filter-expandable-row" data-filter-row="sleeve" role="button" tabindex="0" aria-expanded="false" aria-controls="ind-filter-sleeve">
+                    <div class="filter-title-wrap"><h4>Sleeve</h4><span class="filter-selection-count" hidden>0</span></div>
+                    <div class="filter-row-actions"><button type="button" class="filter-section-clear" data-filter-clear="sleeve" hidden>Clear</button><span class="filter-expandable-arrow" aria-hidden="true"></span></div>
+                </div>
+                <div class="filter-expandable-content" id="ind-filter-sleeve">
+                    <div class="filter-checkbox-list">
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="long-sleeve" data-filter-key="sleeve"><span>Long Sleeve</span><span class="count">(5)</span></label>
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="short-sleeve" data-filter-key="sleeve"><span>Short Sleeve</span><span class="count">(8)</span></label>
+                    </div>
+                </div>
+                <div class="filter-expandable-row" data-filter-row="neckline" role="button" tabindex="0" aria-expanded="false" aria-controls="ind-filter-neckline">
+                    <div class="filter-title-wrap"><h4>Neckline</h4><span class="filter-selection-count" hidden>0</span></div>
+                    <div class="filter-row-actions"><button type="button" class="filter-section-clear" data-filter-clear="neckline" hidden>Clear</button><span class="filter-expandable-arrow" aria-hidden="true"></span></div>
+                </div>
+                <div class="filter-expandable-content" id="ind-filter-neckline">
+                    <div class="filter-checkbox-list">
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="collared" data-filter-key="neckline"><span>Collared</span><span class="count">(9)</span></label>
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="crew-neck" data-filter-key="neckline"><span>crew neck</span><span class="count">(3)</span></label>
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="zip-neck" data-filter-key="neckline"><span>Zip Neck</span><span class="count">(1)</span></label>
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="v-neck" data-filter-key="neckline"><span>V Neck</span><span class="count">(5)</span></label>
+                    </div>
+                </div>
+                <div class="filter-expandable-row" data-filter-row="primaryColour" role="button" tabindex="0" aria-expanded="false" aria-controls="ind-filter-primaryColour">
+                    <div class="filter-title-wrap"><h4>Primary Colour</h4><span class="filter-selection-count" hidden>0</span></div>
+                    <div class="filter-row-actions"><button type="button" class="filter-section-clear" data-filter-clear="primaryColour" hidden>Clear</button><span class="filter-expandable-arrow" aria-hidden="true"></span></div>
+                </div>
+                <div class="filter-expandable-content" id="ind-filter-primaryColour">
+                    <div class="filter-color-swatches">
+                        <label class="color-swatch-item" data-color="black" data-filter-option title="Black"><input type="checkbox" value="black" data-filter-key="primaryColour"><span class="color-swatch-circle"></span><span class="color-swatch-name">Black</span><span class="count">37</span></label>
+                        <label class="color-swatch-item" data-color="white" data-filter-option title="White"><input type="checkbox" value="white" data-filter-key="primaryColour"><span class="color-swatch-circle"></span><span class="color-swatch-name">White</span><span class="count">26</span></label>
+                        <label class="color-swatch-item" data-color="blue" data-filter-option title="Blue"><input type="checkbox" value="blue" data-filter-key="primaryColour"><span class="color-swatch-circle"></span><span class="color-swatch-name">Blue</span><span class="count">21</span></label>
+                        <label class="color-swatch-item" data-color="grey" data-filter-option title="Grey"><input type="checkbox" value="grey" data-filter-key="primaryColour"><span class="color-swatch-circle"></span><span class="color-swatch-name">Grey</span><span class="count">21</span></label>
+                        <label class="color-swatch-item" data-color="green" data-filter-option title="Green"><input type="checkbox" value="green" data-filter-key="primaryColour"><span class="color-swatch-circle"></span><span class="color-swatch-name">Green</span><span class="count">11</span></label>
+                        <label class="color-swatch-item" data-color="purple" data-filter-option title="Purple"><input type="checkbox" value="purple" data-filter-key="primaryColour"><span class="color-swatch-circle"></span><span class="color-swatch-name">Purple</span><span class="count">11</span></label>
+                        <label class="color-swatch-item" data-color="pink" data-filter-option title="Pink"><input type="checkbox" value="pink" data-filter-key="primaryColour"><span class="color-swatch-circle"></span><span class="color-swatch-name">Pink</span><span class="count">10</span></label>
+                        <label class="color-swatch-item" data-color="red" data-filter-option title="Red"><input type="checkbox" value="red" data-filter-key="primaryColour"><span class="color-swatch-circle"></span><span class="color-swatch-name">Red</span><span class="count">9</span></label>
+                        <label class="color-swatch-item" data-color="navy" data-filter-option title="Navy"><input type="checkbox" value="navy" data-filter-key="primaryColour"><span class="color-swatch-circle"></span><span class="color-swatch-name">Navy</span><span class="count">9</span></label>
+                        <label class="color-swatch-item" data-color="royal" data-filter-option title="Royal"><input type="checkbox" value="royal" data-filter-key="primaryColour"><span class="color-swatch-circle"></span><span class="color-swatch-name">Royal</span><span class="count">8</span></label>
+                        <label class="color-swatch-item" data-color="bottle green" data-filter-option title="Bottle Green"><input type="checkbox" value="bottle green" data-filter-key="primaryColour"><span class="color-swatch-circle"></span><span class="color-swatch-name">Bottle Green</span><span class="count">5</span></label>
+                        <label class="color-swatch-item" data-color="maroon" data-filter-option title="Maroon"><input type="checkbox" value="maroon" data-filter-key="primaryColour"><span class="color-swatch-circle"></span><span class="color-swatch-name">Maroon</span><span class="count">5</span></label>
+                        <label class="color-swatch-item" data-color="sky" data-filter-option title="Sky"><input type="checkbox" value="sky" data-filter-key="primaryColour"><span class="color-swatch-circle"></span><span class="color-swatch-name">Sky</span><span class="count">5</span></label>
+                        <label class="color-swatch-item" data-color="neutral" data-filter-option title="Neutral"><input type="checkbox" value="neutral" data-filter-key="primaryColour"><span class="color-swatch-circle"></span><span class="color-swatch-name">Neutral</span><span class="count">2</span></label>
+                        <label class="color-swatch-item" data-color="orange" data-filter-option title="Orange"><input type="checkbox" value="orange" data-filter-key="primaryColour"><span class="color-swatch-circle"></span><span class="color-swatch-name">Orange</span><span class="count">2</span></label>
+                        <label class="color-swatch-item" data-color="brown" data-filter-option title="Brown"><input type="checkbox" value="brown" data-filter-key="primaryColour"><span class="color-swatch-circle"></span><span class="color-swatch-name">Brown</span><span class="count">2</span></label>
+                        <label class="color-swatch-item" data-color="sapphire" data-filter-option title="Sapphire"><input type="checkbox" value="sapphire" data-filter-key="primaryColour"><span class="color-swatch-circle"></span><span class="color-swatch-name">Sapphire</span><span class="count">2</span></label>
+                        <label class="color-swatch-item" data-color="yellow" data-filter-option title="Yellow"><input type="checkbox" value="yellow" data-filter-key="primaryColour"><span class="color-swatch-circle"></span><span class="color-swatch-name">Yellow</span><span class="count">1</span></label>
+                        <label class="color-swatch-item" data-color="charcoal" data-filter-option title="Charcoal"><input type="checkbox" value="charcoal" data-filter-key="primaryColour"><span class="color-swatch-circle"></span><span class="color-swatch-name">Charcoal</span><span class="count">1</span></label>
+                    </div>
+                </div>
+                <div class="filter-expandable-row" data-filter-row="size" role="button" tabindex="0" aria-expanded="false" aria-controls="ind-filter-size">
+                    <div class="filter-title-wrap"><h4>Size</h4><span class="filter-selection-count" hidden>0</span></div>
+                    <div class="filter-row-actions"><button type="button" class="filter-section-clear" data-filter-clear="size" hidden>Clear</button><span class="filter-expandable-arrow" aria-hidden="true"></span></div>
+                </div>
+                <div class="filter-expandable-content" id="ind-filter-size">
+                    <input type="search" class="filter-list-search" placeholder="Search size" aria-label="Search size" data-filter-search="size">
+                    <div class="filter-checkbox-list">
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="xxs" data-filter-key="size"><span>XXS</span><span class="count">(3)</span></label>
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="xs" data-filter-key="size"><span>XS</span><span class="count">(21)</span></label>
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="s" data-filter-key="size"><span>S</span><span class="count">(29)</span></label>
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="m" data-filter-key="size"><span>M</span><span class="count">(29)</span></label>
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="l" data-filter-key="size"><span>L</span><span class="count">(29)</span></label>
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="xl" data-filter-key="size"><span>XL</span><span class="count">(29)</span></label>
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="2xl" data-filter-key="size"><span>2XL</span><span class="count">(29)</span></label>
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="3xl" data-filter-key="size"><span>3XL</span><span class="count">(27)</span></label>
+                        <label class="filter-checkbox-item is-hidden-by-limit" data-filter-option><input type="checkbox" value="4xl" data-filter-key="size"><span>4XL</span><span class="count">(20)</span></label>
+                        <label class="filter-checkbox-item is-hidden-by-limit" data-filter-option><input type="checkbox" value="5xl" data-filter-key="size"><span>5XL</span><span class="count">(12)</span></label>
+                        <label class="filter-checkbox-item is-hidden-by-limit" data-filter-option><input type="checkbox" value="6xl" data-filter-key="size"><span>6XL</span><span class="count">(3)</span></label>
+                        <label class="filter-checkbox-item is-hidden-by-limit" data-filter-option><input type="checkbox" value="wom-6" data-filter-key="size"><span>Wom 6</span><span class="count">(4)</span></label>
+                        <label class="filter-checkbox-item is-hidden-by-limit" data-filter-option><input type="checkbox" value="wom-8" data-filter-key="size"><span>Wom 8</span><span class="count">(5)</span></label>
+                        <label class="filter-checkbox-item is-hidden-by-limit" data-filter-option><input type="checkbox" value="wom-10" data-filter-key="size"><span>Wom 10</span><span class="count">(5)</span></label>
+                        <label class="filter-checkbox-item is-hidden-by-limit" data-filter-option><input type="checkbox" value="wom-12" data-filter-key="size"><span>Wom 12</span><span class="count">(5)</span></label>
+                        <label class="filter-checkbox-item is-hidden-by-limit" data-filter-option><input type="checkbox" value="wom-14" data-filter-key="size"><span>Wom 14</span><span class="count">(5)</span></label>
+                        <label class="filter-checkbox-item is-hidden-by-limit" data-filter-option><input type="checkbox" value="wom-16" data-filter-key="size"><span>Wom 16</span><span class="count">(5)</span></label>
+                        <label class="filter-checkbox-item is-hidden-by-limit" data-filter-option><input type="checkbox" value="wom-18" data-filter-key="size"><span>Wom 18</span><span class="count">(5)</span></label>
+                        <label class="filter-checkbox-item is-hidden-by-limit" data-filter-option><input type="checkbox" value="wom-20" data-filter-key="size"><span>Wom 20</span><span class="count">(5)</span></label>
+                        <label class="filter-checkbox-item is-hidden-by-limit" data-filter-option><input type="checkbox" value="wom-22" data-filter-key="size"><span>Wom 22</span><span class="count">(5)</span></label>
+                        <label class="filter-checkbox-item is-hidden-by-limit" data-filter-option><input type="checkbox" value="wom-24" data-filter-key="size"><span>Wom 24</span><span class="count">(5)</span></label>
+                        <label class="filter-checkbox-item is-hidden-by-limit" data-filter-option><input type="checkbox" value="14" data-filter-key="size"><span>14</span><span class="count">(1)</span></label>
+                        <label class="filter-checkbox-item is-hidden-by-limit" data-filter-option><input type="checkbox" value="16" data-filter-key="size"><span>16</span><span class="count">(1)</span></label>
+                        <label class="filter-checkbox-item is-hidden-by-limit" data-filter-option><input type="checkbox" value="18" data-filter-key="size"><span>18</span><span class="count">(1)</span></label>
+                        <label class="filter-checkbox-item is-hidden-by-limit" data-filter-option><input type="checkbox" value="20" data-filter-key="size"><span>20</span><span class="count">(1)</span></label>
+                        <label class="filter-checkbox-item is-hidden-by-limit" data-filter-option><input type="checkbox" value="one-size" data-filter-key="size"><span>One size</span><span class="count">(1)</span></label>
+                        <label class="filter-checkbox-item is-hidden-by-limit" data-filter-option><input type="checkbox" value="l-xl" data-filter-key="size"><span>L/XL</span><span class="count">(2)</span></label>
+                        <label class="filter-checkbox-item is-hidden-by-limit" data-filter-option><input type="checkbox" value="s-m" data-filter-key="size"><span>S/M</span><span class="count">(2)</span></label>
+                    </div>
+                    <button type="button" class="filter-list-toggle" data-filter-toggle aria-expanded="false">Show more</button>
+                </div>
+                <div class="filter-expandable-row" data-filter-row="fabric" role="button" tabindex="0" aria-expanded="false" aria-controls="ind-filter-fabric">
+                    <div class="filter-title-wrap"><h4>Fabric</h4><span class="filter-selection-count" hidden>0</span></div>
+                    <div class="filter-row-actions"><button type="button" class="filter-section-clear" data-filter-clear="fabric" hidden>Clear</button><span class="filter-expandable-arrow" aria-hidden="true"></span></div>
+                </div>
+                <div class="filter-expandable-content" id="ind-filter-fabric">
+                    <input type="search" class="filter-list-search" placeholder="Search fabric" aria-label="Search fabric" data-filter-search="fabric">
+                    <div class="filter-checkbox-list">
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="polyester-100" data-filter-key="fabric"><span>Polyester (100%)</span><span class="count">(14)</span></label>
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="elastane-blend" data-filter-key="fabric"><span>Elastane Blend</span><span class="count">(8)</span></label>
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="viscose-blend" data-filter-key="fabric"><span>Viscose Blend</span><span class="count">(8)</span></label>
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="recycled-polyester-blend" data-filter-key="fabric"><span>Recycled Polyester Blend</span><span class="count">(6)</span></label>
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="polyester-blend" data-filter-key="fabric"><span>Polyester Blend</span><span class="count">(3)</span></label>
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="cotton-blend" data-filter-key="fabric"><span>Cotton Blend</span><span class="count">(3)</span></label>
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="recycled-polyester-100" data-filter-key="fabric"><span>Recycled Polyester (100%)</span><span class="count">(3)</span></label>
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="polyester" data-filter-key="fabric"><span>Polyester</span><span class="count">(2)</span></label>
+                        <label class="filter-checkbox-item is-hidden-by-limit" data-filter-option><input type="checkbox" value="acrylic-blend" data-filter-key="fabric"><span>Acrylic Blend</span><span class="count">(2)</span></label>
+                        <label class="filter-checkbox-item is-hidden-by-limit" data-filter-option><input type="checkbox" value="recycled-nylon-blend" data-filter-key="fabric"><span>Recycled Nylon Blend</span><span class="count">(2)</span></label>
+                    </div>
+                    <button type="button" class="filter-list-toggle" data-filter-toggle aria-expanded="false">Show more</button>
+                </div>
+                <div class="filter-expandable-row" data-filter-row="weight" role="button" tabindex="0" aria-expanded="false" aria-controls="ind-filter-weight">
+                    <div class="filter-title-wrap"><h4>Weight (GSM)</h4><span class="filter-selection-count" hidden>0</span></div>
+                    <div class="filter-row-actions"><button type="button" class="filter-section-clear" data-filter-clear="weight" hidden>Clear</button><span class="filter-expandable-arrow" aria-hidden="true"></span></div>
+                </div>
+                <div class="filter-expandable-content" id="ind-filter-weight">
+                    <div class="filter-checkbox-list">
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="101-150gsm" data-filter-key="weight"><span>101 - 150gsm</span><span class="count">(6)</span></label>
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="151-200gsm" data-filter-key="weight"><span>151 - 200gsm</span><span class="count">(15)</span></label>
+                        <label class="filter-checkbox-item" data-filter-option><input type="checkbox" value="201-250gsm" data-filter-key="weight"><span>201 - 250gsm</span><span class="count">(7)</span></label>
+                    </div>
+                </div>
             </div>
-        </nav>
+            </aside>
 
-        <section class="ind-group" id="scrubs" aria-labelledby="scrubs-title">
-            <div class="ind-group__head">
-                <h2 id="scrubs-title">Scrubs</h2>
-                <span class="ind-group__count">2 styles</span>
-            </div>
-            <div class="products-grid">
+            <div class="ind-results">
+                <nav class="ind-jump" aria-label="Healthcare Uniforms categories" data-ind-jump>
+                    <button type="button" class="ind-jump__arrow ind-jump__arrow--prev" aria-label="Scroll categories left" data-ind-jump-prev hidden>&lsaquo;</button>
+                    <div class="ind-jump__inner" data-ind-jump-row>
+                    <a href="/industries/healthcare#scrubs" data-ind-chip="scrubs">Scrubs <span>2</span></a>
+                    <a href="/industries/healthcare#tunics" data-ind-chip="tunics">Tunics <span>9</span></a>
+                    <a href="/industries/healthcare#trousers-and-baselayers" data-ind-chip="trousers-and-baselayers">Trousers &amp; baselayers <span>6</span></a>
+                    <a href="/industries/healthcare#polos" data-ind-chip="polos">Polos <span>6</span></a>
+                    <a href="/industries/healthcare#layers" data-ind-chip="layers">Layers <span>8</span></a>
+                    <a href="/industries/healthcare#lab-coats-and-salon-gowns" data-ind-chip="lab-coats-and-salon-gowns">Lab coats &amp; salon gowns <span>2</span></a>
+                    <a href="/industries/healthcare#reception-and-admin-shirts" data-ind-chip="reception-and-admin-shirts">Reception &amp; admin shirts <span>4</span></a>
+                    <a href="/industries/healthcare#more" data-ind-chip="more">More healthcare tunics <span>2</span></a>
+                    </div>
+                    <button type="button" class="ind-jump__arrow ind-jump__arrow--next" aria-label="Scroll categories right" data-ind-jump-next hidden>&rsaquo;</button>
+                </nav>
+
+                <div class="ind-toolbar">
+                    <button type="button" class="ind-filter-btn" data-ind-open-filters aria-controls="filtersDropup" aria-expanded="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="6" y1="21" x2="6" y2="3"></line><line x1="12" y1="21" x2="12" y2="3"></line><line x1="18" y1="21" x2="18" y2="3"></line><circle cx="6" cy="8" r="2"></circle><circle cx="12" cy="14" r="2"></circle><circle cx="18" cy="10" r="2"></circle></svg><span>Filters</span><span class="ind-filter-btn__count" data-ind-active-count hidden></span></button>
+                    <p class="ind-results-count" aria-live="polite"><span data-ind-visible-count>39</span> of 39 styles</p>
+                    <div class="ind-active-filters" data-ind-active-filters></div>
+                </div>
+                <div class="ind-empty" data-ind-empty hidden>
+                    <h2>No styles match these filters</h2>
+                    <p>Try removing a filter, or ask us for a bulk quote and we will find the right style for you.</p>
+                    <button type="button" class="ind-btn ind-btn--ghost" data-ind-clear>Clear all filters</button>
+                </div>
+
+            <section class="ind-group" id="scrubs" aria-labelledby="scrubs-title" data-ind-group>
+                <div class="ind-group__head">
+                    <h2 id="scrubs-title">Scrubs</h2>
+                    <span class="ind-group__count" data-ind-group-count>2 styles</span>
+                </div>
+                <div class="products-grid">
                 <article class="product-card" data-code="UC921" data-href="/product/UC921">
                     <a class="product-media" href="/product/UC921" tabindex="-1" aria-hidden="true">
                         <img src="https://images.uneekclothing.com/model-highres/UC921_W_710.jpg" alt="Scrub Tunic" class="product-image" width="400" height="400" loading="lazy" decoding="async">
@@ -453,15 +672,15 @@
                         </div>
                     </div>
                 </article>
-            </div>
-        </section>
+                </div>
+            </section>
 
-        <section class="ind-group" id="tunics" aria-labelledby="tunics-title">
-            <div class="ind-group__head">
-                <h2 id="tunics-title">Tunics</h2>
-                <span class="ind-group__count">9 styles</span>
-            </div>
-            <div class="products-grid">
+            <section class="ind-group" id="tunics" aria-labelledby="tunics-title" data-ind-group>
+                <div class="ind-group__head">
+                    <h2 id="tunics-title">Tunics</h2>
+                    <span class="ind-group__count" data-ind-group-count>9 styles</span>
+                </div>
+                <div class="products-grid">
                 <article class="product-card" data-code="NN200" data-href="/product/NN200">
                     <a class="product-media" href="/product/NN200" tabindex="-1" aria-hidden="true">
                         <img src="https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/5f82681e/692972b05fa5b59a3a6ca949/NN200_LS00_2026.jpg" alt="Limitless Onna-stretch tunic" class="product-image" width="400" height="400" loading="lazy" decoding="async">
@@ -681,15 +900,15 @@
                         </div>
                     </div>
                 </article>
-            </div>
-        </section>
+                </div>
+            </section>
 
-        <section class="ind-group" id="trousers-and-baselayers" aria-labelledby="trousers-and-baselayers-title">
-            <div class="ind-group__head">
-                <h2 id="trousers-and-baselayers-title">Trousers &amp; baselayers</h2>
-                <span class="ind-group__count">6 styles</span>
-            </div>
-            <div class="products-grid">
+            <section class="ind-group" id="trousers-and-baselayers" aria-labelledby="trousers-and-baselayers-title" data-ind-group>
+                <div class="ind-group__head">
+                    <h2 id="trousers-and-baselayers-title">Trousers &amp; baselayers</h2>
+                    <span class="ind-group__count" data-ind-group-count>6 styles</span>
+                </div>
+                <div class="products-grid">
                 <article class="product-card" data-code="NN500" data-href="/product/NN500">
                     <a class="product-media" href="/product/NN500" tabindex="-1" aria-hidden="true">
                         <img src="https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/fe61aa2a/69296fa15fa5b59a3a6c312e/NN500_LS00_2026.jpg" alt="Relentless Onna-stretch cargo pants" class="product-image" width="400" height="400" loading="lazy" decoding="async">
@@ -826,15 +1045,15 @@
                         </div>
                     </div>
                 </article>
-            </div>
-        </section>
+                </div>
+            </section>
 
-        <section class="ind-group" id="polos" aria-labelledby="polos-title">
-            <div class="ind-group__head">
-                <h2 id="polos-title">Polos</h2>
-                <span class="ind-group__count">6 styles</span>
-            </div>
-            <div class="products-grid">
+            <section class="ind-group" id="polos" aria-labelledby="polos-title" data-ind-group>
+                <div class="ind-group__head">
+                    <h2 id="polos-title">Polos</h2>
+                    <span class="ind-group__count" data-ind-group-count>6 styles</span>
+                </div>
+                <div class="products-grid">
                 <article class="product-card" data-code="PR615" data-href="/product/PR615">
                     <a class="product-media" href="/product/PR615" tabindex="-1" aria-hidden="true">
                         <img src="https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/b6cb8bdd/69296c3a5fa5b59a3a6ba7f3/PR615_LS00_2026.jpg" alt="Coolchecker piqué polo" class="product-image" width="400" height="400" loading="lazy" decoding="async">
@@ -991,15 +1210,15 @@
                         </div>
                     </div>
                 </article>
-            </div>
-        </section>
+                </div>
+            </section>
 
-        <section class="ind-group" id="layers" aria-labelledby="layers-title">
-            <div class="ind-group__head">
-                <h2 id="layers-title">Layers</h2>
-                <span class="ind-group__count">8 styles</span>
-            </div>
-            <div class="products-grid">
+            <section class="ind-group" id="layers" aria-labelledby="layers-title" data-ind-group>
+                <div class="ind-group__head">
+                    <h2 id="layers-title">Layers</h2>
+                    <span class="ind-group__count" data-ind-group-count>8 styles</span>
+                </div>
+                <div class="products-grid">
                 <article class="product-card" data-code="PR697" data-href="/product/PR697">
                     <a class="product-media" href="/product/PR697" tabindex="-1" aria-hidden="true">
                         <img src="https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/44cbb056/69296f985fa5b59a3a6c2f8e/PR697_LS00_2026.jpg" alt="Women's button-through knitted cardigan" class="product-image" width="400" height="400" loading="lazy" decoding="async">
@@ -1178,15 +1397,15 @@
                         </div>
                     </div>
                 </article>
-            </div>
-        </section>
+                </div>
+            </section>
 
-        <section class="ind-group" id="lab-coats-and-salon-gowns" aria-labelledby="lab-coats-and-salon-gowns-title">
-            <div class="ind-group__head">
-                <h2 id="lab-coats-and-salon-gowns-title">Lab coats &amp; salon gowns</h2>
-                <span class="ind-group__count">2 styles</span>
-            </div>
-            <div class="products-grid">
+            <section class="ind-group" id="lab-coats-and-salon-gowns" aria-labelledby="lab-coats-and-salon-gowns-title" data-ind-group>
+                <div class="ind-group__head">
+                    <h2 id="lab-coats-and-salon-gowns-title">Lab coats &amp; salon gowns</h2>
+                    <span class="ind-group__count" data-ind-group-count>2 styles</span>
+                </div>
+                <div class="products-grid">
                 <article class="product-card" data-code="PW175" data-href="/product/PW175">
                     <a class="product-media" href="/product/PW175" tabindex="-1" aria-hidden="true">
                         <img src="https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/27db4759/69296ddc5fa5b59a3a6bec0d/PW175_LS00_2026.jpg" alt="Lab coat (2852)" class="product-image" width="400" height="400" loading="lazy" decoding="async">
@@ -1229,15 +1448,15 @@
                         </div>
                     </div>
                 </article>
-            </div>
-        </section>
+                </div>
+            </section>
 
-        <section class="ind-group" id="reception-and-admin-shirts" aria-labelledby="reception-and-admin-shirts-title">
-            <div class="ind-group__head">
-                <h2 id="reception-and-admin-shirts-title">Reception &amp; admin shirts</h2>
-                <span class="ind-group__count">4 styles</span>
-            </div>
-            <div class="products-grid">
+            <section class="ind-group" id="reception-and-admin-shirts" aria-labelledby="reception-and-admin-shirts-title" data-ind-group>
+                <div class="ind-group__head">
+                    <h2 id="reception-and-admin-shirts-title">Reception &amp; admin shirts</h2>
+                    <span class="ind-group__count" data-ind-group-count>4 styles</span>
+                </div>
+                <div class="products-grid">
                 <article class="product-card" data-code="HB590" data-href="/product/HB590">
                     <a class="product-media" href="/product/HB590" tabindex="-1" aria-hidden="true">
                         <img src="https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/6fe91af8/69296c165fa5b59a3a6ba23e/HB590_LS00_2026.jpg" alt="Wicking antibacterial long sleeve shirt" class="product-image" width="400" height="400" loading="lazy" decoding="async">
@@ -1322,8 +1541,23 @@
                         </div>
                     </div>
                 </article>
+                </div>
+            </section>
+
+            <section class="ind-group ind-more" id="more" aria-labelledby="more-title" data-ind-more>
+                <div class="ind-group__head">
+                    <h2 id="more-title">More healthcare tunics</h2>
+                    <span class="ind-group__count" data-ind-group-count>2 styles</span>
+                </div>
+                <p class="ind-more__intro">More styles from our healthcare uniforms range, best sellers first.</p>
+                <div class="products-grid" data-ind-more-grid aria-live="polite"></div>
+                <div class="ind-more__actions">
+                    <p class="ind-more__status" data-ind-more-status>Loading styles&hellip;</p>
+                    <button type="button" class="ind-btn ind-btn--ghost" data-ind-more-btn hidden>Show more</button>
+                </div>
+            </section>
             </div>
-        </section>
+        </div>
 
         <section class="ind-quote">
             <div>
@@ -1348,6 +1582,19 @@
         </nav>
     </main>
 
+    <div class="filters-overlay" id="filtersOverlay" data-ind-close-filters></div>
+    <div class="filters-dropup ind-filters-drawer" id="filtersDropup" role="dialog" aria-modal="true" aria-label="Filter products" inert>
+        <div class="filters-dropup__header">
+            <h2 class="filters-dropup__title">Filter By</h2>
+            <button type="button" class="filters-dropup__clear" data-ind-clear>Clear All</button>
+            <button type="button" class="filters-dropup__close" data-ind-close-filters aria-label="Close filters">&times;</button>
+        </div>
+        <div class="filters-dropup__body" data-ind-drawer-body></div>
+        <div class="ind-drawer-foot">
+            <button type="button" class="ind-btn ind-btn--primary" data-ind-close-filters>Show <span data-ind-visible-count></span> styles</button>
+        </div>
+    </div>
+
     <div data-pc-footer></div>
     <div data-mobile-footer></div>
 
@@ -1366,6 +1613,10 @@
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg>
             <span class="nav-item-label">Shop</span>
         </a>
+        <button type="button" class="nav-item nav-item--filter" data-ind-open-filters aria-controls="filtersDropup" aria-expanded="false">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="6" y1="21" x2="6" y2="3"></line><line x1="12" y1="21" x2="12" y2="3"></line><line x1="18" y1="21" x2="18" y2="3"></line><circle cx="6" cy="8" r="2"></circle><circle cx="12" cy="14" r="2"></circle><circle cx="18" cy="10" r="2"></circle></svg>
+            <span class="nav-item-label">Filter</span>
+        </button>
         <a href="/basket.html#orderSummary" class="nav-item">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
             <span class="nav-item-label">Basket</span>
@@ -1378,7 +1629,7 @@
 
     <script>if (window.BrandedPcHeader) window.BrandedPcHeader.mount();</script>
     <script src="/brandedukv15-child/assets/js/vat-toggle.js?v=20251230"></script>
-    <script src="/brandedukv15-child/assets/js/pages/industries.js?v=20261011-ind2" defer></script>
+    <script src="/brandedukv15-child/assets/js/pages/industries.js?v=20261012-ind5" defer></script>
     <script src="/mobile/js/popup-contact.js?v=20261003-consent" defer></script>
     <script src="/mobile/footer/footer.js?v=20261002-cta-equal" defer></script>
 </body>
