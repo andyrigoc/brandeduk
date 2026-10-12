@@ -14,6 +14,9 @@
  *                     quote that is created as the first step of a card payment.
  *   - add_to_cart   : the basket (localStorage quoteBasket) gains lines.
  *   - begin_checkout: checkout pages call it on load.
+ *   - phone_click   : any click on a tel: link (header, sticky bar, footer, etc.).
+ *   - Calls from website: when WEBSITE_CALL_LABEL is filled, the Google tag swaps
+ *     020 8974 2722 for a Google forwarding number for visitors from ads.
  *
  * window.brandedAdsPurchase(verified) is called only by payment-success.html with
  * the response of /api/orders/verify-payment. It sends the Purchase conversion
@@ -37,14 +40,21 @@
     generate_lead: '',
     add_to_cart: '',
     begin_checkout: '',
-    // MISSING LABEL: searched ads-conversions.js, payment-success, checkout and
-    // comments. No real Google Ads Purchase send_to label exists in this repo.
-    // Paste the label from Google Ads (Goals > Conversions > the Purchase action
-    // > Tag setup > the part after "AW-438771987/"). Do not invent one.
-    // Until this is filled, payment-success sends gtag('event','purchase') only,
-    // not gtag('event','conversion',{send_to:...}).
+    // Website conversion counting clicks on tel: links (Google Ads: "Phone number
+    // clicks", Secondary, Count: One).
+    phone_click: '',
+    // Purchase action. If it is ever emptied, payment-success sends
+    // gtag('event','purchase') only, not gtag('event','conversion',{send_to:...}).
     purchase: 'PzEFCL7kkpgdEJPCnNEB'
   };
+
+  // "Calls to a phone number on your website" conversion (Goals > Conversions >
+  // New > Phone calls). Paste the part after "AW-438771987/" from its snippet.
+  // While it is '', visitors always see the real number (no Google forwarding number).
+  var WEBSITE_CALL_LABEL = '';
+  var PHONE_DISPLAY = '020 8974 2722';
+  var PHONE_TEXT_RE = /(?:\+44\s?(?:\(0\)\s?)?|0)20\s?8974\s?2722|0208\s?974\s?2722/g;
+  var PHONE_DIGITS = '2089742722';
 
   var CURRENCY = 'GBP';
   var PURCHASE_MIN_GBP = 50;
@@ -383,6 +393,110 @@
       storageProto.setItem = wrappedSetItem;
     }
   } catch (e) {}
+
+  // ---- phone_click: clicks on tel: links --------------------------------------
+
+  if (typeof document !== 'undefined' && document.addEventListener) {
+    document.addEventListener('click', function (event) {
+      var link = event.target && event.target.closest ? event.target.closest('a[href^="tel:"]') : null;
+      if (!link) return;
+      window.brandedAdsConversion('phone_click', {
+        link_url: link.getAttribute('href'),
+        link_text: String(link.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 60)
+      });
+    }, true);
+  }
+
+  // ---- Calls from website: Google forwarding number swap ----------------------
+  // Visitors from an ad (with ad_storage consent) get a Google forwarding number,
+  // so the call is tied to the click, keyword and page. The callback swaps every
+  // format of our number, in text and in tel: links, including content added later.
+
+  function isOurTel(href) {
+    var digits = String(href || '').replace(/\D/g, '');
+    return digits.slice(-PHONE_DIGITS.length) === PHONE_DIGITS && digits.length <= 13;
+  }
+
+  function swapNumber(root, display, telDigits) {
+    if (!root) return;
+    if (root.nodeType === 3) {
+      PHONE_TEXT_RE.lastIndex = 0;
+      if (PHONE_TEXT_RE.test(root.nodeValue)) root.nodeValue = root.nodeValue.replace(PHONE_TEXT_RE, display);
+      return;
+    }
+    if (root.nodeType !== 1 || /^(SCRIPT|STYLE|TEXTAREA|INPUT)$/.test(root.nodeName)) return;
+    var links = root.matches && root.matches('a[href^="tel:"]') ? [root] : [];
+    links = links.concat([].slice.call(root.querySelectorAll ? root.querySelectorAll('a[href^="tel:"]') : []));
+    links.forEach(function (a) {
+      if (isOurTel(a.getAttribute('href'))) a.setAttribute('href', 'tel:' + telDigits);
+      if (a.hasAttribute('aria-label')) a.setAttribute('aria-label', a.getAttribute('aria-label').replace(PHONE_TEXT_RE, display));
+    });
+    var walker = document.createTreeWalker(root, 4, null, false);
+    var nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(function (n) {
+      if (n.parentNode && /^(SCRIPT|STYLE|TEXTAREA)$/.test(n.parentNode.nodeName)) return;
+      swapNumber(n, display, telDigits);
+    });
+  }
+
+  // The site shows and dials UK numbers in national format only (owner's rule: no +44).
+  function toNational(number) {
+    return String(number || '').trim().replace(/^\+44\s?(?:\(0\)\s?)?/, '0');
+  }
+
+  function onForwardingNumber(formattedNumber, mobileNumber) {
+    var display = toNational(formattedNumber);
+    var telDigits = toNational(mobileNumber || formattedNumber).replace(/\D/g, '');
+    if (!display || !telDigits || telDigits.replace(/\D/g, '').slice(-PHONE_DIGITS.length) === PHONE_DIGITS) return;
+    debug('forwarding number', display);
+    var apply = function () {
+      swapNumber(document.body, display, telDigits);
+      if (typeof MutationObserver === 'function') {
+        new MutationObserver(function (records) {
+          records.forEach(function (r) {
+            if (r.type === 'characterData') swapNumber(r.target, display, telDigits);
+            else [].forEach.call(r.addedNodes, function (n) { swapNumber(n, display, telDigits); });
+          });
+        }).observe(document.body, { childList: true, subtree: true, characterData: true });
+      }
+    };
+    if (document.body) apply();
+    else document.addEventListener('DOMContentLoaded', apply);
+  }
+
+  // Google needs the number exactly as the page shows it ("020 8974 2722" on most
+  // pages, "0208 974 2722" in the shared header), so read it from the page.
+  function displayedNumber() {
+    var texts = [].map.call(document.querySelectorAll('a[href^="tel:"]'), function (a) { return a.textContent || ''; });
+    if (document.body) texts.push(document.body.innerText || document.body.textContent || '');
+    for (var i = 0; i < texts.length; i++) {
+      PHONE_TEXT_RE.lastIndex = 0;
+      var m = PHONE_TEXT_RE.exec(texts[i]);
+      if (m) return m[0].replace(/\s+/g, ' ').trim();
+    }
+    return PHONE_DISPLAY;
+  }
+
+  var websiteCallsConfigured = false;
+  function configureWebsiteCalls() {
+    if (websiteCallsConfigured) return;
+    websiteCallsConfigured = true;
+    var shown = displayedNumber();
+    window.gtag('config', AW_ID + '/' + WEBSITE_CALL_LABEL, {
+      phone_conversion_number: shown,
+      phone_conversion_callback: onForwardingNumber
+    });
+    debug('website call conversion configured', shown);
+  }
+
+  if (WEBSITE_CALL_LABEL && window.self === window.top && typeof window.gtag === 'function') {
+    if (document.readyState === 'complete') configureWebsiteCalls();
+    else {
+      document.addEventListener('DOMContentLoaded', configureWebsiteCalls);
+      window.addEventListener('load', configureWebsiteCalls);
+    }
+  }
 
   // Calls made before this file loaded (inline stub in <head>).
   var queued = window.brandedAdsQueue || [];

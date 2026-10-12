@@ -190,7 +190,7 @@
                                         </svg>
                                     </div>
                                     <h2>Quote Request Submitted!</h2>
-                                    <p>Thank you for your quote request. We'll review your order and send you a detailed quote within 24 hours.</p>
+                                    <p>Thank you for your quote request. We'll review your order and send you a detailed quote within 8 hours.</p>
                                     <p class="ref-number">Reference: <strong id="orderRefNumber">#ORD-00000</strong></p>
                                     <div class="success-details">
                                         <div class="detail-row">

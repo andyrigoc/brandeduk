@@ -9,12 +9,22 @@
  * Storage key brandedukCookieConsent = { version, timestamp, analytics, advertising }.
  * Bump CONSENT_VERSION to ask everybody again (for example after adding a new
  * cookie category). Choices expire after 12 months.
+ *
+ * Microsoft Clarity (heatmaps / session recordings) is loaded from here, only
+ * after the visitor allows Analytics cookies. Nothing is requested from
+ * clarity.ms before that. The Crisp live chat (mobile/js/crisp-chat.js) uses the
+ * same Analytics choice and listens for the brandeduk:consent event.
  */
 (function () {
   'use strict';
 
+  // Microsoft Clarity project ID (clarity.microsoft.com > project > Settings >
+  // Overview > Project ID, e.g. 'abcd1234ef'). Leave '' to keep Clarity off.
+  var CLARITY_PROJECT_ID = 'ywi8r3ew9l';
+
   var STORAGE_KEY = 'brandedukCookieConsent';
-  var CONSENT_VERSION = 1;
+  // Switching Clarity on adds a new analytics provider, so everybody is asked again.
+  var CONSENT_VERSION = CLARITY_PROJECT_ID ? 2 : 1;
   var MAX_AGE_MS = 365 * 24 * 60 * 60 * 1000;
   var PRIVACY_URL = '/privacy-policy';
   var POLICY_URL = '/privacy-policy#cookies';
@@ -46,11 +56,15 @@
     };
   }
 
-  function deleteGoogleCookies() {
+  var GOOGLE_COOKIES = /^(_gcl_|_ga|_gid|_gat|FPGCLAW|FPAU)/;
+  var CLARITY_COOKIES = /^(_clck|_clsk)$/;
+  var CRISP_COOKIES = /^crisp-client/;
+
+  function deleteCookies(pattern) {
     var names = document.cookie.split(';').map(function (part) {
       return part.split('=')[0].trim();
     }).filter(function (name) {
-      return /^(_gcl_|_ga|_gid|_gat|FPGCLAW|FPAU)/.test(name);
+      return pattern.test(name);
     });
     if (!names.length) return;
     var host = window.location.hostname;
@@ -82,6 +96,32 @@
   // hidden preload) never show the banner or button; the top page owns them.
   if (window.self !== window.top) return;
 
+  var clarityLoaded = false;
+
+  function clarityConsent(choice) {
+    return {
+      analytics_Storage: choice && choice.analytics ? 'granted' : 'denied',
+      ad_Storage: choice && choice.advertising ? 'granted' : 'denied'
+    };
+  }
+
+  function syncClarity(choice) {
+    if (!CLARITY_PROJECT_ID) return;
+    if (!clarityLoaded) {
+      if (!choice || !choice.analytics) return;
+      clarityLoaded = true;
+      window.clarity = window.clarity || function () { (window.clarity.q = window.clarity.q || []).push(arguments); };
+      window.clarity('consentv2', clarityConsent(choice));
+      var script = document.createElement('script');
+      script.async = true;
+      script.src = 'https://www.clarity.ms/tag/' + encodeURIComponent(CLARITY_PROJECT_ID);
+      (document.head || document.documentElement).appendChild(script);
+      return;
+    }
+    window.clarity('consentv2', clarityConsent(choice));
+    if (!choice || !choice.analytics) window.clarity('consent', false);
+  }
+
   var current = readConsent();
   if (current && current.stale) {
     var prev = current.previous || {};
@@ -89,6 +129,7 @@
     try { window.localStorage.removeItem(STORAGE_KEY); } catch (e) {}
     current = null;
   }
+  syncClarity(current);
 
   function ensureStyles() {
     if (document.getElementById('buk-cc-styles')) return;
@@ -121,7 +162,12 @@
     };
     try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(record)); } catch (e) {}
     gtagSafe('consent', 'update', consentState(record));
-    if (!record.advertising && !record.analytics) deleteGoogleCookies();
+    syncClarity(record);
+    if (!record.advertising && !record.analytics) deleteCookies(GOOGLE_COOKIES);
+    if (!record.analytics) {
+      deleteCookies(CLARITY_COOKIES);
+      deleteCookies(CRISP_COOKIES);
+    }
     current = record;
     hideBanner();
     closeDialog();
@@ -149,7 +195,8 @@
       '<p class="buk-cc-banner__text">' +
         '<strong>Cookies on Branded UK.</strong> ' +
         'We use cookies and similar storage. Necessary ones run the site (basket, login, checkout). ' +
-        'With your permission we also use Google cookies to measure our ads and improve the site. ' +
+        'With your permission we also use ' + (CLARITY_PROJECT_ID ? 'Google, Microsoft Clarity and Crisp' : 'Google and Crisp') +
+        ' cookies to measure our ads, improve the site and run our live chat. ' +
         '<span class="buk-cc-banner__links">' +
           '<a href="' + PRIVACY_URL + '">Privacy Policy</a>' +
           '<span aria-hidden="true"> | </span>' +
@@ -188,10 +235,13 @@
         '</div>' +
         '<div class="buk-cc-cat">' +
           '<label class="buk-cc-cat__row" for="bukCcAnalytics">' +
-            '<span class="buk-cc-cat__name">Analytics</span>' +
+            '<span class="buk-cc-cat__name">Analytics and live chat</span>' +
             '<input type="checkbox" class="buk-cc-switch" id="bukCcAnalytics" role="switch">' +
           '</label>' +
-          '<p class="buk-cc-cat__desc">Lets Google count visits and see how the site is used, so we can improve it.</p>' +
+          '<p class="buk-cc-cat__desc">Lets Google count visits and see how the site is used, so we can improve it.' +
+            (CLARITY_PROJECT_ID ? ' Microsoft Clarity also records clicks, scrolling and mouse movement (form entries are hidden) to show us where pages are hard to use.' : '') +
+            ' Our live chat (Crisp) only loads with this setting on, so we can receive and answer your messages.' +
+          '</p>' +
         '</div>' +
         '<div class="buk-cc-cat">' +
           '<label class="buk-cc-cat__row" for="bukCcAds">' +

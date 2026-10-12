@@ -3,6 +3,9 @@
  * Crisp is inbox-only: operators still get messages in Crisp web/mobile.
  * NEVER show Crisp launcher or chatbox UI — BrandedUK panel (whatsapp.js) is the only chat UI.
  * Safe to include more than once: guarded against double-init.
+ * client.crisp.chat is only requested after the visitor allows Analytics cookies
+ * (cookie-consent.js has no separate functional category). Until then commands
+ * just queue in window.$crisp; granting consent later loads Crisp without a reload.
  */
 (function () {
   'use strict';
@@ -81,14 +84,28 @@
     ]);
   }
 
+  function chatConsentGiven() {
+    var api = window.BrandedCookieConsent;
+    var choice = api && typeof api.get === 'function' ? api.get() : null;
+    return !!(choice && choice.analytics);
+  }
+  window.BrandedCrispConsent = window.BrandedCrispConsent || { allowed: chatConsentGiven };
+
   if (window.__brandedCrispLoaded) return;
   window.__brandedCrispLoaded = true;
 
-  if (document.querySelector('script[src*="client.crisp.chat/l.js"]')) return;
+  function injectCrisp() {
+    if (document.querySelector('script[src*="client.crisp.chat/l.js"]')) return true;
+    if (!chatConsentGiven()) return false;
+    var s = document.createElement('script');
+    s.src = 'https://client.crisp.chat/l.js';
+    s.async = 1;
+    document.getElementsByTagName('head')[0].appendChild(s);
+    return true;
+  }
 
-  var d = document;
-  var s = d.createElement('script');
-  s.src = 'https://client.crisp.chat/l.js';
-  s.async = 1;
-  d.getElementsByTagName('head')[0].appendChild(s);
+  if (injectCrisp()) return;
+  window.addEventListener('brandeduk:consent', injectCrisp);
+  // cookie-consent.js is deferred; it may not have run yet when this file runs async.
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', injectCrisp);
 })();

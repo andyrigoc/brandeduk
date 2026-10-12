@@ -218,6 +218,17 @@
         } catch (e) {}
     }
 
+    var chatConsentAsked = false;
+    function askChatConsent() {
+        if (!chatConsentAsked) {
+            chatConsentAsked = true;
+            appendAgentBubble('Live chat needs your permission to use cookies. Please allow Analytics cookies in the cookie settings and your message will be sent. Or WhatsApp us on 07447 348564, or call ' + PHONE_DISPLAY + '.');
+        }
+        if (window.BrandedCookieConsent && typeof window.BrandedCookieConsent.open === 'function') {
+            window.BrandedCookieConsent.open();
+        }
+    }
+
     function sendToCrispBackend(text) {
         var msg = (text || '').trim();
         if (!msg) return false;
@@ -229,6 +240,11 @@
             rememberOutbound(msg);
             window.$crisp.push(['do', 'message:send', ['text', msg]]);
             forceHideCrispUi();
+            if (window.BrandedCrispConsent && !window.BrandedCrispConsent.allowed()) {
+                // Queued: it is delivered as soon as cookies are allowed (crisp-chat.js loads then).
+                askChatConsent();
+                return true;
+            }
             // Queue always "succeeds"; warn if Crisp SDK never becomes ready (common when
             // footer.js failed to inject crisp-chat.js on mobile).
             watchCrispDelivery(msg);

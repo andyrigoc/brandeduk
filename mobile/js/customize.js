@@ -396,14 +396,14 @@
     
     // Default fallback images (hoodie images)
     const DEFAULT_POSITION_IMAGES = {
-        'left-breast': 'brandedukv15-child/assets/images/customization/positions/adult-tops/short-sleeve-crew-neck/left-chest.png',
-        'right-breast': 'brandedukv15-child/assets/images/customization/positions/adult-tops/short-sleeve-crew-neck/right-chest.png',
-        'small-centre-front': 'brandedukv15-child/assets/images/customization/positions/adult-tops/short-sleeve-crew-neck/left-chest.png',
-        'large-front-center': 'brandedukv15-child/assets/images/customization/positions/adult-tops/short-sleeve-crew-neck/left-chest.png',
-        'large-centre-front': 'brandedukv15-child/assets/images/customization/positions/adult-tops/short-sleeve-crew-neck/left-chest.png',
-        'large-back': 'brandedukv15-child/assets/images/customization/positions/adult-tops/short-sleeve-crew-neck/back.png',
-        'left-arm': 'brandedukv15-child/assets/images/customization/positions/adult-tops/short-sleeve-crew-neck/left-sleeve.png',
-        'right-arm': 'brandedukv15-child/assets/images/customization/positions/adult-tops/short-sleeve-crew-neck/right-sleeve.png'
+        'left-breast': '/brandedukv15-child/assets/images/customization/positions/adult-tops/short-sleeve-crew-neck/left-chest.png',
+        'right-breast': '/brandedukv15-child/assets/images/customization/positions/adult-tops/short-sleeve-crew-neck/right-chest.png',
+        'small-centre-front': '/brandedukv15-child/assets/images/customization/positions/adult-tops/short-sleeve-crew-neck/left-chest.png',
+        'large-front-center': '/brandedukv15-child/assets/images/customization/positions/adult-tops/short-sleeve-crew-neck/left-chest.png',
+        'large-centre-front': '/brandedukv15-child/assets/images/customization/positions/adult-tops/short-sleeve-crew-neck/left-chest.png',
+        'large-back': '/brandedukv15-child/assets/images/customization/positions/adult-tops/short-sleeve-crew-neck/back.png',
+        'left-arm': '/brandedukv15-child/assets/images/customization/positions/adult-tops/short-sleeve-crew-neck/left-sleeve.png',
+        'right-arm': '/brandedukv15-child/assets/images/customization/positions/adult-tops/short-sleeve-crew-neck/right-sleeve.png'
     };
     
     // Quantity-tiered application pricing (Consigliato column, IVA esclusa).
@@ -457,8 +457,8 @@
     const HOODIE_GARMENT_TINT_TYPES = ['Hoodies', 'Sweatshirts'];
     const GARMENT_MASK_WHITE_CUTOFF = 236;
     const GARMENT_MASK_BLACK_CUTOFF = 48;
-    const APRON_NEUTRAL_IMAGE = 'brandedukv15-child/assets/images/customization/positions/aprons/bib-apron/apron-neutral.png';
-    const APRON_NEUTRAL_FALLBACK = 'brandedukv15-child/assets/images/customization/positions/aprons/bib-apron/apron-neutral.svg';
+    const APRON_NEUTRAL_IMAGE = '/brandedukv15-child/assets/images/customization/positions/aprons/bib-apron/apron-neutral.png';
+    const APRON_NEUTRAL_FALLBACK = '/brandedukv15-child/assets/images/customization/positions/aprons/bib-apron/apron-neutral.svg';
 
     /** Root-absolute or ../ from /mobile/ pages — fixes 404 on Live Server */
     function resolveBrandedAssetUrl(assetPath) {
@@ -9750,15 +9750,20 @@
         const deliveryDate = document.getElementById('deliveryDate');
         if (!deliveryDate) return;
 
-        const today = new Date();
-        const minDays = 5; // production + shipping min
-        const maxDays = 8; // production + shipping max
+        const minDays = 9; // working days: production 7-10 + shipping 2-3
+        const maxDays = 13;
 
-        const minDate = new Date(today);
-        minDate.setDate(today.getDate() + minDays);
+        const addWorkingDays = (days) => {
+            const date = new Date();
+            while (days > 0) {
+                date.setDate(date.getDate() + 1);
+                if (date.getDay() !== 0 && date.getDay() !== 6) days--;
+            }
+            return date;
+        };
 
-        const maxDate = new Date(today);
-        maxDate.setDate(today.getDate() + maxDays);
+        const minDate = addWorkingDays(minDays);
+        const maxDate = addWorkingDays(maxDays);
 
         const formatDate = (date) => {
             const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];

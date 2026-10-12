@@ -91,8 +91,13 @@
     <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260329c">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20251230">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="footer-dev/pc-footer.css?v=20261009-phones">
+    <script src="footer-dev/pc-footer.js?v=20261009-phones" defer></script>
     
     <style>
+        .sector-topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; background: #fff; border-bottom: 1px solid #eee; }
+        .sector-topbar__logo { height: 36px; display: block; }
+        .sector-topbar__phone { display: inline-flex; align-items: center; gap: 8px; color: #273469; font-weight: 700; text-decoration: none; white-space: nowrap; }
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             margin: 0;
@@ -101,7 +106,7 @@
         }
         .bulk-container {
             max-width: 1200px;
-            margin: 120px auto 40px;
+            margin: 40px auto 40px;
             padding: 0 20px;
         }
         .bulk-hero {
@@ -364,8 +369,10 @@
         
         @media (max-width: 767px) {
             .bulk-container {
-                margin-top: 80px;
+                margin-top: 24px;
             }
+            .sector-topbar { padding: 12px 16px; }
+            .sector-topbar__logo { height: 30px; }
             .bulk-hero h1 {
                 font-size: 28px;
             }
@@ -382,6 +389,10 @@
     </style>
 </head>
 <body>
+    <div class="sector-topbar">
+        <a href="/"><img class="sector-topbar__logo" src="brandedukv15-child/assets/images/ui/branded-uk-logo-black-padded.png?v=20260927-logoblack" alt="BrandedUK"></a>
+        <a class="sector-topbar__phone" href="tel:02089742722"><i class="fas fa-phone"></i> 020 8974 2722</a>
+    </div>
     <div class="bulk-container">
         <div class="bulk-hero">
             <h1>Bulk Workwear Orders - Save Up to 30%</h1>
@@ -390,7 +401,7 @@
                 <a href="#" data-open-contact="1" data-contact-message="Hi, I would like a quote for a bulk order." class="btn btn-primary">
                     <i class="fas fa-calculator"></i> Get Bulk Quote
                 </a>
-                <a href="tel:+442089742722" class="btn btn-secondary">
+                <a href="tel:02089742722" class="btn btn-secondary">
                     <i class="fas fa-phone"></i> Call: 020 8974 2722
                 </a>
             </div>
@@ -415,7 +426,7 @@
                 <div class="tier-discount">20% OFF</div>
                 <p class="tier-desc">Perfect for medium businesses</p>
                 <ul class="tier-features">
-                    <li>Free UK Delivery</li>
+                    <li>Tracked UK Delivery £7.95</li>
                     <li>Priority Support</li>
                     <li>Dedicated Account Manager</li>
                 </ul>
@@ -426,8 +437,8 @@
                 <div class="tier-discount">30% OFF</div>
                 <p class="tier-desc">Best value for large orders</p>
                 <ul class="tier-features">
-                    <li>Free Express Delivery</li>
-                    <li>24/7 VIP Support</li>
+                    <li>Production in 7-10 Working Days</li>
+                    <li>Support 7 Days a Week, 9am-9pm</li>
                     <li>Dedicated Account Manager</li>
                     <li>Custom Payment Terms</li>
                 </ul>
@@ -445,7 +456,7 @@
                 <div class="benefit-item">
                     <div class="benefit-icon"><i class="fas fa-shipping-fast"></i></div>
                     <h3>Fast Turnaround</h3>
-                    <p>7-10 day standard delivery. Rush service available for urgent orders.</p>
+                    <p>Production in 7-10 working days. Rush service available for urgent orders.</p>
                 </div>
                 <div class="benefit-item">
                     <div class="benefit-icon"><i class="fas fa-award"></i></div>
@@ -500,13 +511,14 @@
         
         <div class="cta-final">
             <h2>Ready to Save on Your Bulk Order?</h2>
-            <p>Get a free, no-obligation quote within 24 hours. Best pricing guaranteed!</p>
+            <p>Get a free, no-obligation quote within 8 hours. Best pricing guaranteed!</p>
             <a href="#" data-open-contact="1" data-contact-message="Hi, I would like a quote for a bulk order." class="btn">
                 <i class="fas fa-paper-plane"></i> Request Bulk Quote Now
             </a>
         </div>
     </div>
-    
+    <div data-pc-footer></div>
+
 <script src="mobile/js/popup-contact.js?v=20261003-consent"></script>
 </body>
 </html>

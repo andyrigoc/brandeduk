@@ -188,11 +188,14 @@
         return digits;
     }
 
-    function displayFromDigits(digits, fallbackDisplay) {
+    function displayFromDigits(digits, fallbackDisplay, linkText) {
         if (!digits) return fallbackDisplay;
         // Keep existing display if matches known number.
         if (digits === '02089742722' || digits === '+442089742722') return '020 8974 2722';
-        return fallbackDisplay || digits;
+        // Any other number (e.g. a Google Ads forwarding number) must be shown as dialled.
+        const text = String(linkText || '').replace(/\s+/g, ' ').trim();
+        if (text.replace(/\D/g, '').length >= 10) return text;
+        return digits;
     }
 
     function initCallModal(userOptions) {
@@ -212,7 +215,7 @@
                 e.preventDefault();
 
                 const digits = getNumberFromTelHref(a.getAttribute('href')) || opts.phoneTel;
-                const display = displayFromDigits(digits, opts.phoneDisplay);
+                const display = displayFromDigits(digits, opts.phoneDisplay, a.textContent);
 
                 const overlay = ensureModal(opts);
                 overlay._callModal.open(display);
