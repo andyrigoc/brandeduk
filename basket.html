@@ -60,8 +60,8 @@
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20261002-logocombo">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20261002-logocombo">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/promo-bar.css?v=20260425a">
-    <script src="brandedukv15-child/assets/js/pc-header-template.js?v=20261005-megafit"></script>
-    <script src="brandedukv15-child/assets/js/pc-header.js?v=20261008-searchleaf1"></script>
+    <script src="brandedukv15-child/assets/js/pc-header-template.js?v=20261012-homechrome"></script>
+    <script src="brandedukv15-child/assets/js/pc-header.js?v=20261012-homechrome"></script>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie_light.min.js" media="(min-width: 700px)">
     <link rel="preload" as="fetch" href="brandedukv15-child/assets/images/ui/cart-icon-loader.json" crossorigin media="(min-width: 700px)">
@@ -138,8 +138,6 @@
         }
         .header-with-promo .searchbar-header__search-expand {
             position: relative !important;
-            /* size comes from pc-header.css, same as home-pc.html (Shop products sits next to search) */
-            height: 44px !important;
             transition: none !important;
             margin-right: 8px;
         }
@@ -2051,18 +2049,6 @@
                 background: #f5f5f3;
                 color: #202124;
             }
-            body.basket-page .header-top { background: #f6f6f5; border-bottom: 1px solid #e6e6e3; }
-            body.basket-page .header-top-left { display: none; }
-            /* Basket page only: nudge top orange cart 5px left (do not change home). */
-            body.basket-page .site-header .header-top .header-top-basket-link {
-                margin-right: 5px !important;
-            }
-            body.basket-page .header-top .header-container {
-                justify-content: flex-end;
-                padding-top: 7px;
-                padding-bottom: 7px;
-            }
-            body.basket-page .searchbar-header__surface { padding-top: 10px !important; padding-bottom: 10px !important; }
             body.basket-page .searchbar-header__brand-img { height: 64px !important; }
             body.basket-page .searchbar-header__action-ring {
                 width: 42px;
@@ -2291,78 +2277,6 @@
             .basket-footer-bottom p,
             .basket-footer-legal a { color: #777b81; }
 
-            body.basket-page .header-top .header-container {
-                min-height: 34px !important;
-                justify-content: space-between;
-                padding-top: 4px;
-                padding-bottom: 4px;
-            }
-            body.basket-page .header-top-left {
-                display: flex;
-                gap: 7px;
-            }
-            body.basket-page .header-social-3d {
-                display: flex;
-                align-items: center;
-                gap: 7px;
-            }
-            body.basket-page .header-social-3d .social-icon-3d {
-                display: inline-flex;
-                width: 28px;
-                height: 28px;
-                align-items: center;
-                justify-content: center;
-                color: #59606b;
-                background: #ececea;
-                border: 1px solid #dfdfdc;
-                border-radius: 50%;
-                box-shadow: none;
-                font-size: 12px;
-                text-decoration: none;
-                transition: color .16s ease, background .16s ease;
-            }
-            body.basket-page .header-social-3d .social-icon-3d:hover {
-                color: #fff;
-                background: #303a4b;
-            }
-            body.basket-page .searchbar-header__surface {
-                padding-top: 6px !important;
-                padding-bottom: 6px !important;
-            }
-            body.basket-page .searchbar-header__brand-img { height: 64px !important; }
-            body.basket-page .searchbar-header__search-expand { height: 40px !important; }
-            body.basket-page .searchbar-header__actions { min-height: 40px; }
-            body.basket-page .searchbar-header__action-ring {
-                width: 36px;
-                height: 36px;
-            }
-            body.basket-page .searchbar-header__action-icon,
-            body.basket-page .searchbar-header__action-icon--whatsapp {
-                width: 18px;
-                height: 18px;
-            }
-            body.basket-page .header-bottom .header-container {
-                padding-top: 7px;
-                padding-bottom: 7px;
-            }
-            body.basket-page .category-toggle,
-            body.basket-page .main-nav > .menu > li > a { font-size: 14px; }
-            body.basket-page .top-promo-bar {
-                display: block !important;
-                min-height: 0;
-                margin-top: 0 !important;
-                padding: 7px 0 !important;
-                color: #fff;
-                background: #303a4b !important;
-                border: 0;
-                font-size: 11px;
-                line-height: 1.3;
-            }
-            body.basket-page .top-promo-bar .promo-scroll span {
-                padding: 0 34px 0 0;
-                font-size: 11px;
-                font-weight: 600;
-            }
             .basket-footer-brandmark span { color: inherit; }
         }
 

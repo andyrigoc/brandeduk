@@ -96,6 +96,19 @@
   // hidden preload) never show the banner or button; the top page owns them.
   if (window.self !== window.top) return;
 
+  // Every live page loads this file, so it also brings in the shared
+  // page-transition loader (blur + brand spinner between pages).
+  var PAGE_TRANSITION_VERSION = '20261012';
+  (function loadPageTransition() {
+    if (document.querySelector('script[src*="page-transition.js"]')) return;
+    var src = '/brandedukv15-child/assets/js/page-transition.js';
+    try { if (scriptRef && scriptRef.src) src = new URL('page-transition.js', scriptRef.src).pathname; } catch (e) {}
+    var script = document.createElement('script');
+    script.async = true;
+    script.src = src + '?v=' + PAGE_TRANSITION_VERSION;
+    (document.head || document.documentElement).appendChild(script);
+  })();
+
   var clarityLoaded = false;
 
   function clarityConsent(choice) {

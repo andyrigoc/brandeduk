@@ -172,7 +172,8 @@
 
     function init() {
         if (lottieIcons.length || videoIcons.length) return;
-        var links = Array.prototype.slice.call(document.querySelectorAll('.site-header a.header-top-basket-link'));
+        // Skip a top-bar cart that cart-lottie-icon.js (data-header-cart) has already mounted.
+        var links = Array.prototype.slice.call(document.querySelectorAll('.site-header a.header-top-basket-link:not(.cart-lottie-host)'));
         if (!links.length) return;
         // The Basket link next to Account plays the recorded laptop loop without a count; the small top-bar cart keeps the Lottie cart.
         links.forEach(function (link) {

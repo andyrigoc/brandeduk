@@ -35,7 +35,7 @@ const HUB_FILE = path.join(ROOT, 'industries.html');
 
 const API = 'https://api.brandeduk.com';
 const SITE = 'https://www.brandeduk.com';
-const ASSET_VERSION = '20261012-ind5';
+const ASSET_VERSION = '20261012-ind6';
 const HIDDEN_BRAND_NAMES = ['absolute', 'ralawise'];
 const ON_SITE_ONLY = process.argv.includes('--on-site-only');
 const MISSING_REPORT_DIR = (() => {
@@ -416,15 +416,15 @@ function headStart() {
 function headAssets() {
     return `    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/brandedukv15-child/assets/css/components/header.css?v=20260926-vatgap">
-    <link rel="stylesheet" href="/brandedukv15-child/assets/css/components/pc-header.css?v=20261005-searchoverflow">
+    <link rel="stylesheet" href="/brandedukv15-child/assets/css/components/pc-header.css?v=20261012-homechrome">
     <link rel="stylesheet" href="/brandedukv15-child/assets/css/components/promo-bar.css?v=20260425a">
     <link rel="stylesheet" href="/mobile/css/mobile.css?v=20260923-home-nav">
     <link rel="stylesheet" href="/mobile/footer/footer.css?v=20260409B">
     <link rel="stylesheet" href="/footer-dev/pc-footer.css?v=20261009-phones">
     <link rel="stylesheet" href="/brandedukv15-child/assets/css/pages/industries.css?v=${ASSET_VERSION}">
     <script src="/brandedukv15-child/assets/js/shared-config.js?v=20261005-megafit"></script>
-    <script src="/brandedukv15-child/assets/js/pc-header-template.js?v=20261005-megafit"></script>
-    <script src="/brandedukv15-child/assets/js/pc-header.js?v=20261008-searchleaf1"></script>
+    <script src="/brandedukv15-child/assets/js/pc-header-template.js?v=20261012-homechrome"></script>
+    <script src="/brandedukv15-child/assets/js/pc-header.js?v=20261012-homechrome"></script>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     <link rel="preconnect" href="https://cdn.pimber.ly">
     <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie_light.min.js" media="(min-width: 700px)">
@@ -495,7 +495,7 @@ function pageEnd(options) {
 
 function sectorImage(slug, alt, extra) {
     const base = `/brandedukv15-child/assets/images/industries/${slug}`;
-    return `<img src="${base}-800.webp" srcset="${base}-800.webp 800w, ${base}.webp 1600w" sizes="${extra && extra.sizes ? extra.sizes : '(min-width: 900px) 560px, 100vw'}" width="1600" height="900" alt="${esc(alt)}"${extra && extra.lazy ? ' loading="lazy"' : ' fetchpriority="high"'} decoding="async">`;
+    return `<img src="${base}-800.webp" srcset="${base}-800.webp 800w, ${base}.webp 1600w" sizes="${extra && extra.sizes ? extra.sizes : '(min-width: 900px) 720px, 100vw'}" width="1600" height="900" alt="${esc(alt)}"${extra && extra.lazy ? ' loading="lazy"' : ' fetchpriority="high"'} decoding="async">`;
 }
 
 /* ------------------------------------------------------------------ product card (same markup/classes as shop-pc.html) */

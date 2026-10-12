@@ -31,10 +31,11 @@
     }
 
     /*
-     * Header rail = HERO banner.
+     * Header rail = HERO banner, capped at --bu-content-max.
      * --bu-hero-width is measured from .hero-banners-container (JS), with the same
-     * CSS fallback as style.css: width: min(100%, 1440px).
-     * Right padding is 0 so mini-basket + laptop Basket sit on the hero right edge.
+     * CSS fallback as style.css: width: min(100%, 1440px). The home hero goes
+     * full-bleed (100vw) from 1024px, so the cap keeps the rail centred there too.
+     * Right padding is 0 so mini-basket + laptop Basket sit on the rail right edge.
      */
     .site-header {
         --bu-adapt: 0;
@@ -52,7 +53,7 @@
     .site-header .header-container,
     .site-header .searchbar-header__surface,
     .site-header .header-bottom > .header-container {
-        width: var(--bu-hero-width) !important;
+        width: min(var(--bu-hero-width), var(--bu-content-max)) !important;
         max-width: none !important;
         margin-left: auto !important;
         margin-right: auto !important;
@@ -1448,6 +1449,53 @@
         width: auto !important;
         max-width: none;
         min-width: 0;
+    }
+}
+
+/*
+ * Home-pc look on every shared-header page. Home gets these from style.css (Poppins on
+ * body/buttons) and its own inline styles; other pages load mobile.css, whose ticker styles
+ * would otherwise win. Kept last so it beats the compact search-row padding above.
+ */
+@media (min-width: 700px) {
+    .site-header {
+        font-size: 16px;
+        line-height: normal;
+    }
+
+    .site-header button {
+        font-family: Poppins, "Segoe UI", Arial, sans-serif;
+    }
+
+    .site-header .searchbar-header {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .site-header .searchbar-header__surface {
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+    }
+
+    .header-with-promo .top-promo-bar {
+        margin-top: 0;
+        padding: 12px 0;
+        background: linear-gradient(135deg, #273469 0%, #1a244d 100%);
+        border-top: 0;
+        border-bottom: 0;
+        color: #fff;
+        font-family: Poppins, "Segoe UI", Arial, sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: 0.3px;
+        line-height: 1.4;
+    }
+
+    .header-with-promo .top-promo-bar .promo-scroll span {
+        padding: 0 50px 0 0;
+        font-size: inherit;
+        font-weight: inherit;
+        letter-spacing: inherit;
     }
 }
 

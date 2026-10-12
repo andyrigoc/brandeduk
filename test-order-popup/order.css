@@ -1,6 +1,8 @@
 /* order.css */
 
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+*{margin:0;padding:0;box-sizing:border-box}
+/* Zero specificity like `*`; the shared site header keeps the home-page fonts. */
+:where(*:not(.header-with-promo, .header-with-promo *)){font-family:Arial}
 body{background:#f2f4f8}
 
 .order_wrapper{display:flex;justify-content:center;padding:60px}

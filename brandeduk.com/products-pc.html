@@ -67,10 +67,27 @@
     </script>
     
     <link rel="stylesheet" href="../brandedukv15-child/assets/css/components/header.css?v=20251230">
-    <script src="../brandedukv15-child/assets/js/pc-header-template.js?v=20261005-megafit"></script>
-    <script src="../brandedukv15-child/assets/js/pc-header.js?v=20261008-searchleaf1"></script>
+    <script src="../brandedukv15-child/assets/js/pc-header-template.js?v=20261012-homechrome"></script>
+    <script src="../brandedukv15-child/assets/js/pc-header.js?v=20261012-homechrome"></script>
     <link rel="stylesheet" href="../brandedukv15-child/assets/css/pages/home.css?v=20251230">
     <style>
+        /* pages/home.css styles the old header's nav links; keep the shared header like home-pc. */
+        @media (min-width: 700px) {
+            .site-header .main-nav .menu > li > a {
+                padding-bottom: 3px;
+                border-bottom: 0;
+            }
+            .site-header .header-basket-icon {
+                font-size: inherit;
+            }
+            .site-header .category-toggle-caret {
+                width: 12px;
+                height: 12px;
+            }
+            .site-header .category-menu .megamenu .brand-heading {
+                color: #0f1729;
+            }
+        }
         /* Account icon purple background */
         .searchbar-header__account .searchbar-header__action-ring {
             background: #7c3aed;
