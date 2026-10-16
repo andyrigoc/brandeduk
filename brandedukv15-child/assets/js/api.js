@@ -139,6 +139,20 @@ const BrandedAPI = (function () {
         const value = String(productType).trim();
         if (!value) return value;
 
+        // Mobile fills this map from the live catalogue. An exact type name
+        // (Polo vs Polos, Hood vs Hoodies) must be kept. Desktop leaves the
+        // map empty, so its existing slug aliases are unchanged.
+        var catalog = window.BRANDED_TYPE_NAMES;
+        if (catalog) {
+            var wanted = value.toLowerCase();
+            var catalogKeys = Object.keys(catalog);
+            for (var i = 0; i < catalogKeys.length; i++) {
+                if (String(catalog[catalogKeys[i]] || '').toLowerCase() === wanted) {
+                    return catalog[catalogKeys[i]];
+                }
+            }
+        }
+
         if (window.BrandedConfig) {
             const categorySlug = window.BrandedConfig.normalizeCategory(value);
             const apiName = window.BrandedConfig.getApiCategoryName(categorySlug);

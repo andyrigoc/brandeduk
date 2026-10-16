@@ -544,14 +544,17 @@
         }
         document.body.classList.add('shop-category-card');
         var pcMap = window.BRANDED_PC_LISTINGS || {};
-        var pcAlias = { tshirts: 't-shirts', 't-shirt': 't-shirts', tees: 't-shirts', polo: 'polos', fleeces: 'fleece', 'hi-vis': 'hivis' };
+        var pcAlias = { tshirts: 't-shirts', 't-shirt': 't-shirts', tees: 't-shirts', fleeces: 'fleece', 'hi-vis': 'hivis' };
         var pcSlug = types.length === 1 ? String(types[0]).toLowerCase() : ((!types.length && cat && cat !== 'all') ? String(cat).toLowerCase() : '');
+        if (pcSlug === 'polo' && types.length !== 1) pcSlug = 'polos';
         pcSlug = pcAlias[pcSlug] || pcSlug;
         var pc = pcMap[pcSlug];
         function plainListingName(value) {
             return String(value || '').replace(/[-_]/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
         }
-        var cardTitle = (pc && pc.title) || (title && title !== 'All Products' ? title : (plainListingName(pcSlug || (types[0] || '')) || title));
+        var named = (pc && pc.title) || '';
+        if (!named && pcSlug && pcSlug !== 'all') named = plainListingName(pcSlug);
+        var cardTitle = named || (title && title !== 'All Products' ? title : 'All Products');
         var cardDesc = (pc && pc.desc) || '';
         var heroTitle = document.getElementById('shopHeroTitle');
         var heroCrumb = document.getElementById('shopHeroCrumb');
@@ -1175,7 +1178,7 @@
 
     <!-- API Integration Scripts -->
     <script src="../brandedukv15-child/assets/js/api-config.js?v=20261016-apiproxy"></script>
-    <script src="../brandedukv15-child/assets/js/api.js?v=20260820a"></script>
+    <script src="../brandedukv15-child/assets/js/api.js?v=20261016-typenames"></script>
     <script src="../brandedukv15-child/assets/data/organic-sustainable-codes.js?v=20261006-leaf3"></script>
     <script src="../brandedukv15-child/assets/js/organic-leaf.js?v=20261006-leaf4"></script>
     <script>
@@ -1311,9 +1314,57 @@
             return out;
         }
 
+        function typeSlug(value) {
+            return String(value || '')
+                .toLowerCase()
+                .replace(/&/g, ' ')
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '');
+        }
+
+        function catalogNameFor(value) {
+            const map = window.BRANDED_TYPE_NAMES || {};
+            const slug = typeSlug(value);
+            if (map[slug]) return map[slug];
+            const wanted = String(value || '').trim().toLowerCase();
+            const keys = Object.keys(map);
+            for (let i = 0; i < keys.length; i++) {
+                if (String(map[keys[i]] || '').toLowerCase() === wanted) return map[keys[i]];
+            }
+            return '';
+        }
+
+        function rememberTypeNames(list) {
+            const map = window.BRANDED_TYPE_NAMES || {};
+            (list || []).forEach((type) => {
+                const name = typeof type === 'string' ? type : (type && (type.name || type.title || type.productType)) || '';
+                const slug = (type && type.slug) || typeSlug(name);
+                if (slug && name && !map[slug]) map[slug] = name;
+            });
+            window.BRANDED_TYPE_NAMES = map;
+        }
+
+        function ensureTypeNames() {
+            if (window.__brandedTypeNamesReady) return Promise.resolve(window.BRANDED_TYPE_NAMES || {});
+            if (!(window.BrandedAPI && typeof window.BrandedAPI.getProductTypes === 'function')) {
+                window.__brandedTypeNamesReady = true;
+                return Promise.resolve(window.BRANDED_TYPE_NAMES || {});
+            }
+            return window.BrandedAPI.getProductTypes().then((list) => {
+                rememberTypeNames(list);
+                window.__brandedTypeNamesReady = true;
+                return window.BRANDED_TYPE_NAMES;
+            }).catch(() => {
+                window.__brandedTypeNamesReady = true;
+                return window.BRANDED_TYPE_NAMES || {};
+            });
+        }
+
         function resolveMobileProductType(value) {
             if (!value) return '';
             const raw = String(value).trim();
+            const catalog = catalogNameFor(raw);
+            if (catalog) return catalog;
             if (window.BrandedConfig) {
                 const slug = window.BrandedConfig.normalizeCategory(raw);
                 return window.BrandedConfig.getApiCategoryName(slug)
@@ -1542,7 +1593,7 @@
             return descriptions[normalized] || `Browse ${title || 'products'} ready for embroidery, print and bulk customisation.`;
         }
 
-        const PC_ALIAS = { tshirts: 't-shirts', 't-shirt': 't-shirts', tees: 't-shirts', polo: 'polos', fleeces: 'fleece', 'hi-vis': 'hivis' };
+        const PC_ALIAS = { tshirts: 't-shirts', 't-shirt': 't-shirts', tees: 't-shirts', fleeces: 'fleece', 'hi-vis': 'hivis' };
 
         function pcListingFor(types, category) {
             const map = window.BRANDED_PC_LISTINGS || {};
@@ -1550,6 +1601,7 @@
             if (types.length === 1) slug = String(types[0]).toLowerCase();
             else if (!types.length && category && category !== 'all') slug = String(category).toLowerCase();
             if (!slug) return null;
+            if (slug === 'polo' && types.length !== 1) slug = 'polos';
             slug = PC_ALIAS[slug] || slug;
             return map[slug] || null;
         }
@@ -1559,9 +1611,10 @@
             const params = new URLSearchParams(window.location.search);
             const types = collectMobileSearchValues(params, 'productType');
             const data = pcListingFor(types, currentCategory || params.get('category') || '');
-            const slug = types.length === 1 ? String(types[0]) : '';
-            const plain = slug.replace(/[-_]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
-            const shown = (data && data.title) || (fallbackTitle && fallbackTitle !== 'All Products' ? fallbackTitle : (plain || fallbackTitle || 'All Products'));
+            const raw = types.length === 1 ? String(types[0]) : ((currentCategory && currentCategory !== 'all') ? currentCategory : '');
+            const catalog = raw ? catalogNameFor(raw) : '';
+            const plain = typeSlug(raw).replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+            const shown = (data && data.title) || catalog || plain || (fallbackTitle && fallbackTitle !== 'All Products' ? fallbackTitle : 'All Products');
             const crumb = document.getElementById('shopHeroCrumb');
             const titleEl = document.getElementById('shopHeroTitle');
             const descEl = document.getElementById('shopHeroDesc');
@@ -2068,7 +2121,8 @@
         }
 
         // Initialize
-        function init() {
+        async function init() {
+            await ensureTypeNames();
             // Get category and search from URL
             const urlParams = new URLSearchParams(window.location.search);
             currentCategory = urlParams.get('category') || 'all';
