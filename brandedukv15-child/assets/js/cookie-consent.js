@@ -184,7 +184,8 @@
     current = record;
     hideBanner();
     closeDialog();
-    showFloatButton();
+    if (record.analytics && record.advertising) hideFloatButton();
+    else showFloatButton();
     try {
       window.dispatchEvent(new CustomEvent('brandeduk:consent', { detail: api.get() }));
     } catch (e) {}
@@ -238,7 +239,7 @@
           '<h2 id="bukCcTitle" class="buk-cc-dialog__title">Cookie settings</h2>' +
           '<button type="button" class="buk-cc-dialog__close" data-cc="close" aria-label="Close cookie settings">&times;</button>' +
         '</div>' +
-        '<p id="bukCcIntro" class="buk-cc-dialog__intro">Choose which optional cookies we may use. You can change this at any time from the cookie button or the footer. Read our <a href="' + PRIVACY_URL + '">Privacy Policy</a> and <a href="' + POLICY_URL + '">Cookie Policy</a>.</p>' +
+        '<p id="bukCcIntro" class="buk-cc-dialog__intro">Choose which optional cookies we may use. You can change this at any time from the footer. Read our <a href="' + PRIVACY_URL + '">Privacy Policy</a> and <a href="' + POLICY_URL + '">Cookie Policy</a>.</p>' +
         '<div class="buk-cc-cat">' +
           '<div class="buk-cc-cat__row">' +
             '<span class="buk-cc-cat__name" id="bukCcNecLabel">Strictly necessary</span>' +
@@ -353,6 +354,11 @@
     document.body.appendChild(floatBtn);
   }
 
+  function hideFloatButton() {
+    if (floatBtn && floatBtn.parentNode) floatBtn.parentNode.removeChild(floatBtn);
+    floatBtn = null;
+  }
+
   document.addEventListener('click', function (event) {
     var trigger = event.target.closest ? event.target.closest('[data-cookie-settings], a[href$="#cookie-settings"]') : null;
     if (!trigger) return;
@@ -362,8 +368,11 @@
 
   function init() {
     ensureStyles();
-    if (current) showFloatButton();
-    else buildBanner();
+    if (!current) {
+      buildBanner();
+      return;
+    }
+    if (!(current.analytics && current.advertising)) showFloatButton();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);

@@ -354,7 +354,10 @@ function initSearch() {
         const fetchSuggestions = async (query) => {
             if (query.length < 2) { suggestionBox.classList.remove('active'); return; }
             try {
-                const res = await fetch(`https://api.brandeduk.com/api/products/suggest?q=${encodeURIComponent(query)}`);
+                const apiBase = (typeof window.resolveBrandedApiBase === 'function'
+                    ? window.resolveBrandedApiBase()
+                    : (window.API_BASE_URL || 'https://api.brandeduk.com')).replace(/\/+$/, '');
+                const res = await fetch(`${apiBase}/api/products/suggest?q=${encodeURIComponent(query)}`);
                 if (!res.ok) throw new Error('API Error');
                 const data = await res.json();
                 renderSuggestions(data, query);

@@ -107,7 +107,7 @@ textarea {
   background: #ffffff;
   border-top: 1px solid #e5e7eb;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   z-index: 420;
 }
 
@@ -130,6 +130,21 @@ textarea {
 
 .tool-bottom-nav-item-basket {
   color: #273469;
+}
+
+button.tool-bottom-nav-item {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.tool-bottom-nav-item--customise {
+  gap: 3px;
+  color: var(--orange);
 }
 
 .tool-bottom-nav-badge {
@@ -2951,6 +2966,17 @@ textarea {
   opacity: 1 !important;
 }
 
+.is-mobile-customization .colour-layer,
+.is-mobile-customization .view-thumb-colour-layer {
+  display: none !important;
+  -webkit-mask: none !important;
+  mask: none !important;
+}
+
+.is-mobile-customization #previewPoloSlot {
+  background: #fff;
+}
+
 /* --- Bottom Sheet --- */
 .bottom-sheet {
   background: #fff;
@@ -4246,4 +4272,3 @@ textarea {
     padding-bottom: 92px;
   }
 }
-

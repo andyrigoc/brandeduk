@@ -3,14 +3,11 @@
  *
  * Production / Vercel: https://api.brandeduk.com
  *
- * Local (127.0.0.1 / localhost): http://127.0.0.1:3005 via `npm run api-proxy`
- * (scripts/api-cors-proxy.js). Direct browser calls to api.brandeduk.com fail with
- * HTTP 403 because CORS_ORIGIN allow-lists only www.brandeduk.com / brandeduk.com
- * (Guardian CORS scope). The proxy rewrites CORS for local Live Server origins.
+ * Local preview (127.0.0.1 / localhost, any port — 5510, 5511, 5500, Live Server):
+ *   same-origin /__api  (scripts/dev-server.js proxies to api.brandeduk.com)
  *
- * All-in-one static + same-origin proxy (alternative to Live Server):
- *   npm run dev  → use http://127.0.0.1:5510/__api
- *   window.API_BASE_URL = location.origin + '/__api';
+ * Direct browser calls to api.brandeduk.com fail with HTTP 403 because CORS_ORIGIN
+ * allow-lists only www.brandeduk.com / brandeduk.com (Guardian CORS scope).
  *
  * Opt out of local proxy (needs DigitalOcean CORS_ORIGIN to include local origin):
  *   window.API_USE_LOCAL_PROXY = false;  // before this script
@@ -33,6 +30,11 @@
         return host === 'localhost' || host === '127.0.0.1' || host === '[::1]' || host === '';
     }
 
+    function isLocalHttpPreview() {
+        var protocol = (window.location && window.location.protocol) || '';
+        return isLocalHost() && (protocol === 'http:' || protocol === 'https:');
+    }
+
     function resolveBrandedApiBase() {
         if (window.API_BASE_URL) {
             return String(window.API_BASE_URL).replace(/\/+$/, '');
@@ -40,13 +42,9 @@
         if (window.API_USE_LOCAL === true) {
             return LOCAL_API;
         }
-        // The bundled development server exposes a same-origin API bridge.
-        if (isLocalHost() && window.location && window.location.port === '5510') {
+        // Any local preview port: same-origin /__api (not :3005)
+        if (isLocalHttpPreview() && window.API_USE_LOCAL_PROXY !== false) {
             return window.location.origin + '/__api';
-        }
-        // Local static pages (Live Server etc.): CORS bridge on :3005
-        if (isLocalHost() && window.API_USE_LOCAL_PROXY !== false) {
-            return LOCAL_CORS_PROXY;
         }
         return PRODUCTION_API;
     }

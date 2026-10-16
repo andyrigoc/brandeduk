@@ -3,55 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <!-- Google Consent Mode v2 defaults (must stay before the Google tag) -->
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('consent', 'default', {
-        ad_storage: 'denied',
-        ad_user_data: 'denied',
-        ad_personalization: 'denied',
-        analytics_storage: 'denied',
-        functionality_storage: 'granted',
-        security_storage: 'granted',
-        wait_for_update: 500
-      });
-      gtag('set', 'ads_data_redaction', true);
-      gtag('set', 'url_passthrough', true);
-      (function () {
-        try {
-          var c = JSON.parse(localStorage.getItem('brandedukCookieConsent') || 'null');
-          if (c && c.timestamp && Date.now() - c.timestamp < 31536000000) {
-            var ads = c.advertising ? 'granted' : 'denied';
-            gtag('consent', 'update', { ad_storage: ads, ad_user_data: ads, ad_personalization: ads, analytics_storage: c.analytics ? 'granted' : 'denied' });
-          }
-        } catch (e) {}
-        try {
-          var u = new URL(location.href), strip = false;
-          ['token', 'email', 'session_id', 'access_token', 'id_token', 'refresh_token'].forEach(function (k) {
-            if (u.searchParams.has(k)) { u.searchParams.delete(k); strip = true; }
-          });
-          if (strip) gtag('set', 'page_location', u.href);
-        } catch (e) {}
-      })();
-      window.brandedAdsConversion = window.brandedAdsConversion || function () { (window.brandedAdsQueue = window.brandedAdsQueue || []).push(arguments); };
-    </script>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-438771987"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      if (window.self === window.top) gtag('config', 'AW-438771987');
-    </script>
-    <script defer src="/brandedukv15-child/assets/js/cookie-consent.js?v=20261008"></script>
-    <script defer src="/brandedukv15-child/assets/js/ads-conversions.js?v=20261009"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shop Custom Workwear &amp; Uniforms - BrandedUK</title>
-    <meta name="description" content="Browse Custom Workwear - T-Shirts, Polos, Hoodies, Hi-Vis, Jackets with Embroidery or Printing. Instant Quote Calculator. Bulk Discounts from 20% OFF. Tracked UK Delivery £7.95.">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://www.brandeduk.com/shop">
+    <title>Shop - BrandedUK</title>
     <script src="brandedukv15-child/assets/js/shop-route.js?v=20260518"></script>
     <script>
         if (window.BrandedShopRoute && BrandedShopRoute.redirectDesktopShopIfMobile()) { /* redirecting */ }
@@ -59,20 +12,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
         integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
         crossorigin="anonymous" referrerpolicy="no-referrer">
-    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20260926-vatgap">
-    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header-basket-lottie.css?v=20260927-basketnoflash1">
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-    <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie_light.min.js">
-    <link rel="preload" as="fetch" crossorigin="anonymous" href="brandedukv15-child/assets/images/ui/cart-icon-loader.json">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20251230">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/promo-bar.css?v=20260425a">
-    <script src="brandedukv15-child/assets/js/shared-config.js?v=20261005-megafit"></script>
-    <script src="brandedukv15-child/assets/js/pc-header-template.js?v=20261012-navmore"></script>
-    <script src="brandedukv15-child/assets/js/pc-header.js?v=20261012-navmore"></script>
-    <link rel="stylesheet" href="footer-dev/pc-footer.css?v=20261009-phones">
-    <script src="footer-dev/pc-footer.js?v=20261012-services" defer></script>
-    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/loader.css?v=20261002-orbitloader">
+    <script src="brandedukv15-child/assets/js/pc-header-template.js?v=20261015-nodeals"></script>
+    <script src="brandedukv15-child/assets/js/pc-header.js?v=20260913c"></script>
+    <link rel="stylesheet" href="footer-dev/pc-footer.css?v=20260922c">
+    <script src="footer-dev/pc-footer.js?v=20260922c" defer></script>
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/loader.css?v=20251230">
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20251230">
-    <link rel="stylesheet" href="mobile/css/popup-contact.css?v=20261003-consent">
+    <link rel="stylesheet" href="mobile/css/popup-contact.css?v=20251230">
     <link rel="stylesheet" href="brandeduk.com/css/style.css?v=20251230">
     <style>
         /* Reduce searchbar header gap - PC only */
@@ -86,7 +34,7 @@
         }
 
         .searchbar-header__brand-img {
-            height: 64px !important;
+            height: 80px !important;
         }
 
         /* ============================================
@@ -147,6 +95,7 @@
             gap: 4px;
             color: #4b5563;
             text-decoration: none;
+            padding: 4px 6px;
             border-radius: 6px;
             position: relative;
             transition: color 0.2s;
@@ -1633,28 +1582,28 @@
         .products-controls {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
             flex-wrap: nowrap;
         }
 
         .control-group {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
         }
 
         .control-group label {
-            font-size: 12px;
+            font-size: 14px;
             font-weight: 500;
             color: #374151;
             white-space: nowrap;
         }
 
         .control-select {
-            padding: 3px 24px 3px 8px;
+            padding: 6px 32px 6px 10px;
             border: 1px solid #e5e7eb;
-            border-radius: 5px;
-            font-size: 12px;
+            border-radius: 6px;
+            font-size: 14px;
             font-weight: 500;
             color: #1f2937;
             background: white;
@@ -1662,9 +1611,9 @@
             appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%236b7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
-            background-position: right 8px center;
+            background-position: right 10px center;
             transition: all 0.2s ease;
-            min-width: 0;
+            min-width: 112px;
         }
 
         .control-select:hover {
@@ -1708,8 +1657,7 @@
         .product-media {
             position: relative;
             padding: 16px;
-            background: #ffffff;
-            border: 1px solid #d1d5db;
+            background: #f9fafb;
             overflow: hidden;
             aspect-ratio: 1;
             display: flex;
@@ -1718,50 +1666,16 @@
             flex-shrink: 0;
         }
 
-        .product-method-row {
+        .product-badges {
+            position: absolute;
+            top: 12px;
+            right: 12px;
             display: flex;
-            align-items: center;
-            flex-wrap: nowrap;
-            gap: 4px;
-            min-height: 18px;
-            margin: 0 0 8px;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 6px;
+            z-index: 10;
         }
-
-        .product-method-row .method-item {
-            display: inline-flex;
-            align-items: center;
-            gap: 3px;
-            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            font-size: 9px;
-            font-weight: 600;
-            letter-spacing: 0.06em;
-            line-height: 1;
-            text-transform: uppercase;
-            white-space: nowrap;
-        }
-
-        .product-method-row .method-item svg {
-            width: 13px;
-            height: 13px;
-            flex-shrink: 0;
-        }
-
-        .product-method-row .method-item.embroidery svg {
-            width: 22px;
-            height: 16px;
-        }
-
-        .product-method-row .method-sep {
-            width: 1px;
-            height: 14px;
-            background: #d1d5db;
-            flex-shrink: 0;
-        }
-
-        .product-method-row .method-item.best-seller { color: #e11d2e; }
-        .product-method-row .method-item.embroidery { color: #2563eb; }
-        .product-method-row .method-item.print { color: #f5a623; }
-        .product-method-row .method-item.recommended { color: #059669; }
 
         .badge {
             padding: 4px 10px;
@@ -2004,16 +1918,16 @@
         }
 
         .pagination-button {
-            width: 26px;
-            height: 26px;
+            width: 32px;
+            height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
             background: white;
             border: 1px solid #e5e7eb;
-            border-radius: 5px;
+            border-radius: 6px;
             color: #6b7280;
-            font-size: 12px;
+            font-size: 14px;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s ease;
@@ -2039,20 +1953,20 @@
         }
 
         .pagination-page {
-            min-width: 26px;
-            height: 26px;
+            min-width: 32px;
+            height: 32px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             background: white;
             border: 1px solid #e5e7eb;
-            border-radius: 5px;
+            border-radius: 6px;
             color: #6b7280;
-            font-size: 12px;
+            font-size: 14px;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s ease;
-            padding: 0 6px;
+            padding: 0 8px;
         }
 
         .pagination-page:hover {
@@ -2062,11 +1976,10 @@
         }
 
         .pagination-page.active {
-            background: #fff;
-            border-color: #273469;
-            color: #273469;
+            background: #1f2937;
+            border-color: #1f2937;
+            color: white;
             font-weight: 600;
-            box-shadow: inset 0 0 0 1px #273469;
         }
 
         .pagination-info {
@@ -2126,14 +2039,12 @@
     </style>
 
     <!-- Order Popup Styles -->
-    <link rel="stylesheet" href="test-order-popup/order.css?v=20261012-homechrome">
-    <link rel="stylesheet" href="test-order-popup/order-shop.css?v=20261003-whiteimg">
+    <link rel="stylesheet" href="test-order-popup/order.css">
+    <link rel="stylesheet" href="test-order-popup/order-shop.css?v=20260924-method-colours2">
     <link rel="stylesheet" href="test-order-popup/order-overlay.css">
     <link rel="stylesheet" href="test-order-popup/customizer-embed.css?v=20260922-poa-contact">
-    <link rel="stylesheet" href="test-order-popup/pc-product-popup.css?v=20261009-continue-quiet">
-    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/tablet-rotate-hint.css?v=20261003-screen">
-    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/cart-lottie-icon.css?v=20260927-cartlottie2">
-    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/pc-shop.css?v=20261007-pageoutline">
+    <link rel="stylesheet" href="test-order-popup/pc-product-popup.css?v=20260924-method-colours2">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/pc-shop.css?v=20260913b">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link
@@ -2193,7 +2104,8 @@
                                     data-vat-inc>inc vat</span>
                             </button>
                         </div>
-                        <a class="header-top-basket-link" href="basket.html" aria-label="View basket">
+                        <a class="header-top-basket-link" href="#" onclick="event.preventDefault(); openOrderDrawer();"
+                            aria-label="View basket">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2">
                                 <path d="M6 6h15l-1.5 9h-12z" />
@@ -2213,7 +2125,7 @@
                 <div class="searchbar-header__inner">
                     <a class="searchbar-header__brand" href="index.html" aria-label="brandedUK home">
                         <img class="searchbar-header__brand-img"
-                            src="brandedukv15-child/assets/images/ui/branded-uk-header-logo-black.png?v=20260927-logoblack" alt="brandedUK">
+                            src="../brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BrandedUK">
                     </a>
 
                     <div class="searchbar-header__actions">
@@ -2279,7 +2191,7 @@
                             <li class="has-children">
                                 <a href="?productType=tshirts" data-product-type="t-shirts">
                                     <img class="category-icon"
-                                        src="brandedukv15-child/assets/images/ui/icons/categories/icon-shirt-71%201.png"
+                                        src="../brandedukv15-child/assets/images/ui/icons/categories/icon-shirt-71%201.png"
                                         alt="" aria-hidden="true">
                                     <span class="category-text">T-Shirts</span>
                                     <span class="category-caret" aria-hidden="true"></span>
@@ -2308,7 +2220,7 @@
                             <li class="has-children">
                                 <a href="?productType=polos" data-product-type="polos">
                                     <img class="category-icon"
-                                        src="brandedukv15-child/assets/images/ui/icons/categories/Polo.png" alt=""
+                                        src="../brandedukv15-child/assets/images/ui/icons/categories/Polo.png" alt=""
                                         aria-hidden="true">
                                     <span class="category-text">Polo Shirts</span>
                                     <span class="category-caret" aria-hidden="true"></span>
@@ -2330,9 +2242,9 @@
                                 </ul>
                             </li>
                             <li class="has-children">
-                                <a href="?productType[]=hoodies&amp;productType[]=sweatshirts" data-product-type="hoodies">
+                                <a href="?productType=hoodies" data-product-type="hoodies">
                                     <img class="category-icon"
-                                        src="brandedukv15-child/assets/images/ui/icons/categories/icon-hoodies-71%201.png"
+                                        src="../brandedukv15-child/assets/images/ui/icons/categories/icon-hoodies-71%201.png"
                                         alt="" aria-hidden="true">
                                     <span class="category-text">Hoodies &amp; Sweatshirts</span>
                                     <span class="category-caret" aria-hidden="true"></span>
@@ -2353,9 +2265,9 @@
                                 </ul>
                             </li>
                             <li class="has-children">
-                                <a href="?productType[]=jackets&amp;productType[]=softshells" data-product-type="jackets">
+                                <a href="?productType=jackets" data-product-type="jackets">
                                     <img class="category-icon"
-                                        src="brandedukv15-child/assets/images/ui/icons/categories/Jacket.png" alt=""
+                                        src="../brandedukv15-child/assets/images/ui/icons/categories/Jacket.png" alt=""
                                         aria-hidden="true">
                                     <span class="category-text">Jackets &amp; Softshell</span>
                                     <span class="category-caret" aria-hidden="true"></span>
@@ -2379,7 +2291,7 @@
                             <li class="has-children">
                                 <a href="?productType=safety-vests" data-product-type="safety-vests">
                                     <img class="category-icon"
-                                        src="brandedukv15-child/assets/images/ui/icons/categories/Hi%20Vis.png"
+                                        src="../brandedukv15-child/assets/images/ui/icons/categories/Hi%20Vis.png"
                                         alt="" aria-hidden="true">
                                     <span class="category-text">Hi-Vis Clothing</span>
                                     <span class="category-caret" aria-hidden="true"></span>
@@ -2403,7 +2315,7 @@
                             <li class="has-children">
                                 <a href="?productType=trousers" data-product-type="trousers">
                                     <img class="category-icon"
-                                        src="brandedukv15-child/assets/images/ui/icons/categories/Trousers.png"
+                                        src="../brandedukv15-child/assets/images/ui/icons/categories/Trousers.png"
                                         alt="" aria-hidden="true">
                                     <span class="category-text">Work Trousers</span>
                                     <span class="category-caret" aria-hidden="true"></span>
@@ -2425,7 +2337,7 @@
                             <li class="has-children">
                                 <a href="?productType=aprons" data-product-type="aprons">
                                     <img class="category-icon"
-                                        src="brandedukv15-child/assets/images/ui/icons/categories/Apron.png" alt=""
+                                        src="../brandedukv15-child/assets/images/ui/icons/categories/Apron.png" alt=""
                                         aria-hidden="true">
                                     <span class="category-text">Work &amp; Uniforms</span>
                                     <span class="category-caret" aria-hidden="true"></span>
@@ -2445,7 +2357,7 @@
                             <li class="has-children">
                                 <a href="?productType=fleece" data-product-type="fleece">
                                     <img class="category-icon"
-                                        src="brandedukv15-child/assets/images/ui/icons/categories/Fleece.png" alt=""
+                                        src="../brandedukv15-child/assets/images/ui/icons/categories/Fleece.png" alt=""
                                         aria-hidden="true">
                                     <span class="category-text">Fleeces</span>
                                     <span class="category-caret" aria-hidden="true"></span>
@@ -2466,7 +2378,7 @@
                             <li class="has-children">
                                 <a href="?productType=caps" data-product-type="caps">
                                     <img class="category-icon"
-                                        src="brandedukv15-child/assets/images/ui/icons/categories/Cap.png" alt=""
+                                        src="../brandedukv15-child/assets/images/ui/icons/categories/Cap.png" alt=""
                                         aria-hidden="true">
                                     <span class="category-text">Headwear / Accessories</span>
                                     <span class="category-caret" aria-hidden="true"></span>
@@ -2488,7 +2400,7 @@
                             <li class="has-children">
                                 <a href="shop-pc.html?accreditation=recycled" data-accreditation="recycled">
                                     <img class="category-icon"
-                                        src="brandedukv15-child/assets/images/ui/icons/categories/Recycle.png" alt=""
+                                        src="../brandedukv15-child/assets/images/ui/icons/categories/Recycle.png" alt=""
                                         aria-hidden="true">
                                     <span class="category-text">Sustainable / Recycled &amp; Organic</span>
                                     <span class="category-caret" aria-hidden="true"></span>
@@ -2698,62 +2610,62 @@
                                 <div class="exclusives-dropdown-title">Exclusives</div>
                                 <div class="exclusives-grid">
                                     <a href="?brand=adidas" class="exclusive-brand" title="Adidas">
-                                        <img src="brandedukv15-child/assets/images/brands/adidas.jpg" alt="Adidas">
+                                        <img src="../brandedukv15-child/assets/images/brands/adidas.jpg" alt="Adidas">
                                     </a>
                                     <a href="?brand=b%26c-collection" class="exclusive-brand" title="B&C Collection">
-                                        <img src="brandedukv15-child/assets/images/brands/bandc-collection.png"
+                                        <img src="../brandedukv15-child/assets/images/brands/bandc-collection.png"
                                             alt="B&C">
                                     </a>
                                     <a href="?brand=build-your-brand" class="exclusive-brand" title="Build Your Brand">
-                                        <img src="brandedukv15-child/assets/images/brands/build-your-brand.png"
+                                        <img src="../brandedukv15-child/assets/images/brands/build-your-brand.png"
                                             alt="Build Your Brand">
                                     </a>
                                     <a href="?brand=build-your-brand-basic" class="exclusive-brand"
                                         title="Build Your Brand Basic">
-                                        <img src="brandedukv15-child/assets/images/brands/build-your-brand-basic-logo-web-2021.jpg"
+                                        <img src="../brandedukv15-child/assets/images/brands/build-your-brand-basic-logo-web-2021.jpg"
                                             alt="Build Your Brand Basic">
                                     </a>
                                     <a href="?brand=build-your-brandit" class="exclusive-brand" title="Brandit">
-                                        <img src="brandedukv15-child/assets/images/brands/build-your-brandit-logo.jpeg"
+                                        <img src="../brandedukv15-child/assets/images/brands/build-your-brandit-logo.jpeg"
                                             alt="Brandit">
                                     </a>
                                     <a href="?brand=comfort-colors" class="exclusive-brand" title="Comfort Colors">
-                                        <img src="brandedukv15-child/assets/images/brands/comfort-colors.webp"
+                                        <img src="../brandedukv15-child/assets/images/brands/comfort-colors.webp"
                                             alt="Comfort Colors">
                                     </a>
                                     <a href="?brand=new-morning-studios" class="exclusive-brand"
                                         title="New Morning Studios">
-                                        <img src="brandedukv15-child/assets/images/brands/web-logo-new-morning-studios.png"
+                                        <img src="../brandedukv15-child/assets/images/brands/web-logo-new-morning-studios.png"
                                             alt="New Morning Studios">
                                     </a>
                                     <a href="?brand=nimbus" class="exclusive-brand" title="Nimbus">
-                                        <img src="brandedukv15-child/assets/images/brands/nimbus2020.webp"
+                                        <img src="../brandedukv15-child/assets/images/brands/nimbus2020.webp"
                                             alt="Nimbus">
                                     </a>
                                     <a href="?brand=nutshell" class="exclusive-brand" title="Nutshell">
-                                        <img src="brandedukv15-child/assets/images/brands/nutshell-bag2020.webp"
+                                        <img src="../brandedukv15-child/assets/images/brands/nutshell-bag2020.webp"
                                             alt="Nutshell">
                                     </a>
                                     <a href="?brand=ogio" class="exclusive-brand" title="OGIO">
-                                        <img src="brandedukv15-child/assets/images/brands/ogio2020.webp" alt="OGIO">
+                                        <img src="../brandedukv15-child/assets/images/brands/ogio2020.webp" alt="OGIO">
                                     </a>
                                     <a href="?brand=rhino" class="exclusive-brand" title="Rhino">
-                                        <img src="brandedukv15-child/assets/images/brands/rhino2020.jpg" alt="Rhino">
+                                        <img src="../brandedukv15-child/assets/images/brands/rhino2020.jpg" alt="Rhino">
                                     </a>
                                     <a href="?brand=ribbon" class="exclusive-brand" title="Ribbon">
-                                        <img src="brandedukv15-child/assets/images/brands/brand-logo-ribbon.jpg"
+                                        <img src="../brandedukv15-child/assets/images/brands/brand-logo-ribbon.jpg"
                                             alt="Ribbon">
                                     </a>
                                     <a href="?brand=tridri" class="exclusive-brand" title="TriDri">
-                                        <img src="brandedukv15-child/assets/images/brands/tridri.webp" alt="Tri Dri">
+                                        <img src="../brandedukv15-child/assets/images/brands/tridri.webp" alt="Tri Dri">
                                     </a>
                                     <a href="shop-pc.html?brand=under-armour" class="exclusive-brand"
                                         title="Under Armour">
-                                        <img src="brandedukv15-child/assets/images/brands/under-armour.webp"
+                                        <img src="../brandedukv15-child/assets/images/brands/under-armour.webp"
                                             alt="Under Armour">
                                     </a>
                                     <a href="shop-pc.html?brand=wombat" class="exclusive-brand" title="Wombat">
-                                        <img src="brandedukv15-child/assets/images/brands/wombat.jpg" alt="Wombat">
+                                        <img src="../brandedukv15-child/assets/images/brands/wombat.jpg" alt="Wombat">
                                     </a>
                                 </div>
                             </div>
@@ -3586,26 +3498,8 @@
         <section class="products-section">
             <!-- Category Description Banner -->
             <div id="cat-desc-banner">
-                <div class="cat-desc-copy">
-                    <h2 id="cat-desc-title"></h2>
-                    <p id="cat-desc-text"></p>
-                </div>
-                <aside class="cat-desc-help" aria-label="Need help choosing?">
-                    <span class="cat-desc-help-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M4 14v-2a8 8 0 0 1 16 0v2"></path>
-                            <path d="M4 14a2 2 0 0 1 2-2h1v6H6a2 2 0 0 1-2-2v-2z"></path>
-                            <path d="M20 14a2 2 0 0 0-2-2h-1v6h1a2 2 0 0 0 2-2v-2z"></path>
-                            <path d="M18 18v.5a2.5 2.5 0 0 1-2.5 2.5H13"></path>
-                        </svg>
-                    </span>
-                    <div class="cat-desc-help-body">
-                        <h3>Need help choosing?</h3>
-                        <p><a href="#" data-open-contact="1">Contact us</a> and we&rsquo;ll point you in the right direction.</p>
-                        <a class="cat-desc-help-phone" href="tel:02089742722">Direct line: <strong>0208 974 2722</strong></a>
-                    </div>
-                </aside>
+                <h2 id="cat-desc-title"></h2>
+                <p id="cat-desc-text"></p>
             </div>
             <section id="brand-editorial" class="brand-editorial" hidden aria-label="Brand information">
                 <div class="brand-editorial-copy">
@@ -3678,19 +3572,6 @@
                 <!-- Products will be rendered by JavaScript -->
             </div>
 
-            <div class="pagination-pages" id="paginationBottom" style="display: none;" aria-label="Product pages">
-                <button type="button" class="pagination-button" id="paginationBottomFirst" title="First page"
-                    aria-label="First page">&laquo;</button>
-                <button type="button" class="pagination-button" id="paginationBottomPrev" title="Previous page"
-                    aria-label="Previous page">&lsaquo;</button>
-                <div id="paginationBottomPageNumbers" class="pagination-page-numbers" aria-label="Pagination pages">
-                </div>
-                <button type="button" class="pagination-button" id="paginationBottomNext" title="Next page"
-                    aria-label="Next page">&rsaquo;</button>
-                <button type="button" class="pagination-button" id="paginationBottomLast" title="Last page"
-                    aria-label="Last page">&raquo;</button>
-            </div>
-
             <!-- Pagination Bottom (keep for backward compatibility, but hide it) -->
             <div class="pagination-container" id="paginationContainer" style="display: none;">
                 <button type="button" class="pagination-button" id="prevPage" disabled>Previous</button>
@@ -3706,21 +3587,18 @@
     <div data-pc-footer></div>
 
     <script src="brandedukv15-child/assets/data/brand-descriptions.js?v=20260915"></script>
-    <script src="brandedukv15-child/assets/data/category-descriptions.js?v=20261006-industry"></script>
     <script src="brandedukv15-child/assets/data/brand-hq-logos.js?v=20260915"></script>
     <script src="brandedukv15-child/assets/js/vat-toggle.js?v=20251230"></script>
-    <script src="brandedukv15-child/assets/js/api-config.js?v=20261002-localproxy"></script>
+    <script src="brandedukv15-child/assets/js/api-config.js?v=20260530"></script>
     <script src="brandedukv15-child/assets/js/api.js?v=20260726b"></script>
-    <script src="brandedukv15-child/assets/data/organic-sustainable-codes.js?v=20261006-leaf3"></script>
-    <script src="brandedukv15-child/assets/js/organic-leaf.js?v=20261006-leaf4"></script>
     <script src="brandeduk.com/js/main.js?v=20260730a"></script>
-    <script src="brandeduk.com/js/product-types-menu.js?v=20261006-apibase"></script>
+    <script src="brandeduk.com/js/product-types-menu.js?v=20260912a"></script>
     <script>
         // ============================================================================
         // API INTEGRATION - Desktop Shop Page
         // ============================================================================
 
-        // Filter value mappings (Frontend HTML values → API values) using API spec exactly
+        // Filter value mappings (Frontend HTML values â†’ API values) using API spec exactly
         // Most values pass through directly, but some need special mapping
         const FILTER_MAPPINGS = {
             // Quick filters (flag[] array param) - special mappings
@@ -3876,16 +3754,11 @@
             },
             // Related Sector - values match API spec directly
             sector: {
-                'sport': 'Sport',
-                'corporate': 'Corporate',
-                'hospitality': 'Hospitality',
-                'travel': 'Travel',
-                'fashion': 'Fashion',
-                'school': 'School',
-                'safety': 'Safety',
-                'outdoor': 'Outdoor',
-                'athleisure': 'Athleisure',
-                'home': 'Home'
+                'sport': 'sport',
+                'corporate': 'corporate',
+                'hospitality': 'hospitality',
+                'travel': 'travel',
+                'fashion': 'fashion'
             },
             // Related Sport - values match API spec directly
             sport: {
@@ -3919,13 +3792,8 @@
             total: 0,
             category: 'all',
             productType: null, // Store productType from URL (e.g., 'aprons', 'tshirts')
-            productTypes: [], // Landing product types. Multiple values are API OR.
-            landingSectors: [], // Locked sector AND on industry landings
-            landingFlags: [], // Locked flag[] on Deals
-            landingTitle: null,
             brand: null, // Store brand from URL (e.g., 'nike', 'adidas')
             search: '',
-            facetQuery: '', // Text-search fallback for menu facets the API cannot filter (e.g. style=zipped)
             priceMin: null,
             priceMax: null,
             apiPriceRange: null, // Store priceRange from API response to update slider
@@ -4025,252 +3893,24 @@
                 'blouses': 'Blouses',
                 'chinos': 'Chinos',
                 'fleeces': 'Fleece',
-                'fleece': 'Fleece',
-                'hivis': 'Hi Vis',
-                'hi-vis': 'Hi Vis',
+                'hivis': 'Hi-Vis',
                 'trousers': 'Trousers',
-                'aprons': 'Aprons',
-                'tunics': 'Tunics',
-                'blouses': 'Blouses',
-                'hats': 'Hats',
-                'caps': 'Caps',
-                'shorts': 'Shorts',
-                'softshells': 'Softshells',
-                'chef-jackets': 'Chef Jackets',
-                'sports-overtops': 'Sports Overtops',
-                'gilets': 'Gilets & Body Warmers',
-                'gilets-body-warmers': 'Gilets & Body Warmers',
-                'vests-t-shirt': 'Vests (t-shirt)',
-                'shorts': 'Shorts',
-                'accessories': 'Accessories',
-                'gloves': 'Gloves',
-                'scarves': 'Scarves',
-                'hats': 'Hats'
+                'workwear': 'Workwear'
             };
             return slugToApiName[categorySlug] || null;
         }
 
-        function collectSearchValues(params, name) {
-            if (window.BrandedConfig && typeof window.BrandedConfig.collectSearchValues === 'function') {
-                return window.BrandedConfig.collectSearchValues(params, name);
-            }
-            return []
-                .concat(params.getAll(name) || [])
-                .concat(params.getAll(name + '[]') || [])
-                .map(value => String(value || '').trim())
-                .filter(Boolean);
-        }
-
-        function uniquePreserve(values) {
-            if (window.BrandedConfig && typeof window.BrandedConfig.uniquePreserve === 'function') {
-                return window.BrandedConfig.uniquePreserve(values);
-            }
-            const seen = new Set();
-            const out = [];
-            (values || []).forEach(value => {
-                const key = String(value).toLowerCase();
-                if (!key || seen.has(key)) return;
-                seen.add(key);
-                out.push(value);
-            });
-            return out;
-        }
-
-        function resolveApiProductType(value) {
-            if (!value) return '';
-            const raw = String(value).trim();
-            if (window.BrandedConfig) {
-                const slug = window.BrandedConfig.normalizeCategory(raw);
-                return window.BrandedConfig.getApiCategoryName(slug)
-                    || window.BrandedConfig.getApiCategoryName(raw)
-                    || raw;
-            }
-            return getApiCategoryName(normalizeCategory(raw)) || getApiCategoryName(raw) || raw;
-        }
-
-        function resolveApiSector(value) {
-            if (!value) return '';
-            const raw = String(value).trim();
-            const mapped = FILTER_MAPPINGS.sector?.[raw]
-                || FILTER_MAPPINGS.sector?.[raw.toLowerCase()];
-            if (mapped) return mapped;
-            return raw.charAt(0).toUpperCase() + raw.slice(1);
-        }
-
-        // Menu slugs that are not products API productType names. Each routes to the
-        // productType[], sector[] or q values the API actually filters on.
-        const PRODUCT_TYPE_ROUTES = {
-            'joggers': { types: ['Sweatpants'] },
-            'knitwear': { types: ['Knitted Jumpers', 'Cardigans'] },
-            'overalls': { types: ['Coveralls'] },
-            'bib-brace-overalls': { types: ['Coveralls'] },
-            'footwear': { types: ['Boots', 'Trainers'] },
-            'lounge-underwear': { types: ['Loungewear Bottoms', 'Robes', 'Bras'] },
-            'chefswear': { types: ['Chef Jackets', 'Aprons'] },
-            'hospitality': { sectors: ['Hospitality'] },
-            'schoolwear': { sectors: ['School'] },
-            'sports-teamwear': { sectors: ['Sport'] },
-            'construction': { sectors: ['Safety'] },
-            'ppe': { sectors: ['Safety'] },
-            'healthcare': { types: ['Tunics', 'Tabards', 'Dresses', 'Gowns'] },
-            'health-beauty': { types: ['Tunics', 'Tabards', 'Dresses', 'Gowns'] },
-            'veterinary': { types: ['Tunics', 'Tabards', 'Aprons'] },
-            'golf': { q: 'golf' },
-            'lab-coats': { q: 'lab coat' },
-            'suits': { q: 'suit' },
-            'plus-size': { q: 'plus size' },
-            'flame-retardant': { q: 'flame retardant' },
-            'scrubs': { q: 'scrubs' },
-            'security': { q: 'security' },
-            'trades': { q: 'trades' },
-            'anti-static': { q: 'anti-static' },
-            'welding': { q: 'welding' },
-            'painter-decorator': { q: 'painter' },
-            'rail-spec': { q: 'rail' },
-            'winter-workwear': { q: 'winter' },
-            'summer-workwear': { q: 'summer' },
-            'spring-workwear': { q: 'spring' },
-            'autumn-workwear': { q: 'autumn' }
-        };
-
-        function routeLandingTypes(values) {
-            const route = { types: [], sectors: [], q: '' };
-            (values || []).forEach(value => {
-                const target = PRODUCT_TYPE_ROUTES[String(value || '').trim().toLowerCase()];
-                if (!target) {
-                    const apiType = resolveApiProductType(value);
-                    if (apiType) route.types.push(apiType);
-                    return;
-                }
-                (target.types || []).forEach(type => route.types.push(type));
-                (target.sectors || []).forEach(sector => route.sectors.push(sector));
-                if (target.q && !route.q) route.q = target.q;
-            });
-            route.types = uniquePreserve(route.types);
-            route.sectors = uniquePreserve(route.sectors);
-            return route;
-        }
-
-        // Menu facet values that differ from the API facet slugs.
-        // A `q` target is sent as a text search because the API has no matching facet.
-        const FACET_VALUE_ROUTES = {
-            style: {
-                'zipped': { q: 'zip' },
-                'zip': { q: 'zip' },
-                'zip-through': { q: 'zip' },
-                'oversized': { fit: 'oversized-fit' },
-                'hooded-1': { style: 'hooded' }
-            },
-            fit: {
-                'classic': { fit: 'classic-fit' },
-                'oversized': { fit: 'oversized-fit' },
-                'relaxed': { fit: 'relaxed-fit' },
-                'regular': { fit: 'regular-fit' },
-                'slim': { fit: 'slim-fit' }
-            },
-            sleeve: {
-                'long-sleeve-2': { sleeve: 'long-sleeve' },
-                'short-sleeve-2': { sleeve: 'short-sleeve' }
-            }
-        };
-
-        function normalizeUrlFacets() {
-            Object.keys(FACET_VALUE_ROUTES).forEach(facet => {
-                const values = Array.isArray(currentState.filters[facet]) ? currentState.filters[facet] : [];
-                const kept = [];
-                values.forEach(value => {
-                    const target = FACET_VALUE_ROUTES[facet][String(value).toLowerCase()];
-                    if (!target) {
-                        kept.push(value);
-                        return;
-                    }
-                    Object.entries(target).forEach(([key, mapped]) => {
-                        if (key === 'q') {
-                            if (!currentState.facetQuery) currentState.facetQuery = mapped;
-                            return;
-                        }
-                        if (key === facet) {
-                            kept.push(mapped);
-                            return;
-                        }
-                        if (!Array.isArray(currentState.filters[key])) currentState.filters[key] = [];
-                        if (!currentState.filters[key].includes(mapped)) currentState.filters[key].push(mapped);
-                    });
-                });
-                currentState.filters[facet] = uniquePreserve(kept);
-            });
-        }
-
-        // Menu brand slugs that the products API does not recognise.
-        const BRAND_ALIASES = {
-            'regatta': 'Regatta Professional',
-            'pro-rtx': 'ProRTX',
-            'pro rtx': 'ProRTX',
-            'adidas': 'adidas\u00AE',
-            'adidasr': 'adidas\u00AE',
-            'nutshell': 'Nutshell\u00AE',
-            'nutshellr': 'Nutshell\u00AE',
-            'tridri': 'TriDri\u00AE',
-            'tridrir': 'TriDri\u00AE',
-            'comfort-colors': 'Comfort Colors\u00AE',
-            'flexfit': 'Flexfit by Yupoong',
-            'russell': 'Russell Athletic',
-            'sf-clothing': 'SF',
-            'stanley-stella': 'Stanley/Stella',
-            'bella+canvas': 'Bella Canvas'
-        };
-
-        function resolveApiBrand(value) {
-            if (!value) return value;
-            return BRAND_ALIASES[String(value).trim().toLowerCase()] || value;
-        }
-
-        function isAggregatedOrQuery() {
-            return Array.isArray(currentState.productTypes) && currentState.productTypes.length > 1;
-        }
-
         // Initialize state from URL
-        const productTypeValues = uniquePreserve(collectSearchValues(urlParams, 'productType'));
-        const landingSectorValues = uniquePreserve(collectSearchValues(urlParams, 'sector'));
-        const flagValues = uniquePreserve(collectSearchValues(urlParams, 'flag'));
-        const productTypeParam = productTypeValues[0] || null;
+        const productTypeParam = urlParams.get('productType');
         const accreditationParam = urlParams.get('accreditation');
         const brandParam = urlParams.get('brand');
-        const hasOffersFlag = flagValues.includes('offers');
-
-        currentState.productTypes = productTypeValues;
-        currentState.landingSectors = landingSectorValues;
-        currentState.landingFlags = hasOffersFlag ? ['offers'] : [];
-        if (window.BrandedConfig && typeof window.BrandedConfig.matchNavLanding === 'function') {
-            const matchedLanding = window.BrandedConfig.matchNavLanding(
-                productTypeValues.map(resolveApiProductType),
-                landingSectorValues.map(resolveApiSector),
-                flagValues
-            );
-            if (matchedLanding) currentState.landingTitle = matchedLanding.title;
-        } else if (landingSectorValues.length === 1 && productTypeValues.length > 1) {
-            currentState.landingTitle = resolveApiSector(landingSectorValues[0]);
-        } else if (hasOffersFlag && !productTypeValues.length) {
-            currentState.landingTitle = 'Deals';
-        } else if (productTypeValues.length === 1) {
-            currentState.landingTitle = resolveApiProductType(productTypeValues[0]);
-        }
-        if (!currentState.landingTitle && productTypeValues.length > 1 && !landingSectorValues.length) {
-            const typeKey = productTypeValues.map(value => value.toLowerCase()).sort().join('|');
-            if (typeKey === 'beanies|caps|hats') currentState.landingTitle = 'Headwear';
-            if (typeKey === 'hoodies|sweatshirts') currentState.landingTitle = 'Hoodies / Sweatshirts';
-            if (typeKey === 'jackets|softshells') currentState.landingTitle = 'Jackets / Softshell';
-        }
 
 
-        // If productType, accreditation, brand, or deals flag is in URL, reset state to defaults (clean state)
-        if (productTypeParam || accreditationParam || brandParam || hasOffersFlag) {
+        // If productType, accreditation, or brand is in URL, reset state to defaults (clean state)
+        if (productTypeParam || accreditationParam || brandParam) {
             currentState.category = 'all';
-            currentState.productType = productTypeValues.length === 1 ? productTypeValues[0] : null;
-            currentState.productTypes = productTypeValues;
-            currentState.landingSectors = landingSectorValues;
-            currentState.landingFlags = hasOffersFlag ? ['offers'] : [];
-            currentState.brand = resolveApiBrand(brandParam) || null; // Store brand from URL
+            currentState.productType = productTypeParam || null; // Store productType from URL
+            currentState.brand = brandParam || null; // Store brand from URL
             currentState.page = parseInt(urlParams.get('page')) || 1;
             currentState.limit = parseInt(urlParams.get('limit')) || 100;
             currentState.sort = urlParams.get('sort') || 'best';
@@ -4302,17 +3942,6 @@
             // If accreditation=recycled is in URL, add it to quickFilters (will be mapped to flag[]=['recycled-organic'])
             if (accreditationParam === 'recycled') {
                 currentState.filters.quickFilters.push('recycled');
-            } else if (accreditationParam) {
-                // Mega-menu / landing links use ?accreditation=<slug> (singular).
-                // Map that onto the sidebar accreditations[] facet so Organic etc. actually filter.
-                // (recycled is special-cased above because the API expects flag[]=recycled-organic)
-                const accreditationSlug = accreditationParam.toLowerCase().trim();
-                if (accreditationSlug && !currentState.filters.accreditations.includes(accreditationSlug)) {
-                    currentState.filters.accreditations.push(accreditationSlug);
-                }
-            }
-            if (hasOffersFlag && !currentState.filters.quickFilters.includes('offers')) {
-                currentState.filters.quickFilters.push('offers');
             }
         } else {
             // Normal category-based navigation
@@ -4321,7 +3950,7 @@
             currentState.page = parseInt(urlParams.get('page')) || 1;
             currentState.limit = parseInt(urlParams.get('limit')) || 100;
             currentState.sort = urlParams.get('sort') || 'best';
-            currentState.search = urlParams.get('q') || '';
+            currentState.search = urlParams.get('q') || '';;
             currentState.priceMin = urlParams.get('priceMin') ? parseFloat(urlParams.get('priceMin')) : null;
             currentState.priceMax = urlParams.get('priceMax') ? parseFloat(urlParams.get('priceMax')) : null;
         }
@@ -4338,9 +3967,7 @@
             sector: 'sector', sport: 'sport', tag: 'tag', effect: 'effect'
         };
         Object.entries(FILTER_URL_PARAM_MAP).forEach(([stateKey, apiKey]) => {
-            if (apiKey === 'productType' && currentState.productTypes.length) return;
-            if (apiKey === 'sector' && currentState.landingSectors.length) return;
-            const values = uniquePreserve(collectSearchValues(urlParams, apiKey));
+            const values = urlParams.getAll(`${apiKey}[]`).filter(Boolean);
             if (values.length) currentState.filters[stateKey] = values;
         });
         if (urlParams.has('q')) currentState.search = urlParams.get('q') || '';
@@ -4360,7 +3987,6 @@
                 currentState.filters.style.push(styleSlug);
             }
         }
-        normalizeUrlFacets();
 
         // Map frontend filter values to API slugs
         function mapFilterValue(filterType, frontendValue) {
@@ -4509,9 +4135,6 @@
             // -- Polo Shirts -------------------------------------------------------
             q = q.replace(/\bpolo[\s\-]?shirts?\b/gi, 'polos'); // polo shirt, polo-shirt
 
-            // -- Zip ---------------------------------------------------------------
-            q = q.replace(/\bzip(?:ped|per|pered)?(?:[\s\-]?(?:up|through|thru))?\b/gi, 'zip'); // zipped, zipper, zip-up, zip through
-
             // -- Hoodies -----------------------------------------------------------
             q = q.replace(/\bhodd?ie[s]?\b/gi, 'hoodies'); // hoodie, hoddie
             q = q.replace(/\bhood[yz]s?\b/gi, 'hoodies'); // hoody, hoodz
@@ -4598,10 +4221,10 @@
             q = q.replace(/\bsports?[\s\-]?kit\b/gi, 'sports-teamwear'); // sports kit
 
             // -- Bags --------------------------------------------------------------
-            // Do NOT rewrite specific bag types (backpack, tote, holdall, duffel) to
-            // "bags". That forced productType=Bags via exactSearchProductType and
-            // dumped the whole Bags category. Leave them as q= for API text search.
-            // Plain "bag"/"bags" still maps to Bags via EXACT_SEARCH_PRODUCT_TYPES.
+            q = q.replace(/\bback[\s\-]?packs?\b/gi, 'bags'); // backpack
+            q = q.replace(/\btote[\s\-]?bags?\b/gi, 'bags'); // tote bag
+            q = q.replace(/\bholdalls?\b/gi, 'bags'); // holdall
+            q = q.replace(/\bduffel[\s\-]?bags?\b/gi, 'bags'); // duffel bag
 
             // -- Chefswear ---------------------------------------------------------
             q = q.replace(/\bchef[\s\-]?jackets?\b/gi, 'chefswear'); // chef jacket
@@ -4875,62 +4498,6 @@
         }
 
         /**
-         * Display-only labels for product-ish q= searches that are NOT exact
-         * category filters (e.g. backpack stays q=backpack, never productType=Bags).
-         * Values are plain uppercase canonical headings — never "Results for …".
-         */
-        const SEARCH_DISPLAY_LABELS = {
-            'backpack': 'BACKPACK',
-            'backpacks': 'BACKPACK',
-            'tote': 'TOTE',
-            'totes': 'TOTE',
-            'holdall': 'HOLDALL',
-            'holdalls': 'HOLDALL',
-            'duffel': 'DUFFEL',
-            'duffels': 'DUFFEL',
-            'duffle': 'DUFFEL',
-            'duffles': 'DUFFEL',
-            'messenger bag': 'MESSENGER BAG',
-            'messenger bags': 'MESSENGER BAG',
-            'laptop bag': 'LAPTOP BAG',
-            'laptop bags': 'LAPTOP BAG'
-        };
-
-        function searchQueryDisplayKey(query) {
-            return String(query || '')
-                .toLowerCase()
-                .replace(/&/g, ' and ')
-                .replace(/[^a-z0-9]+/g, ' ')
-                .trim()
-                .replace(/\s+/g, ' ');
-        }
-
-        /**
-         * Free-text search heading: clean uppercase canonical label only.
-         * No quotes, no "Results for …", no forced plurals.
-         * Exact category names are applied by the caller via exactSearchProductType.
-         */
-        function formatSearchResultsHeading(query) {
-            const raw = String(query || '').trim();
-            if (!raw) return 'Products';
-
-            const key = searchQueryDisplayKey(raw);
-            const normKey = searchQueryDisplayKey(normalizeSearchQuery(raw));
-
-            if (SEARCH_DISPLAY_LABELS[key]) return SEARCH_DISPLAY_LABELS[key];
-            if (SEARCH_DISPLAY_LABELS[normKey]) return SEARCH_DISPLAY_LABELS[normKey];
-
-            const exact = exactSearchProductType(raw)
-                || exactSearchProductType(normalizeSearchQuery(raw));
-            if (exact) return exact;
-
-            // Prefer normalised query wording when it differs (typos/aliases),
-            // then uppercase as a plain heading label.
-            const labelSource = (normKey && normKey !== key) ? normKey : key;
-            return labelSource.toUpperCase();
-        }
-
-        /**
          * Map normalised brand names (as typed in search box) to API brand slugs.
          * If the entire search query matches a known brand, we switch from q= to brand=
          * so results are identical to clicking a brand link in the navigation.
@@ -4977,42 +4544,6 @@
             'build your brand': 'build-your-brand',
         };
 
-        function getLandingRoute() {
-            const landingValues = currentState.productTypes && currentState.productTypes.length
-                ? currentState.productTypes
-                : (currentState.productType ? [currentState.productType] : []);
-            if (landingValues.length) return routeLandingTypes(landingValues);
-            if (currentState.category && currentState.category !== 'all') {
-                const route = routeLandingTypes([currentState.category]);
-                route.types = route.types.filter(type => type && type !== 'all');
-                return route;
-            }
-            return { types: [], sectors: [], q: '' };
-        }
-
-        // Routed menu slugs may need sector[] or q in place of productType, so the
-        // caller applies route.sectors and route.q after the facet params are built.
-        function applyLandingProductTypes(params) {
-            const route = getLandingRoute();
-
-            if (route.types.length > 1) {
-                params['productType[]'] = route.types;
-            } else if (route.types.length === 1) {
-                params.productType = route.types[0];
-            }
-            return route;
-        }
-
-        function applyRouteExtras(params, route, hasSearch) {
-            if (route && route.sectors.length) {
-                const existing = Array.isArray(params['sector[]']) ? params['sector[]'] : [];
-                params['sector[]'] = uniquePreserve(existing.concat(route.sectors));
-            }
-            if (hasSearch) return;
-            const q = [route && route.q, currentState.facetQuery].filter(Boolean).join(' ');
-            if (q) params.q = q;
-        }
-
         // Build API params from current state
         function buildApiParams() {
             const params = {};
@@ -5022,7 +4553,7 @@
             params.limit = currentState.limit || 100;
 
             // Debug: Log pagination params
-            console.log('ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã¢â‚¬Å¾ API Params - Pagination:', {
+            console.log('ðŸ“„ API Params - Pagination:', {
                 page: params.page,
                 limit: params.limit,
                 currentStateLimit: currentState.limit,
@@ -5044,15 +4575,12 @@
                     'price-hl': 'price-hl'
                 };
                 const apiSort = sortMap[currentState.sort] || currentState.sort;
-                // price-lh is not fully reliable on aggregated OR pages (UC924 first-item leak).
                 params.sort = apiSort;
             }
 
             // Search query. For a sidebar search, retain the active category so
             // "Search within results" does not silently become a global search.
-            let landingRoute = null;
-            const hasSearch = !!(currentState.search && currentState.search.trim());
-            if (hasSearch) {
+            if (currentState.search && currentState.search.trim()) {
                 // Normalise spelling first
                 const normQ = normalizeSearchQuery(currentState.search.trim());
                 const exactProductType = exactSearchProductType(normQ) || exactSearchProductType(currentState.search);
@@ -5066,10 +4594,30 @@
                     console.log('Exact category search detected, using productType filter:', exactProductType);
                 } else {
                     params.q = normQ;
-                    landingRoute = applyLandingProductTypes(params);
+                    if (currentState.productType) {
+                        params.productType = getApiCategoryName(currentState.productType) || currentState.productType;
+                    } else if (currentState.category && currentState.category !== 'all') {
+                        params.productType = getApiCategoryName(currentState.category) || currentState.category;
+                    }
                 }
-            } else {
-                landingRoute = applyLandingProductTypes(params);
+            } else if (currentState.productType) {
+                // If productType is set from URL, use it directly (may need mapping)
+                const apiCategoryName = getApiCategoryName(currentState.productType);
+                if (apiCategoryName) {
+                    params.productType = apiCategoryName;
+                } else {
+                    // Use productType as-is if no mapping found (e.g., 'aprons' -> 'aprons')
+                    params.productType = currentState.productType;
+                }
+                console.log('ðŸ“¦ Adding productType to API params:', params.productType);
+            } else if (currentState.category !== 'all') {
+                // Map category slug to API productType name only if no search and no productType
+                const apiCategoryName = getApiCategoryName(currentState.category);
+                if (apiCategoryName) {
+                    params.productType = apiCategoryName;
+                } else {
+                    params.productType = currentState.category;
+                }
             }
 
             // Note: accreditation=recycled from URL is handled via quickFilters -> flag[]=['recycled-organic']
@@ -5078,22 +4626,22 @@
             // Brand filter (from URL, e.g., ?brand=nike)
             if (currentState.brand) {
                 params.brand = currentState.brand;
-                console.log('ÃƒÂ°Ã…Â¸Ã‚ÂÃ‚Â·ÃƒÂ¯Ã‚Â¸Ã‚Â Adding brand to API params:', params.brand);
+                console.log('ðŸ·ï¸ Adding brand to API params:', params.brand);
             }
 
             // Price range (numeric values)
             // Send priceMin and priceMax if they are set (even if they match the full range)
             if (currentState.priceMin !== null && currentState.priceMin !== undefined) {
                 params.priceMin = Number(currentState.priceMin);
-                console.log('ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â° Adding priceMin to API params:', params.priceMin);
+                console.log('ðŸ’° Adding priceMin to API params:', params.priceMin);
             } else {
-                console.log('ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â° priceMin is null/undefined, not adding to API params');
+                console.log('ðŸ’° priceMin is null/undefined, not adding to API params');
             }
             if (currentState.priceMax !== null && currentState.priceMax !== undefined) {
                 params.priceMax = Number(currentState.priceMax);
-                console.log('ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â° Adding priceMax to API params:', params.priceMax);
+                console.log('ðŸ’° Adding priceMax to API params:', params.priceMax);
             } else {
-                console.log('ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â° priceMax is null/undefined, not adding to API params');
+                console.log('ðŸ’° priceMax is null/undefined, not adding to API params');
             }
 
             // Build array parameters from filters
@@ -5129,16 +4677,6 @@
 
                 if (values.length > 0) {
                     const apiParam = filterMap[filterKey];
-                    if (filterKey === 'sector' && currentState.landingSectors.length) {
-                        return;
-                    }
-                    if (filterKey === 'productType' && (currentState.productTypes || []).length) {
-                        return;
-                    }
-                    // The products API returns 500 when brand and brand[] are sent together.
-                    if (filterKey === 'brand' && params.brand) {
-                        return;
-                    }
                     if (apiParam) {
                         // Map each value using FILTER_MAPPINGS
                         const mappedValues = values.map(val => {
@@ -5152,17 +4690,6 @@
                     }
                 }
             });
-
-            if (currentState.landingSectors && currentState.landingSectors.length) {
-                params['sector[]'] = uniquePreserve(currentState.landingSectors.map(resolveApiSector).filter(Boolean));
-            }
-            applyRouteExtras(params, landingRoute, hasSearch);
-            // BrandedAPI.getProducts drops a plain productType whenever q is set;
-            // productType[] is always forwarded, so the search stays within the type.
-            if (params.q && params.productType) {
-                params['productType[]'] = [params.productType];
-                delete params.productType;
-            }
 
             // Handle quick filters separately (flag[] param with special mappings)
             if (currentState.filters.quickFilters) {
@@ -5178,13 +4705,6 @@
                 }
             }
 
-            if (currentState.landingFlags && currentState.landingFlags.length) {
-                params['flag[]'] = uniquePreserve([]
-                    .concat(Array.isArray(params['flag[]']) ? params['flag[]'] : [])
-                    .concat(currentState.landingFlags)
-                );
-            }
-
             // Variant colour param (server-side filter by any matching variant)
             if (currentState.color) {
                 params.colour = currentState.color;
@@ -5193,9 +4713,9 @@
             // Log the final params we will send to the API
             try {
                 const cleanParams = JSON.parse(JSON.stringify(params));
-                console.log('ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Â§ buildApiParams() -> Final params:', cleanParams);
+                console.log('ðŸ”§ buildApiParams() -> Final params:', cleanParams);
             } catch (e) {
-                console.log('ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Â§ buildApiParams() -> Final params:', params);
+                console.log('ðŸ”§ buildApiParams() -> Final params:', params);
             }
             return params;
         }
@@ -5216,7 +4736,7 @@
             // If a request is already in progress, cancel it and start a new one
             // This ensures we always use the latest parameters
             if (pendingRequest && abortController) {
-                console.log('ÃƒÂ¢Ã‚ÂÃ‚Â³ Cancelling previous API request to use latest parameters...');
+                console.log('â³ Cancelling previous API request to use latest parameters...');
                 abortController.abort();
                 pendingRequest = null;
                 abortController = null;
@@ -5272,7 +4792,7 @@
                     const fullUrl = `${baseUrl}${queryString ? '?' + queryString : ''}`;
 
                     // Log the API call
-                    console.log('ÃƒÂ°Ã…Â¸Ã…Â¡Ã¢â€šÂ¬ API CALL TRIGGERED:', {
+                    console.log('ðŸš€ API CALL TRIGGERED:', {
                         method: 'GET',
                         url: fullUrl,
                         params: params,
@@ -5295,119 +4815,40 @@
 
                     }
 
-                    // Generic Hi-Vis (Shop Hi-Vis): the API type is only vests.
-                    // Also include every product whose name or description says hi-vis / hi-viz.
-                    const hiVisPattern = /hi[\s\-_]*vi[sz]|high[\s\-_]*visib|high[\s\-_]*vi[sz]|hivis/i;
-                    const pagingKeys = { page: 1, limit: 1, sort: 1, productType: 1, 'productType[]': 1 };
-                    const typeValues = [].concat(params.productType || [], params['productType[]'] || []);
-                    const hasOtherFilters = Object.keys(params).some(function (key) { return !pagingKeys[key]; });
-                    const isGenericHiVis = !hasOtherFilters && typeValues.length > 0 && typeValues.every(function (value) {
-                        return hiVisPattern.test(String(value || ''));
-                    });
-                    if (isGenericHiVis && data) try {
-                        const seenCodes = new Set();
-                        const merged = [];
-                        const itemText = function (item) {
-                            if (!item) return '';
-                            return [
-                                item.name, item.title, item.productName, item.description,
-                                item.code, item.sku, item.style_code, item.styleCode,
-                                item.productType, item.category, item.type
-                            ].filter(Boolean).join(' ');
-                        };
-                        const itemCode = function (item) {
-                            return item && (item.code || item.sku || item.style_code || item.styleCode);
-                        };
-                        const addItems = function (items, requireText) {
-                            (items || []).forEach(function (item) {
-                                const code = itemCode(item);
-                                if (!code || seenCodes.has(code)) return;
-                                if (requireText && !hiVisPattern.test(itemText(item))) return;
-                                seenCodes.add(code);
-                                merged.push(item);
-                            });
-                        };
-                        const fetchAllMatches = async function (search) {
-                            const collected = [];
-                            for (let matchPage = 1; matchPage <= 8; matchPage += 1) {
-                                let matchData;
-                                if (window.BrandedAPI && window.BrandedAPI.getProducts) {
-                                    matchData = await window.BrandedAPI.getProducts(Object.assign({
-                                        page: matchPage,
-                                        limit: 100,
-                                        sort: params.sort,
-                                        signal: abortController.signal
-                                    }, search));
-                                } else {
-                                    const matchUrl = new URL(baseUrl);
-                                    Object.entries(search).forEach(function (entry) {
-                                        matchUrl.searchParams.set(entry[0], entry[1]);
-                                    });
-                                    matchUrl.searchParams.set('limit', '100');
-                                    matchUrl.searchParams.set('page', String(matchPage));
-                                    if (params.sort) matchUrl.searchParams.set('sort', params.sort);
-                                    const matchResponse = await fetch(matchUrl.toString(), { signal: abortController.signal });
-                                    if (!matchResponse.ok) break;
-                                    matchData = await matchResponse.json();
-                                }
-                                const batch = (matchData && matchData.items) || [];
-                                collected.push.apply(collected, batch);
-                                const total = matchData && matchData.total;
-                                if (!batch.length || (total && collected.length >= total)) break;
+                    // Hi-Vis merge: combine Safety Vests, high visibility, hi-viz and Yoko products.
+                    // The API stores hi-vis products across different productTypes, names and brands,
+                    // so we run parallel searches and deduplicate by product code.
+                    const isHiVisCategory = (params.productType === 'Safety Vests' || params.productType === 'safety-vests');
+                    if (isHiVisCategory && data && data.items) {
+                        console.log('Hi-Vis merge: fetching additional matching products');
+                        const extraUrls = [
+                            `${baseUrl}?q=${encodeURIComponent('high visibility')}&limit=100&page=1`,
+                            `${baseUrl}?q=${encodeURIComponent('hi-viz')}&limit=100&page=1`,
+                            `${baseUrl}?brand=${encodeURIComponent('yoko')}&limit=100&page=1`
+                        ];
+                        const extraResults = await Promise.allSettled(
+                            extraUrls.map(url => fetch(url, { signal: abortController.signal }).then(r => r.json()))
+                        );
+                        // Collect existing codes for dedup
+                        const seenCodes = new Set(data.items.map(item => item.code));
+                        let added = 0;
+                        extraResults.forEach((result, idx) => {
+                            if (result.status === 'fulfilled' && result.value && result.value.items) {
+                                result.value.items.forEach(item => {
+                                    if (!seenCodes.has(item.code)) {
+                                        seenCodes.add(item.code);
+                                        data.items.push(item);
+                                        added++;
+                                    }
+                                });
                             }
-                            return collected;
-                        };
-                        addItems(await fetchAllMatches({ productType: 'Hi Vis' }), false);
-                        const textQueries = ['hi-vis', 'hi vis', 'hi-viz', 'hi viz', 'hivis', 'high vis', 'high visibility', 'high-visibility'];
-                        for (let i = 0; i < textQueries.length; i += 1) {
-                            addItems(await fetchAllMatches({ q: textQueries[i] }), true);
-                        }
-                        const itemPrice = function (item) {
-                            const price = parseFloat(item && item.price);
-                            if (price > 0) return price;
-                            const breaks = (item && item.priceBreaks) || [];
-                            let lowest = 0;
-                            breaks.forEach(function (step) {
-                                const value = Number(step && step.price);
-                                if (value > 0 && (!lowest || value < lowest)) lowest = value;
-                            });
-                            return lowest;
-                        };
-                        const compareText = function (a, b) {
-                            return String(a || '').localeCompare(String(b || ''), undefined, { numeric: true, sensitivity: 'base' });
-                        };
-                        const sortKey = params.sort || 'best';
-                        if (sortKey === 'price-hl' || sortKey === 'price-lh' || sortKey === 'brand-az' || sortKey === 'brand-za' || sortKey === 'code-az' || sortKey === 'code-za') {
-                            merged.sort(function (a, b) {
-                                let diff = 0;
-                                if (sortKey === 'price-hl' || sortKey === 'price-lh') diff = itemPrice(a) - itemPrice(b);
-                                else if (sortKey === 'brand-az' || sortKey === 'brand-za') diff = compareText(a && a.brand, b && b.brand);
-                                else diff = compareText(itemCode(a), itemCode(b));
-                                if (sortKey === 'price-hl' || sortKey === 'brand-za' || sortKey === 'code-za') diff = -diff;
-                                return diff || compareText(itemCode(a), itemCode(b));
-                            });
-                        }
-                        let rangeMin = 0;
-                        let rangeMax = 0;
-                        merged.forEach(function (item) {
-                            const price = itemPrice(item);
-                            if (!(price > 0)) return;
-                            if (!rangeMin || price < rangeMin) rangeMin = price;
-                            if (price > rangeMax) rangeMax = price;
                         });
-                        if (rangeMax) data.priceRange = { min: rangeMin, max: rangeMax };
-                        const pageSize = Number(params.limit) || 100;
-                        const pageNumber = Number(params.page) || 1;
-                        const start = (pageNumber - 1) * pageSize;
-                        data.items = merged.slice(start, start + pageSize);
-                        data.total = merged.length;
-                        data.page = pageNumber;
-                        data.limit = pageSize;
-                    } catch (hiVisError) {
-                        console.warn('Hi-Vis merge failed, keeping the category results', hiVisError);
+                        data.total = (data.total || 0) + added;
+                        console.log(`ðŸ¦º Hi-Vis merge complete: +${added} extra products â†’ ${data.total} total`);
                     }
+                    // End Hi-Vis merge.
 
-                    console.log('ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ API RESPONSE RECEIVED:', {
+                    console.log('âœ… API RESPONSE RECEIVED:', {
                         total: data && data.total,
                         itemsCount: (data && data.items && data.items.length) || 0,
                         priceRange: data && data.priceRange,
@@ -5421,7 +4862,7 @@
                     const isLastPage = data && data.total && currentState.limit &&
                         (data.page >= Math.ceil(data.total / currentState.limit));
                     if (data && data.items && data.items.length !== (data.limit || currentState.limit) && !isLastPage) {
-                        console.warn('ÃƒÂ¢Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â API returned fewer items than requested (this is normal if filters reduce results):', {
+                        console.warn('âš ï¸ API returned fewer items than requested (this is normal if filters reduce results):', {
                             requestedLimit: currentState.limit,
                             apiReturnedLimit: data.limit,
                             actualItemsCount: data.items.length,
@@ -5446,9 +4887,9 @@
                             min: data.priceRange.min || 0,
                             max: data.priceRange.max || 0
                         };
-                        console.log('ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â° API priceRange stored:', currentState.apiPriceRange);
+                        console.log('ðŸ’° API priceRange stored:', currentState.apiPriceRange);
                     } else {
-                        console.log('ÃƒÂ¢Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â API response has no priceRange');
+                        console.log('âš ï¸ API response has no priceRange');
                     }
 
                     // NOTE: Do NOT set priceMin/priceMax from data.priceRange
@@ -5461,10 +4902,10 @@
                 } catch (error) {
                     // Don't log errors for aborted requests
                     if (error.name === 'AbortError') {
-                        console.log('ÃƒÂ¢Ã‚ÂÃ‚Â¹ÃƒÂ¯Ã‚Â¸Ã‚Â API request was cancelled (new request started)');
+                        console.log('â¹ï¸ API request was cancelled (new request started)');
                         throw error; // Re-throw so caller knows it was aborted
                     }
-                    console.error('ÃƒÂ¢Ã‚ÂÃ…â€™ ERROR fetching products:', error);
+                    console.error('âŒ ERROR fetching products:', error);
                     console.error('Error details:', {
                         message: error.message,
                         stack: error.stack,
@@ -5489,7 +4930,7 @@
                 if (error.name === 'AbortError') {
                     return [];
                 }
-                console.error('ÃƒÂ¢Ã‚ÂÃ…â€™ Error awaiting pending request:', error);
+                console.error('âŒ Error awaiting pending request:', error);
                 return [];
             }
         }
@@ -5508,27 +4949,22 @@
                 // Use the brand-specific endpoint only for a dedicated brand page.
                 // Sidebar brand choices stay on the general endpoint so multi-select works.
                 const activeBrandFilter = currentState.brand || null;
-                const hasFacetSearch = !!(currentState.search && currentState.search.trim());
-                let facetRoute = null;
 
                 if (activeBrandFilter) {
                     filterApiUrl = `${filtersApiBase}/api/filters/brands/${encodeURIComponent(activeBrandFilter)}/filters`;
                     console.log('Using brand-specific filters API for:', activeBrandFilter);
                 } else {
-                    facetRoute = getLandingRoute();
-                    if (facetRoute.types.length > 1) {
-                        facetRoute.types.forEach(type => params.append('productType[]', type));
-                    } else if (facetRoute.types.length === 1) {
-                        params.append('productType', facetRoute.types[0]);
+                    // Add productType from URL param or category slug
+                    if (currentState.productType) {
+                        params.append('productType', currentState.productType);
+                    } else if (currentState.category && currentState.category !== 'all') {
+                        const apiCategoryName = getApiCategoryName(currentState.category);
+                        if (apiCategoryName) params.append('productType', apiCategoryName);
                     }
-                    const facetSectors = uniquePreserve(
-                        (currentState.landingSectors || []).map(resolveApiSector).filter(Boolean).concat(facetRoute.sectors)
-                    );
-                    facetSectors.forEach(sector => params.append('sector[]', sector));
                 }
 
                 // Add search query if present
-                if (hasFacetSearch) {
+                if (currentState.search && currentState.search.trim()) {
                     const normalizedSearch = normalizeSearchQuery(currentState.search.trim());
                     const exactProductType = exactSearchProductType(normalizedSearch) || exactSearchProductType(currentState.search);
                     if (exactProductType) {
@@ -5536,9 +4972,6 @@
                     } else {
                         params.append('q', normalizedSearch);
                     }
-                } else {
-                    const routedQuery = [facetRoute && facetRoute.q, currentState.facetQuery].filter(Boolean).join(' ');
-                    if (routedQuery) params.append('q', routedQuery);
                 }
 
                 // Add price range if set
@@ -5556,9 +4989,6 @@
                         params.append('flag[]', mappedFlag);
                     });
                 }
-                (currentState.landingFlags || []).forEach(flag => {
-                    if (!params.getAll('flag[]').includes(flag)) params.append('flag[]', flag);
-                });
 
                 // Facet counts must represent the complete active selection, not only
                 // the page category. This keeps combined desktop filters accurate.
@@ -5587,8 +5017,7 @@
 
                 Object.entries(facetParamMap).forEach(([stateKey, apiKey]) => {
                     if (stateKey === 'brand' && activeBrandFilter) return;
-                    if (stateKey === 'productType' && ((currentState.productTypes || []).length || currentState.productType)) return;
-                    if (stateKey === 'sector' && currentState.landingSectors.length) return;
+                    if (stateKey === 'productType' && currentState.productType) return;
 
                     const values = Array.isArray(currentState.filters[stateKey])
                         ? currentState.filters[stateKey]
@@ -5739,7 +5168,7 @@
         function renderDynamicFilters(filters) {
             const container = document.getElementById('dynamicFiltersContainer');
             if (!container) {
-                console.error('ÃƒÂ¢Ã‚ÂÃ…â€™ dynamicFiltersContainer not found');
+                console.error('âŒ dynamicFiltersContainer not found');
                 return;
             }
 
@@ -5944,7 +5373,7 @@
             // Re-attach checkbox change handlers
             setupDynamicFilterCheckboxes();
 
-            console.log('ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Dynamic filters rendered successfully');
+            console.log('âœ… Dynamic filters rendered successfully');
         }
 
         // Setup event handlers for dynamically rendered filter checkboxes
@@ -5993,7 +5422,7 @@
         // Legacy updateFilterCounts - now handled by renderDynamicFilters
         function updateFilterCounts(counts) {
             // This function is now deprecated - dynamic filters are rendered by renderDynamicFilters
-            console.log('ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¹ÃƒÂ¯Ã‚Â¸Ã‚Â updateFilterCounts called - filters are now rendered dynamically');
+            console.log('â„¹ï¸ updateFilterCounts called - filters are now rendered dynamically');
         }
 
         // Update URL without reload
@@ -6002,51 +5431,26 @@
             const urlParams = new URLSearchParams(window.location.search);
 
             // Check if productType, brand, or accreditation is in URL/state
-            const landingTypes = uniquePreserve(currentState.productTypes || (currentState.productType ? [currentState.productType] : []));
-            const hasProductType = landingTypes.length > 0;
+            const hasProductType = currentState.productType !== null && currentState.productType !== undefined;
             const hasBrand = currentState.brand !== null && currentState.brand !== undefined;
             const accreditationParam = urlParams.get('accreditation');
             // Check if recycled is in quickFilters (from accreditation=recycled URL param)
             const hasRecycledFlag = currentState.filters.quickFilters && currentState.filters.quickFilters.includes('recycled');
-            const hasOffersFlag = (currentState.filters.quickFilters && currentState.filters.quickFilters.includes('offers'))
-                || (currentState.landingFlags && currentState.landingFlags.includes('offers'));
 
-            url.searchParams.delete('productType');
-            url.searchParams.delete('productType[]');
-            url.searchParams.delete('sector');
-            url.searchParams.delete('sector[]');
-            url.searchParams.delete('flag[]');
-
-            if (hasProductType || hasBrand || accreditationParam || hasRecycledFlag || hasOffersFlag) {
+            if (hasProductType || hasBrand || accreditationParam || hasRecycledFlag) {
                 // When productType, brand, or accreditation is present, only include essential parameters
                 if (hasBrand) {
                     url.searchParams.set('brand', currentState.brand);
+                    url.searchParams.delete('productType');
                     url.searchParams.delete('accreditation');
                 } else if (hasProductType) {
-                    if (landingTypes.length > 1) {
-                        landingTypes.forEach(type => url.searchParams.append('productType[]', type));
-                    } else {
-                        url.searchParams.set('productType', landingTypes[0]);
-                    }
+                    url.searchParams.set('productType', currentState.productType);
                     url.searchParams.delete('accreditation');
                     url.searchParams.delete('brand');
                 }
-                if (currentState.landingSectors && currentState.landingSectors.length) {
-                    currentState.landingSectors.forEach(sector => url.searchParams.append('sector[]', sector));
-                }
-                if (hasOffersFlag) {
-                    url.searchParams.append('flag[]', 'offers');
-                }
-                if (hasRecycledFlag) {
+                if (accreditationParam || hasRecycledFlag) {
                     url.searchParams.set('accreditation', 'recycled');
-                    url.searchParams.delete('brand');
-                } else if (accreditationParam) {
-                    // Preserve organic / certified-organic / etc. (do not rewrite to recycled)
-                    url.searchParams.set('accreditation', accreditationParam);
-                    url.searchParams.delete('brand');
-                } else if (currentState.filters.accreditations && currentState.filters.accreditations.length === 1) {
-                    // Keep a single landing accreditation in the URL after filter sync
-                    url.searchParams.set('accreditation', currentState.filters.accreditations[0]);
+                    url.searchParams.delete('productType');
                     url.searchParams.delete('brand');
                 }
 
@@ -6077,6 +5481,7 @@
                 if (currentState.limit === 100) url.searchParams.delete('limit');
             } else {
                 // Normal category-based navigation - include all params
+                url.searchParams.delete('productType');
                 url.searchParams.delete('brand');
                 url.searchParams.set('category', currentState.category);
                 url.searchParams.set('page', currentState.page);
@@ -6104,31 +5509,9 @@
             const facetParamNames = new Set(Object.values(FILTER_URL_PARAM_MAP).map(name => `${name}[]`));
             facetParamNames.forEach(name => url.searchParams.delete(name));
             Object.entries(FILTER_URL_PARAM_MAP).forEach(([stateKey, apiKey]) => {
-                if (apiKey === 'productType' && landingTypes.length) return;
-                if (apiKey === 'sector' && currentState.landingSectors.length) return;
                 const values = Array.isArray(currentState.filters[stateKey]) ? currentState.filters[stateKey] : [];
                 values.forEach(value => url.searchParams.append(`${apiKey}[]`, value));
             });
-            // A plain style= that normalizeUrlFacets mapped to a real facet is now persisted
-            // as a [] param; keep it only while it drives a text-search fallback.
-            if (!currentState.facetQuery) url.searchParams.delete('style');
-
-            // Facet rewrite deletes productType[] / sector[]. Re-apply locked landing params last.
-            url.searchParams.delete('productType');
-            url.searchParams.delete('productType[]');
-            if (landingTypes.length > 1) {
-                landingTypes.forEach(type => url.searchParams.append('productType[]', type));
-            } else if (landingTypes.length === 1) {
-                url.searchParams.set('productType', landingTypes[0]);
-            }
-            url.searchParams.delete('sector');
-            url.searchParams.delete('sector[]');
-            (currentState.landingSectors || []).forEach(sector => {
-                url.searchParams.append('sector[]', sector);
-            });
-            if (hasOffersFlag && !url.searchParams.getAll('flag[]').includes('offers')) {
-                url.searchParams.append('flag[]', 'offers');
-            }
 
             window.history.replaceState({}, '', url);
         }
@@ -6148,9 +5531,7 @@
             'beanies': 'Beanies',
             'sustainable': 'Sustainable',
             'trousers': 'Trousers',
-            'sweatshirts': 'Sweatshirts',
-            'headwear': 'Headwear',
-            'deals': 'Deals'
+            'workwear': 'Workwear'
         };
 
         // Cache for product type names
@@ -6622,11 +6003,11 @@
 
             const grid = document.getElementById('productsGrid');
             if (!grid) {
-                console.error('ÃƒÂ¢Ã‚ÂÃ…â€™ productsGrid element not found!');
+                console.error('âŒ productsGrid element not found!');
                 return;
             }
 
-            console.log('ÃƒÂ°Ã…Â¸Ã…Â½Ã‚Â¨ renderProducts() called - updating product grid...');
+            console.log('ðŸŽ¨ renderProducts() called - updating product grid...');
 
             // Get title and count elements
             const categoryTitleEl = document.getElementById('categoryTitle');
@@ -6818,11 +6199,11 @@
 
             const grid = document.getElementById('productsGrid');
             if (!grid) {
-                console.error('ÃƒÂ¢ Ã…â€™ productsGrid element not found!');
+                console.error('â Œ productsGrid element not found!');
                 return;
             }
 
-            console.log('ÃƒÂ°Ã…Â¸Ã…Â½Ã‚Â¨ renderProducts() called - updating product grid...');
+            console.log('ðŸŽ¨ renderProducts() called - updating product grid...');
 
             // Get title and count elements
             const categoryTitleEl = document.getElementById('categoryTitle');
@@ -6864,7 +6245,7 @@
 
             // Guard against undefined products
             if (!products || !Array.isArray(products)) {
-                console.error('ÃƒÂ¢ Ã…â€™ fetchProducts() returned invalid data:', products);
+                console.error('â Œ fetchProducts() returned invalid data:', products);
                 return;
             }
 
@@ -6874,7 +6255,7 @@
                 if (p && p.code) window.__brandedUkProducts.set(p.code, p);
             });
 
-            console.log(`ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â¦ Received ${products.length} products from API`);
+            console.log(`ðŸ“¦ Received ${products.length} products from API`);
 
             // Update title and count (only after data arrives)
             if (categoryTitleEl) {
@@ -6883,7 +6264,6 @@
                 const productTypeParam = urlParams.get('productType');
                 const accreditationParam = urlParams.get('accreditation');
                 const brandParam = urlParams.get('brand');
-                const activeSearch = (currentState.search || '').trim();
 
                 if (brandParam) {
                     // Format brand name nicely for display
@@ -6895,7 +6275,7 @@
                     updateCategoryBrandLogo(brandParam, brandDisplayName);
                     updateBrandEditorial(brandParam, brandDisplayName);
                     categoryTitleEl.style.opacity = '1';
-                    console.log('ÃƒÂ°Ã…Â¸ Ã‚Â·ÃƒÂ¯Ã‚Â¸  Showing brand title:', brandDisplayName);
+                    console.log('ðŸ ·ï¸  Showing brand title:', brandDisplayName);
                 } else if (accreditationParam) {
                     document.getElementById('brand-editorial')?.setAttribute('hidden', '');
                     updateCategoryBrandLogo('', '');
@@ -6911,39 +6291,6 @@
                             .join(' ');
                         categoryTitleEl.style.opacity = '1';
                     });
-                } else if (activeSearch) {
-                    // Search heading must reflect q= intent with a clean label, or the
-                    // resolved category/brand when the query is an exact type/brand match.
-                    // Without this, q= searches fell through to "All Products".
-                    document.getElementById('brand-editorial')?.setAttribute('hidden', '');
-                    const normQ = normalizeSearchQuery(activeSearch);
-                    const exactProductType = exactSearchProductType(normQ) || exactSearchProductType(activeSearch);
-                    const searchBrandSlug = BRAND_SEARCH_MAP[normQ.toLowerCase().trim()];
-                    if (searchBrandSlug) {
-                        const brandDisplayName = decodeURIComponent(searchBrandSlug)
-                            .split('-')
-                            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                            .join(' ');
-                        categoryTitleEl.textContent = brandDisplayName;
-                        updateCategoryBrandLogo(searchBrandSlug, brandDisplayName);
-                        updateBrandEditorial(searchBrandSlug, brandDisplayName);
-                        categoryTitleEl.style.opacity = '1';
-                    } else if (exactProductType) {
-                        updateCategoryBrandLogo('', '');
-                        // Exact category searches keep the canonical category name.
-                        categoryTitleEl.textContent = exactProductType;
-                        categoryTitleEl.style.opacity = '1';
-                    } else {
-                        updateCategoryBrandLogo('', '');
-                        // Free-text q=: clean uppercase/display label, never quoted lowercase.
-                        categoryTitleEl.textContent = formatSearchResultsHeading(activeSearch);
-                        categoryTitleEl.style.opacity = '1';
-                    }
-                } else if (currentState.landingTitle) {
-                    document.getElementById('brand-editorial')?.setAttribute('hidden', '');
-                    updateCategoryBrandLogo('', '');
-                    categoryTitleEl.textContent = currentState.landingTitle;
-                    categoryTitleEl.style.opacity = '1';
                 } else if (productTypeParam) {
                     document.getElementById('brand-editorial')?.setAttribute('hidden', '');
                     updateCategoryBrandLogo('', '');
@@ -7013,7 +6360,7 @@
             const gridChildrenAfterClear = grid.children.length;
 
             if (products.length === 0) {
-                console.log('ÃƒÂ¢Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸  No products found matching criteria');
+                console.log('âš ï¸  No products found matching criteria');
 
                 let noResultsHtml = `
                     <div class="no-results-container" style="grid-column: 1/-1; text-align: center; padding: 60px 20px; background: #f8fafc; border-radius: 16px; border: 1px dashed #e2e8f0; margin: 20px 0;">
@@ -7069,8 +6416,8 @@
                 fetchFilterCounts();
             };
 
-            console.log(`ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Rendering ${products.length} products to grid...`);
-            console.log('ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã…Â  Rendering details:', {
+            console.log(`âœ… Rendering ${products.length} products to grid...`);
+            console.log('ðŸ“Š Rendering details:', {
                 productsReceived: products.length,
                 expectedLimit: currentState.limit,
                 currentPage: currentState.page,
@@ -7080,7 +6427,7 @@
             // Safety check: Only render up to the limit (in case API returns more)
             const productsToRender = products.slice(0, currentState.limit);
             if (products.length > currentState.limit) {
-                console.warn('ÃƒÂ¢Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸  API returned more products than limit:', {
+                console.warn('âš ï¸  API returned more products than limit:', {
                     received: products.length,
                     limit: currentState.limit,
                     rendering: productsToRender.length
@@ -7105,7 +6452,7 @@
 
                 // Debug: log when search color is detected (only for first product to avoid spam)
                 if (index === 0 && searchColor) {
-                    console.log('ÃƒÂ°Ã…Â¸Ã…Â½Ã‚Â¨ Search color detected:', searchColor, '| Search query:', currentState.search);
+                    console.log('ðŸŽ¨ Search color detected:', searchColor, '| Search query:', currentState.search);
                 }
 
                 // Use the model/lifestyle image as the default thumbnail (not the color variant image)
@@ -7187,39 +6534,29 @@
                 const visibleColors = 7;
                 const progressPercent = Math.min(100, (visibleColors / displayColors.length) * 100);
 
-                const methods = Array.isArray(product.customization) ? product.customization : [];
-                const isBeanie = (product.name || '').toLowerCase().includes('beanie');
-                const methodIcon = {
-                    crown: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 17.5h17"/><path d="M4 17.5 6.2 9.2 10 13.2 12 6.2 14 13.2 17.8 9.2 20 17.5"/><circle cx="6.2" cy="7.4" r="1.15" fill="currentColor" stroke="none"/><circle cx="12" cy="4.6" r="1.15" fill="currentColor" stroke="none"/><circle cx="17.8" cy="7.4" r="1.15" fill="currentColor" stroke="none"/></svg>',
-                    needle: '<svg viewBox="0 0 40 28" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 8c2.2-3 4-2 5.2.6"/><path d="M2 7.5h12"/><path d="M3 7.5v13M13 7.5v13"/><path d="M2 20.5h12"/><path d="M3.4 11h9.2M3.4 14.2h9.2M3.4 17.2h9.2"/><path d="M13.5 9.5c3-1.4 4.6.4 5.2 2.4"/><path d="M22 5.2 35.2 24"/><circle cx="23.6" cy="7.6" r="1.15" fill="currentColor" stroke="none"/><circle cx="27.2" cy="13" r="0.85" fill="currentColor" stroke="none"/><circle cx="30.4" cy="17.6" r="0.85" fill="currentColor" stroke="none"/><circle cx="33.6" cy="22.2" r="0.85" fill="currentColor" stroke="none"/></svg>',
-                    shirt: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8.2 4.2 4 7.2l2.1 2.6 2-1.1V20h7.8V8.7l2 1.1L20 7.2l-4.2-3-1.6 2.2H9.8L8.2 4.2z"/></svg>'
-                };
-                const methodItems = [];
+                let badgesHtml = '';
+
                 if (product.is_best_seller === true || product.is_best_seller === 'true' || product.is_best_seller === 1) {
-                    methodItems.push(`<span class="method-item best-seller">${methodIcon.crown}<span>Best Seller</span></span>`);
+                    badgesHtml += '<span class="badge best-seller">BEST SELLER</span>';
                 }
                 if (product.is_recommended === true || product.is_recommended === 'true' || product.is_recommended === 1) {
-                    methodItems.push('<span class="method-item recommended"><span>Recommended</span></span>');
+                    badgesHtml += '<span class="badge recommended">RECOMMENDED</span>';
                 }
-                if (methods.includes('embroidery')) {
-                    methodItems.push(`<span class="method-item embroidery">${methodIcon.needle}<span>EMB</span></span>`);
+                if (product.customization && product.customization.includes('embroidery')) {
+                    badgesHtml += '<span class="badge embroidery">EMBROIDERY</span>';
                 }
-                if (methods.includes('print') && !isBeanie) {
-                    methodItems.push(`<span class="method-item print">${methodIcon.shirt}<span>Print</span></span>`);
+                if (product.customization && product.customization.includes('print')) {
+                    badgesHtml += '<span class="badge print">PRINT</span>';
                 }
-                const methodRowHtml = methodItems.join('<span class="method-sep" aria-hidden="true"></span>');
-
-                const ecoLeafHtml = (window.BrandedOrganicLeaf && window.BrandedOrganicLeaf.maybeLeafHtml)
-                    ? window.BrandedOrganicLeaf.maybeLeafHtml(product)
-                    : '';
 
                 card.innerHTML = `
             <div class="product-media">
+                <div class="product-badges">
+                    ${badgesHtml}
+                </div>
                 <img src="${defaultThumbImage || product.image}" alt="${product.name}" class="product-image">
-                ${ecoLeafHtml}
             </div>
             <div class="product-info">
-                ${methodRowHtml ? `<div class="product-method-row">${methodRowHtml}</div>` : '<div class="product-method-row"></div>'}
                 <div class="product-code-row">
                     <span class="product-code">${product.code}</span>
                     ${(() => { const bn = product.brand || ''; if (!bn || ['absolute', 'ralawise'].some(ex => bn.toLowerCase().includes(ex))) return ''; const logo = getBrandLogo(bn); return logo ? `<img src="${logo}" alt="${bn}" class="brand-logo" title="${bn}">` : `<span class="brand-name">${bn}</span>`; })()}
@@ -7316,7 +6653,7 @@
                 const isLastPage = currentState.page >= Math.ceil(currentState.total / currentState.limit);
                 // Only warn if it's not the last page (last page having fewer items is normal)
                 if (!isLastPage) {
-                    console.warn('ÃƒÂ¢Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸  Fewer products rendered than limit (this is normal if filters reduce results):', {
+                    console.warn('âš ï¸  Fewer products rendered than limit (this is normal if filters reduce results):', {
                         expected: currentState.limit,
                         rendered: gridChildrenAfterRender,
                         filteredOut: productsFilteredOut,
@@ -7328,7 +6665,7 @@
                 }
             }
 
-            console.log(`ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Successfully rendered ${renderedCount} products to grid!`);
+            console.log(`âœ… Successfully rendered ${renderedCount} products to grid!`);
         }
 
         // Toggle switch functionality for special filters
@@ -7362,7 +6699,7 @@
                 }
 
                 if (filterValue) {
-                    console.log('ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‹Å“ QUICK FILTER TOGGLE CLICKED:', {
+                    console.log('ðŸ”˜ QUICK FILTER TOGGLE CLICKED:', {
                         filterValue: filterValue,
                         isPressed: isPressed,
                         willBeActive: !isPressed,
@@ -7379,20 +6716,20 @@
                         currentState.filters.quickFilters = currentState.filters.quickFilters.filter(v => v !== filterValue);
                     }
 
-                    console.log('ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã…Â  QUICK FILTER STATE UPDATED:', {
+                    console.log('ðŸ“Š QUICK FILTER STATE UPDATED:', {
                         quickFilters: currentState.filters.quickFilters,
                         fullState: JSON.parse(JSON.stringify(currentState.filters))
                     });
 
                     // Build API params to show what will be sent
                     const apiParams = buildApiParams();
-                    console.log('ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â¤ API PARAMS BUILT:', apiParams);
+                    console.log('ðŸ“¤ API PARAMS BUILT:', apiParams);
 
                     // Reset to page 1 and fetch new products
                     currentState.page = 1;
                     updateURL();
 
-                    console.log('ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Å¾ Calling renderProducts() to trigger API call...');
+                    console.log('ðŸ”„ Calling renderProducts() to trigger API call...');
                     await renderProducts();
                     await fetchFilterCounts();
                 }
@@ -7414,7 +6751,6 @@
             // Reset state
             currentState.page = 1;
             currentState.search = '';
-            currentState.facetQuery = '';
             currentState.color = '';
             currentState.priceMin = null;
             currentState.priceMax = null;
@@ -7422,11 +6758,8 @@
                 currentState.filters[key] = [];
             });
 
-            // Reset quick filters, but keep locked landing flags such as Deals.
+            // Reset quick filters
             currentState.filters.quickFilters = [];
-            if ((currentState.landingFlags || []).includes('offers')) {
-                currentState.filters.quickFilters.push('offers');
-            }
 
             // Clear search input
             const searchInput = document.querySelector('.filter-search');
@@ -7441,22 +6774,22 @@
             await renderProducts();
             await fetchFilterCounts();
             initPriceRangeSlider().then(() => {
-                console.log('ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ initPriceRangeSlider completed');
+                console.log('âœ… initPriceRangeSlider completed');
             }).catch(err => {
-                console.error('ÃƒÂ¢ Ã…â€™ initPriceRangeSlider failed:', err);
+                console.error('â Œ initPriceRangeSlider failed:', err);
             });
         });
 
         // Listen for VAT state changes from main.js (legacy)
         document.addEventListener('vatStateChanged', function (e) {
-            console.log('ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â° vatStateChanged event received');
+            console.log('ðŸ’° vatStateChanged event received');
             updatePrices(); // Update existing prices immediately (no API call needed)
             updatePriceRangeDisplay();
         });
 
         // Listen for VAT state changes from vat-toggle.js
         document.addEventListener('brandeduk:vat-change', function (e) {
-            console.log('ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â° VAT toggle changed, updating prices...');
+            console.log('ðŸ’° VAT toggle changed, updating prices...');
             updatePrices(); // Update existing prices immediately (no API call needed)
             updatePriceRangeDisplay(); // Update price range display
             // Note: No renderProducts() call - VAT is a display-only change, not a filter
@@ -7468,7 +6801,7 @@
 
         async function initPriceRangeSlider() {
             try {
-                console.log('ÃƒÂ°Ã…Â¸Ã…Â½Ã…Â¡ÃƒÂ¯Ã‚Â¸  Initializing price range slider...');
+                console.log('ðŸŽšï¸  Initializing price range slider...');
                 const sliderMin = document.getElementById('priceSliderMin');
                 const sliderMax = document.getElementById('priceSliderMax');
                 const rangeSelected = document.getElementById('priceRangeSelected');
@@ -7477,11 +6810,11 @@
                 const inputMax = document.getElementById('priceInputMax');
 
                 if (!sliderMin || !sliderMax) {
-                    console.error('ÃƒÂ¢ Ã…â€™ Price sliders not found!', { sliderMin: !!sliderMin, sliderMax: !!sliderMax });
+                    console.error('â Œ Price sliders not found!', { sliderMin: !!sliderMin, sliderMax: !!sliderMax });
                     return;
                 }
 
-                console.log('ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Price sliders found');
+                console.log('âœ… Price sliders found');
 
                 // Declare variables in function scope
                 let catalogMinPrice = 14;
@@ -7495,10 +6828,10 @@
                     // First, check if we have priceRange from the latest API response
                     if (currentState.apiPriceRange) {
                         priceRange = currentState.apiPriceRange;
-                        console.log('ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â¡ Using price range from latest API response:', priceRange);
+                        console.log('ðŸ“¡ Using price range from latest API response:', priceRange);
                     } else {
                         // Fallback: fetch price range from API (without filters to get full range)
-                        console.log('ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â¡ Fetching price range from API (no cached range)...');
+                        console.log('ðŸ“¡ Fetching price range from API (no cached range)...');
                         const params = { limit: 1 }; // Just to get priceRange metadata
                         const data = await BrandedAPI.getProducts(params);
                         priceRange = data.priceRange || { min: 14, max: 65 };
@@ -7506,7 +6839,7 @@
 
                     catalogMinPrice = Math.floor(priceRange.min || 14);
                     catalogMaxPrice = Math.ceil(priceRange.max || 65);
-                    console.log('ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Price range determined:', { catalogMinPrice, catalogMaxPrice, source: currentState.apiPriceRange ? 'cached' : 'API' });
+                    console.log('âœ… Price range determined:', { catalogMinPrice, catalogMaxPrice, source: currentState.apiPriceRange ? 'cached' : 'API' });
 
                     sliderMin.disabled = false;
                     sliderMax.disabled = false;
@@ -7539,7 +6872,7 @@
                         currentState.priceMax = null; // Keep null so API doesn't filter by price
                     }
 
-                    console.log('ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Slider values initialized:', {
+                    console.log('âœ… Slider values initialized:', {
                         minValue: sliderMin.value,
                         maxValue: sliderMax.value,
                         minRange: catalogMinPrice,
@@ -7549,7 +6882,7 @@
                     });
 
                 } catch (error) {
-                    console.error('ÃƒÂ¢ Ã…â€™ Error initializing price slider:', error);
+                    console.error('â Œ Error initializing price slider:', error);
                     // Use defaults
                     catalogMinPrice = 14;
                     catalogMaxPrice = 65;
@@ -7598,7 +6931,7 @@
 
                 // Handle price slider change - call API (for change events - when user releases)
                 function handlePriceSliderChange() {
-                    console.log('ÃƒÂ°Ã…Â¸Ã…Â½Ã…Â¡ÃƒÂ¯Ã‚Â¸  handlePriceSliderChange() called');
+                    console.log('ðŸŽšï¸  handlePriceSliderChange() called');
 
                     // Update UI first
                     updatePriceSliderUI();
@@ -7606,7 +6939,7 @@
                     let minVal = parseInt(sliderMin.value);
                     let maxVal = parseInt(sliderMax.value);
 
-                    console.log('ÃƒÂ°Ã…Â¸Ã…Â½Ã…Â¡ÃƒÂ¯Ã‚Â¸  Parsed values:', { minVal, maxVal, catalogMinPrice, catalogMaxPrice });
+                    console.log('ðŸŽšï¸  Parsed values:', { minVal, maxVal, catalogMinPrice, catalogMaxPrice });
 
                     // Update state - set to null if full range, otherwise set values
                     if (minVal === catalogMinPrice && maxVal === catalogMaxPrice) {
@@ -7620,11 +6953,11 @@
                     // Call API directly - just like filter checkboxes do
                     currentState.page = 1;
                     updateURL();
-                    console.log('ÃƒÂ°Ã…Â¸Ã…Â¡Ã¢â€šÂ¬ Calling renderProducts()...');
+                    console.log('ðŸš€ Calling renderProducts()...');
                     renderProducts().then(() => {
-                        console.log('ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ renderProducts() completed');
+                        console.log('âœ… renderProducts() completed');
                     }).catch(err => {
-                        console.error('ÃƒÂ¢ Ã…â€™ renderProducts() error:', err);
+                        console.error('â Œ renderProducts() error:', err);
                     });
                     fetchFilterCounts();
                 }
@@ -7632,36 +6965,36 @@
                 // Simple event listeners - just call the handler on change
                 // Only attach event listeners once to prevent duplicate API calls
                 if (!priceSliderEventListenersAttached) {
-                    console.log('ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Â§ Attaching price slider event listeners...');
+                    console.log('ðŸ”§ Attaching price slider event listeners...');
                     if (sliderMin) {
                         sliderMin.addEventListener('change', function (e) {
-                            console.log('ÃƒÂ°Ã…Â¸Ã…Â½Ã…Â¡ÃƒÂ¯Ã‚Â¸  sliderMin change event fired, value:', sliderMin.value);
+                            console.log('ðŸŽšï¸  sliderMin change event fired, value:', sliderMin.value);
                             handlePriceSliderChange();
                         });
                     } else {
-                        console.error('ÃƒÂ¢ Ã…â€™ sliderMin element not found!');
+                        console.error('â Œ sliderMin element not found!');
                     }
 
                     if (sliderMax) {
                         sliderMax.addEventListener('change', function (e) {
-                            console.log('ÃƒÂ°Ã…Â¸Ã…Â½Ã…Â¡ÃƒÂ¯Ã‚Â¸  sliderMax change event fired, value:', sliderMax.value);
+                            console.log('ðŸŽšï¸  sliderMax change event fired, value:', sliderMax.value);
                             handlePriceSliderChange();
                         });
                     } else {
-                        console.error('ÃƒÂ¢ Ã…â€™ sliderMax element not found!');
+                        console.error('â Œ sliderMax element not found!');
                     }
 
                     // Also listen to 'input' events for real-time UI updates while dragging (no API call)
                     if (sliderMin) {
                         sliderMin.addEventListener('input', function (e) {
-                            console.log('ÃƒÂ°Ã…Â¸Ã…Â½Ã…Â¡ÃƒÂ¯Ã‚Â¸  sliderMin input event fired, value:', sliderMin.value);
+                            console.log('ðŸŽšï¸  sliderMin input event fired, value:', sliderMin.value);
                             updatePriceSliderUI(); // Only update UI, don't call API
                         });
                     }
 
                     if (sliderMax) {
                         sliderMax.addEventListener('input', function (e) {
-                            console.log('ÃƒÂ°Ã…Â¸Ã…Â½Ã…Â¡ÃƒÂ¯Ã‚Â¸  sliderMax input event fired, value:', sliderMax.value);
+                            console.log('ðŸŽšï¸  sliderMax input event fired, value:', sliderMax.value);
                             updatePriceSliderUI(); // Only update UI, don't call API
                         });
                     }
@@ -7688,9 +7021,9 @@
                     }
 
                     priceSliderEventListenersAttached = true;
-                    console.log('ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ All price slider event listeners attached');
+                    console.log('âœ… All price slider event listeners attached');
                 } else {
-                    console.log('ÃƒÂ¢ Ã‚Â­ÃƒÂ¯Ã‚Â¸  Price slider event listeners already attached, skipping');
+                    console.log('â ­ï¸  Price slider event listeners already attached, skipping');
                 }
 
                 // Initialize display (without triggering API on initial load)
@@ -7711,8 +7044,8 @@
                 }
                 if (inputMin) inputMin.value = POUND_SYMBOL + initMinVal;
                 if (inputMax) inputMax.value = POUND_SYMBOL + initMaxVal;
-                console.log('ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Price slider initialization complete');
-                console.log('ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã…Â  Final slider state:', {
+                console.log('âœ… Price slider initialization complete');
+                console.log('ðŸ“Š Final slider state:', {
                     sliderMinValue: sliderMin.value,
                     sliderMaxValue: sliderMax.value,
                     statePriceMin: currentState.priceMin,
@@ -7720,7 +7053,7 @@
                     catalogRange: { min: catalogMinPrice, max: catalogMaxPrice }
                 });
             } catch (err) {
-                console.error('ÃƒÂ¢ Ã…â€™ Error in initPriceRangeSlider:', err);
+                console.error('â Œ Error in initPriceRangeSlider:', err);
                 throw err; // Re-throw to maintain error propagation
             }
         }
@@ -7736,14 +7069,14 @@
 
             // Check if we have priceRange from API response
             if (!currentState.apiPriceRange) {
-                console.log('ÃƒÂ¢Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸  No API price range available yet');
+                console.log('âš ï¸  No API price range available yet');
                 return;
             }
 
             const apiMin = Math.floor(currentState.apiPriceRange.min || 0);
             const apiMax = Math.ceil(currentState.apiPriceRange.max || 100);
 
-            console.log('ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Å¾ Updating price slider range from API:', { apiMin, apiMax });
+            console.log('ðŸ”„ Updating price slider range from API:', { apiMin, apiMax });
 
             // Update slider min/max attributes
             let rangeMin, rangeMax;
@@ -7779,7 +7112,7 @@
             if (currentState.priceMin === null && currentState.priceMax === null) {
                 currentMin = rangeMin;
                 currentMax = rangeMax;
-                console.log('ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Å¾ No price filter active - resetting slider handles to full range');
+                console.log('ðŸ”„ No price filter active - resetting slider handles to full range');
             } else {
                 // Price filter is active - preserve user's selection but clamp to valid range
                 currentMin = currentState.priceMin !== null ? currentState.priceMin : rangeMin;
@@ -7814,7 +7147,7 @@
                 rangeSelected.style.width = (percentMax - percentMin) + '%';
             }
 
-            console.log('ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Price slider range updated:', {
+            console.log('âœ… Price slider range updated:', {
                 min: apiMin,
                 max: apiMax,
                 currentMin,
@@ -7844,11 +7177,11 @@
 
         // Filter checkbox handlers
         function setupFilterCheckboxes() {
-            console.log('ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Â§ Setting up filter checkboxes...');
+            console.log('ðŸ”§ Setting up filter checkboxes...');
 
             // Setup expandable filter rows
             const expandableRows = document.querySelectorAll('.filter-expandable-row');
-            console.log(`ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã¢â‚¬Â¹ Found ${expandableRows.length} expandable filter rows`);
+            console.log(`ðŸ“‹ Found ${expandableRows.length} expandable filter rows`);
 
             expandableRows.forEach(row => {
                 row.addEventListener('click', function (e) {
@@ -7898,7 +7231,7 @@
 
                 // Setup checkboxes in this content section
                 const checkboxes = content.querySelectorAll('input[type="checkbox"]');
-                console.log(`  ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“ ${headerText}: Found ${checkboxes.length} checkboxes`);
+                console.log(`  âœ“ ${headerText}: Found ${checkboxes.length} checkboxes`);
 
                 checkboxes.forEach((checkbox, index) => {
                     // Check if event listener already attached (avoid duplicates)
@@ -7924,7 +7257,7 @@
                             currentState.color = '';
                         }
 
-                        console.log('ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‹Å“ FILTER CHECKBOX CLICKED:', {
+                        console.log('ðŸ”˜ FILTER CHECKBOX CLICKED:', {
                             filterKey: filterKey,
                             checkboxValue: checkbox.value,
                             isChecked: checkbox.checked,
@@ -7943,7 +7276,7 @@
                             currentState.filters[filterKey] = [];
                         }
 
-                        console.log('ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã…Â  FILTER STATE UPDATED:', {
+                        console.log('ðŸ“Š FILTER STATE UPDATED:', {
                             filterKey: filterKey,
                             checkedValues: checkedBoxes,
                             fullState: JSON.parse(JSON.stringify(currentState.filters))
@@ -7951,26 +7284,26 @@
 
                         // Build API params to show what will be sent
                         const apiParams = buildApiParams();
-                        console.log('ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â¤ API PARAMS BUILT:', apiParams);
+                        console.log('ðŸ“¤ API PARAMS BUILT:', apiParams);
 
                         // Reset to page 1 and fetch new products
                         currentState.page = 1;
                         updateURL();
 
-                        console.log('ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Å¾ Calling renderProducts() to trigger API call...');
+                        console.log('ðŸ”„ Calling renderProducts() to trigger API call...');
                         try {
                             await renderProducts();
                             await fetchFilterCounts();
-                            console.log('ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Products updated successfully!');
+                            console.log('âœ… Products updated successfully!');
                         } catch (error) {
-                            console.error('ÃƒÂ¢ Ã…â€™ Error updating products:', error);
+                            console.error('â Œ Error updating products:', error);
                         }
                     });
                 });
             });
 
-            console.log('ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Filter checkboxes setup complete!');
-            console.log('ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“  To test: Click any filter checkbox and check the console for API call logs');
+            console.log('âœ… Filter checkboxes setup complete!');
+            console.log('ðŸ“  To test: Click any filter checkbox and check the console for API call logs');
         }
 
         // Debounce utility
@@ -8019,7 +7352,7 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', async function () {
-            console.log('ÃƒÂ°Ã…Â¸Ã…Â¡Ã¢â€šÂ¬ Page loaded, initializing filters and products...');
+            console.log('ðŸš€ Page loaded, initializing filters and products...');
 
             // Show loader immediately when page loads - better UX
             showLoader();
@@ -8044,7 +7377,7 @@
 
             // Verify filter checkboxes are set up
             const totalCheckboxes = document.querySelectorAll('.filter-checkbox-item input[type="checkbox"], .color-swatch-item input[type="checkbox"]').length;
-            console.log(`ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Found ${totalCheckboxes} filter checkboxes, event handlers attached`);
+            console.log(`âœ… Found ${totalCheckboxes} filter checkboxes, event handlers attached`);
 
             // Hide title and count initially to prevent flash
             const categoryTitleEl = document.getElementById('categoryTitle');
@@ -8056,41 +7389,41 @@
             try {
                 await renderProducts();
             } catch (err) {
-                console.error('ÃƒÂ¢ Ã…â€™ Error in renderProducts():', err);
+                console.error('â Œ Error in renderProducts():', err);
             }
 
             try {
                 await fetchFilterCounts();
             } catch (err) {
-                console.error('ÃƒÂ¢ Ã…â€™ Error in fetchFilterCounts():', err);
+                console.error('â Œ Error in fetchFilterCounts():', err);
             }
 
             try {
                 await initPriceRangeSlider();
             } catch (err) {
-                console.error('ÃƒÂ¢ Ã…â€™ Error calling initPriceRangeSlider:', err);
+                console.error('â Œ Error calling initPriceRangeSlider:', err);
             }
 
             // Ensure prices match current VAT state on initial load
-            console.log('ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â° Initial VAT state check:', { isVatOn: isVatOn(), storage: localStorage.getItem('brandeduk-vat-mode') });
+            console.log('ðŸ’° Initial VAT state check:', { isVatOn: isVatOn(), storage: localStorage.getItem('brandeduk-vat-mode') });
             updatePrices(); // Update prices to match current VAT state
             updatePriceRangeDisplay();
 
             // Update prices when VAT changes
             window.addEventListener('vatToggleChanged', () => {
-                console.log('ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â° vatToggleChanged event received');
+                console.log('ðŸ’° vatToggleChanged event received');
                 updatePrices();
                 updatePriceRangeDisplay();
             });
 
-            console.log('ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Initialization complete!');
+            console.log('âœ… Initialization complete!');
         });
 
         // Update prices on VAT change
         function updatePrices() {
-            console.log('ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â° updatePrices() called, isVatOn():', isVatOn(), 'localStorage:', localStorage.getItem('brandeduk-vat-mode'));
+            console.log('ðŸ’° updatePrices() called, isVatOn():', isVatOn(), 'localStorage:', localStorage.getItem('brandeduk-vat-mode'));
             const priceElements = document.querySelectorAll('.product-price');
-            console.log(`ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â° Found ${priceElements.length} product price elements to update`);
+            console.log(`ðŸ’° Found ${priceElements.length} product price elements to update`);
 
             priceElements.forEach((priceEl, index) => {
                 const min = Number(priceEl.dataset.priceMin);
@@ -8112,12 +7445,12 @@
                     const newSuffix = vatSuffix();
                     suffixEl.textContent = newSuffix;
                     if (index < 3) { // Log first 3 for debugging
-                        console.log(`ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â° Product ${index + 1} suffix: "${oldSuffix}" ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ "${newSuffix}"`);
+                        console.log(`ðŸ’° Product ${index + 1} suffix: "${oldSuffix}" â†’ "${newSuffix}"`);
                     }
                 }
             });
 
-            console.log('ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ updatePrices() completed');
+            console.log('âœ… updatePrices() completed');
         }
 
         // Pagination functions
@@ -8145,65 +7478,7 @@
             updateURL();
             await renderProducts();
             updatePagination();
-            scrollToProductsSectionTop();
 
-        }
-
-        function paintCataloguePager(pager, ids, totalPages) {
-            if (!pager) return;
-
-            const firstBtn = document.getElementById(ids.first);
-            const prevBtn = document.getElementById(ids.prev);
-            const nextBtn = document.getElementById(ids.next);
-            const lastBtn = document.getElementById(ids.last);
-            const pageNumbersContainer = document.getElementById(ids.numbers);
-
-            if (totalPages <= 1) {
-                pager.style.display = 'none';
-                return;
-            }
-
-            pager.style.display = 'flex';
-            if (firstBtn) firstBtn.disabled = currentState.page === 1;
-            if (prevBtn) prevBtn.disabled = currentState.page === 1;
-            if (nextBtn) nextBtn.disabled = currentState.page === totalPages;
-            if (lastBtn) lastBtn.disabled = currentState.page === totalPages;
-
-            if (!pageNumbersContainer) return;
-            pageNumbersContainer.innerHTML = '';
-
-            const maxVisible = 3;
-            let startPage = 1;
-            let endPage = totalPages;
-
-            if (totalPages > maxVisible) {
-                startPage = currentState.page - 1;
-                endPage = currentState.page + 1;
-
-                if (startPage < 1) {
-                    startPage = 1;
-                    endPage = maxVisible;
-                }
-                if (endPage > totalPages) {
-                    endPage = totalPages;
-                    startPage = totalPages - (maxVisible - 1);
-                }
-            }
-
-            for (let page = startPage; page <= endPage; page++) {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = 'pagination-page' + (page === currentState.page ? ' active' : '');
-                btn.textContent = String(page);
-                if (page === currentState.page) {
-                    btn.setAttribute('aria-current', 'page');
-                } else {
-                    btn.addEventListener('click', async () => {
-                        await goToCataloguePage(page);
-                    });
-                }
-                pageNumbersContainer.appendChild(btn);
-            }
         }
 
         function updatePagination() {
@@ -8225,20 +7500,65 @@
                 if (nextBtn) nextBtn.disabled = currentState.page === totalPages || totalPages === 0;
             }
 
-            paintCataloguePager(paginationTop, {
-                first: 'paginationFirst',
-                prev: 'paginationPrev',
-                next: 'paginationNext',
-                last: 'paginationLast',
-                numbers: 'paginationPageNumbers'
-            }, totalPages);
-            paintCataloguePager(document.getElementById('paginationBottom'), {
-                first: 'paginationBottomFirst',
-                prev: 'paginationBottomPrev',
-                next: 'paginationBottomNext',
-                last: 'paginationBottomLast',
-                numbers: 'paginationBottomPageNumbers'
-            }, totalPages);
+            // Update new pagination (inline in header)
+            if (!paginationTop) return;
+
+            const firstBtn = document.getElementById('paginationFirst');
+            const prevTopBtn = document.getElementById('paginationPrev');
+            const nextTopBtn = document.getElementById('paginationNext');
+            const lastBtn = document.getElementById('paginationLast');
+            const pageNumbersContainer = document.getElementById('paginationPageNumbers');
+
+            if (totalPages <= 1) {
+                paginationTop.style.display = 'none';
+                return;
+            }
+
+            paginationTop.style.display = 'flex';
+
+            // Enable/disable navigation buttons
+            if (firstBtn) firstBtn.disabled = currentState.page === 1;
+            if (prevTopBtn) prevTopBtn.disabled = currentState.page === 1;
+            if (nextTopBtn) nextTopBtn.disabled = currentState.page === totalPages;
+            if (lastBtn) lastBtn.disabled = currentState.page === totalPages;
+
+            // Render page numbers (show up to 3 pages as a sliding window)
+            if (pageNumbersContainer) {
+                pageNumbersContainer.innerHTML = '';
+
+                const maxVisible = 3;
+                let startPage = 1;
+                let endPage = totalPages;
+
+                if (totalPages > maxVisible) {
+                    startPage = currentState.page - 1;
+                    endPage = currentState.page + 1;
+
+                    if (startPage < 1) {
+                        startPage = 1;
+                        endPage = maxVisible;
+                    }
+                    if (endPage > totalPages) {
+                        endPage = totalPages;
+                        startPage = totalPages - (maxVisible - 1);
+                    }
+                }
+
+                for (let page = startPage; page <= endPage; page++) {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'pagination-page' + (page === currentState.page ? ' active' : '');
+                    btn.textContent = String(page);
+                    if (page === currentState.page) {
+                        btn.setAttribute('aria-current', 'page');
+                    } else {
+                        btn.addEventListener('click', async () => {
+                            await goToCataloguePage(page);
+                        });
+                    }
+                    pageNumbersContainer.appendChild(btn);
+                }
+            }
         }
 
         // Pagination button handlers
@@ -8304,34 +7624,6 @@
                 });
             }
 
-            const bottomFirstBtn = document.getElementById('paginationBottomFirst');
-            const bottomPrevBtn = document.getElementById('paginationBottomPrev');
-            const bottomNextBtn = document.getElementById('paginationBottomNext');
-            const bottomLastBtn = document.getElementById('paginationBottomLast');
-
-            if (bottomFirstBtn) {
-                bottomFirstBtn.addEventListener('click', async () => {
-                    if (currentState.page > 1) await goToCataloguePage(1);
-                });
-            }
-            if (bottomPrevBtn) {
-                bottomPrevBtn.addEventListener('click', async () => {
-                    if (currentState.page > 1) await goToCataloguePage(currentState.page - 1);
-                });
-            }
-            if (bottomNextBtn) {
-                bottomNextBtn.addEventListener('click', async () => {
-                    const totalPages = Math.ceil(currentState.total / currentState.limit);
-                    if (currentState.page < totalPages) await goToCataloguePage(currentState.page + 1);
-                });
-            }
-            if (bottomLastBtn) {
-                bottomLastBtn.addEventListener('click', async () => {
-                    const totalPages = Math.ceil(currentState.total / currentState.limit);
-                    if (currentState.page < totalPages) await goToCataloguePage(totalPages);
-                });
-            }
-
             // Sort By dropdown handler
             const sortSelect = document.getElementById('sortSelect');
             if (sortSelect) {
@@ -8358,7 +7650,7 @@
                     const oldLimit = currentState.limit;
                     const oldPage = currentState.page;
 
-                    console.log('ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Å¾ View limit changed:', {
+                    console.log('ðŸ”„ View limit changed:', {
                         oldLimit: currentState.limit,
                         newLimit: newLimit,
                         selectedValue: e.target.value
@@ -8405,13 +7697,13 @@
                         <span>Sign In</span>
                     </div>
                     <div class="account-form-content">
-                        <form id="signinFormData" method="post" action="#">
+                        <form id="signinFormData">
                             <div class="account-input-group">
-                                <input type="email" id="signinEmail" required autocomplete="username">
+                                <input type="email" id="signinEmail" required>
                                 <label for="signinEmail">Email</label>
                             </div>
                             <div class="account-input-group">
-                                <input type="password" id="signinPassword" required autocomplete="current-password">
+                                <input type="password" id="signinPassword" required>
                                 <label for="signinPassword">Password</label>
                             </div>
                             <div class="account-form-actions">
@@ -8439,31 +7731,31 @@
                         <span>Sign Up</span>
                     </div>
                     <div class="account-form-content">
-                        <form id="signupFormData" method="post" action="#">
+                        <form id="signupFormData">
                             <div class="account-input-row">
                                 <div class="account-input-group half">
-                                    <input type="text" id="signupFirstName" required autocomplete="given-name">
+                                    <input type="text" id="signupFirstName" required>
                                     <label for="signupFirstName">First Name</label>
                                 </div>
                                 <div class="account-input-group half">
-                                    <input type="text" id="signupLastName" required autocomplete="family-name">
+                                    <input type="text" id="signupLastName" required>
                                     <label for="signupLastName">Last Name</label>
                                 </div>
                             </div>
                             <div class="account-input-group">
-                                <input type="email" id="signupEmail" required autocomplete="email">
+                                <input type="email" id="signupEmail" required>
                                 <label for="signupEmail">Email</label>
                             </div>
                             <div class="account-input-group">
-                                <input type="tel" id="signupPhone" required autocomplete="tel">
+                                <input type="tel" id="signupPhone" required>
                                 <label for="signupPhone">Phone Number</label>
                             </div>
                             <div class="account-input-group">
-                                <input type="text" id="signupCompany" autocomplete="organization">
+                                <input type="text" id="signupCompany">
                                 <label for="signupCompany">Company Name (optional)</label>
                             </div>
                             <div class="account-input-group">
-                                <input type="password" id="signupPassword" required autocomplete="new-password">
+                                <input type="password" id="signupPassword" required>
                                 <label for="signupPassword">Password</label>
                             </div>
                             <div class="account-form-actions">
@@ -8843,7 +8135,7 @@
         })();
     </script>
 
-    <script src="brandedukv15-child/assets/js/call-modal.js?v=20260122"></script>
+    <script src="../brandedukv15-child/assets/js/call-modal.js?v=20260122"></script>
 
     <!-- Order Popup HTML -->
     <div id="orderPopup" class="order_overlay" style="display:none;">
@@ -8855,7 +8147,7 @@
                 <header class="pc-product-flow-header">
                     <div class="pc-product-flow-brand">
                         <a class="pc-product-flow-logo-link" href="index.html" aria-label="BrandedUK home">
-                            <img class="pc-product-flow-logo" src="brandedukv15-child/assets/images/ui/branded-uk-header-logo-black.png?v=20260927-logoblack"
+                            <img class="pc-product-flow-logo" src="brandedukv15-child/assets/images/ui/branded-logo-sunset.png"
                                 alt="BrandedUK">
                         </a>
                         <span class="pc-product-flow-brand-copy">
@@ -8881,9 +8173,9 @@
                         </li>
                     </ol>
                     <div class="pc-product-flow-help">
-                        <a class="pc-flow-basket" href="basket.html" aria-label="View quote basket" data-cart-lottie="show">
+                        <a class="pc-flow-basket" href="basket.html" aria-label="View quote basket">
                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-                            <span class="pc-flow-basket-badge" id="pcFlowBasketBadge" data-cart-lottie-badge hidden>0</span>
+                            <span class="pc-flow-basket-badge" id="pcFlowBasketBadge" hidden>0</span>
                         </a>
                         <span>Need help?</span>
                         <a href="tel:02089742722">0208 974 2722</a>
@@ -8927,10 +8219,10 @@
                                             <span class="p1-divider"></span>
                                         </div>
                                         <h1 class="p1-name" id="productTitle"></h1>
-                                        <div class="p1-rating" aria-label="Product rating" hidden>
+                                        <div class="p1-rating" aria-label="Product rating">
                                             <span class="p1-rating-stars" aria-hidden="true">★★★★★</span>
-                                            <span id="productRatingValue"></span>
-                                            <span class="p1-rating-reviews" id="productReviewCount"></span>
+                                            <span id="productRatingValue">4.8</span>
+                                            <span class="p1-rating-reviews" id="productReviewCount">(124 reviews)</span>
                                         </div>
                                         <div class="p1-brand-block">
                                             <img id="productBrandLogo" class="p1-brand-logo" src="" alt=""
@@ -9089,42 +8381,22 @@
                                             </label>
                                         </div>
 
-                                        <div class="op-scroll-shell p2-colour-scroll-shell">
-                                            <div class="op-scroll p2-colour-scroll" id="p2ColourScroll" tabindex="0" aria-label="Colour list">
-                                                <div class="colour-section p2-popular-section">
-                                                    <h3 class="p2-grid-title">Popular colours</h3>
-                                                    <div id="p2PopularColours" class="p2-popular-grid"></div>
-                                                </div>
+                                        <div class="colour-section p2-popular-section">
+                                            <h3 class="p2-grid-title">Popular colours</h3>
+                                            <div id="p2PopularColours" class="p2-popular-grid"></div>
+                                        </div>
 
-                                                <div class="colour-section p2-all-section">
-                                                    <h3 class="p2-grid-title">All colours</h3>
-                                                    <div class="p2-all-carousel">
-                                                        <button type="button" class="p2-colour-arrow p2-colour-arrow-prev" id="p2ColourPrev" aria-label="Previous colours" hidden>
-                                                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                                        </button>
-                                                        <div id="colourSwatches"></div>
-                                                        <button type="button" class="p2-colour-arrow p2-colour-arrow-next" id="p2ColourNext" aria-label="Next colours" hidden>
-                                                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="op-scroll-rail" id="p2ColourScrollRail" hidden aria-hidden="true">
-                                                <button type="button" class="op-scroll-btn op-scroll-up" id="p2ColourScrollUp" aria-label="Scroll colours up">
-                                                    <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 7.5L6 4l3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                        <div class="colour-section p2-all-section">
+                                            <h3 class="p2-grid-title">All colours</h3>
+                                            <div class="p2-all-carousel">
+                                                <button type="button" class="p2-colour-arrow p2-colour-arrow-prev" id="p2ColourPrev" aria-label="Previous colours" hidden>
+                                                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                                                 </button>
-                                                <div class="op-scroll-track" id="p2ColourScrollTrack">
-                                                    <div class="op-scroll-thumb" id="p2ColourScrollThumb"></div>
-                                                </div>
-                                                <button type="button" class="op-scroll-btn op-scroll-down" id="p2ColourScrollDown" aria-label="Scroll colours down">
-                                                    <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                                <div id="colourSwatches"></div>
+                                                <button type="button" class="p2-colour-arrow p2-colour-arrow-next" id="p2ColourNext" aria-label="Next colours" hidden>
+                                                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                                                 </button>
                                             </div>
-
-                                            <button type="button" class="op-scroll-more-below" id="p2ColourMoreBelow" aria-label="More colours below" hidden>
-                                                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6.5L8 10.5L12 6.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -9192,27 +8464,13 @@
 
                                     <div class="sizes-section-p3 p3-qty-col" tabindex="0" aria-label="Available sizes and quantities">
                                         <div class="p3-from-price">From <strong id="p3BasePrice">&pound;0.00</strong> per unit excl. VAT</div>
-                                        <div class="p3-size-scroll-wrap">
-                                            <div class="p3-size-scroll" id="p3SizeScroll">
-                                                <div class="size-qty-grid" id="sizeQtyGridP3"></div>
-                                            </div>
-                                            <div class="p3-size-scroll-arrows" id="p3SizeScrollArrows" hidden>
-                                                <button type="button" class="p3-size-scroll-btn p3-size-scroll-up" id="p3SizeScrollUp" aria-label="Scroll sizes up" hidden>
-                                                    <span aria-hidden="true">▲</span>
-                                                </button>
-                                                <button type="button" class="p3-size-scroll-btn p3-size-scroll-down" id="p3SizeScrollDown" aria-label="Scroll sizes down" hidden>
-                                                    <span aria-hidden="true">▼</span>
-                                                </button>
-                                            </div>
+                                        <div class="size-qty-grid" id="sizeQtyGridP3"></div>
+                                        <div class="p3-volume-head">
+                                            <h3>Volume pricing</h3>
+                                            <span>Price per item, ex. VAT</span>
                                         </div>
-                                        <div class="p3-volume-anchor">
-                                            <div class="p3-volume-head">
-                                                <h3>Volume pricing</h3>
-                                                <span>Price per item, ex. VAT</span>
-                                            </div>
-                                            <div class="discount-tiers" id="p3DiscountTiers"></div>
-                                            <p class="sizes-hint">Use +/- or tap quantities to type directly</p>
-                                        </div>
+                                        <div class="discount-tiers" id="p3DiscountTiers"></div>
+                                        <p class="sizes-hint">Use +/- or tap quantities to type directly</p>
                                     </div>
                                 </div>
 
@@ -9270,17 +8528,16 @@
                                                 <span class="p4-confirm-text">Confirm &amp; update basket</span>
                                                 <svg class="p4-confirm-check" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 13 10 18 19 7"></polyline></svg>
                                             </button>
-                                            <button type="button" class="p4-view-basket" id="p4ViewBasket">ASK FOR QUOTE <span aria-hidden="true">&rarr;</span></button>
+                                            <button type="button" class="p4-view-basket" id="p4ViewBasket">VIEW BASKET →</button>
                                         </div>
                                         <div class="p4-selected-colour">
                                             <div class="p4-selected-colour-choice">
-                                                <span class="p4-bar-icon" role="img" aria-label="Selected colour"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 2.2A9.8 9.8 0 0 0 2.2 12c0 2.1 1.5 3.3 3.2 3.3h1.5c.8 0 1.3.6 1.3 1.2 0 .5.3.9.6 1.2.5.4.9 1.1.9 1.9 0 2 1.6 3.2 3.6 3.2A9.8 9.8 0 0 0 12 2.2zM7.2 11.2a1.35 1.35 0 1 1 0-2.7 1.35 1.35 0 0 1 0 2.7zm3.6-3a1.35 1.35 0 1 1 0-2.7 1.35 1.35 0 0 1 0 2.7zm4.3 1.5a1.35 1.35 0 1 1 0-2.7 1.35 1.35 0 0 1 0 2.7z"/></svg></span>
+                                                <span>✓</span> Selected colour
                                                 <i id="p4SelectedSwatch"></i>
                                                 <strong id="p4SelectedName"></strong>
                                             </div>
                                             <div class="p4-artwork-approval">
-                                                <span class="p4-bar-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" focusable="false"><path fill="currentColor" d="M6 2h8.4L20 7.6V20a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm7.2 1.6V8H18L13.2 3.6zM10.1 16.7l-2.2-2.2-1.3 1.3 3.5 3.5 6.2-6.2-1.3-1.3-4.9 4.9z"/></svg></span>
-                                                <strong>Artwork approval included</strong>
+                                                <strong>✓ Artwork approval included</strong>
                                             </div>
                                         </div>
                                     </aside>
@@ -9299,9 +8556,7 @@
                                 </div>
 
                                 <!-- Position Cards Grid -->
-                                <div class="op-scroll-shell p4-positions-scroll-shell">
-                                    <div class="op-scroll" id="p4PositionsScroll" tabindex="0" aria-label="Decoration positions">
-                                        <div class="positions-grid" id="p4PositionOptions">
+                                <div class="positions-grid" id="p4PositionOptions">
 
                                     <!-- Left Chest -->
                                     <div class="position-card" data-position="Left Chest" data-embroidery="5.00"
@@ -9328,6 +8583,7 @@
                                         </div>
                                         <div class="position-preview">
                                             <img class="position-placeholder"
+                                                src="https://i.postimg.cc/fTVKLHLj/Chat_GPT_Image_Jan_11_2026_04_51_46_PM.png"
                                                 alt="Left Chest">
                                         </div>
                                         <div class="uploaded-logo-container" hidden>
@@ -9371,6 +8627,7 @@
                                         </div>
                                         <div class="position-preview">
                                             <img class="position-placeholder"
+                                                src="https://i.postimg.cc/fTVKLHLj/Chat_GPT_Image_Jan_11_2026_04_51_46_PM.png"
                                                 alt="Right Chest">
                                         </div>
                                         <div class="uploaded-logo-container" hidden>
@@ -9414,6 +8671,7 @@
                                         </div>
                                         <div class="position-preview">
                                             <img class="position-placeholder"
+                                                src="https://i.postimg.cc/hPXrjCjm/Chat_GPT_Image_Jan_11_2026_04_51_53_PM.png"
                                                 alt="Left Sleeve">
                                         </div>
                                         <div class="uploaded-logo-container" hidden>
@@ -9457,7 +8715,8 @@
                                         </div>
                                         <div class="position-preview">
                                             <img class="position-placeholder"
-                                                alt="Right Sleeve">>
+                                                src="https://i.postimg.cc/hPXrjCjm/Chat_GPT_Image_Jan_11_2026_04_51_53_PM.png"
+                                                alt="Right Sleeve" style="transform:scaleX(-1);">
                                         </div>
                                         <div class="uploaded-logo-container" hidden>
                                             <div class="uploaded-logo-box">
@@ -9500,6 +8759,7 @@
                                         </div>
                                         <div class="position-preview">
                                             <img class="position-placeholder"
+                                                src="https://i.postimg.cc/RFng3DGw/Chat_GPT_Image_Dec_19_2025_08_06_23_PM.png"
                                                 alt="Large Front">
                                         </div>
                                         <div class="uploaded-logo-container" hidden>
@@ -9543,6 +8803,7 @@
                                         </div>
                                         <div class="position-preview">
                                             <img class="position-placeholder"
+                                                src="https://i.postimg.cc/4NY5d8dt/Chat_GPT_Image_Jan_11_2026_04_51_51_PM.png"
                                                 alt="Large Back">
                                         </div>
                                         <div class="uploaded-logo-container" hidden>
@@ -9561,24 +8822,6 @@
                                         </div>
                                     </div>
 
-                                        </div>
-                                    </div>
-
-                                    <div class="op-scroll-rail" id="p4PositionsScrollRail" hidden aria-hidden="true">
-                                        <button type="button" class="op-scroll-btn op-scroll-up" id="p4PositionsScrollUp" aria-label="Scroll positions up">
-                                            <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 7.5L6 4l3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                        </button>
-                                        <div class="op-scroll-track" id="p4PositionsScrollTrack">
-                                            <div class="op-scroll-thumb" id="p4PositionsScrollThumb"></div>
-                                        </div>
-                                        <button type="button" class="op-scroll-btn op-scroll-down" id="p4PositionsScrollDown" aria-label="Scroll positions down">
-                                            <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                        </button>
-                                    </div>
-
-                                    <button type="button" class="op-scroll-more-below" id="p4PositionsMoreBelow" aria-label="More positions below" hidden>
-                                        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6.5L8 10.5L12 6.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                    </button>
                                 </div>
                                         <label class="p4-notes">
                                             <span>Notes</span>
@@ -9588,16 +8831,16 @@
                                     <aside class="p4-upload-col">
                                         <h3>Add your logo</h3>
                                         <p>Upload your artwork and we'll place it on your garment.</p>
-                                        <div class="p4-upload-box" id="p4ChooseFile">
+                                        <button type="button" class="p4-upload-box" id="p4ChooseFile">
                                             <span class="p4-upload-icon" aria-hidden="true">&#8593;</span>
                                             <span class="p4-upload-copy">
                                                 <strong>Upload a File</strong>
                                                 <span>Select a file to upload from your computer or device.</span>
                                             </span>
-                                            <button type="button" class="p4-choose-file" id="p4ChooseFileBtn">Choose File</button>
-                                        </div>
+                                            <em>Choose File</em>
+                                        </button>
                                         <small class="p4-file-types">PNG, JPG, PDF, SVG, EPS or AI<br>Maximum file size: 25 MB</small>
-                                        <p class="p4-file-tip"><span class="p4-bar-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="14" height="14" focusable="false"><path fill="currentColor" d="M9 16.2 4.8 12l-1.4 1.4L9 19 20.6 7.4 19.2 6z"/></svg></span> For best results, use a high-resolution or vector file.</p>
+                                        <p class="p4-file-tip">✓ For best results, use a high-resolution or vector file.</p>
                                         <h4>Use a previous logo</h4>
                                         <div id="p4PreviousLogos" class="p4-previous-logos" hidden></div>
                                         <button type="button" class="p4-saved-logos">View all saved logos →</button>
@@ -9607,7 +8850,6 @@
                                             <span>Upload what you have. Our team checks every file before production.</span>
                                         </div>
                                         <button type="button" class="p4-btn-skip" id="btnSkipLogo">Skip (no logo)</button>
-                                        <a class="p4-continue-shopping" id="p4ContinueShopping" href="/shop-pc.html?category=all">Continue shopping</a>
                                     </aside>
                                 </div>
 
@@ -9704,7 +8946,7 @@
                     <header class="pc-customizer-header">
                         <div class="pc-customizer-left">
                             <a class="pc-customizer-logo-link" href="index.html" aria-label="BrandedUK home">
-                                <img class="pc-customizer-logo" src="brandedukv15-child/assets/images/ui/branded-uk-header-logo-black.png?v=20260927-logoblack"
+                                <img class="pc-customizer-logo" src="brandedukv15-child/assets/images/ui/bd-logo-3d.png"
                                     alt="BrandedUK">
                             </a>
                             <button type="button" id="pcCustomizerBack" class="pc-customizer-back"
@@ -9811,7 +9053,6 @@
     <div class="popup-contact" id="popupContact">
         <div class="popup-contact__header">
             <h2 class="popup-contact__title">Get in touch</h2>
-            <p class="popup-contact__subtitle">Have a question, need a quote or want to discuss your project? We're here to help.</p>
             <button class="popup-contact__close" id="popupContactClose" aria-label="Close contact form" type="button">
                 <svg class="popup-contact__close-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                     <path d="M6 6l12 12M18 6L6 18"></path>
@@ -9819,125 +9060,28 @@
             </button>
         </div>
         <div class="popup-contact__body">
-            <form class="popup-contact__form" id="contactQuickForm" method="post" action="#" novalidate>
-                <div class="popup-contact__form-grid">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <svg class="popup-contact__field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                            <input type="text" id="contactName" name="name" placeholder="Your name *" required autocomplete="name">
-                        </div>
-                        <div class="form-group">
-                            <svg class="popup-contact__field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="m22 6-10 7L2 6"/></svg>
-                            <input type="email" id="contactEmail" name="email" placeholder="Email address *" required autocomplete="email">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <svg class="popup-contact__field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg>
-                        <select id="contactInterest" name="interest" aria-label="What are you interested in?">
-                            <option value="" selected>What are you interested in?</option>
-                            <option value="embroidery">Embroidery</option>
-                            <option value="printing">Printing / DTF</option>
-                            <option value="workwear">Workwear</option>
-                            <option value="uniforms">Uniforms</option>
-                            <option value="promotional">Promotional Items</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <svg class="popup-contact__field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                            <input type="tel" id="contactPhone" name="phone" placeholder="Phone number" autocomplete="tel">
-                        </div>
-                        <div class="form-group">
-                            <svg class="popup-contact__field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                            <input type="text" id="contactPostCode" name="postCode" placeholder="Post code" autocomplete="postal-code">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <svg class="popup-contact__field-icon popup-contact__field-icon--textarea" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                        <textarea id="contactMessage" name="message" placeholder="Your message *" required></textarea>
-                    </div>
-                    <label class="popup-contact__consent">
-                        <input type="checkbox" id="contactConsent" name="consent" required>
-                        <span>I agree to be contacted about my enquiry</span>
-                    </label>
-                    <button type="submit" class="popup-contact__submit">Send message →</button>
-                    <div class="popup-contact__perks" aria-label="Why choose BrandedUK">
-                        <div class="popup-contact__perk">
-                            <span class="popup-contact__perk-icon" aria-hidden="true">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>
-                            </span>
-                            <div>
-                                <strong>Free artwork check</strong>
-                                <span>See it before we print</span>
-                            </div>
-                        </div>
-                        <div class="popup-contact__perk">
-                            <span class="popup-contact__perk-icon" aria-hidden="true">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                            </span>
-                            <div>
-                                <strong>Competitive pricing</strong>
-                                <span>Better rates for bigger teams</span>
-                            </div>
-                        </div>
-                        <div class="popup-contact__perk">
-                            <span class="popup-contact__perk-icon" aria-hidden="true">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                            </span>
-                            <div>
-                                <strong>Fast turnaround</strong>
-                                <span>7–10 working days</span>
-                            </div>
-                        </div>
-                    </div>
+            <form class="popup-contact__form" id="contactQuickForm">
+                <div class="form-group"><input type="text" id="contactName" placeholder="Name" required></div>
+                <div class="form-group"><input type="email" id="contactEmail" placeholder="Email address" required></div>
+                <div class="form-group">
+                    <select id="contactInterest" required>
+                        <option value="" disabled selected>Interested in</option>
+                        <option value="embroidery">Embroidery</option>
+                        <option value="printing">Printing</option>
+                        <option value="workwear">Workwear</option>
+                        <option value="uniforms">Uniforms</option>
+                        <option value="promotional">Promotional Items</option>
+                        <option value="other">Other</option>
+                    </select>
                 </div>
+                <div class="form-group"><input type="tel" id="contactPhone" placeholder="Phone number"></div>
+                <div class="form-row">
+                    <div class="form-group"><input type="text" id="contactAddress" placeholder="Address"></div>
+                    <div class="form-group"><input type="text" id="contactPostCode" placeholder="Post Code"></div>
+                </div>
+                <div class="form-group"><textarea id="contactMessage" placeholder="Message" required></textarea></div>
+                <button type="submit" class="popup-contact__submit">Submit</button>
             </form>
-
-            <aside class="popup-contact__aside">
-                <div class="popup-contact__map">
-                    <div class="popup-contact__map-frame">
-                        <a class="popup-contact__map-open" href="https://www.google.com/maps/search/?api=1&query=Branded%20Europe%20Ltd%2C%20Unit%208%20Red%20Lion%20Business%20Centre%2C%20Surbiton%20KT6%207QD" target="_blank" rel="noopener">
-                            Open in Google Maps
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg>
-                        </a>
-                        <iframe
-                            title="Branded Europe Ltd location map"
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1456.0490450435852!2d-0.2944082213978167!3d51.37503081265773!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x48760a3b287b96e5%3A0x53b62f78d81fb599!2sBranded%20Europe%20Ltd!5e1!3m2!1sen!2suk!4v1766788895449!5m2!1sen!2suk"
-                            allowfullscreen=""
-                            loading="lazy"
-                            referrerpolicy="no-referrer-when-downgrade">
-                        </iframe>
-                    </div>
-                </div>
-                <div class="popup-contact__visit">
-                    <h3 class="popup-contact__visit-title">Visit us</h3>
-                    <div class="popup-contact__visit-row">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                        <div>
-                            Unit 8, Red Lion Business Centre<br>
-                            Surbiton, Surrey KT6 7QD<br>
-                            United Kingdom
-                        </div>
-                    </div>
-                    <div class="popup-contact__visit-contacts">
-                        <div class="popup-contact__visit-row">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                            <div>
-                                <a href="tel:02089742722">0208 974 2722</a>
-                                <small>Open 7 days a week, 9:00–21:00</small>
-                            </div>
-                        </div>
-                        <div class="popup-contact__visit-row">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="m22 6-10 7L2 6"/></svg>
-                            <div>
-                                <a href="mailto:info@brandeduk.com">info@brandeduk.com</a>
-                                <small>We usually reply quickly</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </aside>
         </div>
     </div>
 
@@ -9955,14 +9099,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
 
     <!-- Order Popup Scripts -->
-    <script src="test-order-popup/order.js?v=20261009-choose-file"></script>
-    <script src="test-order-popup/order-integration.js?v=20261007-api-template-refresh"></script>
-    <script src="brandedukv15-child/assets/js/tablet-rotate-hint.js?v=20261003-screen"></script>
-    <script src="test-order-popup/customizer-embed.js?v=20260929-touchdnd5"></script>
-    <script src="test-order-popup/pc-product-routing.js?v=20261007-tablet-upload"></script>
-    <script src="test-order-popup/pc-product-popup.js?v=20261007-tablet-file"></script>
-    <script src="brandedukv15-child/assets/js/cart-lottie-icon.js?v=20260927-cartlottie2"></script>
-    <script src="mobile/js/popup-contact.js?v=20261003-quotemsg1"></script>
+    <script src="test-order-popup/order.js?v=20260924-method-colours"></script>
+    <script src="test-order-popup/order-integration.js?v=20260923-colour-slide"></script>
+    <script src="test-order-popup/customizer-embed.js?v=20260923-studio-load"></script>
+    <script src="test-order-popup/pc-product-routing.js?v=20260924-basket-loader"></script>
+    <script src="test-order-popup/pc-product-popup.js?v=20260923-qty-green"></script>
+    <script src="mobile/js/popup-contact.js?v=20251230"></script>
 
     <script>
         // Color Zoom Modal Functions
@@ -10014,70 +9156,54 @@
     </script>
 
     <!-- ORDER DRAWER PC - Slide-in basket summary -->
-    <script src="order-drawer-pc.js?v=20261007-tablet-side"></script>
+    <script src="order-drawer-pc.js?v=20260919-contained-item-images"></script>
 
     <script>
         (function () {
-            var DESCRIPTIONS = window.BrandedCategoryDescriptions || {};
-            var resolveIndustry = window.BrandedResolveIndustryDescription;
-
-            var SUSTAINABLE = { title: 'Sustainable', desc: 'Lower-impact garments made with recycled, organic and more responsible materials, without compromising on quality or customisation options.' };
-            var ALL_PRODUCTS = { title: 'Explore Our Full Product Range', desc: 'Browse over 9,000 customisable products from leading workwear, uniform and promotional clothing brands. Use the filters to narrow your search by product type, brand, colour, size, fabric, style and features, then find the right garments to personalise with embroidery or print.' };
+            var DESCRIPTIONS = {
+                'accessories': { title: 'Accessories', desc: 'Complete your branded uniform with practical accessories for staff, events and daily workwear. From bags to small add-ons, these items help keep your team looking organised and professional. Ideal for corporate, hospitality, schools, clubs and promotional use.' },
+                'aprons': { title: 'Aprons', desc: 'Personalised aprons are ideal for restaurants, cafes, bars, salons, workshops and catering teams. Add your logo with embroidery or print for a clean, professional look. Choose from bib aprons, waist aprons and durable workwear styles built for daily use.' },
+                'bags': { title: 'Bags', desc: 'Branded bags are a practical way to promote your company while giving staff, customers or event teams something useful. Choose from gym bags, tote bags, backpacks and work bags suitable for schools, corporate teams, clubs and promotions.' },
+                'baselayers': { title: 'Baselayers', desc: 'Personalised baselayers are designed for comfort, performance and warmth during work, sport or outdoor activity. Ideal for teams, clubs, security staff and outdoor workers. Add your logo for a consistent branded look underneath jackets, uniforms or sportswear.' },
+                'beanies': { title: 'Beanies', desc: 'Custom beanies are a simple and effective choice for winter workwear, outdoor teams, events and promotional merchandise. Add embroidery for a premium finish that keeps your brand visible in colder weather. Suitable for construction, logistics, schools and clubs.' },
+                'blouses': { title: 'Blouses', desc: 'Branded blouses give office, hospitality, reception and customer-facing teams a smart and professional appearance. Available in styles suitable for corporate uniforms and front-of-house staff. Add subtle embroidery for a refined branded finish.' },
+                'bodywarmers': { title: 'Bodywarmers & Gilets', desc: 'Personalised bodywarmers and gilets are ideal for staff who need warmth without restricting movement. Perfect for trades, warehouses, outdoor teams, events and hospitality. Add embroidery or print for a practical uniform layer with strong brand visibility.' },
+                'caps': { title: 'Caps', desc: 'Personalised caps are a popular choice for workwear, events, hospitality, clubs and promotional campaigns. Add embroidery or print to create a clean branded finish. Available in styles suitable for staff uniforms, outdoor work and team merchandise.' },
+                'chefswear': { title: 'Chef Jackets', desc: 'Personalised chef jackets are designed for kitchens, restaurants, hotels, catering teams and food service professionals. Add your logo or staff name with embroidery for a premium finish. Choose durable garments that maintain a clean and professional appearance.' },
+                'coveralls': { title: 'Coveralls', desc: 'Personalised coveralls are built for trades, mechanics, engineering, maintenance and industrial work. They provide full-body protection while helping your team look organised and professional. Add embroidery or print to create durable branded workwear.' },
+                'dresses': { title: 'Dresses', desc: 'Workwear dresses offer a smart and polished option for hospitality, beauty, healthcare, reception and corporate teams. Comfortable and professional, they help create a consistent brand image. Suitable for staff uniforms in customer-facing environments.' },
+                'fleece': { title: 'Fleece', desc: 'Personalised fleeces are a versatile uniform layer for staff working indoors or outdoors. Warm, comfortable and easy to brand, they are ideal for trades, schools, hospitality, clubs and corporate teams. Add embroidery for a professional long-lasting finish.' },
+                'footwear': { title: 'Footwear', desc: 'Work boots and shoes are designed for protection, durability and comfort across demanding environments. Suitable for construction, warehouse, industrial and outdoor teams. Choose reliable footwear options to support staff safety and everyday performance.' },
+                'gloves': { title: 'Gloves', desc: 'Work gloves help protect staff across construction, warehouse, logistics, catering, cleaning and outdoor environments. Choose from practical styles designed for comfort, grip and durability. Ideal for completing safety-focused workwear packages.' },
+                'helmets': { title: 'Helmets', desc: 'Safety helmets are essential for construction, site work, maintenance and industrial environments. They help protect staff while supporting workplace safety requirements. Suitable for contractors, site teams and trade professionals.' },
+                'safety-vests': { title: 'Hi-Vis / Safety Vests', desc: 'Safety vests are essential for visibility in construction, logistics, warehousing, events and site work. Add your logo or staff role for clear identification. A practical and cost-effective option for branded PPE and compliant workwear.' },
+                'hivis': { title: 'Hi-Vis', desc: 'Safety vests are essential for visibility in construction, logistics, warehousing, events and site work. Add your logo or staff role for clear identification. A practical and cost-effective option for branded PPE and compliant workwear.' },
+                'hoodies': { title: 'Hoodies', desc: 'Personalised hoodies are a popular choice for staff uniforms, schools, trades, clubs and promotional clothing. Comfortable and easy to brand, they work well for casual workwear or teamwear. Add embroidery or print for a professional branded finish.' },
+                'jackets': { title: 'Jackets', desc: 'Personalised jackets are ideal for keeping staff warm, dry and professional in all working conditions. Suitable for construction, logistics, hospitality, events and corporate teams. Choose from softshells, waterproofs, fleeces and insulated styles with embroidery or print.' },
+                'joggers': { title: 'Joggers', desc: 'Personalised sweatpants and joggers are ideal for schools, clubs, gyms, sports teams and casual staff uniforms. Comfortable and practical, they work well with hoodies, t-shirts and jackets. Add print or embroidery for a complete branded teamwear look.' },
+                'knitwear': { title: 'Knitted Jumpers', desc: 'Knitted jumpers offer a smart and comfortable uniform layer for offices, schools, hospitality and customer-facing teams. Add embroidery for a clean branded finish. Ideal for professional environments where warmth and presentation are both important.' },
+                'polos': { title: 'Polo Shirts', desc: 'Personalised polo shirts are one of the most versatile uniform options for businesses, schools, hospitality, trades and events. Smart, comfortable and easy to brand, they work well with embroidery or print. Ideal for professional staff uniforms and teamwear.' },
+                'scarves': { title: 'Scarves', desc: 'Branded scarves are suitable for schools, clubs, sports teams, events and winter merchandise. They offer warmth while keeping your identity visible. Ideal for seasonal uniforms, supporter merchandise and promotional campaigns.' },
+                'shirts': { title: 'Shirts', desc: 'Personalised shirts are ideal for corporate, hospitality, reception, retail and front-of-house teams. Smart and professional, they help create a consistent brand image. Add embroidery for a subtle and durable uniform finish.' },
+                'shorts': { title: 'Shorts', desc: 'Workwear shorts are suitable for warmer conditions, outdoor teams, trades, schools, sports and hospitality staff. Comfortable and practical, they pair well with branded polos, t-shirts and jackets. Ideal for seasonal uniforms and active work environments.' },
+                'skirts': { title: 'Skirts', desc: 'Uniform skirts provide a smart option for corporate, school, hospitality and front-of-house teams. Comfortable and professional, they help maintain a consistent appearance. Suitable for staff uniforms where presentation is important.' },
+                'socks': { title: 'Socks', desc: 'Personalised socks are suitable for sports teams, schools, clubs, promotions and branded merchandise. Comfortable and practical, they can complete a uniform or teamwear package. Ideal for events, gifts and retail-style campaigns.' },
+                'softshells': { title: 'Softshell Jackets', desc: 'Personalised softshell jackets are a smart and practical choice for trades, outdoor teams, hospitality, events and corporate uniforms. They offer warmth, comfort and weather resistance without bulk. Add embroidery for a premium professional finish.' },
+                'sports-teamwear': { title: 'Sports & Teamwear', desc: 'Sports overtop garments are ideal for clubs, schools, teams and training sessions. Lightweight and practical, they help create a consistent team appearance. Add logos, names or numbers for a professional branded sportswear finish.' },
+                'sweatshirts': { title: 'Sweatshirts', desc: 'Branded sweatshirts are a versatile uniform option for schools, trades, clubs, offices and promotional clothing. Comfortable and durable, they are suitable for everyday use. Add embroidery or print for a clean and professional branded finish.' },
+                'tabards': { title: 'Tabards', desc: 'Tabards are ideal for cleaning teams, care homes, schools, catering, salons and service staff. Practical and easy to wear, they help identify roles clearly. Add embroidery or print to create a professional branded uniform.' },
+                'ties': { title: 'Ties', desc: 'Personalised or coordinated ties help complete a smart uniform for corporate, hospitality, school and front-of-house teams. They add a professional finish to shirts and formal workwear. Suitable for reception, events and customer-facing staff.' },
+                'towels': { title: 'Towels', desc: 'Branded towels are ideal for gyms, spas, hotels, salons, sports clubs and promotional gift sets. Add embroidery for a premium, long-lasting finish. Suitable for hospitality, wellness and leisure businesses looking for professional branded products.' },
+                'trousers': { title: 'Trousers', desc: 'Work trousers are essential for trades, warehouses, logistics, hospitality, healthcare and general staff uniforms. Durable and practical, they support comfort and movement throughout the working day. Pair with branded tops and jackets for a complete uniform.' },
+                't-shirts': { title: 'T-Shirts', desc: 'Personalised t-shirts are perfect for staff uniforms, events, promotions, clubs, schools and casual workwear. Easy to brand with print or embroidery, they offer a cost-effective way to promote your business. Choose from a wide range of colours and fits.' },
+                'tunics': { title: 'Tunics', desc: 'Tunics are ideal for healthcare, beauty, spa, salon and care environments. Smart, comfortable and practical, they help staff maintain a professional appearance. Add embroidery for a clean branded uniform finish.' },
+                'umbrellas': { title: 'Umbrellas', desc: 'Branded umbrellas are practical promotional products for events, corporate gifts, hospitality and outdoor teams. They keep your brand visible in everyday use while offering real value to customers or staff. Ideal for seasonal campaigns and premium giveaways.' },
+                'waistcoats': { title: 'Waistcoats', desc: 'Waistcoats are a smart option for hospitality, events, corporate, reception and front-of-house teams. They help create a polished and consistent uniform appearance. Suitable for hotels, restaurants, venues and formal customer-facing roles.' },
+            };
 
             var params = new URLSearchParams(window.location.search);
-            var typeValues = []
-                .concat(params.getAll('productType') || [])
-                .concat(params.getAll('productType[]') || [])
-                .map(function (value) { return String(value || '').toLowerCase().trim(); })
-                .filter(Boolean);
-            var type = typeValues[0] || '';
-            var typeKey = typeValues.slice().sort().join('|');
-            var sectorValues = []
-                .concat(params.getAll('sector') || [])
-                .concat(params.getAll('sector[]') || [])
-                .map(function (value) { return String(value || '').trim(); })
-                .filter(Boolean);
-
-            // Industry landings (and any active sector) take priority over leftover productType copy.
-            var data = null;
-            if (typeof resolveIndustry === 'function' && sectorValues.length) {
-                for (var s = 0; s < sectorValues.length; s++) {
-                    data = resolveIndustry(sectorValues[s]);
-                    if (data) break;
-                }
-            }
-
-            var hasSubcategory = ['feature', 'feature[]', 'gender', 'gender[]', 'sleeve', 'sleeve[]', 'sector', 'sector[]', 'style', 'style[]', 'fit', 'fit[]', 'ageGroup', 'ageGroup[]', 'fabric', 'fabric[]', 'neckline', 'neckline[]', 'q', 'brand', 'accreditation', 'flag', 'flag[]'].some(function (key) {
-                return params.get(key);
-            });
-            var COMBINED = {
-                'hoodies|sweatshirts': {
-                    title: 'Hoodies / Sweatshirts',
-                    desc: 'Warm layers for teams, staff and branded uniforms. Hoodies and sweatshirts together, from classic pullovers and crew necks to heavyweight and performance styles, ready for embroidery or print.'
-                },
-                'jackets|softshells': {
-                    title: 'Jackets / Softshell',
-                    desc: 'Outerwear for work, travel and outdoor teams. Jackets and softshells together, from lightweight and waterproof styles to insulated and technical layers, ready to brand.'
-                }
-            };
-            var compactKey = function (value) { return value.replace(/[^a-z0-9]/g, ''); };
-            if (!data) {
-                data = !hasSubcategory && COMBINED[typeKey] ? COMBINED[typeKey] : DESCRIPTIONS[type];
-            }
-            if (!data && type) {
-                var match = Object.keys(DESCRIPTIONS).find(function (key) { return compactKey(key) === compactKey(type); });
-                data = match ? DESCRIPTIONS[match] : null;
-            }
-            var accreditation = (params.get('accreditation') || '').toLowerCase().trim();
-            if (!data && !type && !params.get('brand') && ['recycled', 'sustainable', 'organic'].indexOf(accreditation) !== -1) {
-                data = SUSTAINABLE;
-            }
-            if (!data && !type) {
-                var category = (params.get('category') || '').toLowerCase().trim();
-                var isFiltered = ['brand', 'accreditation', 'sector', 'flag', 'q'].some(function (key) { return params.get(key); })
-                    || (category && category !== 'all');
-                if (!isFiltered) data = ALL_PRODUCTS;
-            }
+            var type = (params.get('productType') || '').toLowerCase().trim();
+            var data = DESCRIPTIONS[type];
             if (!data) return;
 
             var banner = document.getElementById('cat-desc-banner');
@@ -10090,7 +9216,7 @@
             banner.classList.add('visible');
         })();
     </script>
-    <script src="brandedukv15-child/assets/js/header-basket-lottie.js?v=20261012-allpages"></script>
+    <script src="bundle-proof.js?v=20261013-trial3"></script>
 </body>
 
 </html>

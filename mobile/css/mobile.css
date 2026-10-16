@@ -6638,6 +6638,10 @@ a {
     padding-left: 4px;
 }
 
+.bottom-nav > .nav-item[hidden] {
+    display: none;
+}
+
 /* Bottom Nav Badge */
 .nav-item {
     position: relative;

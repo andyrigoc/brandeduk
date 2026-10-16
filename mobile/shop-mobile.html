@@ -56,13 +56,14 @@
 
       gtag('config', 'AW-438771987');
     </script>
-    <script defer src="/brandedukv15-child/assets/js/cookie-consent.js?v=20261008"></script>
+    <script defer src="/brandedukv15-child/assets/js/cookie-consent.js?v=20261016"></script>
     <script defer src="/brandedukv15-child/assets/js/ads-conversions.js?v=20261009"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#273469">
     <title>Shop - BrandedUK</title>
     <link rel="stylesheet" href="css/mobile.css?v=20261002-logocombo">
+    <link rel="stylesheet" href="css/bottom-nav.css?v=20261016-filter">
     <link rel="stylesheet" href="css/breadcrumbs.css?v=20260403d">
     <link rel="stylesheet" href="css/social-buttons.css?v=20261002-logocombo">
     <link rel="stylesheet" href="../brandedukv15-child/assets/css/components/loader.css?v=20261002-orbitloader">
@@ -449,15 +450,15 @@
     </main>
 
     <!-- Bottom Navigation -->
-    <nav class="bottom-nav">
-        <a href="home-mobile.html" class="nav-item">
+    <nav class="bottom-nav bottom-nav--v2" aria-label="Main navigation">
+        <a href="/index-mobile.html?force=mobile" class="nav-item" data-home-nav aria-label="Home">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                 <polyline points="9 22 9 12 15 12 15 22" />
             </svg>
             <span class="nav-item-label">Home</span>
         </a>
-        <a href="shop-mobile.html" class="nav-item active">
+        <a href="shop-mobile.html" class="nav-item" aria-current="page">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="3" y="3" width="7" height="7" />
                 <rect x="14" y="3" width="7" height="7" />
@@ -466,15 +467,18 @@
             </svg>
             <span class="nav-item-label">Shop</span>
         </a>
-        <button type="button" class="nav-item-center" id="filtersNavBtn" aria-label="Filters">
-            <svg class="filter-icon-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-                <line x1="6" y1="21" x2="6" y2="3"></line>
-                <line x1="12" y1="21" x2="12" y2="3"></line>
-                <line x1="18" y1="21" x2="18" y2="3"></line>
-                <circle cx="6" cy="8" r="2"></circle>
-                <circle cx="12" cy="14" r="2"></circle>
-                <circle cx="18" cy="10" r="2"></circle>
-            </svg>
+        <!-- On the product list the center button filters the list (opens #filtersDropup via mobile.js) -->
+        <button type="button" class="nav-item nav-item--customise" id="filtersNavBtn" aria-label="Filters" aria-controls="filtersDropup">
+            <span class="nav-customise-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                    <line x1="6" y1="21" x2="6" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="3"></line>
+                    <line x1="18" y1="21" x2="18" y2="3"></line>
+                    <circle cx="6" cy="8" r="2"></circle>
+                    <circle cx="12" cy="14" r="2"></circle>
+                    <circle cx="18" cy="10" r="2"></circle>
+                </svg>
+            </span>
             <span class="nav-item-label">Filter</span>
         </button>
 
@@ -927,7 +931,7 @@
     </div>
 
     <!-- API Integration Scripts -->
-    <script src="../brandedukv15-child/assets/js/api-config.js?v=20261002-localproxy"></script>
+    <script src="../brandedukv15-child/assets/js/api-config.js?v=20261016-apiproxy"></script>
     <script src="../brandedukv15-child/assets/js/api.js?v=20260820a"></script>
     <script src="../brandedukv15-child/assets/data/organic-sustainable-codes.js?v=20261006-leaf3"></script>
     <script src="../brandedukv15-child/assets/js/organic-leaf.js?v=20261006-leaf4"></script>
@@ -2036,7 +2040,7 @@
         });
     })();
     </script>
-    <script src="js/mobile.js?v=20260730a"></script>
+    <script src="js/mobile.js?v=20261016-apiproxy"></script>
     <script src="js/breadcrumbs.js?v=20260403a"></script>
     <script src="footer/footer.js?v=20261002-cta-equal"></script>
 </body>

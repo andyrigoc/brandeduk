@@ -44,7 +44,7 @@
 
       gtag('config', 'AW-438771987');
     </script>
-    <script defer src="/brandedukv15-child/assets/js/cookie-consent.js?v=20261008"></script>
+    <script defer src="/brandedukv15-child/assets/js/cookie-consent.js?v=20261016"></script>
     <script defer src="/brandedukv15-child/assets/js/ads-conversions.js?v=20261009"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#273469">
@@ -53,6 +53,7 @@
     <meta name="description" content="Customize your workwear with embroidery or printing. Upload your logo, choose positions, and see live previews of your branded clothing.">
     <title>Customize Your Workwear - BrandedUK</title>
     <link rel="stylesheet" href="mobile/css/mobile.css?v=20261002-logocombo">
+    <link rel="stylesheet" href="mobile/css/bottom-nav.css?v=20261016-newbar">
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20261002-logocombo">
     <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20261002-chatlogo">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260116a">
@@ -1001,13 +1002,14 @@
     </div>
 
     <!-- Bottom Navigation -->
-    <nav class="bottom-nav">
-        <a href="#" class="nav-item" id="accountNavBtn">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                <circle cx="12" cy="7" r="4"/>
+    <nav class="bottom-nav bottom-nav--v2" aria-label="Main navigation">
+        <a href="/index-mobile.html?force=mobile" class="nav-item" data-home-nav aria-label="Home">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M3 11 12 3l9 8"></path>
+                <path d="M5 10v10h14V10"></path>
+                <path d="M9 20v-6h6v6"></path>
             </svg>
-            <span class="nav-item-label">Account</span>
+            <span class="nav-item-label">Home</span>
         </a>
         <a href="shop.html" class="nav-item">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1018,17 +1020,13 @@
             </svg>
             <span class="nav-item-label">Shop</span>
         </a>
-        <button type="button" class="nav-item-center" id="filtersNavBtn" aria-label="Filters">
-            <svg class="filter-icon-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-                <line x1="6" y1="21" x2="6" y2="3"></line>
-                <line x1="12" y1="21" x2="12" y2="3"></line>
-                <line x1="18" y1="21" x2="18" y2="3"></line>
-                <circle cx="6" cy="8" r="2"></circle>
-                <circle cx="12" cy="14" r="2"></circle>
-                <circle cx="18" cy="10" r="2"></circle>
-            </svg>
-            <span class="nav-item-label">Filter</span>
+        <button type="button" class="nav-item nav-item--customise" id="customiseNavBtn" data-start-sheet-trigger aria-haspopup="dialog" aria-expanded="false" aria-controls="startSheet">
+            <span class="nav-customise-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                    <path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/>
+                </svg>
+            </span>
+            <span class="nav-item-label">Customise</span>
         </button>
         <a href="basket.html#orderSummary" class="nav-item" id="basketNavLink">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1039,16 +1037,12 @@
             <span class="nav-badge" id="navCartBadge">0</span>
             <span class="nav-item-label">Basket</span>
         </a>
-        <a href="https://wa.me/447447348564?text=Hi%20I%20would%20like%20a%20quote" target="_blank" rel="noopener" class="nav-item" id="chatNavBtn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 80 80">
-                <g fill="none" stroke="currentColor" stroke-width="3">
-                    <path d="M30,59C27.794,59,26,60.794,26,63C26,65.206,27.794,67,30,67C32.206,67,34,65.206,34,63C34,60.794,32.206,59,30,59zM30,65C28.897,65,28,64.103,28,63C28,61.897,28.897,61,30,61C31.103,61,32,61.897,32,63C32,64.103,31.103,65,30,65zM27,15L31,15C31.552,15,32,14.553,32,14C32,13.447,31.552,13,31,13L27,13C26.448,13,26,13.447,26,14C26,14.553,26.448,15,27,15zM34,15L35,15C35.552,15,36,14.553,36,14C36,13.447,35.552,13,35,13L34,13C33.448,13,33,13.447,33,14C33,14.553,33.448,15,34,15z" fill="currentColor"/>
-                    <path d="M66,22L48,22L48,14.405C48,11.977,46.024,10,43.595,10L18.405,10C15.976,10,14,11.977,14,14.405L14,65.594C14,68.023,15.976,70,18.405,70L43.594,70C46.024,70,48,68.023,48,65.595L48,43L66,43L66,22ZM18.405,12L43.594,12C44.921,12,46,13.079,46,14.405L46,16L16,16L16,14.405C16,13.079,17.079,12,18.405,12zM43.595,68L18.405,68C17.079,68,16,66.921,16,65.595L16,58L46,58L46,65.595C46,66.921,44.921,68,43.595,68zM46,56L16,56L16,18L46,18L46,22L28,22L28,43L32,43L32,50L41.333,43L46,43L46,56ZM64,41L48,41L40.667,41L34,46L34,41L30,41L30,24L48,24L64,24L64,41Z" fill="currentColor"/>
-                    <path fill="currentColor" d="M34,35C34,35.553,34.448,36,35,36L59,36C59.552,36,60,35.553,60,35C60,34.447,59.552,34,59,34L35,34C34.448,34,34,34.447,34,35z"/>
-                    <path fill="currentColor" d="M35,31L45,31C45.552,31,46,30.553,46,30C46,29.447,45.552,29,45,29L35,29C34.448,29,34,29.447,34,30C34,30.553,34.448,31,35,31z"/>
-                </g>
+        <a href="#" class="nav-item" id="accountNavBtn">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
             </svg>
-            <span class="nav-item-label">Chat</span>
+            <span class="nav-item-label">Account</span>
         </a>
     </nav>
 
@@ -1202,6 +1196,7 @@
     </div>
 
     <script src="mobile/js/mobile.js?v=20260730a"></script>
+    <script src="mobile/js/bottom-nav.js?v=20261016-newbar"></script>
     <script src="brandedukv15-child/assets/js/upload/logo-upload.js?v=20260403a"></script>
     <script src="brandedukv15-child/assets/js/color-eyedropper.js?v=20260610n"></script>
     <script src="brandedukv15-child/assets/js/color-hex.js?v=20260610n"></script>

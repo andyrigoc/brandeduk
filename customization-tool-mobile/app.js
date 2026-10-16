@@ -316,6 +316,16 @@ function isWhiteColourName(name) {
 }
 
 function applyGarmentTintHex(hex) {
+  if (isMobileCustomizationExperience()) {
+    if (colourLayer) {
+      colourLayer.style.display = "none";
+      colourLayer.style.backgroundColor = "transparent";
+      colourLayer.style.webkitMaskImage = "none";
+      colourLayer.style.maskImage = "none";
+    }
+    return;
+  }
+
   const thumbUrl = state.selectedColorImage || getColourImageForName(state.colourName);
   const BCH = brandedColour();
   let tintHex = BCH && typeof BCH.getImageHexSync === "function" ? BCH.getImageHexSync(thumbUrl) : "";
@@ -434,6 +444,16 @@ function applySelectedProductColour(name, hex) {
 }
 
 function syncViewThumbTint() {
+  if (isMobileCustomizationExperience()) {
+    document.querySelectorAll(".view-tabs-side .view-thumb").forEach((thumbImg) => {
+      thumbImg.style.removeProperty("background-color");
+      thumbImg.style.removeProperty("filter");
+      thumbImg.style.removeProperty("opacity");
+    });
+    document.querySelectorAll(".view-tabs-side .view-thumb-colour-layer").forEach((layer) => layer.remove());
+    return;
+  }
+
   const thumbUrl = state.selectedColorImage || getColourImageForName(state.colourName);
   const BCH = brandedColour();
   let safeHex = BCH && typeof BCH.getImageHexSync === "function" ? BCH.getImageHexSync(thumbUrl) : "";
@@ -996,6 +1016,15 @@ function isDesktopToolExperience() {
   const params = new URLSearchParams(window.location.search);
   if (String(params.get("from") || "").toLowerCase() === "customize-pc") return true;
   return Boolean(window.matchMedia && window.matchMedia("(min-width: 800px)").matches);
+}
+
+function isMobileCustomizationExperience() {
+  const source = String(customizationRouteParams.get("from") || "").toLowerCase();
+  return source === "customize-mobile" || !isDesktopToolExperience();
+}
+
+if (isMobileCustomizationExperience()) {
+  document.body.classList.add("is-mobile-customization");
 }
 
 function notifyEmbeddedOrderSaved(result) {
@@ -1840,7 +1869,7 @@ async function restoreAreaDesign(area) {
     designLayer.style.left = `${areaWidth * (placement.leftPct / 100)}px`;
     designLayer.style.top = `${areaHeight * (placement.topPct / 100)}px`;
   } else {
-    fitLogoToPrintArea();
+    fitLogoToInitialBounds();
     centerLogo();
   }
 
@@ -3094,8 +3123,15 @@ async function applyArea() {
     productPreview.classList.add("custom-tshirt-front");
   }
 
-  // Vista utente: sempre PNG neutro (box laterale). Il thumb API serve solo al campionamento colore.
+  // Mobile uses the selected product image on the front; other views stay neutral.
   const neutralPngSrc = resolveNeutralGarmentPngForArea(state.selectedArea);
+  const productColourImage = isMobileCustomizationExperience()
+    && state.selectedArea === "front"
+    && state.selectedColorImage
+    && !isUnreliableRemoteImageUrl(state.selectedColorImage)
+    ? state.selectedColorImage
+    : "";
+  const previewImageSrc = productColourImage || neutralPngSrc;
   const productShapeEl = document.getElementById("productShape");
   const colourLayerEl  = document.getElementById("colourLayer");
   const wrapEl         = document.querySelector(".polo-colour-wrap");
@@ -3104,16 +3140,21 @@ async function applyArea() {
     wrapEl.classList.add("is-switching-area");
   }
 
-  await ensureGarmentImageLoaded(neutralPngSrc);
+  const previewImageLoaded = await withTimeout(ensureGarmentImageLoaded(previewImageSrc), 5000);
+  const displayedImageSrc = previewImageLoaded ? previewImageSrc : neutralPngSrc;
+  if (!previewImageLoaded && previewImageSrc !== neutralPngSrc) {
+    await ensureGarmentImageLoaded(neutralPngSrc);
+  }
   if (requestId !== areaRenderRequestId) return;
 
-  productShapeEl.src = neutralPngSrc;
-  const useConfiguredTemplateDirectly = isConfiguredTemplateImageUrl(neutralPngSrc);
+  productShapeEl.src = displayedImageSrc;
+  const useConfiguredTemplateDirectly = isConfiguredTemplateImageUrl(displayedImageSrc);
   const shouldMirrorRight = state.selectedArea === "right"
     && state.product !== "beanie"
     && !useConfiguredTemplateDirectly;
   productPreview.classList.toggle("mirror-right", shouldMirrorRight);
-  colourLayerEl.style.opacity = useConfiguredTemplateDirectly ? "0" : "1";
+  const applyColourTint = !isMobileCustomizationExperience();
+  colourLayerEl.style.opacity = useConfiguredTemplateDirectly || !applyColourTint ? "0" : "1";
   const areaTintHex = (() => {
     const thumb = state.selectedColorImage || getColourImageForName(state.colourName);
     const BCH = brandedColour();
@@ -3122,15 +3163,26 @@ async function applyArea() {
     if (state.colourHex && !isPlaceholderSwatchHex(state.colourHex)) return state.colourHex;
     return isWhiteColourName(state.colourName) ? "#ffffff" : "#ffffff";
   })();
-  if (useConfiguredTemplateDirectly) {
+  if (useConfiguredTemplateDirectly || !applyColourTint) {
+    colourLayerEl.style.display = applyColourTint ? "" : "none";
+    colourLayerEl.style.backgroundColor = applyColourTint ? colourLayerEl.style.backgroundColor : "transparent";
     colourLayerEl.style.webkitMaskImage = "none";
     colourLayerEl.style.maskImage = "none";
+    if (!applyColourTint) {
+      colourLayerEl.style.webkitMaskSize = "auto";
+      colourLayerEl.style.maskSize = "auto";
+      colourLayerEl.style.webkitMaskRepeat = "repeat";
+      colourLayerEl.style.maskRepeat = "repeat";
+      colourLayerEl.style.webkitMaskPosition = "0% 0%";
+      colourLayerEl.style.maskPosition = "0% 0%";
+    }
   } else {
+    colourLayerEl.style.display = "";
     colourLayerEl.style.backgroundColor = areaTintHex;
 
     // Maschera tint sul PNG neutro, non sulla foto catalogo.
-    colourLayerEl.style.webkitMaskImage = `url("${neutralPngSrc}")`;
-    colourLayerEl.style.maskImage = `url("${neutralPngSrc}")`;
+    colourLayerEl.style.webkitMaskImage = `url("${displayedImageSrc}")`;
+    colourLayerEl.style.maskImage = `url("${displayedImageSrc}")`;
     colourLayerEl.style.webkitMaskSize = "contain";
     colourLayerEl.style.maskSize = "contain";
     colourLayerEl.style.webkitMaskRepeat = "no-repeat";
@@ -4404,7 +4456,7 @@ document.querySelectorAll("[data-design-type]").forEach(card => {
     if (card.classList.contains("is-disabled")) return;
     state.pendingDecorationType = card.dataset.designType;
     const library = getSessionLogoLibrary();
-    if (library.length > 0) {
+    if (library.length > 0 && !isMobileCustomizationExperience()) {
       showLogoLibraryPicker(library);
     } else {
       document.getElementById("logoFileInput").click();
@@ -4942,7 +4994,7 @@ function showLogoOnCanvas(imageSrc) {
       return;
     }
 
-    fitLogoToPrintArea();
+    fitLogoToInitialBounds();
     centerLogo();
     activateLogo();
     updateLogoSizeLabels();
@@ -4961,10 +5013,15 @@ function showLogoOnCanvas(imageSrc) {
   };
 }
 
-function fitLogoToPrintArea() {
+function fitLogoToInitialBounds() {
   const imageRatio = getLogoAspectRatio();
-  const maxWidth = getPrintableReferenceWidthPx();
-  const maxHeight = getPrintableReferenceHeightPx();
+  const mobileExperience = isMobileCustomizationExperience();
+  const maxWidth = mobileExperience
+    ? customArea.clientWidth * 0.9
+    : getPrintableReferenceWidthPx();
+  const maxHeight = mobileExperience
+    ? customArea.clientHeight * 0.9
+    : getPrintableReferenceHeightPx();
   const width = Math.min(maxWidth, maxHeight * imageRatio);
   const height = width / imageRatio;
 
@@ -5007,9 +5064,11 @@ function getRenderedLogoSizePx() {
 
 function centerLogo() {
   const logoFrame = getLogoFrameEl();
-  const printableArea = getPrintableAreaRectPx();
-  designLayer.style.left = `${printableArea.x + printableArea.width / 2 - logoFrame.offsetWidth / 2}px`;
-  designLayer.style.top = `${printableArea.y + printableArea.height / 2 - logoFrame.offsetHeight / 2}px`;
+  const placementArea = isMobileCustomizationExperience()
+    ? { x: 0, y: 0, width: customArea.clientWidth, height: customArea.clientHeight }
+    : getPrintableAreaRectPx();
+  designLayer.style.left = `${placementArea.x + placementArea.width / 2 - logoFrame.offsetWidth / 2}px`;
+  designLayer.style.top = `${placementArea.y + placementArea.height / 2 - logoFrame.offsetHeight / 2}px`;
   updateVisibilityByPrintArea(designLayer);
 }
 
@@ -6151,6 +6210,9 @@ function syncPreviewGarmentClone(poloClone) {
   }
 
   const cloneCL = poloClone.querySelector(".colour-layer");
+  if (cloneCL && isMobileCustomizationExperience()) {
+    cloneCL.remove();
+  }
   if (cloneCL && colourLayer) {
     copyInlineStyles(colourLayer, cloneCL, [
       "backgroundColor",
@@ -6604,4 +6666,3 @@ document.getElementById("straightenBtn").addEventListener("click", () => {
     resetLayerRotationToStraight("text");
   }
 });
-

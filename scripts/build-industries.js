@@ -423,7 +423,7 @@ function headAssets() {
     <link rel="stylesheet" href="/footer-dev/pc-footer.css?v=20261009-phones">
     <link rel="stylesheet" href="/brandedukv15-child/assets/css/pages/industries.css?v=${ASSET_VERSION}">
     <script src="/brandedukv15-child/assets/js/shared-config.js?v=20261005-megafit"></script>
-    <script src="/brandedukv15-child/assets/js/pc-header-template.js?v=20261012-navmore"></script>
+    <script src="/brandedukv15-child/assets/js/pc-header-template.js?v=20261015-nodeals"></script>
     <script src="/brandedukv15-child/assets/js/pc-header.js?v=20261012-navmore"></script>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     <link rel="preconnect" href="https://cdn.pimber.ly">
