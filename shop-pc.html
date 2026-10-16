@@ -6264,8 +6264,20 @@
                 const productTypeParam = urlParams.get('productType');
                 const accreditationParam = urlParams.get('accreditation');
                 const brandParam = urlParams.get('brand');
+                const productTypeKey = []
+                    .concat(urlParams.getAll('productType') || [])
+                    .concat(urlParams.getAll('productType[]') || [])
+                    .map(value => String(value || '').toLowerCase().trim())
+                    .filter(Boolean)
+                    .sort()
+                    .join('|');
 
-                if (brandParam) {
+                if (productTypeKey === 'hoodies|sweatshirts') {
+                    document.getElementById('brand-editorial')?.setAttribute('hidden', '');
+                    updateCategoryBrandLogo('', '');
+                    categoryTitleEl.textContent = 'Hoodies / Sweatshirts';
+                    categoryTitleEl.style.opacity = '1';
+                } else if (brandParam) {
                     // Format brand name nicely for display
                     const brandDisplayName = brandParam
                         .split('-')

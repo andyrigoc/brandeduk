@@ -73,6 +73,60 @@
         return cat.replace(/[-_]/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
     }
 
+    /* Shop products menu labels. Combined keys match the H1 for those lists. */
+    var PRODUCT_TYPE_CRUMBS = {
+        'tshirts': 'T-Shirts',
+        't-shirts': 'T-Shirts',
+        'polos': 'Polo Shirts',
+        'polo': 'Polo Shirts',
+        'hoodies': 'Hoodies',
+        'sweatshirts': 'Sweatshirts',
+        'jackets': 'Jackets',
+        'softshells': 'Softshells',
+        'safety-vests': 'Hi-Vis Clothing',
+        'hivis': 'Hi-Vis Clothing',
+        'hi-vis': 'Hi-Vis Clothing',
+        'trousers': 'Work Trousers',
+        'aprons': 'Work & Uniforms',
+        'fleece': 'Fleeces',
+        'fleeces': 'Fleeces',
+        'caps': 'Headwear'
+    };
+    var COMBINED_TYPE_CRUMBS = {
+        'hoodies|sweatshirts': 'Hoodies / Sweatshirts',
+        'jackets|softshells': 'Jackets / Softshell'
+    };
+
+    function collectParams(name) {
+        var params = new URLSearchParams(window.location.search);
+        var seen = {};
+        return [].concat(params.getAll(name) || []).concat(params.getAll(name + '[]') || [])
+            .map(function (value) { return String(value || '').trim().toLowerCase(); })
+            .filter(function (value) {
+                if (!value || seen[value]) return false;
+                seen[value] = true;
+                return true;
+            });
+    }
+
+    /** Visible shop crumb when the list is filtered by productType, not ?category=. */
+    function productTypeCrumb() {
+        var types = collectParams('productType');
+        if (!types.length) {
+            var accreditation = (param('accreditation') || '').toLowerCase();
+            if (accreditation === 'recycled' || accreditation === 'organic' || accreditation === 'sustainable') {
+                return 'Sustainable';
+            }
+            return '';
+        }
+        var key = types.slice().sort().join('|');
+        if (COMBINED_TYPE_CRUMBS[key]) return COMBINED_TYPE_CRUMBS[key];
+        if (types.length === 1) return PRODUCT_TYPE_CRUMBS[types[0]] || prettyCategory(types[0]);
+        return types.map(function (type) {
+            return PRODUCT_TYPE_CRUMBS[type] || prettyCategory(type);
+        }).join(' / ');
+    }
+
     /* ── Helpers ────────────────────────────────────── */
 
     /** Read a URL search param (works from the current page URL) */
@@ -150,7 +204,10 @@
         switch (page) {
 
             case 'shop':
-                if (category && category !== 'all') {
+                var typeCrumb = productTypeCrumb();
+                if (typeCrumb) {
+                    crumbs.push({ label: typeCrumb, href: null });
+                } else if (category && category !== 'all') {
                     crumbs.push({ label: catDisplay, href: shopUrl + '?category=' + encodeURIComponent(category) });
                 } else {
                     crumbs.push({ label: 'All Products', href: shopUrl });
