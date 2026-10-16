@@ -292,7 +292,79 @@
     </div>
 
 
-    <!-- Category Heading (same structure as shop.html) -->
+    <style>
+        .shop-hero-band { display: none; }
+        body.shop-category-card .shop-hero-band {
+            display: block;
+            margin-top: 0;
+            background: #f3f4f6;
+            padding: 8px 0 4px;
+        }
+        body.shop-category-card .site-breadcrumbs,
+        body.shop-category-card .shop-category-heading { display: none !important; }
+        .shop-hero-card {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0 12px 8px;
+            padding: 14px 12px 14px 16px;
+            background: #fff;
+            border-radius: 22px;
+            box-shadow: 0 10px 28px rgba(15, 23, 42, 0.07);
+            text-align: left;
+        }
+        .shop-hero-card__copy { flex: 1; min-width: 0; }
+        .shop-hero-card__crumb {
+            margin: 0 0 6px;
+            font-size: 12px;
+            line-height: 1.2;
+            font-weight: 400;
+            color: #9ca3af;
+        }
+        .shop-hero-card__crumb a { color: inherit; text-decoration: none; }
+        .shop-hero-card__title {
+            margin: 0;
+            font-size: 28px;
+            line-height: 1.05;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: #111827;
+        }
+        .shop-hero-card__desc {
+            margin: 8px 0 0;
+            font-size: 13px;
+            line-height: 1.4;
+            font-weight: 400;
+            color: #4b5563;
+        }
+        .shop-hero-card__desc:empty,
+        .shop-hero-card__desc[hidden] { display: none; }
+        .shop-hero-card__count {
+            margin: 8px 0 0;
+            font-size: 13px;
+            line-height: 1.2;
+            font-weight: 500;
+            color: #4b5563;
+        }
+        .shop-hero-card__photo {
+            flex: 0 0 112px;
+            width: 112px;
+            height: 132px;
+            object-fit: contain;
+            object-position: center right;
+        }
+    </style>
+    <div class="shop-hero-band" id="shopHeroBand">
+        <section class="shop-hero-card" aria-label="Category">
+            <div class="shop-hero-card__copy">
+                <p class="shop-hero-card__crumb"><a href="../index.html">Home</a> <span aria-hidden="true">›</span> <span id="shopHeroCrumb">T-Shirts</span></p>
+                <h1 class="shop-hero-card__title" id="shopHeroTitle">T-Shirts</h1>
+                <p class="shop-hero-card__desc" id="shopHeroDesc" hidden></p>
+                <p class="shop-hero-card__count" id="shopHeroCount"></p>
+            </div>
+            <img class="shop-hero-card__photo" id="shopHeroPhoto" alt="" hidden>
+        </section>
+    </div>
     <div class="shop-category-heading" id="shopCategoryHeading">
         <h1 class="shop-category-title" id="shopCategoryTitle">All Products</h1>
         <p class="shop-category-desc" id="shopCategoryDesc">Browse our full range of customisable workwear and uniforms.</p>
@@ -371,6 +443,46 @@
         </div>
     </div>
     <script>
+    window.BRANDED_PC_LISTINGS = {
+        'accessories': { title: 'Accessories', desc: 'Complete your branded uniform with practical accessories for staff, events and daily workwear. From bags to small add-ons, these items help keep your team looking organised and professional. Ideal for corporate, hospitality, schools, clubs and promotional use.' },
+        'aprons': { title: 'Aprons', desc: 'Personalised aprons are ideal for restaurants, cafes, bars, salons, workshops and catering teams. Add your logo with embroidery or print for a clean, professional look. Choose from bib aprons, waist aprons and durable workwear styles built for daily use.' },
+        'bags': { title: 'Bags', desc: 'Branded bags are a practical way to promote your company while giving staff, customers or event teams something useful. Choose from gym bags, tote bags, backpacks and work bags suitable for schools, corporate teams, clubs and promotions.' },
+        'baselayers': { title: 'Baselayers', desc: 'Personalised baselayers are designed for comfort, performance and warmth during work, sport or outdoor activity. Ideal for teams, clubs, security staff and outdoor workers. Add your logo for a consistent branded look underneath jackets, uniforms or sportswear.' },
+        'beanies': { title: 'Beanies', desc: 'Custom beanies are a simple and effective choice for winter workwear, outdoor teams, events and promotional merchandise. Add embroidery for a premium finish that keeps your brand visible in colder weather. Suitable for construction, logistics, schools and clubs.' },
+        'blouses': { title: 'Blouses', desc: 'Branded blouses give office, hospitality, reception and customer-facing teams a smart and professional appearance. Available in styles suitable for corporate uniforms and front-of-house staff. Add subtle embroidery for a refined branded finish.' },
+        'bodywarmers': { title: 'Bodywarmers & Gilets', desc: 'Personalised bodywarmers and gilets are ideal for staff who need warmth without restricting movement. Perfect for trades, warehouses, outdoor teams, events and hospitality. Add embroidery or print for a practical uniform layer with strong brand visibility.' },
+        'caps': { title: 'Caps', desc: 'Personalised caps are a popular choice for workwear, events, hospitality, clubs and promotional campaigns. Add embroidery or print to create a clean branded finish. Available in styles suitable for staff uniforms, outdoor work and team merchandise.' },
+        'chefswear': { title: 'Chef Jackets', desc: 'Personalised chef jackets are designed for kitchens, restaurants, hotels, catering teams and food service professionals. Add your logo or staff name with embroidery for a premium finish. Choose durable garments that maintain a clean and professional appearance.' },
+        'coveralls': { title: 'Coveralls', desc: 'Personalised coveralls are built for trades, mechanics, engineering, maintenance and industrial work. They provide full-body protection while helping your team look organised and professional. Add embroidery or print to create durable branded workwear.' },
+        'dresses': { title: 'Dresses', desc: 'Workwear dresses offer a smart and polished option for hospitality, beauty, healthcare, reception and corporate teams. Comfortable and professional, they help create a consistent brand image. Suitable for staff uniforms in customer-facing environments.' },
+        'fleece': { title: 'Fleece', desc: 'Personalised fleeces are a versatile uniform layer for staff working indoors or outdoors. Warm, comfortable and easy to brand, they are ideal for trades, schools, hospitality, clubs and corporate teams. Add embroidery for a professional long-lasting finish.' },
+        'footwear': { title: 'Footwear', desc: 'Work boots and shoes are designed for protection, durability and comfort across demanding environments. Suitable for construction, warehouse, industrial and outdoor teams. Choose reliable footwear options to support staff safety and everyday performance.' },
+        'gloves': { title: 'Gloves', desc: 'Work gloves help protect staff across construction, warehouse, logistics, catering, cleaning and outdoor environments. Choose from practical styles designed for comfort, grip and durability. Ideal for completing safety-focused workwear packages.' },
+        'helmets': { title: 'Helmets', desc: 'Safety helmets are essential for construction, site work, maintenance and industrial environments. They help protect staff while supporting workplace safety requirements. Suitable for contractors, site teams and trade professionals.' },
+        'safety-vests': { title: 'Hi-Vis / Safety Vests', desc: 'Safety vests are essential for visibility in construction, logistics, warehousing, events and site work. Add your logo or staff role for clear identification. A practical and cost-effective option for branded PPE and compliant workwear.' },
+        'hivis': { title: 'Hi-Vis', desc: 'Safety vests are essential for visibility in construction, logistics, warehousing, events and site work. Add your logo or staff role for clear identification. A practical and cost-effective option for branded PPE and compliant workwear.' },
+        'hoodies': { title: 'Hoodies', desc: 'Personalised hoodies are a popular choice for staff uniforms, schools, trades, clubs and promotional clothing. Comfortable and easy to brand, they work well for casual workwear or teamwear. Add embroidery or print for a professional branded finish.' },
+        'jackets': { title: 'Jackets', desc: 'Personalised jackets are ideal for keeping staff warm, dry and professional in all working conditions. Suitable for construction, logistics, hospitality, events and corporate teams. Choose from softshells, waterproofs, fleeces and insulated styles with embroidery or print.' },
+        'joggers': { title: 'Joggers', desc: 'Personalised sweatpants and joggers are ideal for schools, clubs, gyms, sports teams and casual staff uniforms. Comfortable and practical, they work well with hoodies, t-shirts and jackets. Add print or embroidery for a complete branded teamwear look.' },
+        'knitwear': { title: 'Knitted Jumpers', desc: 'Knitted jumpers offer a smart and comfortable uniform layer for offices, schools, hospitality and customer-facing teams. Add embroidery for a clean branded finish. Ideal for professional environments where warmth and presentation are both important.' },
+        'polos': { title: 'Polo Shirts', desc: 'Personalised polo shirts are one of the most versatile uniform options for businesses, schools, hospitality, trades and events. Smart, comfortable and easy to brand, they work well with embroidery or print. Ideal for professional staff uniforms and teamwear.' },
+        'scarves': { title: 'Scarves', desc: 'Branded scarves are suitable for schools, clubs, sports teams, events and winter merchandise. They offer warmth while keeping your identity visible. Ideal for seasonal uniforms, supporter merchandise and promotional campaigns.' },
+        'shirts': { title: 'Shirts', desc: 'Personalised shirts are ideal for corporate, hospitality, reception, retail and front-of-house teams. Smart and professional, they help create a consistent brand image. Add embroidery for a subtle and durable uniform finish.' },
+        'shorts': { title: 'Shorts', desc: 'Workwear shorts are suitable for warmer conditions, outdoor teams, trades, schools, sports and hospitality staff. Comfortable and practical, they pair well with branded polos, t-shirts and jackets. Ideal for seasonal uniforms and active work environments.' },
+        'skirts': { title: 'Skirts', desc: 'Uniform skirts provide a smart option for corporate, school, hospitality and front-of-house teams. Comfortable and professional, they help maintain a consistent appearance. Suitable for staff uniforms where presentation is important.' },
+        'socks': { title: 'Socks', desc: 'Personalised socks are suitable for sports teams, schools, clubs, promotions and branded merchandise. Comfortable and practical, they can complete a uniform or teamwear package. Ideal for events, gifts and retail-style campaigns.' },
+        'softshells': { title: 'Softshell Jackets', desc: 'Personalised softshell jackets are a smart and practical choice for trades, outdoor teams, hospitality, events and corporate uniforms. They offer warmth, comfort and weather resistance without bulk. Add embroidery for a premium professional finish.' },
+        'sports-teamwear': { title: 'Sports & Teamwear', desc: 'Sports overtop garments are ideal for clubs, schools, teams and training sessions. Lightweight and practical, they help create a consistent team appearance. Add logos, names or numbers for a professional branded sportswear finish.' },
+        'sweatshirts': { title: 'Sweatshirts', desc: 'Branded sweatshirts are a versatile uniform option for schools, trades, clubs, offices and promotional clothing. Comfortable and durable, they are suitable for everyday use. Add embroidery or print for a clean and professional branded finish.' },
+        'tabards': { title: 'Tabards', desc: 'Tabards are ideal for cleaning teams, care homes, schools, catering, salons and service staff. Practical and easy to wear, they help identify roles clearly. Add embroidery or print to create a professional branded uniform.' },
+        'ties': { title: 'Ties', desc: 'Personalised or coordinated ties help complete a smart uniform for corporate, hospitality, school and front-of-house teams. They add a professional finish to shirts and formal workwear. Suitable for reception, events and customer-facing staff.' },
+        'towels': { title: 'Towels', desc: 'Branded towels are ideal for gyms, spas, hotels, salons, sports clubs and promotional gift sets. Add embroidery for a premium, long-lasting finish. Suitable for hospitality, wellness and leisure businesses looking for professional branded products.' },
+        'trousers': { title: 'Trousers', desc: 'Work trousers are essential for trades, warehouses, logistics, hospitality, healthcare and general staff uniforms. Durable and practical, they support comfort and movement throughout the working day. Pair with branded tops and jackets for a complete uniform.' },
+        't-shirts': { title: 'T-Shirts', desc: 'Personalised t-shirts are perfect for staff uniforms, events, promotions, clubs, schools and casual workwear. Easy to brand with print or embroidery, they offer a cost-effective way to promote your business. Choose from a wide range of colours and fits.' },
+        'tunics': { title: 'Tunics', desc: 'Tunics are ideal for healthcare, beauty, spa, salon and care environments. Smart, comfortable and practical, they help staff maintain a professional appearance. Add embroidery for a clean branded uniform finish.' },
+        'umbrellas': { title: 'Umbrellas', desc: 'Branded umbrellas are practical promotional products for events, corporate gifts, hospitality and outdoor teams. They keep your brand visible in everyday use while offering real value to customers or staff. Ideal for seasonal campaigns and premium giveaways.' },
+        'waistcoats': { title: 'Waistcoats', desc: 'Waistcoats are a smart option for hospitality, events, corporate, reception and front-of-house teams. They help create a polished and consistent uniform appearance. Suitable for hotels, restaurants, venues and formal customer-facing roles.' }
+    };
     // Set correct title immediately from URL to avoid "All Products" flash
     (function() {
         var cfg = window.BrandedConfig;
@@ -383,29 +495,41 @@
         var sectors = (cfg && typeof cfg.collectSearchValues === 'function') ? cfg.collectSearchValues(p, 'sector') : [];
         var flags = (cfg && typeof cfg.collectSearchValues === 'function') ? cfg.collectSearchValues(p, 'flag') : [];
         var landing = (cfg && typeof cfg.matchNavLanding === 'function') ? cfg.matchNavLanding(types, sectors, flags) : null;
+        function storedCategoryDesc(keys) {
+            var map = cfg && cfg.CATEGORY_INFO;
+            if (!map) return '';
+            for (var i = 0; i < keys.length; i++) {
+                var raw = String(keys[i] || '').trim();
+                if (!raw || raw.toLowerCase() === 'all') continue;
+                var norm = (cfg.normalizeCategory ? cfg.normalizeCategory(raw) : raw.toLowerCase());
+                var entry = map[norm] || map[raw.toLowerCase()];
+                if (entry && String(entry.desc || '').trim() && norm !== 'all') return String(entry.desc).trim();
+            }
+            if (!types.length && (!cat || cat === 'all') && map.all && map.all.desc) return String(map.all.desc).trim();
+            return '';
+        }
         var title = 'All Products';
-        var desc = 'Browse our full range of customisable workwear and uniforms.';
+        var desc = '';
         if (q) {
             title = 'Search: "' + q + '"';
-            desc = 'Finding matches for "' + q + '" across custom clothing, workwear and accessories.';
         } else if (landing && landing.title) {
             title = landing.title;
-            desc = sectors.length ? ('Products for the ' + landing.title + ' sector.') : desc;
+            desc = storedCategoryDesc(types.concat(sectors));
         } else if (types.map(function (value) { return String(value).toLowerCase(); }).sort().join('|') === 'hoodies|sweatshirts') {
             title = 'Hoodies / Sweatshirts';
         } else if (types.length === 1 && String(types[0]).toLowerCase() === 'hoodies') {
             title = 'Hoodies';
+            desc = storedCategoryDesc(types);
         } else if (types.length === 1 && cfg && typeof cfg.getCategoryTitle === 'function') {
             title = cfg.getCategoryTitle(types[0]) || types[0];
         } else if (flags.indexOf('offers') !== -1) {
             title = 'Deals';
         } else if (bs) {
             title = 'Recommended For You';
-            desc = 'A quick mix of popular branded workwear and custom clothing picked for faster browsing.';
         } else if (cfg && typeof cfg.getCategoryInfo === 'function') {
             var info = cfg.getCategoryInfo(cat) || {};
             title = info.title || title;
-            desc = info.desc || desc;
+            desc = storedCategoryDesc([cat]);
         } else {
             title = titles[cat] || titles[cat.toLowerCase()] || title;
         }
@@ -414,7 +538,30 @@
         var description = document.getElementById('shopCategoryDesc');
         if (legacyTitle) legacyTitle.textContent = title;
         if (heading) heading.textContent = title;
-        if (description) description.textContent = desc;
+        if (description) {
+            description.textContent = desc;
+            description.hidden = !desc;
+        }
+        document.body.classList.add('shop-category-card');
+        var pcMap = window.BRANDED_PC_LISTINGS || {};
+        var pcAlias = { tshirts: 't-shirts', 't-shirt': 't-shirts', tees: 't-shirts', polo: 'polos', fleeces: 'fleece', 'hi-vis': 'hivis' };
+        var pcSlug = types.length === 1 ? String(types[0]).toLowerCase() : ((!types.length && cat && cat !== 'all') ? String(cat).toLowerCase() : '');
+        pcSlug = pcAlias[pcSlug] || pcSlug;
+        var pc = pcMap[pcSlug];
+        function plainListingName(value) {
+            return String(value || '').replace(/[-_]/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+        }
+        var cardTitle = (pc && pc.title) || (title && title !== 'All Products' ? title : (plainListingName(pcSlug || (types[0] || '')) || title));
+        var cardDesc = (pc && pc.desc) || '';
+        var heroTitle = document.getElementById('shopHeroTitle');
+        var heroCrumb = document.getElementById('shopHeroCrumb');
+        var heroDesc = document.getElementById('shopHeroDesc');
+        if (heroTitle) heroTitle.textContent = cardTitle;
+        if (heroCrumb) heroCrumb.textContent = cardTitle;
+        if (heroDesc) {
+            heroDesc.textContent = cardDesc;
+            heroDesc.hidden = !cardDesc;
+        }
         if (!q) {
             var active = document.querySelector('.category-filter-card[data-category="' + cat + '"]');
             var label = document.getElementById('activeCatLabel');
@@ -1395,7 +1542,49 @@
             return descriptions[normalized] || `Browse ${title || 'products'} ready for embroidery, print and bulk customisation.`;
         }
 
-        function updateShopResultMeta({ mode, title, query, total, visible }) {
+        const PC_ALIAS = { tshirts: 't-shirts', 't-shirt': 't-shirts', tees: 't-shirts', polo: 'polos', fleeces: 'fleece', 'hi-vis': 'hivis' };
+
+        function pcListingFor(types, category) {
+            const map = window.BRANDED_PC_LISTINGS || {};
+            let slug = '';
+            if (types.length === 1) slug = String(types[0]).toLowerCase();
+            else if (!types.length && category && category !== 'all') slug = String(category).toLowerCase();
+            if (!slug) return null;
+            slug = PC_ALIAS[slug] || slug;
+            return map[slug] || null;
+        }
+
+        function applyCategoryCard(total, product, fallbackTitle) {
+            document.body.classList.add('shop-category-card');
+            const params = new URLSearchParams(window.location.search);
+            const types = collectMobileSearchValues(params, 'productType');
+            const data = pcListingFor(types, currentCategory || params.get('category') || '');
+            const slug = types.length === 1 ? String(types[0]) : '';
+            const plain = slug.replace(/[-_]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+            const shown = (data && data.title) || (fallbackTitle && fallbackTitle !== 'All Products' ? fallbackTitle : (plain || fallbackTitle || 'All Products'));
+            const crumb = document.getElementById('shopHeroCrumb');
+            const titleEl = document.getElementById('shopHeroTitle');
+            const descEl = document.getElementById('shopHeroDesc');
+            const countEl = document.getElementById('shopHeroCount');
+            if (crumb) crumb.textContent = shown;
+            if (titleEl) titleEl.textContent = shown;
+            if (descEl) {
+                descEl.textContent = (data && data.desc) || '';
+                descEl.hidden = !(data && data.desc);
+            }
+            if (countEl && total != null) {
+                const n = Number(total) || 0;
+                countEl.textContent = `${n.toLocaleString()} item${n === 1 ? '' : 's'}`;
+            }
+            const img = document.getElementById('shopHeroPhoto');
+            const src = product && (product.image || (product.colors && product.colors[0] && product.colors[0].main));
+            if (img && src) {
+                img.hidden = false;
+                img.src = src;
+            }
+        }
+
+        function updateShopResultMeta({ mode, title, query, total, visible, product }) {
             const headingEl = document.getElementById('shopCategoryTitle');
             const descEl = document.getElementById('shopCategoryDesc');
             const countEl = document.getElementById('catProductCount');
@@ -1417,6 +1606,7 @@
             if (countEl) {
                 countEl.textContent = `(${Number(total || 0).toLocaleString()})`;
             }
+            applyCategoryCard(total, product, mode === 'search' ? `Search: "${query}"` : safeTitle);
         }
 
         function updateShopLoadingMeta({ mode, title, query }) {
@@ -1670,7 +1860,8 @@
                     title: `Search: ${query}`,
                     query,
                     total: totalProducts,
-                    visible: items.length
+                    visible: items.length,
+                    product: items[0]
                 });
 
                 if (items.length === 0) {
@@ -1763,7 +1954,8 @@
                         mode: 'category',
                         title,
                         total: totalProducts,
-                        visible: 0
+                        visible: 0,
+                        product: items[0]
                     });
                     grid.innerHTML = `
                         <div class="no-products" style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
@@ -1800,7 +1992,8 @@
                     mode: 'category',
                     title,
                     total: totalProducts,
-                    visible: items.length
+                    visible: items.length,
+                    product: items[0]
                 });
 
                 items.forEach((product, index) => {
