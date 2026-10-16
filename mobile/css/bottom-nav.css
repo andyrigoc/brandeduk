@@ -1,0 +1,264 @@
+/* ==========================================================================
+   Mobile bottom bar: Home · Shop · Customise · Basket · Account
+   Pairs with mobile/js/bottom-nav.js (the chooser sheet behind "Customise").
+   On the product list (shop.html) the center tile is "Filter" instead.
+   Load after mobile.css on pages using <nav class="bottom-nav bottom-nav--v2">.
+   The customisation tool has its own bar and only reuses the icon + sheet rules.
+   ========================================================================== */
+
+/* --- Bar items --- */
+.bottom-nav--v2 {
+    --bnav-accent: var(--orange, #ea580c);
+    --bnav-active: var(--purple, #273469);
+    --bnav-idle: var(--gray-500, #5c5b66);
+}
+
+.bottom-nav--v2 > .nav-item {
+    justify-content: center;
+    gap: 3px;
+    background: none;
+    border: 0;
+    font: inherit;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.bottom-nav--v2 .nav-item-label {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* The highlighted item comes from aria-current only: mobile.js marks every
+   .html link as .active when the page is served from an extensionless URL. */
+.bottom-nav--v2 > .nav-item.active {
+    color: var(--bnav-idle);
+}
+
+.bottom-nav--v2 > .nav-item[aria-current="page"] {
+    color: var(--bnav-active);
+}
+
+.bottom-nav--v2 > .nav-item[aria-current="page"] .nav-item-label {
+    font-weight: 700;
+}
+
+.bottom-nav--v2 > .nav-item:focus-visible {
+    outline: 2px solid var(--bnav-active);
+    outline-offset: -3px;
+    border-radius: 10px;
+}
+
+/* --- Customise button (center) --- */
+.bottom-nav--v2 > .nav-item--customise,
+.bottom-nav--v2 > .nav-item--customise.active {
+    color: var(--bnav-accent);
+    gap: 2px;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.bottom-nav--v2 > .nav-item--customise .nav-item-label {
+    font-weight: 600;
+}
+
+.nav-customise-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 13px;
+    background: #FD7F47;
+    color: #fff;
+    box-shadow: 0 3px 8px rgba(15, 23, 42, 0.2);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.nav-customise-icon svg,
+.bottom-nav--v2 .nav-customise-icon svg {
+    display: block;
+    width: 24px;
+    height: 24px;
+}
+
+[data-start-sheet-trigger]:active .nav-customise-icon,
+[data-start-sheet-trigger][aria-expanded="true"] .nav-customise-icon {
+    transform: scale(0.93);
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.25);
+}
+
+/* --- Chooser sheet ("How would you like to get started?") --- */
+.start-sheet {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    /* Set from JS so the bar underneath stays visible and untouched. */
+    bottom: var(--start-sheet-bottom, 64px);
+    z-index: 500;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0 12px 12px;
+}
+
+.start-sheet[hidden] {
+    display: none;
+}
+
+.start-sheet *,
+.start-sheet *::before,
+.start-sheet *::after {
+    box-sizing: border-box;
+}
+
+.start-sheet__backdrop {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(15, 23, 42, 0.55);
+    touch-action: none;
+    animation: start-sheet-fade 0.2s ease-out;
+}
+
+.start-sheet__panel {
+    position: relative;
+    width: 100%;
+    max-width: 440px;
+    padding: 18px 14px 14px;
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 0 12px 40px rgba(15, 23, 42, 0.3);
+    animation: start-sheet-rise 0.22s ease-out;
+}
+
+.start-sheet__title {
+    margin: 0 0 14px;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.3;
+    text-align: center;
+    color: #1e2749;
+}
+
+.start-sheet__option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 76px;
+    margin: 0 0 10px;
+    padding: 10px 12px;
+    border: 1.5px solid transparent;
+    border-radius: 14px;
+    font: inherit;
+    text-align: left;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.start-sheet__option:last-child {
+    margin-bottom: 0;
+}
+
+.start-sheet__option:active {
+    transform: scale(0.985);
+}
+
+.start-sheet__option:focus-visible {
+    outline: 2px solid #273469;
+    outline-offset: 2px;
+}
+
+.start-sheet__option--shop {
+    background: #fff4ec;
+    border-color: #fdd2b3;
+}
+
+.start-sheet__option--quote {
+    background: #eef2fb;
+    border-color: #cbd5ee;
+}
+
+.start-sheet__icon {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    color: #fff;
+}
+
+.start-sheet__icon svg {
+    display: block;
+    width: 24px;
+    height: 24px;
+}
+
+.start-sheet__option--shop .start-sheet__icon {
+    background: var(--orange, #ea580c);
+}
+
+.start-sheet__option--quote .start-sheet__icon {
+    background: #273469;
+}
+
+.start-sheet__text {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.start-sheet__name {
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.25;
+    color: #1e2749;
+}
+
+.start-sheet__hint {
+    font-size: 12.5px;
+    line-height: 1.35;
+    color: #5c5b66;
+}
+
+.start-sheet__arrow {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    color: #8b8a95;
+}
+
+@keyframes start-sheet-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes start-sheet-rise {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .start-sheet__backdrop,
+    .start-sheet__panel {
+        animation: none;
+    }
+
+    .nav-customise-icon,
+    .start-sheet__option {
+        transition: none;
+    }
+}

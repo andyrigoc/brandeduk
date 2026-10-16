@@ -55,7 +55,7 @@
 
       gtag('config', 'AW-438771987');
     </script>
-    <script defer src="/brandedukv15-child/assets/js/cookie-consent.js?v=20261008"></script>
+    <script defer src="/brandedukv15-child/assets/js/cookie-consent.js?v=20261016"></script>
     <script defer src="/brandedukv15-child/assets/js/ads-conversions.js?v=20261009"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -215,7 +215,9 @@
         }
     </script>
     <!-- Mobile-First CSS -->
-    <link rel="stylesheet" href="mobile/css/mobile.css?v=20261002-logocombo">
+    <link rel="stylesheet" href="mobile/css/mobile.css?v=20261016-chatnav">
+    <link rel="stylesheet" href="mobile/css/bottom-nav.css?v=20261016-chatorange">
+    <link rel="stylesheet" href="mobile/css/header-v2.css?v=20261016-topthree">
     <link rel="stylesheet" href="mobile/hero/hero.css?v=20260927-neonfix">
     <link rel="stylesheet" href="mobile/css/popup-contact.css?v=20261003-consent">
     <link rel="stylesheet" href="mobile/css/faq.css?v=20260307A">
@@ -1025,54 +1027,43 @@
     </div>
 
     <div class="header-with-promo">
-    <header class="mobile-header">
-        <!-- Top Row: Social + VAT Toggle -->
-        <div class="header-top-row">
-            <!-- Social Buttons Left -->
-            <div class="social-icons-container social-icons-mobile">
-                <a href="https://www.facebook.com/profile.php?id=100083540654262" class="social-icon facebook" target="_blank" rel="noopener">
-                    <i class="fab fa-facebook-f"></i>
+    <header class="mobile-header mobile-header--v2">
+        <div class="mh-bar">
+            <button type="button" class="mh-icon-btn" id="menuToggle" aria-label="Open menu" aria-expanded="false" aria-controls="slideMenu">
+                <svg class="mh-icon-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+                    <line x1="4" y1="7" x2="20" y2="7"></line>
+                    <line x1="4" y1="12" x2="20" y2="12"></line>
+                    <line x1="4" y1="17" x2="20" y2="17"></line>
+                </svg>
+                <svg class="mh-icon-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                </svg>
+            </button>
+            <a href="/index-mobile.html?force=mobile" class="mobile-logo-center mh-logo" aria-label="brandedUK home">
+                <img class="mobile-logo-badge" src="brandedukv15-child/assets/videos/use-the-provided-circular-1727756126.gif?v=20261001-newgif" alt="" width="64" height="64">
+                <img class="mobile-logo-word" src="brandedukv15-child/assets/images/ui/Branded UK Logo on Transparent Background.png?v=20261002-logocombo" alt="branded" width="120" height="52">
+            </a>
+            <div class="mh-actions">
+                <a href="tel:02089742722" class="mh-icon-btn" aria-label="Call 020 8974 2722">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                    </svg>
                 </a>
-                <a href="https://www.instagram.com/brandeduk_workwear/" class="social-icon instagram" target="_blank" rel="noopener">
-                    <i class="fab fa-instagram"></i>
+                <a href="basket.html#orderSummary" class="mh-icon-btn mh-cart" aria-label="View basket">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                    <span class="mh-cart-count" id="cartBadge" hidden>0</span>
                 </a>
-                <a href="https://www.linkedin.com/in/anderson-ricotta-92a394321/" class="social-icon linkedin" target="_blank" rel="noopener">
-                    <i class="fab fa-linkedin-in"></i>
-                </a>
-                <a href="https://www.youtube.com/@barudanamericainc3060" class="social-icon youtube" target="_blank" rel="noopener">
-                    <i class="fab fa-youtube"></i>
-                </a>
-                <a href="https://uk.pinterest.com/search/pins/?q=embroidery%20polo&rs=typed" class="social-icon pinterest" target="_blank" rel="noopener">
-                    <i class="fab fa-pinterest-p"></i>
-                </a>
-            </div>
-
-            <span class="header-contact-tablet">
-                <a href="mailto:info@brandeduk.com"><i class="fas fa-envelope"></i> info@brandeduk.com</a>
-                <a href="tel:02089742722"><i class="fas fa-phone"></i> 020 8974 2722</a>
-            </span>
-
-            <a href="tel:02089742722" class="header-call-mobile" aria-label="Call 020 8974 2722"><i class="fas fa-phone"></i> 020 8974 2722</a>
-
-            <!-- VAT Toggle Right -->
-            <div class="vat-toggle-mobile" id="vatToggleContainer">
-                <span class="vat-label vat-label--exc">EX VAT</span>
-                <input type="checkbox" id="vatToggleCheckbox" class="vat-checkbox" />
-                <label for="vatToggleCheckbox" class="vat-toggle-label">Toggle VAT</label>
-                <span class="vat-label vat-label--inc">INC VAT</span>
             </div>
         </div>
-
-        <!-- Bottom Row: Logo Left + Search Right -->
-        <div class="header-logo-row">
-            <a href="index.html" class="mobile-logo-center" aria-label="brandedUK home">
-                <img class="mobile-logo-badge" src="brandedukv15-child/assets/videos/use-the-provided-circular-1727756126.gif?v=20261001-newgif" alt="" width="64" height="64">
-                <img class="mobile-logo-word" src="brandedukv15-child/assets/images/ui/Branded UK Logo on Transparent Background.png?v=20261002-logocombo" alt="brandedUK" width="120" height="52">
-            </a>
-            <!-- Search Bar inline -->
+        <div class="mh-search">
             <div class="search-wrapper-expand">
                 <input type="text" placeholder="Search 9,000+ products..." id="searchInput" autocomplete="off" class="search-input-expand" aria-label="Search products">
-                <svg class="search-icon-expand" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg class="search-icon-expand" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <circle cx="11" cy="11" r="8"></circle>
                     <path d="m21 21-4.35-4.35"></path>
                 </svg>
@@ -1081,12 +1072,8 @@
         </div>
     </header>
 
-    <!-- Top Promotional Bar -->
-    <div class="top-promo-bar">
-        <div class="promo-scroll">
-            <span>Custom Workwear & Uniforms UK • Embroidery • DTF Printing • Screen Printing • Vinyl Heat Transfer • Trades & Construction • Schools & Leavers • Hospitality & Restaurants • Corporate & Office Teams • Warehouses & Delivery Companies • Sports Clubs • Events & Promotions • T-Shirts • Polo Shirts • Hoodies • Hi-Vis • Jackets • Fleeces • Aprons • Caps • Bags • Fast Turnaround • Bulk Pricing Available</span>
-            <span>Custom Workwear & Uniforms UK • Embroidery • DTF Printing • Screen Printing • Vinyl Heat Transfer • Trades & Construction • Schools & Leavers • Hospitality & Restaurants • Corporate & Office Teams • Warehouses & Delivery Companies • Sports Clubs • Events & Promotions • T-Shirts • Polo Shirts • Hoodies • Hi-Vis • Jackets • Fleeces • Aprons • Caps • Bags • Fast Turnaround • Bulk Pricing Available</span>
-        </div>
+    <div class="top-promo-bar mh-promo">
+        <p class="mh-promo-line">Workwear • Uniforms • Sportswear</p>
     </div>
     </div>
 
@@ -1907,127 +1894,121 @@
         </div>
     </main>
 
-    <!-- Slide-out Menu -->
     <div class="menu-overlay" id="menuOverlay"></div>
-    <nav class="slide-menu" id="slideMenu">
-        <div class="menu-header">
-            <div class="menu-logo">
-                <img src="brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BrandedUK" class="logo-image" style="width: 36px; height: 36px;" width="11851" height="5792">
-            </div>
-            <button class="close-menu" id="closeMenu">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
+    <nav class="slide-menu slide-menu--v2" id="slideMenu" aria-label="Menu">
+        <div class="mh-drawer-top">
+            <button type="button" class="mh-icon-btn mh-back" id="mhBack" hidden aria-label="Back to menu">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18 9 12l6-6"></path></svg>
+            </button>
+            <a href="/index-mobile.html?force=mobile" class="mobile-logo-center mh-logo" aria-label="brandedUK home">
+                <img class="mobile-logo-badge" src="brandedukv15-child/assets/videos/use-the-provided-circular-1727756126.gif?v=20261001-newgif" alt="" width="64" height="64">
+                <img class="mobile-logo-word" src="brandedukv15-child/assets/images/ui/Branded UK Logo on Transparent Background.png?v=20261002-logocombo" alt="branded" width="120" height="52">
+            </a>
+            <button type="button" class="mh-icon-btn close-menu" id="closeMenu" aria-label="Close menu">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
                     <line x1="6" y1="6" x2="18" y2="18"></line>
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
                 </svg>
             </button>
         </div>
-        <div class="menu-content">
-            <div class="menu-section">
-                <a href="index.html" class="menu-item active">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                    </svg>
-                    Home
-                </a>
-                <a href="shop.html" class="menu-item">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="9" cy="21" r="1"></circle>
-                        <circle cx="20" cy="21" r="1"></circle>
-                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                    </svg>
-                    Shop All Products
-                </a>
-                <a href="#orderSummary" class="menu-item">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                        <line x1="3" y1="6" x2="21" y2="6"></line>
-                        <path d="M16 10a4 4 0 0 1-8 0"></path>
-                    </svg>
-                    Quote Summary
-                    <span class="menu-badge" id="menuCartCount">0</span>
-                </a>
+        <div class="mh-panels">
+        <div class="mh-view" data-mh-view="main">
+        <div class="mh-drawer-vat vat-toggle-mobile" id="vatToggleContainer">
+            <input type="checkbox" id="vatToggleCheckbox" class="vat-checkbox">
+            <span class="vat-label vat-label--exc">EXC VAT</span>
+            <label for="vatToggleCheckbox" class="vat-toggle-label">Toggle VAT</label>
+            <span class="vat-label vat-label--inc">INC VAT</span>
+        </div>
+        <div class="mh-view-scroll">
+            <div class="mh-menu-block">
+            <button type="button" class="mh-row" data-mh-open="products"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag" src="/brandedukv15-child/assets/images/icons/menu/shop-product.svg" alt="" width="22" height="22"></span>Shop by Product<span class="mh-chev" aria-hidden="true"></span></button>
+            <button type="button" class="mh-row" data-mh-open="industries"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag" src="/brandedukv15-child/assets/images/icons/menu/shop-by-industry.svg" alt="" width="22" height="22"></span>Shop by Industry<span class="mh-chev" aria-hidden="true"></span></button>
+            <a class="mh-row" href="bundles.html"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag" src="/brandedukv15-child/assets/images/icons/menu/deals-bundles.svg" alt="" width="22" height="22"></span>Deals &amp; Bundles<span class="mh-chev" aria-hidden="true"></span></a>
             </div>
-            
-            <div class="menu-divider"></div>
-            
-            <div class="menu-section">
-                <p class="menu-section-title">Categories</p>
-                <a href="shop.html?category=t-shirts" class="menu-item sub-item">T-Shirts</a>
-                <a href="shop.html?category=polos" class="menu-item sub-item">Polo Shirts</a>
-                <a href="shop.html?category=hoodies" class="menu-item sub-item">Hoodies & Sweatshirts</a>
-                <a href="shop.html?category=jackets" class="menu-item sub-item">Jackets & Softshell</a>
-                <a href="shop.html?category=hi-vis" class="menu-item sub-item">Hi-Vis Clothing</a>
-                <a href="shop.html?category=trousers" class="menu-item sub-item">Work Trousers</a>
-                <a href="shop.html?category=fleece" class="menu-item sub-item">Fleeces</a>
-                <a href="shop.html?category=headwear" class="menu-item sub-item">Headwear & Accessories</a>
-                <a href="shop.html?accreditation=recycled" class="menu-item sub-item sustainable-link">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66S7 16 14 14l-4 5 7-9c-3-1-6-2-7-4 6-2 9 1 11-5-4 1-5 2-4-3z"/>
-                    </svg>
-                    Sustainable / Eco
-                </a>
+            <div class="mh-menu-block">
+            <button type="button" class="mh-row" data-mh-open="help"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M9.4 9.6a2.6 2.6 0 1 1 3.4 2.5c-.8.4-1.3 1-1.3 1.9"/></svg></span>Help &amp; Support<span class="mh-chev" aria-hidden="true"></span></button>
+            <button type="button" class="mh-row" data-mh-quote><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3.5h7.2L19 8.2V20.5H7z"/><path d="M14.2 3.5V8.2H19"/><path d="M9.5 13h5"/><path d="M9.5 16.5h5"/></svg></span>Request a Quote</button>
+            <a class="mh-row" href="track-order.html"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="2.5" y="8" width="11" height="7.5" rx="1"/><path d="M13.5 11H17l3 2.6v1.9h-6.5"/><circle cx="6.5" cy="17.8" r="1.5"/><circle cx="17.2" cy="17.8" r="1.5"/></svg></span>Track Your Order<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="about.html"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 11v5"/><path d="M12 8h.01"/></svg></span>About Us<span class="mh-chev" aria-hidden="true"></span></a>
+            <button type="button" class="mh-row" data-mh-quote><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>Contact Us</button>
+            <div class="mh-contact-stack">
+            <a class="mh-contact mh-contact--call" href="tel:02089742722">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                <span><strong>Call Us</strong><small>020 8974 2722</small></span>
+            </a>
+            <a class="mh-contact mh-contact--email" href="mailto:info@brandeduk.com">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                <span><strong>Email Us</strong><small>info@brandeduk.com</small></span>
+            </a>
             </div>
-            
-            <div class="menu-divider"></div>
-            
-            <div class="menu-section">
-                <p class="menu-section-title">Services</p>
-                <a href="/customize" class="menu-item">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                    </svg>
-                    Embroidery
-                </a>
-                <a href="/customize?service=print" class="menu-item">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="6 9 6 2 18 2 18 9"></polyline>
-                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
-                        <rect x="6" y="14" width="12" height="8"></rect>
-                    </svg>
-                    Print Services
-                </a>
-            </div>
-            
-            <div class="menu-divider"></div>
-            
-            <div class="menu-section contact-section-menu">
-                <a href="tel:02089742722" class="menu-item phone-link">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path>
-                    </svg>
-                    020 8974 2722
-                </a>
-                <a href="https://wa.me/447447348564" class="menu-item whatsapp-link">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                    </svg>
-                    WhatsApp
-                </a>
-                <a href="mailto:info@brandeduk.com" class="menu-item">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                        <polyline points="22,6 12,13 2,6"></polyline>
-                    </svg>
-                    info@brandeduk.com
-                </a>
             </div>
         </div>
-        <div class="menu-footer">
-            <a href="#" class="menu-footer-link">About Us</a>
-            <a href="#" class="menu-footer-link">Blog</a>
-            <a href="#" class="menu-footer-link">Sign In</a>
+        </div>
+        <div class="mh-view" data-mh-view="products" hidden>
+            <div class="mh-section-title"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag" src="/brandedukv15-child/assets/images/icons/menu/shop-product.svg" alt="" width="22" height="22"></span>Shop by Product</div>
+            <div class="mh-view-scroll">
+            <a class="mh-row" href="shop-pc.html?productType=tshirts"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="brandedukv15-child/assets/images/ui/icons/categories/icon-shirt-71%201.png" alt=""></span>T-Shirts<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="shop-pc.html?productType=polos"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="brandedukv15-child/assets/images/ui/icons/categories/Polo.png" alt=""></span>Polo Shirts<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="shop-pc.html?productType[]=hoodies&amp;productType[]=sweatshirts"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="brandedukv15-child/assets/images/ui/icons/categories/icon-hoodies-71%201.png" alt=""></span>Hoodies &amp; Sweatshirts<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="shop-pc.html?productType[]=jackets&amp;productType[]=softshells"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="brandedukv15-child/assets/images/ui/icons/categories/Jacket.png" alt=""></span>Jackets &amp; Softshell<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="shop-pc.html?productType=safety-vests"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="brandedukv15-child/assets/images/ui/icons/categories/Hi%20Vis.png" alt=""></span>Hi-Vis Clothing<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="shop-pc.html?productType=trousers"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="brandedukv15-child/assets/images/ui/icons/categories/Trousers.png" alt=""></span>Work Trousers<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="shop-pc.html?productType=aprons"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="brandedukv15-child/assets/images/ui/icons/categories/Apron.png" alt=""></span>Work &amp; Uniforms<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="shop-pc.html?productType=fleece"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="brandedukv15-child/assets/images/ui/icons/categories/Fleece.png" alt=""></span>Fleeces<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="shop-pc.html?productType=caps"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="brandedukv15-child/assets/images/ui/icons/categories/Cap.png" alt=""></span>Headwear<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row mh-row--eco" href="shop-pc.html?accreditation=recycled"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="brandedukv15-child/assets/images/ui/icons/categories/Recycle.png" alt=""></span>Sustainable / Recycled &amp; Organic<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="shop-pc.html">View All Categories<span class="mh-chev" aria-hidden="true"></span></a>
+                <div class="mh-sibling-group">
+            <button type="button" class="mh-row" data-mh-open="industries"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag" src="/brandedukv15-child/assets/images/icons/menu/shop-by-industry.svg" alt="" width="22" height="22"></span>Shop by Industry<span class="mh-chev" aria-hidden="true"></span></button>
+            <a class="mh-row" href="bundles.html"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag" src="/brandedukv15-child/assets/images/icons/menu/deals-bundles.svg" alt="" width="22" height="22"></span>Deals &amp; Bundles<span class="mh-chev" aria-hidden="true"></span></a>
+            <button type="button" class="mh-row" data-mh-open="help"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M9.4 9.6a2.6 2.6 0 1 1 3.4 2.5c-.8.4-1.3 1-1.3 1.9"/></svg></span>Help &amp; Support<span class="mh-chev" aria-hidden="true"></span></button>
+                </div>
+            </div>
+        </div>
+        <div class="mh-view" data-mh-view="industries" hidden>
+            <div class="mh-section-title"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag" src="/brandedukv15-child/assets/images/icons/menu/shop-by-industry.svg" alt="" width="22" height="22"></span>Shop by Industry</div>
+            <div class="mh-view-scroll">
+            <a class="mh-row" href="industries/construction.html"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 15.5a7 7 0 0 1 14 0"/><path d="M3.5 15.5h17v2.2h-17z"/></svg></span>Construction<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="industries/hospitality.html"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4v6.2a2 2 0 1 0 2 0V4"/><path d="M8 12.2V20"/><path d="M15 4c2.2 1.6 2.2 4 0 5.6V20"/></svg></span>Hospitality<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="industries/healthcare.html"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10 4.5h4v15h-4z"/><path d="M4.5 10h15v4h-15z"/></svg></span>Healthcare<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="industries/education.html"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 6l9 4.5L12 15z"/><path d="M7 12.2v3.6c1.6 1.6 8.4 1.6 10 0v-3.6"/></svg></span>Schools &amp; Leavers<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="industries/corporate.html"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="8" width="17" height="11" rx="1.6"/><path d="M8.5 8V6.2A1.8 1.8 0 0 1 10.3 4.4h3.4A1.8 1.8 0 0 1 15.5 6.2V8"/></svg></span>Corporate<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="industries/sports.html"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 4.5h8v5.2a4 4 0 0 1-8 0z"/><path d="M12 13.7V16.5"/><path d="M9.2 19.5h5.6"/></svg></span>Sports<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="industries/cleaning.html">Cleaning<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="industries/logistics.html">Logistics<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="industries/retail.html">Retail<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="industries.html">View All Industries<span class="mh-chev" aria-hidden="true"></span></a>
+                <div class="mh-sibling-group">
+            <button type="button" class="mh-row" data-mh-open="products"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag" src="/brandedukv15-child/assets/images/icons/menu/shop-product.svg" alt="" width="22" height="22"></span>Shop by Product<span class="mh-chev" aria-hidden="true"></span></button>
+            <a class="mh-row" href="bundles.html"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag" src="/brandedukv15-child/assets/images/icons/menu/deals-bundles.svg" alt="" width="22" height="22"></span>Deals &amp; Bundles<span class="mh-chev" aria-hidden="true"></span></a>
+            <button type="button" class="mh-row" data-mh-open="help"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M9.4 9.6a2.6 2.6 0 1 1 3.4 2.5c-.8.4-1.3 1-1.3 1.9"/></svg></span>Help &amp; Support<span class="mh-chev" aria-hidden="true"></span></button>
+                </div>
+            </div>
+        </div>
+        <div class="mh-view" data-mh-view="help" hidden>
+            <div class="mh-section-title"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M9.4 9.6a2.6 2.6 0 1 1 3.4 2.5c-.8.4-1.3 1-1.3 1.9"/></svg></span>Help &amp; Support</div>
+            <div class="mh-view-scroll">
+            <a class="mh-row" href="#faq"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M9.4 9.6a2.6 2.6 0 1 1 3.4 2.5c-.8.4-1.3 1-1.3 1.9"/></svg></span>Help &amp; FAQs<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="pricing-guide.html">Delivery &amp; Returns<span class="mh-chev" aria-hidden="true"></span></a>
+                <div class="mh-sibling-group">
+            <button type="button" class="mh-row" data-mh-open="products"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag" src="/brandedukv15-child/assets/images/icons/menu/shop-product.svg" alt="" width="22" height="22"></span>Shop by Product<span class="mh-chev" aria-hidden="true"></span></button>
+            <button type="button" class="mh-row" data-mh-open="industries"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag" src="/brandedukv15-child/assets/images/icons/menu/shop-by-industry.svg" alt="" width="22" height="22"></span>Shop by Industry<span class="mh-chev" aria-hidden="true"></span></button>
+            <a class="mh-row" href="bundles.html"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag" src="/brandedukv15-child/assets/images/icons/menu/deals-bundles.svg" alt="" width="22" height="22"></span>Deals &amp; Bundles<span class="mh-chev" aria-hidden="true"></span></a>
+                </div>
+            </div>
+        </div>
         </div>
     </nav>
 
     <!-- Bottom Navigation -->
-    <nav class="bottom-nav">
-        <a href="#" class="nav-item" id="accountNavBtn">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                <circle cx="12" cy="7" r="4"/>
+    <nav class="bottom-nav bottom-nav--v2" aria-label="Main navigation">
+        <a href="/index-mobile.html?force=mobile" class="nav-item" data-home-nav aria-label="Home" aria-current="page">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M3 11 12 3l9 8"></path>
+                <path d="M5 10v10h14V10"></path>
+                <path d="M9 20v-6h6v6"></path>
             </svg>
-            <span class="nav-item-label">Account</span>
+            <span class="nav-item-label">Home</span>
         </a>
         <a href="shop.html" class="nav-item">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -2038,16 +2019,13 @@
             </svg>
             <span class="nav-item-label">Shop</span>
         </a>
-        <button type="button" class="nav-item-center" id="filtersNavBtn" aria-label="Filters">
-            <svg class="filter-icon-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-                <line x1="6" y1="21" x2="6" y2="3"></line>
-                <line x1="12" y1="21" x2="12" y2="3"></line>
-                <line x1="18" y1="21" x2="18" y2="3"></line>
-                <circle cx="6" cy="8" r="2"></circle>
-                <circle cx="12" cy="14" r="2"></circle>
-                <circle cx="18" cy="10" r="2"></circle>
-            </svg>
-            <span class="nav-item-label">Filter</span>
+        <button type="button" class="nav-item nav-item--customise" id="customiseNavBtn" data-start-sheet-trigger aria-haspopup="dialog" aria-expanded="false" aria-controls="startSheet">
+            <span class="nav-customise-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                    <path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/>
+                </svg>
+            </span>
+            <span class="nav-item-label">Customise</span>
         </button>
         <a href="basket.html#orderSummary" class="nav-item" id="basketNavLink">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -2058,16 +2036,12 @@
             <span class="nav-badge" id="navCartBadge">0</span>
             <span class="nav-item-label">Basket</span>
         </a>
-        <a href="#" class="nav-item" id="chatNavBtn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 80 80">
-                <g fill="none" stroke="currentColor" stroke-width="3">
-                    <path d="M30,59C27.794,59,26,60.794,26,63C26,65.206,27.794,67,30,67C32.206,67,34,65.206,34,63C34,60.794,32.206,59,30,59zM30,65C28.897,65,28,64.103,28,63C28,61.897,28.897,61,30,61C31.103,61,32,61.897,32,63C32,64.103,31.103,65,30,65zM27,15L31,15C31.552,15,32,14.553,32,14C32,13.447,31.552,13,31,13L27,13C26.448,13,26,13.447,26,14C26,14.553,26.448,15,27,15zM34,15L35,15C35.552,15,36,14.553,36,14C36,13.447,35.552,13,35,13L34,13C33.448,13,33,13.447,33,14C33,14.553,33.448,15,34,15z" fill="currentColor"/>
-                    <path d="M66,22L48,22L48,14.405C48,11.977,46.024,10,43.595,10L18.405,10C15.976,10,14,11.977,14,14.405L14,65.594C14,68.023,15.976,70,18.405,70L43.594,70C46.024,70,48,68.023,48,65.595L48,43L66,43L66,22ZM18.405,12L43.594,12C44.921,12,46,13.079,46,14.405L46,16L16,16L16,14.405C16,13.079,17.079,12,18.405,12zM43.595,68L18.405,68C17.079,68,16,66.921,16,65.595L16,58L46,58L46,65.595C46,66.921,44.921,68,43.595,68zM46,56L16,56L16,18L46,18L46,22L28,22L28,43L32,43L32,50L41.333,43L46,43L46,56ZM64,41L48,41L40.667,41L34,46L34,41L30,41L30,24L48,24L64,24L64,41Z" fill="currentColor"/>
-                    <path fill="currentColor" d="M34,35C34,35.553,34.448,36,35,36L59,36C59.552,36,60,35.553,60,35C60,34.447,59.552,34,59,34L35,34C34.448,34,34,34.447,34,35z"/>
-                    <path fill="currentColor" d="M35,31L45,31C45.552,31,46,30.553,46,30C46,29.447,45.552,29,45,29L35,29C34.448,29,34,29.447,34,30C34,30.553,34.448,31,35,31z"/>
-                </g>
+        <a href="#" class="nav-item" id="accountNavBtn">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
             </svg>
-            <span class="nav-item-label">Chat</span>
+            <span class="nav-item-label">Account</span>
         </a>
     </nav>
 
@@ -2671,14 +2645,16 @@
     </div>
 
     <script src="brandedukv15-child/assets/js/cart.js?v=20260417"></script>
-    <script src="mobile/js/mobile.js?v=20260925-banners"></script>
+    <script src="mobile/js/mobile.js?v=20261016-header"></script>
     <!-- customize.js only needed on customize pages, not homepage -->
     <script src="mobile/hero/hero.js?v=20260923-expansion"></script>
     <script src="mobile/js/popup-contact.js?v=20261003-consent"></script>
+    <script src="mobile/js/bottom-nav.js?v=20261016-newbar"></script>
+    <script src="mobile/js/header-menu.js?v=20261016-underbar"></script>
     <script src="mobile/js/faq.js?v=20260102"></script>
     <!-- Desktop Header JS -->
     <script src="brandedukv15-child/assets/js/header.js?v=20260104B"></script>
-    <script src="brandedukv15-child/assets/js/api-config.js?v=20260530"></script>
+    <script src="brandedukv15-child/assets/js/api-config.js?v=20261016-apiproxy"></script>
     <script src="brandedukv15-child/assets/js/account.js?v=20260521-home-auth"></script>
     <script src="brandedukv15-child/assets/js/account-panel.js?v=20260930-authgate1"></script>
 
@@ -3502,7 +3478,10 @@
         try {
             // Public catalog only — do not call /api/admin/* from the storefront
             // (Guardian #1). Prefer sort=featured; map fields to the card shape.
-            var res = await fetch('https://api.brandeduk.com/api/products?sort=featured&limit=' + FEATURED_API_LIMIT);
+            var apiBase = (typeof window.resolveBrandedApiBase === 'function'
+                ? window.resolveBrandedApiBase()
+                : (window.API_BASE_URL || 'https://api.brandeduk.com')).replace(/\/+$/, '');
+            var res = await fetch(apiBase + '/api/products?sort=featured&limit=' + FEATURED_API_LIMIT);
             if (!res.ok) throw new Error('Network response was not ok');
             var data = await res.json();
 
