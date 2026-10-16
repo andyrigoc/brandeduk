@@ -75,6 +75,7 @@
 
     <title>Shop Custom Workwear &amp; Uniforms - BrandedUK</title>
     <link rel="stylesheet" href="mobile/css/mobile.css?v=20261002-logocombo">
+    <link rel="stylesheet" href="mobile/css/header-v2.css?v=20261016-hamleft">
     <link rel="stylesheet" href="mobile/css/bottom-nav.css?v=20261016-newbar">
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20261002-logocombo">
     <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20261002-chatlogo">
@@ -2253,73 +2254,60 @@
         </div>
     </div>
 
-    <!-- Mobile Header -->
-    <header class="mobile-header">
-        <!-- Top Row: Social + VAT Toggle -->
-        <div class="header-top-row">
-            <!-- Social Buttons Left -->
-            <div class="social-icons-container social-icons-mobile">
-                <a href="https://www.facebook.com/profile.php?id=100083540654262" class="social-icon facebook"
-                    target="_blank" rel="noopener">
-                    <i class="fab fa-facebook-f"></i>
+    <div class="header-with-promo">
+    <header class="mobile-header mobile-header--v2">
+        <div class="mh-bar">
+            <button type="button" class="mh-icon-btn" id="menuToggle" aria-label="Open menu" aria-expanded="false" aria-controls="slideMenu">
+                <svg class="mh-icon-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+                    <line x1="4" y1="7" x2="20" y2="7"></line>
+                    <line x1="4" y1="12" x2="20" y2="12"></line>
+                    <line x1="4" y1="17" x2="20" y2="17"></line>
+                </svg>
+                <svg class="mh-icon-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                </svg>
+            </button>
+            <a href="/index-mobile.html?force=mobile" class="mobile-logo-center mh-logo" aria-label="brandedUK home">
+                <img class="mobile-logo-badge" src="/brandedukv15-child/assets/videos/use-the-provided-circular-1727756126.gif?v=20261001-newgif" alt="" width="64" height="64">
+                <img class="mobile-logo-word" src="/brandedukv15-child/assets/images/ui/Branded UK Logo on Transparent Background.png?v=20261002-logocombo" alt="branded" width="120" height="52">
+            </a>
+            <div class="mh-actions">
+                <a href="tel:02089742722" class="mh-icon-btn" aria-label="Call 020 8974 2722">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                    </svg>
                 </a>
-                <a href="https://www.instagram.com/brandeduk_workwear/" class="social-icon instagram" target="_blank"
-                    rel="noopener">
-                    <i class="fab fa-instagram"></i>
+                <a href="/basket.html#orderSummary" class="mh-icon-btn mh-cart" aria-label="View basket">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                    <span class="mh-cart-count" id="cartBadge" hidden>0</span>
                 </a>
-                <a href="https://www.linkedin.com/in/anderson-ricotta-92a394321/" class="social-icon linkedin"
-                    target="_blank" rel="noopener">
-                    <i class="fab fa-linkedin-in"></i>
-                </a>
-                <a href="https://www.youtube.com/@barudanamericainc3060" class="social-icon youtube" target="_blank"
-                    rel="noopener">
-                    <i class="fab fa-youtube"></i>
-                </a>
-                <a href="https://uk.pinterest.com/search/pins/?q=embroidery%20polo&rs=typed"
-                    class="social-icon pinterest" target="_blank" rel="noopener">
-                    <i class="fab fa-pinterest-p"></i>
-                </a>
-                <!-- Contact info (tablet only) -->
-                <span class="header-contact-tablet">
-                    <a href="mailto:info@brandeduk.com"><i class="fas fa-envelope"></i> info@brandeduk.com</a>
-                    <a href="tel:02089742722"><i class="fas fa-phone"></i> 0208 974 2722</a>
-                </span>
             </div>
-
-            <!-- VAT Toggle Right -->
-            <div class="vat-toggle-mobile" id="vatToggleContainer">
-                <span class="vat-label vat-label--exc">EX VAT</span>
-                <input type="checkbox" id="vatToggleCheckbox" class="vat-checkbox" />
+        </div>
+        <div class="mh-search">
+            <div class="search-wrapper-expand">
+                <input type="text" placeholder="Search 9,000+ products..." id="searchInput" autocomplete="off" class="search-input-expand" aria-label="Search products">
+                <svg class="search-icon-expand" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <div class="search-autocomplete" id="mobileSearchAutocomplete"></div>
+            </div>
+            <div class="mh-search-vat vat-toggle-mobile" id="vatToggleContainer">
+                <span class="vat-label vat-label--exc">EXC VAT</span>
+                <input type="checkbox" id="vatToggleCheckbox" class="vat-checkbox">
                 <label for="vatToggleCheckbox" class="vat-toggle-label">Toggle VAT</label>
                 <span class="vat-label vat-label--inc">INC VAT</span>
             </div>
         </div>
-
-        <!-- Bottom Row: Logo + Search -->
-        <div class="header-logo-row">
-            <a href="index.html" class="mobile-logo-center">
-                <img class="mobile-logo-badge" src="brandedukv15-child/assets/videos/use-the-provided-circular-1727756126.gif?v=20261001-newgif" alt="" width="64" height="64">
-                <img class="mobile-logo-word" src="brandedukv15-child/assets/images/ui/Branded UK Logo on Transparent Background.png?v=20261002-logocombo" alt="brandedUK" width="120" height="52">
-            </a>
-            <!-- Search Bar inline -->
-            <div class="search-wrapper-expand">
-                <input type="text" placeholder="Search 9,000+ products..." id="searchInput" class="search-input-expand">
-                <svg class="search-icon-expand" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <path d="m21 21-4.35-4.35"></path>
-                </svg>
-            </div>
-        </div>
     </header>
 
-    <!-- Top Promotional Bar -->
-    <div class="top-promo-bar">
-        <div class="promo-scroll">
-            <span>Custom Workwear & Uniforms UK Ã¢â‚¬Â¢ Embroidery Ã¢â‚¬Â¢ DTF Printing Ã¢â‚¬Â¢ Screen Printing Ã¢â‚¬Â¢ Vinyl Heat Transfer Ã¢â‚¬Â¢ Trades & Construction Ã¢â‚¬Â¢ Schools & Leavers Ã¢â‚¬Â¢ Hospitality & Restaurants Ã¢â‚¬Â¢ Corporate & Office Teams Ã¢â‚¬Â¢ Warehouses & Delivery Companies Ã¢â‚¬Â¢ Sports Clubs Ã¢â‚¬Â¢ Events & Promotions Ã¢â‚¬Â¢ T-Shirts Ã¢â‚¬Â¢ Polo Shirts Ã¢â‚¬Â¢ Hoodies Ã¢â‚¬Â¢ Hi-Vis Ã¢â‚¬Â¢ Jackets Ã¢â‚¬Â¢ Fleeces Ã¢â‚¬Â¢ Aprons Ã¢â‚¬Â¢ Caps Ã¢â‚¬Â¢ Bags Ã¢â‚¬Â¢ Fast Turnaround Ã¢â‚¬Â¢ Bulk Pricing Available</span>
-            <span>Custom Workwear & Uniforms UK Ã¢â‚¬Â¢ Embroidery Ã¢â‚¬Â¢ DTF Printing Ã¢â‚¬Â¢ Screen Printing Ã¢â‚¬Â¢ Vinyl Heat Transfer Ã¢â‚¬Â¢ Trades & Construction Ã¢â‚¬Â¢ Schools & Leavers Ã¢â‚¬Â¢ Hospitality & Restaurants Ã¢â‚¬Â¢ Corporate & Office Teams Ã¢â‚¬Â¢ Warehouses & Delivery Companies Ã¢â‚¬Â¢ Sports Clubs Ã¢â‚¬Â¢ Events & Promotions Ã¢â‚¬Â¢ T-Shirts Ã¢â‚¬Â¢ Polo Shirts Ã¢â‚¬Â¢ Hoodies Ã¢â‚¬Â¢ Hi-Vis Ã¢â‚¬Â¢ Jackets Ã¢â‚¬Â¢ Fleeces Ã¢â‚¬Â¢ Aprons Ã¢â‚¬Â¢ Caps Ã¢â‚¬Â¢ Bags Ã¢â‚¬Â¢ Fast Turnaround Ã¢â‚¬Â¢ Bulk Pricing Available</span>
-        </div>
     </div>
+
     </div>
 
     <!-- Category Heading (H1 for SEO) -->
@@ -2486,7 +2474,107 @@
     <div class="bottom-pagination" id="bottomPagination">
     </div>
 
-    <!-- Bottom Navigation -->
+        <div class="menu-overlay" id="menuOverlay"></div>
+    <nav class="slide-menu slide-menu--v2" id="slideMenu" aria-label="Menu">
+        <div class="mh-drawer-top">
+            <button type="button" class="mh-icon-btn mh-back" id="mhBack" hidden aria-label="Back to menu">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18 9 12l6-6"></path></svg>
+            </button>
+            <a href="/index-mobile.html?force=mobile" class="mobile-logo-center mh-logo" aria-label="brandedUK home">
+                <img class="mobile-logo-badge" src="/brandedukv15-child/assets/videos/use-the-provided-circular-1727756126.gif?v=20261001-newgif" alt="" width="64" height="64">
+                <img class="mobile-logo-word" src="/brandedukv15-child/assets/images/ui/Branded UK Logo on Transparent Background.png?v=20261002-logocombo" alt="branded" width="120" height="52">
+            </a>
+            <button type="button" class="mh-icon-btn close-menu" id="closeMenu" aria-label="Close menu">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <div class="mh-panels">
+        <div class="mh-view" data-mh-view="main">
+        <div class="mh-view-scroll">
+            <div class="mh-menu-block">
+            <button type="button" class="mh-row" data-mh-open="products"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-product" src="/brandedukv15-child/assets/images/icons/menu/shop-product.png?v=20261016-file" alt="" width="46" height="46"></span>Shop by Product<span class="mh-chev" aria-hidden="true"></span></button>
+            <button type="button" class="mh-row" data-mh-open="industries"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-industry" src="/brandedukv15-child/assets/images/icons/menu/shop-by-industry.png?v=20261016-file" alt="" width="46" height="46"></span>Shop by Industry<span class="mh-chev" aria-hidden="true"></span></button>
+            <a class="mh-row" href="/bundles.html"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-deals" src="/brandedukv15-child/assets/images/icons/menu/deals-bundles.png?v=20261016-nobg" alt="" width="46" height="46"></span>Deals &amp; Bundles<span class="mh-chev" aria-hidden="true"></span></a>
+            </div>
+            <div class="mh-menu-block">
+            <button type="button" class="mh-row" data-mh-open="help"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M9.4 9.6a2.6 2.6 0 1 1 3.4 2.5c-.8.4-1.3 1-1.3 1.9"/></svg></span>Help &amp; Support<span class="mh-chev" aria-hidden="true"></span></button>
+            <button type="button" class="mh-row" data-mh-quote><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3.5h7.2L19 8.2V20.5H7z"/><path d="M14.2 3.5V8.2H19"/><path d="M9.5 13h5"/><path d="M9.5 16.5h5"/></svg></span>Request a Quote</button>
+            <a class="mh-row" href="/track-order.html"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="2.5" y="8" width="11" height="7.5" rx="1"/><path d="M13.5 11H17l3 2.6v1.9h-6.5"/><circle cx="6.5" cy="17.8" r="1.5"/><circle cx="17.2" cy="17.8" r="1.5"/></svg></span>Track Your Order<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="/about.html"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 11v5"/><path d="M12 8h.01"/></svg></span>About Us<span class="mh-chev" aria-hidden="true"></span></a>
+            <button type="button" class="mh-row" data-mh-quote><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>Contact Us</button>
+            <div class="mh-contact-stack">
+            <a class="mh-contact mh-contact--call" href="tel:02089742722">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                <span><strong>Call Us</strong><small>020 8974 2722</small></span>
+            </a>
+            <a class="mh-contact mh-contact--email" href="mailto:info@brandeduk.com">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                <span><strong>Email Us</strong><small>info@brandeduk.com</small></span>
+            </a>
+            </div>
+            </div>
+        </div>
+        </div>
+        <div class="mh-view" data-mh-view="products" hidden>
+            <div class="mh-section-title"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-product" src="/brandedukv15-child/assets/images/icons/menu/shop-product.png?v=20261016-file" alt="" width="46" height="46"></span>Shop by Product</div>
+            <div class="mh-view-scroll">
+            <a class="mh-row" href="/shop-pc.html?productType=tshirts"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="/brandedukv15-child/assets/images/ui/icons/categories/icon-shirt-71%201.png" alt=""></span>T-Shirts<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="/shop-pc.html?productType=polos"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="/brandedukv15-child/assets/images/ui/icons/categories/Polo.png" alt=""></span>Polo Shirts<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="/shop-pc.html?productType[]=hoodies&amp;productType[]=sweatshirts"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="/brandedukv15-child/assets/images/ui/icons/categories/icon-hoodies-71%201.png" alt=""></span>Hoodies &amp; Sweatshirts<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="/shop-pc.html?productType[]=jackets&amp;productType[]=softshells"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="/brandedukv15-child/assets/images/ui/icons/categories/Jacket.png" alt=""></span>Jackets &amp; Softshell<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="/shop-pc.html?productType=safety-vests"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="/brandedukv15-child/assets/images/ui/icons/categories/Hi%20Vis.png" alt=""></span>Hi-Vis Clothing<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="/shop-pc.html?productType=trousers"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="/brandedukv15-child/assets/images/ui/icons/categories/Trousers.png" alt=""></span>Work Trousers<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="/shop-pc.html?productType=aprons"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="/brandedukv15-child/assets/images/ui/icons/categories/Apron.png" alt=""></span>Work &amp; Uniforms<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="/shop-pc.html?productType=fleece"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="/brandedukv15-child/assets/images/ui/icons/categories/Fleece.png" alt=""></span>Fleeces<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="/shop-pc.html?productType=caps"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="/brandedukv15-child/assets/images/ui/icons/categories/Cap.png" alt=""></span>Headwear<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row mh-row--eco" href="/shop-pc.html?accreditation=recycled"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="/brandedukv15-child/assets/images/ui/icons/categories/Recycle.png" alt=""></span>Sustainable / Recycled &amp; Organic<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="/shop-pc.html">View All Categories<span class="mh-chev" aria-hidden="true"></span></a>
+                <div class="mh-sibling-group">
+            <button type="button" class="mh-row" data-mh-open="industries"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-industry" src="/brandedukv15-child/assets/images/icons/menu/shop-by-industry.png?v=20261016-file" alt="" width="46" height="46"></span>Shop by Industry<span class="mh-chev" aria-hidden="true"></span></button>
+            <a class="mh-row" href="/bundles.html"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-deals" src="/brandedukv15-child/assets/images/icons/menu/deals-bundles.png?v=20261016-nobg" alt="" width="46" height="46"></span>Deals &amp; Bundles<span class="mh-chev" aria-hidden="true"></span></a>
+            <button type="button" class="mh-row" data-mh-open="help"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M9.4 9.6a2.6 2.6 0 1 1 3.4 2.5c-.8.4-1.3 1-1.3 1.9"/></svg></span>Help &amp; Support<span class="mh-chev" aria-hidden="true"></span></button>
+                </div>
+            </div>
+        </div>
+        <div class="mh-view" data-mh-view="industries" hidden>
+            <div class="mh-section-title"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-industry" src="/brandedukv15-child/assets/images/icons/menu/shop-by-industry.png?v=20261016-file" alt="" width="46" height="46"></span>Shop by Industry</div>
+            <div class="mh-view-scroll">
+            <a class="mh-row" href="/industries/construction.html"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 15.5a7 7 0 0 1 14 0"/><path d="M3.5 15.5h17v2.2h-17z"/></svg></span>Construction<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="/industries/hospitality.html"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4v6.2a2 2 0 1 0 2 0V4"/><path d="M8 12.2V20"/><path d="M15 4c2.2 1.6 2.2 4 0 5.6V20"/></svg></span>Hospitality<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="/industries/healthcare.html"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10 4.5h4v15h-4z"/><path d="M4.5 10h15v4h-15z"/></svg></span>Healthcare<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="/industries/education.html"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 6l9 4.5L12 15z"/><path d="M7 12.2v3.6c1.6 1.6 8.4 1.6 10 0v-3.6"/></svg></span>Schools &amp; Leavers<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="/industries/corporate.html"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="8" width="17" height="11" rx="1.6"/><path d="M8.5 8V6.2A1.8 1.8 0 0 1 10.3 4.4h3.4A1.8 1.8 0 0 1 15.5 6.2V8"/></svg></span>Corporate<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="/industries/sports.html"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 4.5h8v5.2a4 4 0 0 1-8 0z"/><path d="M12 13.7V16.5"/><path d="M9.2 19.5h5.6"/></svg></span>Sports<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="/industries/cleaning.html">Cleaning<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="/industries/logistics.html">Logistics<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="/industries/retail.html">Retail<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="/industries.html">View All Industries<span class="mh-chev" aria-hidden="true"></span></a>
+                <div class="mh-sibling-group">
+            <button type="button" class="mh-row" data-mh-open="products"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-product" src="/brandedukv15-child/assets/images/icons/menu/shop-product.png?v=20261016-file" alt="" width="46" height="46"></span>Shop by Product<span class="mh-chev" aria-hidden="true"></span></button>
+            <a class="mh-row" href="/bundles.html"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-deals" src="/brandedukv15-child/assets/images/icons/menu/deals-bundles.png?v=20261016-nobg" alt="" width="46" height="46"></span>Deals &amp; Bundles<span class="mh-chev" aria-hidden="true"></span></a>
+            <button type="button" class="mh-row" data-mh-open="help"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M9.4 9.6a2.6 2.6 0 1 1 3.4 2.5c-.8.4-1.3 1-1.3 1.9"/></svg></span>Help &amp; Support<span class="mh-chev" aria-hidden="true"></span></button>
+                </div>
+            </div>
+        </div>
+        <div class="mh-view" data-mh-view="help" hidden>
+            <div class="mh-section-title"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M9.4 9.6a2.6 2.6 0 1 1 3.4 2.5c-.8.4-1.3 1-1.3 1.9"/></svg></span>Help &amp; Support</div>
+            <div class="mh-view-scroll">
+            <a class="mh-row" href="#faq"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M9.4 9.6a2.6 2.6 0 1 1 3.4 2.5c-.8.4-1.3 1-1.3 1.9"/></svg></span>Help &amp; FAQs<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="/pricing-guide.html">Delivery &amp; Returns<span class="mh-chev" aria-hidden="true"></span></a>
+                <div class="mh-sibling-group">
+            <button type="button" class="mh-row" data-mh-open="products"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-product" src="/brandedukv15-child/assets/images/icons/menu/shop-product.png?v=20261016-file" alt="" width="46" height="46"></span>Shop by Product<span class="mh-chev" aria-hidden="true"></span></button>
+            <button type="button" class="mh-row" data-mh-open="industries"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-industry" src="/brandedukv15-child/assets/images/icons/menu/shop-by-industry.png?v=20261016-file" alt="" width="46" height="46"></span>Shop by Industry<span class="mh-chev" aria-hidden="true"></span></button>
+            <a class="mh-row" href="/bundles.html"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-deals" src="/brandedukv15-child/assets/images/icons/menu/deals-bundles.png?v=20261016-nobg" alt="" width="46" height="46"></span>Deals &amp; Bundles<span class="mh-chev" aria-hidden="true"></span></a>
+                </div>
+            </div>
+        </div>
+        </div>
+    </nav>
+
+<!-- Bottom Navigation -->
     <nav class="bottom-nav bottom-nav--v2" aria-label="Main navigation">
         <a href="/index-mobile.html?force=mobile" class="nav-item" data-home-nav aria-label="Home">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -5122,6 +5210,7 @@
         });
     </script>
     <script src="mobile/js/mobile.js?v=20260730a"></script>
+    <script src="mobile/js/header-menu.js?v=20261016-shopheader"></script>
     <script src="mobile/js/bottom-nav.js?v=20261016-newbar"></script>
     <script src="mobile/js/breadcrumbs.js?v=20260629a"></script>
 

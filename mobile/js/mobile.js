@@ -180,6 +180,11 @@ function initVatToggle() {
             applyVatMode(!!vatToggleTablet.checked);
         });
     }
+
+    window.addEventListener('vatToggleChanged', function () {
+        updateVatToggleUI();
+        updateAllPrices();
+    });
 }
 
 function updateVatToggleUI() {
@@ -336,6 +341,13 @@ function initSearch() {
                 const detailUrl = `${baseUrl}customize-mobile.html?code=${product.value}`;
                 const imgUrl = product.image || '../brandedukv15-child/assets/images/ui/no-image.png';
                 const safeName = (product.label || '').replace(/'/g, "\\'");
+                const brand = product.brand || product.brand_name || '';
+                const priceVal = Number(product.price);
+                const vatOn = typeof window.isVatOn === 'function' && window.isVatOn();
+                const amount = Number.isFinite(priceVal) ? (vatOn ? priceVal * 1.2 : priceVal) : null;
+                const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+                const brandHtml = brand ? `<span class="suggestion-item-brand">${esc(brand)}</span>` : '';
+                const priceHtml = amount == null ? '' : `<span class="suggestion-item-price">From <strong>£${amount.toFixed(2)}</strong> ${vatOn ? 'inc. VAT' : 'ex. VAT'}</span>`;
                 html += `
                     <a href="${detailUrl}" class="suggestion-item" data-product-code="${product.value}"
                        onclick="sessionStorage.setItem('selectedProduct','${product.value}');sessionStorage.setItem('selectedProductData',JSON.stringify({code:'${product.value}',name:'${safeName}'}));">
@@ -344,6 +356,7 @@ function initSearch() {
                             <div class="suggestion-item-label">${highlight(product.label)}</div>
                             <div class="suggestion-item-sub"><span>Code: ${product.value}</span></div>
                         </div>
+                        <div class="suggestion-item-aside">${brandHtml}${priceHtml}</div>
                     </a>`;
             });
             html += `<a href="${getCanonicalShopUrl(`q=${encodeURIComponent(query)}`)}" class="view-all-results">View all results for "${query}" →</a>`;

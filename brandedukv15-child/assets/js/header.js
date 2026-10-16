@@ -685,6 +685,13 @@
                         ? `${mobileBasePath}customize-mobile.html?code=${encodeURIComponent(product.value)}`
                         : `product-detail.html?code=${encodeURIComponent(product.value)}`;
                     const imgUrl = product.image || '/brandedukv15-child/assets/images/ui/no-image.png';
+                    const brand = product.brand || product.brand_name || '';
+                    const priceVal = Number(product.price);
+                    const vatOn = typeof window.isVatOn === 'function' && window.isVatOn();
+                    const amount = Number.isFinite(priceVal) ? (vatOn ? priceVal * 1.2 : priceVal) : null;
+                    const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+                    const brandHtml = brand ? `<span class="suggestion-item-brand">${esc(brand)}</span>` : '';
+                    const priceHtml = amount == null ? '' : `<span class="suggestion-item-price">From <strong>£${amount.toFixed(2)}</strong> ${vatOn ? 'inc. VAT' : 'ex. VAT'}</span>`;
 
                     html += `
                         <a href="${detailUrl}" class="suggestion-item" data-product-code="${product.value}" onclick="if(window.innerWidth<700){sessionStorage.setItem('selectedProduct','${product.value}');sessionStorage.setItem('selectedProductData',JSON.stringify({code:'${product.value}',name:'${(product.label||'').replace(/'/g,"\\'")}'}));}">
@@ -695,6 +702,7 @@
                                     <span>Code: ${product.value}</span>
                                 </div>
                             </div>
+                            <div class="suggestion-item-aside">${brandHtml}${priceHtml}</div>
                         </a>`;
                 });
 

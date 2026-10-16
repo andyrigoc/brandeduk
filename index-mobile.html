@@ -217,7 +217,7 @@
     <!-- Mobile-First CSS -->
     <link rel="stylesheet" href="mobile/css/mobile.css?v=20261016-chatnav">
     <link rel="stylesheet" href="mobile/css/bottom-nav.css?v=20261016-chatorange">
-    <link rel="stylesheet" href="mobile/css/header-v2.css?v=20261016-icons60">
+    <link rel="stylesheet" href="mobile/css/header-v2.css?v=20261016-hamleft">
     <link rel="stylesheet" href="mobile/hero/hero.css?v=20260927-neonfix">
     <link rel="stylesheet" href="mobile/css/popup-contact.css?v=20261003-consent">
     <link rel="stylesheet" href="mobile/css/faq.css?v=20260307A">
@@ -1069,12 +1069,15 @@
                 </svg>
                 <div class="search-autocomplete" id="mobileSearchAutocomplete"></div>
             </div>
+            <div class="mh-search-vat vat-toggle-mobile" id="vatToggleContainer">
+                <span class="vat-label vat-label--exc">EXC VAT</span>
+                <input type="checkbox" id="vatToggleCheckbox" class="vat-checkbox">
+                <label for="vatToggleCheckbox" class="vat-toggle-label">Toggle VAT</label>
+                <span class="vat-label vat-label--inc">INC VAT</span>
+            </div>
         </div>
     </header>
 
-    <div class="top-promo-bar mh-promo">
-        <p class="mh-promo-line">Workwear • Uniforms • Sportswear</p>
-    </div>
     </div>
 
     <!-- Main Content -->
@@ -1913,12 +1916,6 @@
         </div>
         <div class="mh-panels">
         <div class="mh-view" data-mh-view="main">
-        <div class="mh-drawer-vat vat-toggle-mobile" id="vatToggleContainer">
-            <input type="checkbox" id="vatToggleCheckbox" class="vat-checkbox">
-            <span class="vat-label vat-label--exc">EXC VAT</span>
-            <label for="vatToggleCheckbox" class="vat-toggle-label">Toggle VAT</label>
-            <span class="vat-label vat-label--inc">INC VAT</span>
-        </div>
         <div class="mh-view-scroll">
             <div class="mh-menu-block">
             <button type="button" class="mh-row" data-mh-open="products"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-product" src="/brandedukv15-child/assets/images/icons/menu/shop-product.png?v=20261016-file" alt="" width="46" height="46"></span>Shop by Product<span class="mh-chev" aria-hidden="true"></span></button>
@@ -2645,15 +2642,15 @@
     </div>
 
     <script src="brandedukv15-child/assets/js/cart.js?v=20260417"></script>
-    <script src="mobile/js/mobile.js?v=20261016-header"></script>
+    <script src="mobile/js/mobile.js?v=20261016-suggestmeta"></script>
     <!-- customize.js only needed on customize pages, not homepage -->
     <script src="mobile/hero/hero.js?v=20260923-expansion"></script>
     <script src="mobile/js/popup-contact.js?v=20261003-consent"></script>
     <script src="mobile/js/bottom-nav.js?v=20261016-newbar"></script>
-    <script src="mobile/js/header-menu.js?v=20261016-underbar"></script>
+    <script src="mobile/js/header-menu.js?v=20261016-fullwidth"></script>
     <script src="mobile/js/faq.js?v=20260102"></script>
     <!-- Desktop Header JS -->
-    <script src="brandedukv15-child/assets/js/header.js?v=20260104B"></script>
+    <script src="brandedukv15-child/assets/js/header.js?v=20261016-suggestmeta"></script>
     <script src="brandedukv15-child/assets/js/api-config.js?v=20261016-apiproxy"></script>
     <script src="brandedukv15-child/assets/js/account.js?v=20260521-home-auth"></script>
     <script src="brandedukv15-child/assets/js/account-panel.js?v=20260930-authgate1"></script>

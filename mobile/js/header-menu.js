@@ -7,7 +7,11 @@
         var header = document.querySelector('.mobile-header--v2');
         var promo = document.querySelector('.mh-promo');
         var nav = document.querySelector('.bottom-nav');
+        var searchRow = document.querySelector('.mobile-header--v2 .mh-search');
         var top = header ? header.getBoundingClientRect().bottom : 118;
+        if (searchRow) {
+            document.documentElement.style.setProperty('--mh-search-bottom', Math.round(searchRow.getBoundingClientRect().bottom) + 'px');
+        }
         if (promo) {
             var promoBox = promo.getBoundingClientRect();
             if (promoBox.height > 0 && promoBox.bottom > top - 1) top = promoBox.bottom;
@@ -88,4 +92,7 @@
             if (open) placeMenu();
         }).observe(menu, { attributes: true, attributeFilter: ['class'] });
     }
+
+    placeMenu();
+    window.addEventListener('resize', placeMenu);
 })();
