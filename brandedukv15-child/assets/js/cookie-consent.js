@@ -98,7 +98,7 @@
 
   // Every live page loads this file, so it also brings in the shared
   // page-transition loader (blur + brand spinner between pages).
-  var PAGE_TRANSITION_VERSION = '20261012';
+  var PAGE_TRANSITION_VERSION = '20261017';
   (function loadPageTransition() {
     if (document.querySelector('script[src*="page-transition.js"]')) return;
     var src = '/brandedukv15-child/assets/js/page-transition.js';

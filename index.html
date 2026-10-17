@@ -107,7 +107,7 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
-            background: #faf7f3;
+            background: #fff;
             color: #333;
         }
         /* Accessible hiding: present in the DOM/HTML for crawlers and screen readers,
@@ -123,12 +123,19 @@
             white-space: nowrap;
             border: 0;
         }
+        /* The redirect starts immediately: the loader only appears if the
+           next page is slow to arrive. */
         .loader-container {
             position: relative;
             width: 100px;
             height: 100px;
             contain: layout paint;
+            opacity: 0;
+            -webkit-animation: splash-in .2s ease .6s forwards;
+            animation: splash-in .2s ease .6s forwards;
         }
+        @-webkit-keyframes splash-in { to { opacity: 1; } }
+        @keyframes splash-in { to { opacity: 1; } }
         .upload span {
             display: block;
             position: absolute;
@@ -139,9 +146,9 @@
             -webkit-animation: run 2s infinite ease-in-out;
             animation: run 2s infinite ease-in-out;
         }
-        .upload .upload1 { background: #f3b222; animation-delay: 1.5s; }
-        .upload .upload2 { background: #f0653e; animation-delay: 1s; }
-        .upload .upload3 { background: #b9c0c0; animation-delay: .5s; }
+        .upload .upload1 { background: #f3b222; -webkit-animation-delay: -.5s; animation-delay: -.5s; }
+        .upload .upload2 { background: #f0653e; -webkit-animation-delay: -1s; animation-delay: -1s; }
+        .upload .upload3 { background: #b9c0c0; -webkit-animation-delay: -1.5s; animation-delay: -1.5s; }
         .upload .upload4 { background: #8f7473; }
         @-webkit-keyframes run {
             0% { transform: translate(0%); border-radius: 50%; }
@@ -195,7 +202,6 @@
             // iPad mini 6 (744), iPad mini (768), Android tablets, desktops.
             var BREAKPOINT = 700;
             var lastTarget = null;
-            var autoTimer = null;
             var debugInfoEl = document.getElementById('debugInfo');
             var redirected = false;
 
@@ -263,32 +269,7 @@
                 }
             }
 
-            // Redirect after splash screen delay.
-            updateDebug('pending');
-
-            var MAX_WAIT_MS = 3000;
-            var didRedirect = false;
-
-            function safeRedirect(reason) {
-                if (didRedirect) return;
-                didRedirect = true;
-                updateDebug(reason);
-                redirectIfNeeded();
-            }
-
-            function startSplashCountdown() {
-                if (autoTimer) return;
-                autoTimer = setTimeout(function () {
-                    safeRedirect('timeout');
-                }, MAX_WAIT_MS);
-            }
-
-            // Wait for this loader page to be fully ready, then show one full animation cycle.
-            if (document.readyState === 'complete') {
-                startSplashCountdown();
-            } else {
-                window.addEventListener('load', startSplashCountdown, { once: true });
-            }
+            redirectIfNeeded();
         })();
     </script>
 </body>

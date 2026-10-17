@@ -46,6 +46,7 @@
       gtag('config', 'AW-438771987');
     </script>
     <script defer src="/brandedukv15-child/assets/js/cookie-consent.js?v=20261016"></script>
+    <script defer src="/brandedukv15-child/assets/js/page-transition.js?v=20261017"></script>
     <script defer src="/brandedukv15-child/assets/js/ads-conversions.js?v=20261009"></script>
     <script src="brandedukv15-child/assets/js/shop-route.js?v=20260518"></script>
     <script>
@@ -3216,6 +3217,11 @@
                 grid-template-columns: repeat(4, 1fr) !important;
             }
         }
+
+        .products-loading-space {
+            grid-column: 1 / -1;
+            min-height: 70vh;
+        }
     </style>
 
     <script src="brandedukv15-child/assets/js/header.js?v=20251230"></script>
@@ -4776,21 +4782,22 @@
             return (!best || bestScore < 70) ? null : best;
         }
 
+        let renderProductsSeq = 0;
+
         // Render products using API (delegates to BrandedAPI)
         async function renderProducts() {
             const grid = document.getElementById('productsGrid');
             if (!grid) return;
-            grid.innerHTML = `<div class="products-loader">
-                <section class="dots-container">
-                    <div class="dot"></div>
-                    <div class="dot"></div>
-                    <div class="dot"></div>
-                    <div class="dot"></div>
-                    <div class="dot"></div>
-                </section>
-                <div class="loader-text">Loading...</div>
-            </div>`;
-            const products = await fetchProducts();
+            // The products already on screen stay there until the next ones arrive;
+            // an empty grid keeps its height so the footer does not jump up.
+            if (!grid.querySelector('.product-card-shop')) {
+                grid.innerHTML = '<div class="products-loading-space" aria-hidden="true"></div>';
+            }
+            const seq = ++renderProductsSeq;
+            const overlay = window.BrandedPageTransition;
+            const request = fetchProducts();
+            const products = await (overlay && typeof overlay.track === 'function' ? overlay.track(request) : request);
+            if (seq !== renderProductsSeq) return;
             // Update title/count
             const titleEl = document.getElementById('categoryTitle');
             const resultsEl = document.getElementById('resultsCount');

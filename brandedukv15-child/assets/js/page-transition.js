@@ -1,9 +1,12 @@
 /**
- * Branded UK - page transition loader.
+ * Branded UK - page loading overlay.
  *
- * On a click on an internal link to another page, the current page is blurred,
- * the brand orbiting-squares loader (components/loader.css, .branded-orbit-loader)
- * is shown in the middle, and the browser navigates after DELAY_MS.
+ * Shown only while the site is really waiting: the current page stays visible,
+ * slightly blurred, with the brand orbiting-squares loader (components/loader.css,
+ * .branded-orbit-loader) in the middle. Nothing is delayed on purpose: links
+ * navigate straight away and the overlay appears only when the next page takes
+ * longer than SHOW_AFTER_MS to replace this one. Pages wrap their own slow
+ * requests in BrandedPageTransition.track(promise) to get the same overlay.
  * Nothing runs on page load: landings (Google Ads traffic) stay instant.
  *
  * Skipped: modifier / middle clicks, target other than _self, download links,
@@ -13,15 +16,16 @@
  * role="button", data-toggle), clicks already handled by other scripts
  * (event.defaultPrevented), and anything inside [data-no-loader].
  *
- * Loaded on every live page by cookie-consent.js.
+ * Loaded on every live page by cookie-consent.js. Pages that call track()
+ * during their first load include it directly, before their own scripts.
  */
 (function () {
   'use strict';
 
-  // Fake loading time before navigating to the clicked page.
-  var DELAY_MS = 1500;
-  // If the browser is still on this page this long after navigating
-  // (beforeunload prompt cancelled, download, very slow server), drop the overlay.
+  // Shorter waits never show the overlay, so fast pages do not flash a loader.
+  var SHOW_AFTER_MS = 300;
+  // If the browser is still on this page this long after the overlay appeared
+  // (beforeunload prompt cancelled, download, very slow server), drop it.
   var STUCK_MS = 6000;
 
   if (window.self !== window.top) return;
@@ -36,6 +40,8 @@
   var navTimer = null;
   var stuckTimer = null;
   var pending = false;
+  var waits = 0;
+  var waitTimer = null;
 
   var CSS =
     '#' + OVERLAY_ID + '{position:fixed;inset:0;z-index:2147483646;display:flex;align-items:center;justify-content:center;' +
@@ -46,7 +52,7 @@
     '#' + OVERLAY_ID + ' .buk-pt-sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}' +
     /* Same values as .branded-orbit-loader in components/loader.css (not loaded on every page).
        Delays are the negative equivalents of 1.5s / 1s / .5s on the 2s cycle, so all four
-       squares are already moving on the first frame of a short transition. */
+       squares are already moving on the first frame of a short wait. */
     '#' + OVERLAY_ID + ' .branded-orbit-loader{position:relative;width:100px;height:100px;contain:layout paint}' +
     '#' + OVERLAY_ID + ' .branded-orbit-loader span{display:block;position:absolute;width:40%;height:40%;border-radius:50%;' +
       'box-shadow:2px 2px 3px rgba(0,0,0,.4);-webkit-animation:buk-pt-orbit-run 2s infinite ease-in-out;animation:buk-pt-orbit-run 2s infinite ease-in-out}' +
@@ -70,6 +76,7 @@
   }
 
   function show() {
+    if (overlay && overlay.parentNode) return;
     ensureStyles();
     if (!overlay) {
       overlay = document.createElement('div');
@@ -85,11 +92,17 @@
         '</div>' +
         '<span class="buk-pt-sr"></span>';
     }
+    var label = overlay.querySelector('.buk-pt-sr');
+    label.textContent = '';
     overlay.classList.remove('is-active');
-    if (!overlay.parentNode) document.body.appendChild(overlay);
+    document.body.appendChild(overlay);
     void overlay.offsetWidth;
     overlay.classList.add('is-active');
-    overlay.querySelector('.buk-pt-sr').textContent = 'Loading';
+    label.textContent = 'Loading';
+  }
+
+  function removeOverlay() {
+    if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
   }
 
   function hide() {
@@ -97,7 +110,28 @@
     clearTimeout(navTimer);
     clearTimeout(stuckTimer);
     navTimer = stuckTimer = null;
-    if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    if (!waits) removeOverlay();
+  }
+
+  // Overlay for a request on the current page (catalogue fetch, ...):
+  // shown once it has been running SHOW_AFTER_MS, removed when the last one settles.
+  function track(promise) {
+    waits += 1;
+    if (!waitTimer) {
+      waitTimer = setTimeout(function () {
+        waitTimer = null;
+        if (waits) show();
+      }, SHOW_AFTER_MS);
+    }
+    function done() {
+      if (waits > 0) waits -= 1;
+      if (waits) return;
+      clearTimeout(waitTimer);
+      waitTimer = null;
+      if (!pending) removeOverlay();
+    }
+    Promise.resolve(promise).then(done, done);
+    return promise;
   }
 
   function samePage(url) {
@@ -132,47 +166,40 @@
     return url;
   }
 
-  function prefetch(href) {
-    try {
-      var link = document.createElement('link');
-      link.rel = 'prefetch';
-      link.href = href;
-      (document.head || document.documentElement).appendChild(link);
-    } catch (e) {}
-  }
-
+  // The browser follows the link itself; this only adds the overlay if the
+  // next page is slow to arrive.
   function onClick(event) {
-    if (pending) {
-      var again = event.target && event.target.closest ? event.target.closest('a[href]') : null;
-      if (again && !event.defaultPrevented) event.preventDefault();
-      return;
-    }
-    var url = targetUrl(event);
-    if (!url) return;
-
-    event.preventDefault();
+    if (pending || !targetUrl(event)) return;
     pending = true;
-    show();
-    prefetch(url.href);
     navTimer = setTimeout(function () {
       navTimer = null;
-      window.location.assign(url.href);
+      // A handler registered after this one may still have cancelled the click.
+      if (event.defaultPrevented) {
+        pending = false;
+        return;
+      }
+      show();
       stuckTimer = setTimeout(hide, STUCK_MS);
-    }, DELAY_MS);
+    }, SHOW_AFTER_MS);
   }
 
   // Bubble phase on window: runs after page scripts that handle the same click
   // on elements or document, so their preventDefault() is already visible.
   window.addEventListener('click', onClick);
 
+  // Esc also stops the navigation in most browsers.
   document.addEventListener('keydown', function (event) {
-    if (pending && navTimer && (event.key === 'Escape' || event.key === 'Esc')) hide();
+    if (pending && (event.key === 'Escape' || event.key === 'Esc')) hide();
   });
 
   // Back/forward cache: never restore a blurred page.
   window.addEventListener('pageshow', function (event) {
-    if (event.persisted) hide();
+    if (!event.persisted) return;
+    waits = 0;
+    clearTimeout(waitTimer);
+    waitTimer = null;
+    hide();
   });
 
-  window.BrandedPageTransition = { delay: DELAY_MS, show: show, hide: hide };
+  window.BrandedPageTransition = { show: show, hide: hide, track: track };
 })();

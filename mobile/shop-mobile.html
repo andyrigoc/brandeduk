@@ -57,6 +57,7 @@
       gtag('config', 'AW-438771987');
     </script>
     <script defer src="/brandedukv15-child/assets/js/cookie-consent.js?v=20261016"></script>
+    <script defer src="/brandedukv15-child/assets/js/page-transition.js?v=20261017"></script>
     <script defer src="/brandedukv15-child/assets/js/ads-conversions.js?v=20261009"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -308,7 +309,7 @@
             gap: 8px;
             margin: 0 12px 8px;
             padding: 14px 12px 14px 16px;
-            background: #fff;
+            background: #f3f4f6;
             border-radius: 22px;
             box-shadow: 0 10px 28px rgba(15, 23, 42, 0.07);
             text-align: left;
@@ -357,7 +358,7 @@
             position: relative;
             overflow: hidden;
             min-height: 168px;
-            background-color: #fff;
+            background-color: #f3f4f6;
             background-image: none !important;
         }
         .shop-hero-card--art .shop-hero-card__copy {
@@ -370,6 +371,61 @@
             text-decoration: none;
         }
         body.shop-category-card .category-hamburger-btn .cat-product-count { display: none; }
+        .categories-filter-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .categories-filter-row .category-hamburger-btn {
+            width: auto;
+            flex: 1;
+            min-width: 0;
+        }
+        .categories-filter-row .active-cat-label {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .shop-page-nav {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex: none;
+        }
+        .shop-page-nav[hidden] { display: none; }
+        .shop-page-nav button {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            color: #374151;
+            font-size: 18px;
+            line-height: 1;
+            cursor: pointer;
+        }
+        .shop-page-nav button:disabled {
+            opacity: 0.35;
+            cursor: default;
+        }
+        .shop-page-count {
+            min-width: 46px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: #374151;
+            letter-spacing: 0.02em;
+        }
+        .products-loading-space {
+            grid-column: 1 / -1;
+            min-height: 70vh;
+        }
         .shop-hero-card--art .shop-hero-card__photo {
             display: block !important;
             position: absolute;
@@ -383,6 +439,10 @@
             object-fit: contain;
             object-position: right center;
             pointer-events: none;
+        }
+        .shop-hero-card--art .shop-hero-card__photo[src*="headwear-photo"] {
+            max-width: 42%;
+            object-position: right center;
         }
         .shop-hero-card--art .shop-hero-card__photo[src*="trousers-photo"] {
             top: auto;
@@ -423,11 +483,18 @@
 
     <!-- Category Filters (Hamburger Dropdown) -->
     <div class="categories-filter-scroll">
+        <div class="categories-filter-row">
         <button class="category-hamburger-btn" id="categoryHamburgerBtn" aria-expanded="false" aria-controls="categoriesDropdown">
             <span class="hamburger-lines"><span></span><span></span><span></span></span>
             <span class="active-cat-label" id="activeCatLabel">All</span>
             <span class="cat-product-count" id="catProductCount"></span>
         </button>
+        <div class="shop-page-nav" id="shopPageNav" hidden>
+            <button type="button" id="shopPagePrev" aria-label="Previous page">&lsaquo;</button>
+            <span class="shop-page-count"><span id="shopPageCurrent">1</span>/<span id="shopPageTotal">1</span></span>
+            <button type="button" id="shopPageNext" aria-label="Next page">&rsaquo;</button>
+        </div>
+        </div>
         <div class="categories-dropdown" id="categoriesDropdown">
             <button class="category-filter-card active" data-category="all">
                 <div class="category-icon">
@@ -624,14 +691,7 @@
     <main class="shop-products-container">
         <div class="products-grid-shop" id="productsGrid">
             <!-- Products will be loaded from API -->
-            <div class="products-loader">
-                <div class="branded-orbit-loader" aria-hidden="true">
-                    <span class="branded-orbit-1"></span>
-                    <span class="branded-orbit-2"></span>
-                    <span class="branded-orbit-3"></span>
-                    <span class="branded-orbit-4"></span>
-                </div>
-            </div>
+            <div class="products-loading-space" aria-hidden="true"></div>
         </div>
 
         <!-- Footer -->
@@ -1365,6 +1425,14 @@
                 .replace(/^-+|-+$/g, '');
         }
 
+        function artSlugFor(types, category) {
+            const keys = (types || []).map((value) => typeSlug(value)).filter(Boolean).sort();
+            if (keys.join('|') === 'beanies|caps|hats') return 'headwear';
+            if (keys.length === 1) return keys[0];
+            const cat = typeSlug(category || '');
+            return cat && cat !== 'all' ? cat : '';
+        }
+
         function catalogNameFor(value) {
             const map = window.BRANDED_TYPE_NAMES || {};
             const slug = typeSlug(value);
@@ -1662,7 +1730,7 @@
             const titleEl = document.getElementById('shopHeroTitle');
             const descEl = document.getElementById('shopHeroDesc');
             const countEl = document.getElementById('shopHeroCount');
-            const slug = typeSlug(raw || currentCategory || '');
+            const slug = artSlugFor(types, raw || currentCategory || params.get('category') || '');
             const artCards = {
                 "accessories": ["img/accessories-photo.png", "Accessories", "A wide range of accessories to complete your look."],
                 "accessory": ["img/accessory-photo.png", "Accessory", "Single accessories for work, events and everyday use."],
@@ -1860,6 +1928,42 @@
                 countEl.textContent = `(${Number(total || 0).toLocaleString()})`;
             }
             applyCategoryCard(total, product, mode === 'search' ? `Search: "${query}"` : safeTitle);
+            updateMobilePagination();
+        }
+
+        function cataloguePageCount() {
+            const limit = isBestsellerMode ? 100 : (currentLimit || 24);
+            const total = Number(totalProducts) || 0;
+            if (total <= 0) return 0;
+            return Math.max(1, Math.ceil(total / limit));
+        }
+
+        function updateMobilePagination() {
+            const nav = document.getElementById('shopPageNav');
+            if (!nav) return;
+            const totalPages = cataloguePageCount();
+            nav.hidden = totalPages < 1;
+            const currentEl = document.getElementById('shopPageCurrent');
+            const totalEl = document.getElementById('shopPageTotal');
+            const page = Math.min(currentPage, Math.max(totalPages, 1));
+            if (currentEl) currentEl.textContent = String(page);
+            if (totalEl) totalEl.textContent = String(Math.max(totalPages, 1));
+            const prev = document.getElementById('shopPagePrev');
+            const next = document.getElementById('shopPageNext');
+            if (prev) prev.disabled = page <= 1;
+            if (next) next.disabled = totalPages < 1 || page >= totalPages;
+        }
+
+        function goToShopPage(page) {
+            const totalPages = cataloguePageCount();
+            if (totalPages < 1) return;
+            const nextPage = Math.max(1, Math.min(Number(page) || 1, totalPages));
+            if (nextPage === currentPage) return;
+            currentPage = nextPage;
+            const grid = document.getElementById('productsGrid');
+            if (grid) grid.scrollIntoView({ block: 'start' });
+            if (currentSearchQuery) loadProductsWithSearch(currentSearchQuery);
+            else loadProducts();
         }
 
         function updateShopLoadingMeta({ mode, title, query }) {
@@ -2074,27 +2178,36 @@
             return card;
         }
 
+        let catalogueLoadSeq = 0;
+
+        // The products already on screen stay there until the next ones arrive;
+        // an empty grid keeps its height so the footer does not jump up.
+        function startCatalogueLoad(grid) {
+            if (!grid.querySelector('.product-card-shop')) {
+                grid.innerHTML = '<div class="products-loading-space" aria-hidden="true"></div>';
+            }
+            catalogueLoadSeq += 1;
+            return catalogueLoadSeq;
+        }
+
+        // Blurs the page with the brand loader only while the request is really slow.
+        function trackCatalogueLoad(request) {
+            const overlay = window.BrandedPageTransition;
+            return overlay && typeof overlay.track === 'function' ? overlay.track(request) : request;
+        }
+
         // Load products with search query
         async function loadProductsWithSearch(query) {
             const grid = document.getElementById('productsGrid');
             const resultsCount = document.getElementById('resultsCount');
             const categoryTitle = document.getElementById('categoryTitle');
 
-            // Show loading
-            grid.innerHTML = `
-                <div class="products-loader">
-                    <div class="branded-orbit-loader" aria-hidden="true">
-                        <span class="branded-orbit-1"></span>
-                        <span class="branded-orbit-2"></span>
-                        <span class="branded-orbit-3"></span>
-                        <span class="branded-orbit-4"></span>
-                    </div>
-                </div>
-            `;
+            const loadSeq = startCatalogueLoad(grid);
             updateShopLoadingMeta({ mode: 'search', title: `Search: "${query}"`, query });
 
             try {
-                const result = await BrandedAPI.getProducts(buildProductsOptions({ search: query }));
+                const result = await trackCatalogueLoad(BrandedAPI.getProducts(buildProductsOptions({ search: query })));
+                if (loadSeq !== catalogueLoadSeq) return;
 
                 totalProducts = result.total;
 
@@ -2147,9 +2260,12 @@
                 console.log('[MobileShop] Loaded', result.items.length, 'products for search:', query);
 
             } catch (error) {
+                if (loadSeq !== catalogueLoadSeq) return;
                 console.error('[MobileShop] Error loading products:', error);
                 const countEl = document.getElementById('catProductCount');
                 if (countEl) countEl.textContent = '';
+                const pageNav = document.getElementById('shopPageNav');
+                if (pageNav) pageNav.hidden = true;
                 grid.innerHTML = `
                     <div class="error-message" style="grid-column: 1 / -1; text-align: center; padding: 40px 20px;">
                         <p style="color: #ef4444;">Failed to load products</p>
@@ -2165,17 +2281,7 @@
             const resultsCount = document.getElementById('resultsCount');
             const categoryTitle = document.getElementById('categoryTitle');
 
-            // Show loading
-            grid.innerHTML = `
-                <div class="products-loader">
-                    <div class="branded-orbit-loader" aria-hidden="true">
-                        <span class="branded-orbit-1"></span>
-                        <span class="branded-orbit-2"></span>
-                        <span class="branded-orbit-3"></span>
-                        <span class="branded-orbit-4"></span>
-                    </div>
-                </div>
-            `;
+            const loadSeq = startCatalogueLoad(grid);
             const loadingBaseTitle = isBestsellerMode ? 'Recommended For You' : (landingTitle || CATEGORY_TITLES[currentCategory] || 'Products');
             updateShopLoadingMeta({ mode: 'category', title: loadingBaseTitle });
 
@@ -2185,7 +2291,8 @@
                 if (isBestsellerMode) {
                     opts.limit = 100;
                 }
-                const result = await BrandedAPI.getProducts(opts);
+                const result = await trackCatalogueLoad(BrandedAPI.getProducts(opts));
+                if (loadSeq !== catalogueLoadSeq) return;
 
                 totalProducts = result.total;
 
@@ -2266,9 +2373,12 @@
                 console.log('[MobileShop] Loaded', items.length, 'products');
 
             } catch (error) {
+                if (loadSeq !== catalogueLoadSeq) return;
                 console.error('[MobileShop] Error loading products:', error);
                 const countEl = document.getElementById('catProductCount');
                 if (countEl) countEl.textContent = '';
+                const pageNav = document.getElementById('shopPageNav');
+                if (pageNav) pageNav.hidden = true;
                 grid.innerHTML = `
                     <div class="error-message" style="grid-column: 1 / -1; text-align: center; padding: 40px 20px;">
                         <p style="color: #ef4444;">Failed to load products</p>
@@ -2332,7 +2442,7 @@
                 window.location.replace('shop-mobile.html?productType=tunics&force=mobile');
                 return;
             }
-            if (!earlySearch && (earlyTypes.length === 1 || (earlyCat && earlyCat !== 'all'))) {
+            if (!earlySearch && artSlugFor(earlyTypes, earlyCat)) {
                 currentCategory = earlyCat || currentCategory;
                 applyCategoryCard(null, null, '');
             }
@@ -2407,6 +2517,11 @@
                     }
                 });
             }
+
+            const pagePrev = document.getElementById('shopPagePrev');
+            const pageNext = document.getElementById('shopPageNext');
+            if (pagePrev) pagePrev.addEventListener('click', () => goToShopPage(currentPage - 1));
+            if (pageNext) pageNext.addEventListener('click', () => goToShopPage(currentPage + 1));
 
             const hamBtn = document.getElementById('categoryHamburgerBtn');
             const dropdown = document.getElementById('categoriesDropdown');
