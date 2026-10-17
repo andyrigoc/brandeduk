@@ -73,31 +73,59 @@
   var lastTouchHandledAt = 0;
   var panelNavigationPending = false;
 
+  function categoryHref($el) {
+    var cta = $el.querySelector('.hero-el__cta');
+    var href = cta ? cta.getAttribute('href') : '';
+    if (!href) {
+      var category = $el.getAttribute('data-category') || '';
+      var inMobileFolder = window.location.pathname.toLowerCase().indexOf('/mobile/') !== -1;
+      href = (inMobileFolder ? '' : 'mobile/') + 'shop-mobile.html?category=' + encodeURIComponent(category);
+    }
+    if (!/[?&]force=mobile(?:&|$)/.test(href)) {
+      href += (href.indexOf('?') === -1 ? '?' : '&') + 'force=mobile';
+    }
+    return href;
+  }
+
   function handlePanelActivation($el) {
     if (panelNavigationPending) return;
-
-    var category = $el.getAttribute('data-category');
-    if (!category) return;
+    if (!$el.getAttribute('data-category') && !$el.querySelector('.hero-el__cta')) return;
     panelNavigationPending = true;
     revealHeroBackground($el);
 
-    // Keep the fully expanded card visible before opening its products.
+    var startLeft = $el.offsetLeft;
+    var startWidth = $el.offsetWidth;
+    var endLeft = $cont.scrollLeft;
+    var endWidth = $cont.clientWidth;
+    var ease = 'cubic-bezier(0.22, 1, 0.36, 1)';
+
+    $el.style.transition = 'none';
+    $el.style.left = startLeft + 'px';
+    $el.style.width = startWidth + 'px';
+    void $el.offsetWidth;
+
     $cont.classList.add('s--el-active');
     $el.classList.add('s--active');
 
-    var navigationTimer = setTimeout(openCategory, 2400);
+    $el.style.transition = 'left 0.7s ' + ease + ', width 0.7s ' + ease + ', border-radius 0.7s ' + ease;
+    $el.style.left = endLeft + 'px';
+    $el.style.width = endWidth + 'px';
+    $el.style.borderRadius = '0px';
+
+    var href = categoryHref($el);
+    var navigationTimer = setTimeout(openCategory, 780);
 
     function openCategory() {
       clearTimeout(navigationTimer);
       $el.removeEventListener('transitionend', handleExpansionEnd);
-      window.location.href = 'shop.html?category=' + category;
+      window.location.href = href;
     }
 
     function handleExpansionEnd(e) {
       if (e.target !== $el || e.propertyName !== 'width') return;
       clearTimeout(navigationTimer);
       $el.removeEventListener('transitionend', handleExpansionEnd);
-      navigationTimer = setTimeout(openCategory, 900);
+      openCategory();
     }
 
     $el.addEventListener('transitionend', handleExpansionEnd);
@@ -141,7 +169,7 @@
       var autoScrollDragged = !!window._heroAutoscrollDragMoved;
 
       // Only treat as tap if: finger barely moved, scroll didn't change, quick touch
-      if (!elTouchMoved && !autoScrollDragged && scrollDelta < TAP_MOVE_LIMIT && elapsed < TAP_TIME_LIMIT) {
+      if (!elTouchMoved && !autoScrollDragged && elapsed < TAP_TIME_LIMIT) {
         // Check we didn't tap on close button or CTA
         var target = e.target;
         if (target.closest && (target.closest('.hero-el__close-btn') || target.closest('.hero-el__cta'))) {
@@ -153,21 +181,18 @@
       }
     }, { passive: false }); // passive:false needed for preventDefault()
 
-    // For mouse/desktop: keep click but only for non-touch
     $el.addEventListener('click', function(e) {
-      // On touch devices, touchend already handled it; block click to avoid double-fire.
-      // Detect touch device: if last interaction was touch, skip.
-      if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
-        // On touch-capable devices, block click – touchend handles everything.
+      if (Date.now() - lastTouchHandledAt < 700) {
         e.preventDefault();
-        e.stopPropagation();
         return;
       }
-
-      // Desktop mouse click
-      if (e.target.closest('.hero-el__close-btn') || e.target.closest('.hero-el__cta')) {
+      if (e.target.closest('.hero-el__close-btn')) {
         return;
       }
+      if (e.target.closest('.hero-el__cta')) {
+        return;
+      }
+      e.preventDefault();
       handlePanelActivation($el);
     });
   });

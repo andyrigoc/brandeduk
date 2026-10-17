@@ -718,30 +718,35 @@
 
 /* Inactive states for non-active elements */
 .hero-cont.s--el-active .hero-el:not(.s--active) {
-  transform: scale(0.5) translate3d(0, 0, 0);
   opacity: 0;
-  transition: transform 0.95s, opacity 0.95s;
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* Active element - full width no padding */
+/* Active element grows into the visible strip in one movement */
 .hero-el.s--active {
-  z-index: 1;
+  z-index: 2;
   width: 100%;
   left: 0;
   transform: translate3d(0, 0, 0);
-  transition: transform 0.6s, width 0.7s 0.25s, z-index 0s;
   border-radius: 0;
+  transition:
+    left 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    width 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    border-radius 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    z-index 0s;
 }
 
 .hero-el.s--active .hero-el__bg {
   width: 100%;
   transform: none;
-  transition: transform 0.6s;
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .hero-el.s--active .hero-el__bg:before {
-  transition-delay: 0.6s;
-  transform: scale(1.1);
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1), background-position 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: 0s;
+  transform: scale(1.04);
 }
 
 .hero-el:hover .hero-el__bg:after {

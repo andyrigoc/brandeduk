@@ -2315,6 +2315,14 @@
 
         // Initialize
         async function init() {
+            const earlyParams = new URLSearchParams(window.location.search);
+            const earlyTypes = collectMobileSearchValues(earlyParams, 'productType');
+            const earlyCat = earlyParams.get('category') || '';
+            const earlySearch = earlyParams.get('search') || earlyParams.get('q') || '';
+            if (!earlySearch && (earlyTypes.length === 1 || (earlyCat && earlyCat !== 'all'))) {
+                currentCategory = earlyCat || currentCategory;
+                applyCategoryCard(null, null, '');
+            }
             await ensureTypeNames();
             // Get category and search from URL
             const urlParams = new URLSearchParams(window.location.search);
