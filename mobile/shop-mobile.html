@@ -63,7 +63,7 @@
     <meta name="theme-color" content="#273469">
     <title>Shop - BrandedUK</title>
     <link rel="stylesheet" href="css/mobile.css?v=20261002-logocombo">
-    <link rel="stylesheet" href="css/header-v2.css?v=20261016-hamleft">
+    <link rel="stylesheet" href="css/header-v2.css?v=20261016-azlist">
     <link rel="stylesheet" href="css/bottom-nav.css?v=20261016-filter">
     <link rel="stylesheet" href="css/breadcrumbs.css?v=20260403d">
     <link rel="stylesheet" href="css/social-buttons.css?v=20261002-logocombo">
@@ -321,7 +321,7 @@
             font-weight: 400;
             color: #9ca3af;
         }
-        .shop-hero-card__crumb a { color: inherit; text-decoration: none; }
+        .shop-hero-card__crumb { display: none; }
         .shop-hero-card__title {
             margin: 0;
             font-size: 28px;
@@ -352,6 +352,37 @@
             height: 132px;
             object-fit: contain;
             object-position: center right;
+        }
+        .shop-hero-card--art {
+            position: relative;
+            overflow: hidden;
+            min-height: 168px;
+            background-color: #fff;
+            background-image: none !important;
+        }
+        .shop-hero-card--art .shop-hero-card__copy {
+            position: relative;
+            z-index: 1;
+            max-width: 58%;
+        }
+        .category-hamburger-btn .active-cat-label a {
+            color: inherit;
+            text-decoration: none;
+        }
+        body.shop-category-card .category-hamburger-btn .cat-product-count { display: none; }
+        .shop-hero-card--art .shop-hero-card__photo {
+            display: block !important;
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            width: auto;
+            max-width: none;
+            flex: none;
+            transform: none;
+            object-fit: contain;
+            object-position: right center;
+            pointer-events: none;
         }
     </style>
     <div class="shop-hero-band" id="shopHeroBand">
@@ -561,6 +592,11 @@
         var heroDesc = document.getElementById('shopHeroDesc');
         if (heroTitle) heroTitle.textContent = cardTitle;
         if (heroCrumb) heroCrumb.textContent = cardTitle;
+        var filterLabel = document.getElementById('activeCatLabel');
+        if (filterLabel && cardTitle && cardTitle !== 'All Products') {
+            filterLabel.innerHTML = '<a href="../index.html">Home</a> <span aria-hidden="true">›</span> <span></span>';
+            filterLabel.querySelector('span:last-child').textContent = cardTitle;
+        }
         if (heroDesc) {
             heroDesc.textContent = cardDesc;
             heroDesc.hidden = !cardDesc;
@@ -571,7 +607,6 @@
             if (active && label) {
                 document.querySelectorAll('.category-filter-card').forEach(function(btn) { btn.classList.remove('active'); });
                 active.classList.add('active');
-                label.textContent = active.querySelector('span:last-child').textContent;
             }
         }
     })();
@@ -1619,18 +1654,176 @@
             const titleEl = document.getElementById('shopHeroTitle');
             const descEl = document.getElementById('shopHeroDesc');
             const countEl = document.getElementById('shopHeroCount');
-            if (crumb) crumb.textContent = shown;
-            if (titleEl) titleEl.textContent = shown;
+            const slug = typeSlug(raw || currentCategory || '');
+            const artCards = {
+                "accessories": ["img/accessories-photo.png", "Accessories", "A wide range of accessories to complete your look."],
+                "accessory": ["img/accessory-photo.png", "Accessory", "Single accessories for work, events and everyday use."],
+                "all-in-one": ["img/all-in-one-photo.png", "All in One", "Versatile all in one garments for work and everyday wear."],
+                "apron": ["img/apron-photo.png", "Apron", "Practical aprons for work, hospitality, events and more."],
+                "aprons": ["img/aprons-photo.png", "Aprons", "Durable aprons for hospitality, retail, events and everyday use."],
+                "arm-guards": ["img/arm-guards-photo.png", "Arm Guards", "Protective arm guards for safer, more comfortable work."],
+                "armbands": ["img/armbands-photo.png", "Armbands", "High visibility and elastic armbands for work and events."],
+                "bag": ["img/bag-photo.png", "Bag", "Practical bags for work, travel, events and everyday use."],
+                "bags": ["img/bags-photo.png", "Bags", "A wide range of bags for work, travel, events and more."],
+                "baselayers": ["img/baselayers-photo.png", "Baselayers", "Performance baselayers for warmth, comfort and flexibility."],
+                "beanies": ["img/beanies-photo.png", "Beanies", "Warm and comfortable beanies for work, events and everyday wear."],
+                "bedding": ["img/bedding-photo.png", "Bedding", "Comfortable bedding for homes, accommodation and more."],
+                "blanket": ["img/blanket-photo.png", "Blanket", "Warm and versatile blankets for work, travel and everyday use."],
+                "blankets": ["img/blankets-photo.png", "Blankets", "A wide range of blankets for work, events and more."],
+                "blouse": ["img/blouse-photo.png", "Blouse", "Stylish blouses for work, events and everyday wear."],
+                "blouses": ["img/blouses-photo.png", "Blouses", "Stylish blouses for work, uniforms and everyday wear."],
+                "bodysuits": ["img/bodysuits-photo.png", "Bodysuits", "Comfortable and versatile bodysuits for work and everyday wear."],
+                "boots": ["img/boots-photo.png", "Boots", "Durable boots for work, outdoors and everyday use."],
+                "bottles": ["img/bottles-photo.png", "Bottles", "Reusable bottles for work, travel and everyday use."],
+                "boxers": ["img/boxers-photo.png", "Boxers", "Comfortable boxers for everyday wear."],
+                "braces": ["img/braces-photo.png", "Braces", "Durable braces for work, uniforms and everyday use."],
+                "caps": ["img/caps-photo.png", "Caps", "Stylish caps for work, events and everyday wear."],
+                "cardigan": ["img/cardigan-photo.png", "Cardigan", "Comfortable cardigans for work and everyday wear."],
+                "cardigans": ["img/cardigans-photo.png", "Cardigans", "Versatile cardigans for work, events and everyday wear."],
+                "chef-jackets": ["img/chef-jackets-photo.png", "Chef Jackets", "Professional chef jackets for hospitality and catering."],
+                "chinos": ["img/chinos-photo.png", "Chinos", "Smart and comfortable chinos for work and everyday wear."],
+                "coverall": ["img/coverall-photo.png", "Coverall", "Durable coveralls for work, safety and industrial use."],
+                "coveralls": ["img/coveralls-photo.png", "Coveralls", "High quality coveralls for work, safety and everyday protection."],
+                "cushion-covers": ["img/cushion-covers-photo.png", "Cushion Covers", "Stylish cushion covers for homes, offices and events."],
+                "cushions": ["img/cushions-photo.png", "Cushions", "Comfortable cushions for homes, offices and events."],
+                "document-wallets": ["img/document-wallets-photo.png", "Document Wallets", "Secure document wallets for work, school and travel."],
+                "dog-hoodies": ["img/dog-hoodies-photo.png", "Dog Hoodies", "Warm and comfortable hoodies for dogs."],
+                "dog-jackets": ["img/dog-jackets-photo.png", "Dog Jackets", "Durable dog jackets for all weather conditions."],
+                "dog-t-shirts": ["img/dog-t-shirts-photo.png", "Dog T-Shirts", "Comfortable dog t-shirts for everyday wear."],
+                "dog-vests": ["img/dog-vests-photo.png", "Dog Vests", "Lightweight dog vests for comfort and visibility."],
+                "dress": ["img/dress-photo.png", "Dress", "Stylish dresses for work, events and everyday wear."],
+                "dresses": ["img/dresses-photo.png", "Dresses", "A wide range of dresses for work, occasions and casual wear."],
+                "dungarees": ["img/dungarees-photo.png", "Dungarees", "Durable dungarees for work, DIY and everyday wear."],
+                "ear-muffs": ["img/ear-muffs-photo.png", "Ear Muffs", "Warm and comfortable ear muffs for work, events and everyday wear."],
+                "embroidery-accessories": ["img/embroidery-accessories-photo.png", "Embroidery Accessories", "Essential accessories for embroidery, customisation and garment decoration."],
+                "embroidery-backing": ["img/embroidery-backing-photo.png", "Embroidery Backing", "Quality backing materials for clean, professional embroidery results."],
+                "first-aid-boxes": ["img/first-aid-boxes-photo.png", "First Aid Boxes", "Durable first aid boxes for workplaces, events and travel."],
+                "fleece": ["img/fleece-photo.png", "Fleece", "Warm and versatile fleece for work, events and everyday wear."],
+                "gilet": ["img/gilet-photo.png", "Gilet", "Lightweight gilets for comfort, warmth and layering."],
+                "gilets-body-warmers": ["img/gilets-body-warmers-photo.png", "Gilets & Body Warmers", "Practical gilets and body warmers for work, outdoor and everyday use."],
+                "glasses": ["img/glasses-photo.png", "Glasses", "Safety and lifestyle glasses for work, sport and everyday use."],
+                "gloves": ["img/gloves-photo.png", "Gloves", "Durable gloves for work, outdoor activities and everyday use."],
+                "gowns": ["img/gowns-photo.png", "Gowns", "Protective gowns for work, healthcare and everyday use."],
+                "hats": ["img/hats-photo.png", "Hats", "Stylish and practical hats for work, events and everyday wear."],
+                "headbands": ["img/headbands-photo.png", "Headbands", "Comfortable headbands for sport, work and everyday use."],
+                "headwear": ["img/headwear-photo.png", "Headwear", "A wide range of headwear for work, sport and everyday use."],
+                "helmets": ["img/helmets-photo.png", "Helmets", "Safety helmets for work, sites and industrial use."],
+                "safety-vests": ["img/safety-vests-photo.png", "Hi Vis", "High visibility clothing for improved safety."],
+                "hood": ["img/hood-photo.png", "Hood", "Warm and practical hoods for work and everyday wear."],
+                "hoodies": ["img/hoodies-photo.png", "Hoodies", "Comfortable hoodies for work, teams and everyday wear."],
+                "hot-water-bottles-covers": ["img/hot-water-bottles-covers-photo.png", "Hot Water Bottles & Covers", "Reusable hot water bottles and soft covers."],
+                "jacket": ["img/jacket-photo.png", "Jacket", "Practical jackets for work, outdoor and everyday use."],
+                "jackets": ["img/jackets-photo.png", "Jackets", "A wide range of jackets for work, teams and leisure."],
+                "jeans": ["img/jeans-photo.png", "Jeans", "Durable and comfortable jeans for work and casual wear."],
+                "jumper": ["img/jumper-photo.png", "Jumper", "Comfortable jumpers for work and everyday wear."],
+                "keyrings": ["img/keyrings-photo.png", "Keyrings", "Practical keyrings for branding, events and everyday use."],
+                "kneepads": ["img/kneepads-photo.png", "Kneepads", "Durable kneepads for added protection and comfort."],
+                "knitted-jumpers": ["img/knitted-jumpers-photo.png", "Knitted Jumpers", "Warm knitted jumpers for work and everyday wear."],
+                "laptop-cases": ["img/laptop-cases-photo.png", "Laptop Cases", "Protective laptop cases for work, travel and everyday use."],
+                "leggings": ["img/leggings-photo.png", "Leggings", "Comfortable and versatile leggings for work, sport and everyday wear."],
+                "loungewear-bottoms": ["img/loungewear-bottoms-photo.png", "Loungewear Bottoms", "Relaxed and comfortable loungewear bottoms for home and everyday wear."],
+                "mail-order-bags": ["img/mail-order-bags-photo.png", "Mail Order Bags", "Strong and reliable mail order bags for secure packaging and delivery."],
+                "onesies": ["img/onesies-photo.png", "Onesies", "Cosy and comfortable onesies for work, events and everyday wear."],
+                "packing-tape": ["img/packing-tape-photo.png", "Packing Tape", "High quality packing tape for secure and reliable packaging."],
+                "paper": ["img/paper-photo.png", "Paper", "A range of paper for printing, packaging and everyday use."],
+                "pencil-cases": ["img/pencil-cases-photo.png", "Pencil Cases", "Practical pencil cases for school, work and everyday organisation."],
+                "polo": ["img/polo-photo.png", "Polo", "Classic polo shirts for work, events and everyday wear."],
+                "polos": ["img/polos-photo.png", "Polos", "A wide range of polo shirts for work, teams and everyday wear."],
+                "ponchos": ["img/ponchos-photo.png", "Ponchos", "Lightweight and practical ponchos for work, events and outdoor use."],
+                "pyjamas": ["img/pyjamas-photo.png", "Pyjamas", "Comfortable pyjamas for a great night's sleep and relaxed wear."],
+                "quad-guards": ["img/quad-guards-photo.png", "Quad Guards", "Durable quad guards for extra protection and safer work environments."],
+                "rain-suits": ["img/rain-suits-photo.png", "Rain Suits", "Waterproof rain suits for reliable protection in all weather."],
+                "robe": ["img/robe-photo.png", "Robe", "Comfortable robes for work, leisure and everyday use."],
+                "robes": ["img/robes-photo.png", "Robes", "A range of robes for hospitality, spa, leisure and everyday use."],
+                "rugby-shirts": ["img/rugby-shirts-photo.png", "Rugby Shirts", "Durable rugby shirts for work, teams and everyday wear."],
+                "scarf": ["img/scarf-photo.png", "Scarf", "Classic scarves for work, uniforms and everyday use."],
+                "scarves": ["img/scarves-photo.png", "Scarves", "A wide range of scarves for work, events and everyday wear."],
+                "shirt": ["img/shirt-photo.png", "Shirt", "Smart and practical shirts for work, uniforms and more."],
+                "shirt-bags": ["img/shirt-bags-photo.png", "Shirt Bags", "Protective shirt bags for travel, storage and everyday use."],
+                "shirts": ["img/shirts-photo.png", "Shirts", "A wide range of shirts for work, uniforms and everyday wear."],
+                "shoes": ["img/shoes-photo.png", "Shoes", "Durable shoes for work, safety and everyday use."],
+                "shorts": ["img/shorts-photo.png", "Shorts", "Comfortable shorts for work, sports and everyday wear."],
+                "skirt": ["img/skirt-photo.png", "Skirt", "Versatile skirts for work, uniforms and everyday wear."],
+                "skirts": ["img/skirts-photo.png", "Skirts", "A wide range of skirts for work, uniforms and everyday use."],
+                "skorts": ["img/skorts-photo.png", "Skorts", "Practical skorts for work, sport and everyday wear."],
+                "sleepsuits": ["img/sleepsuits-photo.png", "Sleepsuits", "Comfortable sleepsuits for babies and children."],
+                "slippers": ["img/slippers-photo.png", "Slippers", "Warm and comfortable slippers for everyday use."],
+                "snoods": ["img/snoods-photo.png", "Snoods", "Versatile snoods for warmth and everyday wear."],
+                "socks": ["img/socks-photo.png", "Socks", "Comfortable and durable socks for work and everyday."],
+                "soft-shell-jacket": ["img/soft-shell-jacket-photo.png", "Soft Shell Jacket", "Weather-resistant soft shell jackets for work and outdoor use."],
+                "soft-toy": ["img/soft-toy-photo.png", "Soft Toy", "Soft and cuddly toys for all ages."],
+                "soft-toys": ["img/soft-toys-photo.png", "Soft Toys", "A wide range of soft toys for gifts, events and more."],
+                "softshells": ["img/softshells-photo.png", "Softshells", "Lightweight softshells for work and everyday wear."],
+                "sports-overtops": ["img/sports-overtops-photo.png", "Sports Overtops", "Performance overtops for sport, work and training."],
+                "straps": ["img/straps-photo.png", "Straps", "Durable straps for work, travel and everyday use."],
+                "suit-jacket": ["img/suit-jacket-photo.png", "Suit Jacket", "Smart suit jackets for work, events and formal wear."],
+                "sweatpants": ["img/sweatpants-photo.png", "Sweatpants", "Comfortable sweatpants for work, leisure and everyday."],
+                "sweatshirt": ["img/sweatshirt-photo.png", "Sweatshirt", "Comfortable sweatshirts for work, events and everyday."],
+                "sweatshirts": ["img/sweatshirts-photo.png", "Sweatshirts", "Comfortable sweatshirts for work, events and everyday wear."],
+                "tshirts": ["img/tshirts-photo.png", "T-shirts", "Quality t-shirts for work, events and everyday wear."],
+                "tabard": ["img/tabard-photo.png", "Tabard", "Lightweight tabards for work, events and promotions."],
+                "tabards": ["img/tabards-photo.png", "Tabards", "Versatile tabards for work, events and everyday use."],
+                "tablecloths": ["img/tablecloths-photo.png", "Tablecloths", "Quality tablecloths for events, exhibitions and hospitality."],
+                "tie": ["img/tie-photo.png", "Tie", "Smart ties for work, events and formal wear."],
+                "ties": ["img/ties-photo.png", "Ties", "A wide range of ties for work, events and formal wear."],
+                "towel": ["img/towel-photo.png", "Towel", "Soft towels for work, travel and everyday use."],
+                "towels": ["img/towels-photo.png", "Towels", "A wide range of towels for work, travel and everyday use."],
+                "trackwear": ["img/trackwear-photo.png", "Trackwear", "Comfortable trackwear for sports, work and everyday wear."],
+                "trainers": ["img/trainers-photo.png", "Trainers", "Stylish trainers for work, sports and everyday wear."],
+                "travel-sets": ["img/travel-sets-photo.png", "Travel Sets", "Practical travel sets for work, travel and everyday use."],
+                "trousers": ["img/trousers-photo.png", "Trousers", "Durable trousers for work, events and everyday wear."],
+                "tunic": ["img/tunic-photo.png", "Tunic", "Comfortable tunics for work, healthcare, hospitality and everyday wear."],
+                "tunics": ["img/tunics-photo.png", "Tunics", "Stylish and practical tunics for work, uniforms and everyday use."],
+                "umbrellas": ["img/umbrellas-photo.png", "Umbrellas", "Reliable umbrellas for work, travel, events and everyday protection."],
+                "unitards": ["img/unitards-photo.png", "Unitards", "Flexible and durable unitards for dance, sports and performance."],
+                "vests-t-shirt": ["img/vests-t-shirt-photo.png", "Vests (t-shirt)", "Comfortable t-shirt vests for work, sports and everyday wear."],
+                "waistcoat": ["img/waistcoat-photo.png", "Waistcoat", "Smart and practical waistcoats for work, uniforms and events."],
+                "waistcoats": ["img/waistcoats-photo.png", "Waistcoats", "Versatile waistcoats for work, hospitality, events and everyday wear."],
+                "wallets": ["img/wallets-photo.png", "Wallets", "Practical wallets for work, travel and everyday use."],
+                "winter-accessory-sets": ["img/winter-accessory-sets-photo.png", "Winter Accessory Sets", "Coordinated winter accessory sets for warmth, comfort and style."],
+                "yoga-mats": ["img/yoga-mats-photo.png", "Yoga Mats", "Durable yoga mats for fitness, wellness and everyday use."],
+                "zips-pulls": ["img/zips-pulls-photo.png", "Zips Pulls", "Durable zip pulls for clothing, bags, workwear and accessories."],
+                "t-shirts": ["img/tshirts-photo.png", "T-shirts", "Quality t-shirts for work, events and everyday wear."],
+                "tshirt": ["img/tshirts-photo.png", "T-shirts", "Quality t-shirts for work, events and everyday wear."],
+                "vest": ["img/vests-t-shirt-photo.png", "Vests (t-shirt)", "Comfortable t-shirt vests for work, sports and everyday wear."],
+                "vests": ["img/vests-t-shirt-photo.png", "Vests (t-shirt)", "Comfortable t-shirt vests for work, sports and everyday wear."],
+                "hi-vis": ["img/safety-vests-photo.png", "Hi Vis", "High visibility clothing for improved safety."],
+                "hivis": ["img/safety-vests-photo.png", "Hi Vis", "High visibility clothing for improved safety."],
+            };
+            const art = artCards[slug];
+            if (crumb) crumb.textContent = art ? art[1] : shown;
+            if (titleEl) titleEl.textContent = art ? art[1] : shown;
+            var crumbName = art ? art[1] : shown;
+            var filterLabel = document.getElementById('activeCatLabel');
+            if (filterLabel && crumbName && crumbName !== 'All Products') {
+                filterLabel.innerHTML = '<a href="../index.html">Home</a> <span aria-hidden="true">›</span> <span></span>';
+                filterLabel.querySelector('span:last-child').textContent = crumbName;
+            }
             if (descEl) {
-                descEl.textContent = (data && data.desc) || '';
-                descEl.hidden = !(data && data.desc);
+                descEl.textContent = art ? art[2] : ((data && data.desc) || '');
+                descEl.hidden = !descEl.textContent;
             }
             if (countEl && total != null) {
                 const n = Number(total) || 0;
                 countEl.textContent = `${n.toLocaleString()} item${n === 1 ? '' : 's'}`;
             }
             const img = document.getElementById('shopHeroPhoto');
-            const src = product && (product.image || (product.colors && product.colors[0] && product.colors[0].main));
+            const card = document.querySelector('.shop-hero-card');
+            if (card) {
+                card.classList.toggle('shop-hero-card--art', !!art);
+                card.style.backgroundImage = '';
+            }
+            if (art && img) {
+                img.hidden = false;
+                img.src = art[0];
+                return;
+            }
+            const colours = (product && product.colors) || [];
+            const flat = colours.filter(function (color) {
+                return color && color.main && !/_LS\d*/i.test(color.main);
+            });
+            const pack = flat[0] || colours[0];
+            const src = (pack && (pack.main || pack.thumb)) || (product && product.image);
             if (img && src) {
                 img.hidden = false;
                 img.src = src;
@@ -2208,8 +2401,6 @@
                 if (cat === currentCategory && !currentSearchQuery) {
                     document.querySelectorAll('.category-filter-card').forEach(card => card.classList.remove('active'));
                     btn.classList.add('active');
-                    const label = document.getElementById('activeCatLabel');
-                    if (label) label.textContent = btn.querySelector('span:last-child')?.textContent || 'All';
                 }
                 btn.addEventListener('click', () => {
                     if (!cat) return;
@@ -2389,7 +2580,7 @@
     })();
     </script>
     <script src="js/mobile.js?v=20261016-apiproxy"></script>
-    <script src="js/header-menu.js?v=20261016-shopheader"></script>
+    <script src="js/header-menu.js?v=20261016-azlist"></script>
     <script src="js/breadcrumbs.js?v=20261016-crumbs"></script>
     <script src="footer/footer.js?v=20261002-cta-equal"></script>
 </body>

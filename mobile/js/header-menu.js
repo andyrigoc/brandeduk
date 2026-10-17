@@ -45,7 +45,10 @@
             view.hidden = view.getAttribute('data-mh-view') !== name;
         });
         var back = document.getElementById('mhBack');
-        if (back) back.hidden = name === 'main';
+        if (back) {
+            back.hidden = name === 'main';
+            back.dataset.backTo = name === 'all-products' ? 'products' : 'main';
+        }
         var scroll = document.querySelector('#slideMenu [data-mh-view="' + name + '"] .mh-view-scroll');
         if (scroll) scroll.scrollTop = 0;
     }
@@ -59,9 +62,127 @@
     var back = document.getElementById('mhBack');
     if (back) {
         back.addEventListener('click', function () {
-            showView('main');
+            showView(back.dataset.backTo || 'main');
         });
     }
+
+    var azReady = null;
+    function slugifyName(name) {
+        return String(name || '')
+            .toLowerCase()
+            .replace(/&/g, ' ')
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+    }
+    function shopTypeHref(slug) {
+        return '/mobile/shop-mobile.html?productType=' + encodeURIComponent(slug) + '&force=mobile';
+    }
+    function fallbackTypes() {
+        var list = window.BrandedConfig && Array.isArray(window.BrandedConfig.PRODUCT_TYPES)
+            ? window.BrandedConfig.PRODUCT_TYPES
+            : [];
+        return list.map(function (name) {
+            return { name: name, slug: slugifyName(name) };
+        });
+    }
+    function loadProductTypes() {
+        if (azReady) return azReady;
+        var base = typeof window.resolveBrandedApiBase === 'function'
+            ? window.resolveBrandedApiBase()
+            : (window.API_BASE_URL || 'https://api.brandeduk.com');
+        azReady = fetch(String(base).replace(/\/+$/, '') + '/api/filters/product-types')
+            .then(function (response) { return response.ok ? response.json() : null; })
+            .then(function (data) {
+                var list = data && (data.productTypes || data.items || data.data);
+                if (!Array.isArray(list) && Array.isArray(data)) list = data;
+                var seen = {};
+                var types = (list || []).map(function (type) {
+                    var name = typeof type === 'string' ? type : (type.name || type.title || '');
+                    var slug = (type && type.slug) || slugifyName(name);
+                    return { name: name, slug: slug };
+                }).filter(function (type) {
+                    var key = type.slug || type.name.toLowerCase();
+                    if (!type.name || seen[key]) return false;
+                    seen[key] = true;
+                    return true;
+                });
+                types.sort(function (a, b) { return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }); });
+                return types.length ? types : fallbackTypes();
+            })
+            .catch(function () { return fallbackTypes(); });
+        return azReady;
+    }
+    function ensureAllProductsView() {
+        var panels = document.querySelector('#slideMenu .mh-panels');
+        if (!panels || panels.querySelector('[data-mh-view="all-products"]')) {
+            return panels && panels.querySelector('[data-mh-view="all-products"]');
+        }
+        var view = document.createElement('div');
+        view.className = 'mh-view';
+        view.setAttribute('data-mh-view', 'all-products');
+        view.hidden = true;
+        view.innerHTML = '<div class="mh-section-title">View all products</div><div class="mh-az"><div class="mh-view-scroll" data-az-list></div><nav class="mh-az-rail" data-az-rail aria-label="Letters"></nav></div>';
+        panels.appendChild(view);
+        return view;
+    }
+    function renderAllProducts(types) {
+        var view = ensureAllProductsView();
+        if (!view) return;
+        var list = view.querySelector('[data-az-list]');
+        var rail = view.querySelector('[data-az-rail]');
+        var grouped = {};
+        types.forEach(function (type) {
+            var letter = (type.name.charAt(0) || '#').toUpperCase();
+            if (!/[A-Z]/.test(letter)) letter = '#';
+            if (!grouped[letter]) grouped[letter] = [];
+            grouped[letter].push(type);
+        });
+        var letters = Object.keys(grouped).sort();
+        list.innerHTML = letters.map(function (letter) {
+            var rows = grouped[letter].map(function (type) {
+                return '<a class="mh-row mh-az-row" href="' + shopTypeHref(type.slug) + '"><span>' + type.name.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</span><span class="mh-chev" aria-hidden="true"></span></a>';
+            }).join('');
+            return '<h2 class="mh-az-letter" id="mh-az-' + letter + '" data-az-letter="' + letter + '">' + letter + '</h2>' + rows;
+        }).join('');
+        rail.innerHTML = letters.map(function (letter, index) {
+            return '<button type="button" data-letter="' + letter + '"' + (index === 0 ? ' class="is-active"' : '') + '>' + letter + '</button>';
+        }).join('');
+        rail.onclick = function (event) {
+            var button = event.target.closest('button[data-letter]');
+            if (!button) return;
+            var target = list.querySelector('[data-az-letter="' + button.getAttribute('data-letter') + '"]');
+            if (target) target.scrollIntoView({ block: 'start' });
+        };
+        list.onscroll = function () {
+            var top = list.getBoundingClientRect().top;
+            var current = letters[0];
+            letters.forEach(function (letter) {
+                var node = list.querySelector('[data-az-letter="' + letter + '"]');
+                if (node && node.getBoundingClientRect().top - top <= 28) current = letter;
+            });
+            rail.querySelectorAll('button').forEach(function (button) {
+                button.classList.toggle('is-active', button.getAttribute('data-letter') === current);
+            });
+        };
+    }
+    function openAllProducts(event) {
+        event.preventDefault();
+        ensureAllProductsView();
+        showView('all-products');
+        loadProductTypes().then(renderAllProducts);
+    }
+    document.querySelectorAll('#slideMenu a.mh-row').forEach(function (link) {
+        var label = (link.textContent || '').replace(/\s+/g, ' ').trim().toLowerCase();
+        if (label !== 'view all categories' && label !== 'view all products') return;
+        link.textContent = '';
+        link.appendChild(document.createTextNode('View all products'));
+        var chev = document.createElement('span');
+        chev.className = 'mh-chev';
+        chev.setAttribute('aria-hidden', 'true');
+        link.appendChild(chev);
+        link.setAttribute('href', '#all-products');
+        link.addEventListener('click', openAllProducts);
+    });
 
     document.querySelectorAll('[data-mh-quote]').forEach(function (button) {
         button.addEventListener('click', function () {
