@@ -74,8 +74,21 @@ body:has(.mobile-header--v2) {
 .mobile-header--v2 .mh-search {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 0 8px 0 10px;
+    padding: 0 12px;
+}
+
+.mobile-header--v2 .mh-search-control {
+    display: flex;
+    align-items: center;
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 48px;
+    padding: 0 10px 0 12px;
+    border: 1px solid #ff7a00;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #fafafa, #f1f2f4);
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+    box-sizing: border-box;
 }
 
 .mobile-header--v2 .mh-search .search-wrapper-expand {
@@ -83,6 +96,62 @@ body:has(.mobile-header--v2) {
     min-width: 0;
     width: auto;
     max-width: none;
+}
+
+.mobile-header--v2 .mh-search .search-input-expand {
+    height: 44px;
+    padding: 0 8px 0 34px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.mobile-header--v2 .mh-search .search-input-expand:focus {
+    border: 0;
+    box-shadow: none;
+}
+
+.mobile-header--v2 .mh-search .search-icon-expand {
+    right: auto;
+    left: 6px;
+    width: 20px;
+    height: 20px;
+    color: #374151;
+}
+
+.mobile-header--v2 .mh-search-divider {
+    flex: 0 0 1px;
+    height: 28px;
+    margin: 0 12px 0 8px;
+    background: #dfe2e7;
+}
+
+.mobile-header--v2 .mh-search-vat {
+    gap: 7px;
+}
+
+.mobile-header--v2 .mh-search-vat .vat-label {
+    width: 22px;
+    font-size: 9px;
+    line-height: 1.05;
+    letter-spacing: 0.02em;
+    text-align: center;
+    white-space: normal;
+}
+
+.mobile-header--v2 .mh-search-vat .vat-toggle-label {
+    width: 42px;
+    height: 24px;
+    flex: 0 0 42px;
+    background: #d1d5db;
+}
+
+.mobile-header--v2 .mh-search-vat .vat-toggle-label::after {
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
 }
 
 .mobile-header--v2 .search-suggestions,
@@ -137,11 +206,6 @@ body:has(.mobile-header--v2) {
 }
 
 .mobile-header--v2 .search-input-expand {
-    height: 40px;
-    border-radius: 999px;
-    background: #f3f4f6;
-    border: 1px solid #e6e8ee;
-    padding: 0 40px 0 16px;
     font-size: 14px;
 }
 

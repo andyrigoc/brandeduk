@@ -163,19 +163,22 @@
             </div>
         </div>
         <div class="mh-search">
-            <div class="search-wrapper-expand">
-                <input type="text" placeholder="Search 9,000+ products..." id="searchInput" autocomplete="off" class="search-input-expand" aria-label="Search products">
-                <svg class="search-icon-expand" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <path d="m21 21-4.35-4.35"></path>
-                </svg>
-                <div class="search-autocomplete" id="mobileSearchAutocomplete"></div>
-            </div>
-            <div class="mh-search-vat vat-toggle-mobile" id="vatToggleContainer">
-                <span class="vat-label vat-label--exc">EXC VAT</span>
-                <input type="checkbox" id="vatToggleCheckbox" class="vat-checkbox">
-                <label for="vatToggleCheckbox" class="vat-toggle-label">Toggle VAT</label>
-                <span class="vat-label vat-label--inc">INC VAT</span>
+            <div class="mh-search-control">
+                <div class="search-wrapper-expand">
+                    <input type="text" placeholder="Search 9,000+ products..." id="searchInput" autocomplete="off" class="search-input-expand" aria-label="Search products">
+                    <svg class="search-icon-expand" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                    <div class="search-autocomplete" id="mobileSearchAutocomplete"></div>
+                </div>
+                <span class="mh-search-divider" aria-hidden="true"></span>
+                <div class="mh-search-vat vat-toggle-mobile" id="vatToggleContainer">
+                    <span class="vat-label vat-label--exc">EXC VAT</span>
+                    <input type="checkbox" id="vatToggleCheckbox" class="vat-checkbox">
+                    <label for="vatToggleCheckbox" class="vat-toggle-label">Toggle VAT</label>
+                    <span class="vat-label vat-label--inc">INC VAT</span>
+                </div>
             </div>
         </div>
     </header>
