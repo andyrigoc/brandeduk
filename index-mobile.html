@@ -2647,7 +2647,7 @@
     <script src="mobile/hero/hero.js?v=20261017-nopause"></script>
     <script src="mobile/js/popup-contact.js?v=20261003-consent"></script>
     <script src="mobile/js/bottom-nav.js?v=20261016-newbar"></script>
-    <script src="mobile/js/header-menu.js?v=20261016-azlist"></script>
+    <script src="mobile/js/header-menu.js?v=20261017-tunicfix"></script>
     <script src="mobile/js/faq.js?v=20260102"></script>
     <!-- Desktop Header JS -->
     <script src="brandedukv15-child/assets/js/header.js?v=20261016-suggestmeta"></script>
@@ -2791,9 +2791,10 @@
         var speedPxPerSec = 7;
         var lastTs = null;
         var scrollPos = 0;
+        var cachedMax = -1;
 
-        // Calculate actual scrollable width from absolute-positioned children
         function getMaxScroll() {
+            if (cachedMax >= 0) return cachedMax;
             var inner = hero.querySelector('.hero-cont__inner');
             if (!inner) return 0;
             var children = inner.children;
@@ -2802,8 +2803,11 @@
                 var r = children[i].offsetLeft + children[i].offsetWidth;
                 if (r > maxRight) maxRight = r;
             }
-            return Math.max(0, maxRight - hero.clientWidth);
+            cachedMax = Math.max(0, maxRight - hero.clientWidth);
+            return cachedMax;
         }
+
+        window.addEventListener('resize', function () { cachedMax = -1; });
 
         var resetting = false;
         function smoothResetToStart() {
@@ -3263,25 +3267,25 @@
         var scroller = document.getElementById('categoriesScroller');
         if (!scroller) return;
 
-        var speed = 0.4;          // px per frame - slow & smooth
+        var speed = 0.4;
         var paused = false;
         var isVisible = true;
         var rafId = null;
         var resumeTimer = null;
+        var loopWidth = 0;
 
-        // Clone children once for seamless infinite loop
         var originals = Array.from(scroller.children);
         originals.forEach(function (el) {
             scroller.appendChild(el.cloneNode(true));
         });
+        loopWidth = scroller.scrollWidth / 2;
 
         function tick() {
             if (!paused && isVisible && !document.hidden) {
+                if (loopWidth <= 0) loopWidth = scroller.scrollWidth / 2;
                 scroller.scrollLeft += speed;
-                // When we've scrolled past the first set, jump back seamlessly
-                var half = scroller.scrollWidth / 2;
-                if (scroller.scrollLeft >= half) {
-                    scroller.scrollLeft -= half;
+                if (loopWidth > 0 && scroller.scrollLeft >= loopWidth) {
+                    scroller.scrollLeft -= loopWidth;
                 }
             }
             rafId = requestAnimationFrame(tick);

@@ -412,13 +412,65 @@ const BrandedAPI = (function () {
         const fetchOptions = options.signal ? { signal: options.signal } : {};
         const response = await apiRequest('/api/products', params, fetchOptions);
 
-        const allItems = (response.items || []).map(transformProduct);
+        let allItems = (response.items || []).map(transformProduct);
+        let total = response.total || 0;
+
+        const typeKeys = [];
+        if (params.productType) typeKeys.push(String(params.productType).toLowerCase());
+        if (Array.isArray(params['productType[]'])) {
+            params['productType[]'].forEach((value) => typeKeys.push(String(value).toLowerCase()));
+        }
+        const extraFilter = Object.keys(params).some((key) => !['page', 'limit', 'sort', 'productType', 'productType[]'].includes(key));
+        const onlyType = !params.q && !extraFilter && typeKeys.length === 1 ? typeKeys[0] : '';
+        const wantsChefJackets = onlyType === 'chef-jackets' || onlyType === 'chef jackets';
+        const wantsTunics = onlyType === 'tunics' || onlyType === 'tunic';
+        if (wantsChefJackets || wantsTunics) {
+            const misfiledResponse = await apiRequest('/api/products', {
+                page: 1,
+                limit: 100,
+                productType: 'Tunic'
+            }, fetchOptions);
+            const misfiled = (misfiledResponse.items || []).map(transformProduct);
+            const extras = misfiled.filter((item) => {
+                const jacket = /jacket/i.test(String(item.name || ''));
+                return wantsChefJackets ? jacket : !jacket;
+            });
+            if (onlyType === 'tunic') {
+                const tunicsResponse = await apiRequest('/api/products', {
+                    page: 1,
+                    limit: Math.min(params.limit || DEFAULT_LIMIT, MAX_LIMIT),
+                    productType: 'Tunics',
+                    sort: params.sort
+                }, fetchOptions);
+                const seen = {};
+                allItems = [];
+                (tunicsResponse.items || []).map(transformProduct).concat(extras).forEach((item) => {
+                    const code = String(item.code || '');
+                    if (!code || seen[code]) return;
+                    seen[code] = true;
+                    allItems.push(item);
+                });
+                total = (tunicsResponse.total || 0) + extras.length;
+            } else if ((params.page || 1) === 1) {
+                const seen = {};
+                allItems.forEach((item) => { seen[String(item.code || '')] = true; });
+                extras.forEach((item) => {
+                    const code = String(item.code || '');
+                    if (!code || seen[code]) return;
+                    seen[code] = true;
+                    allItems.push(item);
+                });
+                total += extras.length;
+            } else {
+                total += extras.length;
+            }
+        }
 
         return {
             items: allItems,
             page: response.page || params.page,
             limit: response.limit || params.limit,
-            total: response.total || 0,
+            total: total,
             priceRange: response.priceRange || { min: 0, max: 200 }
         };
     }

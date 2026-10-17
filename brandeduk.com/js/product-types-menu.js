@@ -38,7 +38,7 @@
             var slug = type.slug || type.id || slugifyName(name);
             return Object.assign({}, type, { name: name, slug: slug });
         }).filter(function (type) {
-            return !!type.name;
+            return !!type.name && String(type.slug || '').toLowerCase() !== 'tunic';
         });
     }
 

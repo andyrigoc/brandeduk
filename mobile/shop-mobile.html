@@ -1213,7 +1213,7 @@
 
     <!-- API Integration Scripts -->
     <script src="../brandedukv15-child/assets/js/api-config.js?v=20261016-apiproxy"></script>
-    <script src="../brandedukv15-child/assets/js/api.js?v=20261016-typenames"></script>
+    <script src="../brandedukv15-child/assets/js/api.js?v=20261017-tunic"></script>
     <script src="../brandedukv15-child/assets/data/organic-sustainable-codes.js?v=20261006-leaf3"></script>
     <script src="../brandedukv15-child/assets/js/organic-leaf.js?v=20261006-leaf4"></script>
     <script>
@@ -1772,7 +1772,6 @@
                 "trainers": ["img/trainers-photo.png", "Trainers", "Stylish trainers for work, sports and everyday wear."],
                 "travel-sets": ["img/travel-sets-photo.png", "Travel Sets", "Practical travel sets for work, travel and everyday use."],
                 "trousers": ["img/trousers-photo.png", "Trousers", "Durable trousers for work, events and everyday wear."],
-                "tunic": ["img/tunic-photo.png", "Tunic", "Comfortable tunics for work, healthcare, hospitality and everyday wear."],
                 "tunics": ["img/tunics-photo.png", "Tunics", "Stylish and practical tunics for work, uniforms and everyday use."],
                 "umbrellas": ["img/umbrellas-photo.png", "Umbrellas", "Reliable umbrellas for work, travel, events and everyday protection."],
                 "unitards": ["img/unitards-photo.png", "Unitards", "Flexible and durable unitards for dance, sports and performance."],
@@ -2319,6 +2318,12 @@
             const earlyTypes = collectMobileSearchValues(earlyParams, 'productType');
             const earlyCat = earlyParams.get('category') || '';
             const earlySearch = earlyParams.get('search') || earlyParams.get('q') || '';
+            const singularTunic = earlyTypes.length === 1 && String(earlyTypes[0]).toLowerCase() === 'tunic'
+                || String(earlyCat).toLowerCase() === 'tunic';
+            if (!earlySearch && singularTunic) {
+                window.location.replace('shop-mobile.html?productType=tunics&force=mobile');
+                return;
+            }
             if (!earlySearch && (earlyTypes.length === 1 || (earlyCat && earlyCat !== 'all'))) {
                 currentCategory = earlyCat || currentCategory;
                 applyCategoryCard(null, null, '');
@@ -2588,7 +2593,7 @@
     })();
     </script>
     <script src="js/mobile.js?v=20261016-apiproxy"></script>
-    <script src="js/header-menu.js?v=20261016-azlist"></script>
+    <script src="js/header-menu.js?v=20261017-tunicfix"></script>
     <script src="js/breadcrumbs.js?v=20261016-crumbs"></script>
     <script src="footer/footer.js?v=20261002-cta-equal"></script>
 </body>

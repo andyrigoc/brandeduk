@@ -375,7 +375,7 @@
             document.body.appendChild(script);
         }
         if (!hasScript('product-types-menu.js')) {
-            appendScript(new URL('brandeduk.com/js/product-types-menu.js?v=20261006-apibase', projectRoot).href);
+            appendScript(new URL('brandeduk.com/js/product-types-menu.js?v=20261017-tunic', projectRoot).href);
         }
         // The basket page already shows the full basket, so its laptop icon does not open the drawer.
         if (!isBasketPage() && typeof window.openOrderDrawer !== 'function' && !hasScript('order-drawer-pc.js')) {

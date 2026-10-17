@@ -3,7 +3,7 @@
     var menu = document.getElementById('slideMenu');
     var overlay = document.getElementById('menuOverlay');
 
-    function placeMenu() {
+    function placeMenuNow() {
         var header = document.querySelector('.mobile-header--v2');
         var promo = document.querySelector('.mh-promo');
         var nav = document.querySelector('.bottom-nav');
@@ -20,6 +20,16 @@
         if (nav) bottom = Math.max(0, window.innerHeight - nav.getBoundingClientRect().top);
         document.documentElement.style.setProperty('--mh-menu-top', Math.round(top) + 'px');
         document.documentElement.style.setProperty('--mh-menu-bottom', Math.round(bottom) + 'px');
+    }
+
+    var placeScheduled = false;
+    function placeMenu() {
+        if (placeScheduled) return;
+        placeScheduled = true;
+        requestAnimationFrame(function () {
+            placeScheduled = false;
+            placeMenuNow();
+        });
     }
 
     function setMenuIcon(open) {
@@ -102,7 +112,7 @@
                     return { name: name, slug: slug };
                 }).filter(function (type) {
                     var key = type.slug || type.name.toLowerCase();
-                    if (!type.name || seen[key]) return false;
+                    if (!type.name || key === 'tunic' || seen[key]) return false;
                     seen[key] = true;
                     return true;
                 });
