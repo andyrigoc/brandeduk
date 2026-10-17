@@ -1,7 +1,7 @@
 /* Homepage mobile header: hamburger, centered logo, phone, cart, search. */
 body.home-page,
 body:has(.mobile-header--v2) {
-    --header-height: 118px;
+    --header-height: 128px;
 }
 
 .mobile-header--v2 {
@@ -74,6 +74,7 @@ body:has(.mobile-header--v2) {
 .mobile-header--v2 .mh-search {
     display: flex;
     align-items: center;
+    margin-top: 10px;
     padding: 0 12px;
 }
 
