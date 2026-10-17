@@ -1,0 +1,20 @@
+---
+description: Git commit, push and merge only when the user explicitly asks for it in the current message
+alwaysApply: true
+---
+
+# Never commit or push without explicit permission
+
+- Do not run `git commit`, `git push`, `git merge`, `gh pr merge` or anything that
+  publishes changes unless the user's **current** message explicitly asks for it
+  (for example "commit", "push", "fai il push", "committa").
+- Generic words like "procedi", "vai", "ok", "continua" or "fatto" are **not**
+  permission to commit or push. They only mean: continue the edit work.
+- After finishing a change, stop and report. If a commit seems useful, say so in
+  one sentence and wait for the user to ask.
+
+```text
+❌ User: "procedi"            → agent runs git commit + git push
+✅ User: "procedi"            → agent finishes the edit, then reports
+✅ User: "push commit"        → agent commits and pushes
+```
