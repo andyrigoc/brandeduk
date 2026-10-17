@@ -1239,6 +1239,7 @@
 <script src="../brandedukv15-child/assets/js/color-eyedropper.js?v=20260610n"></script>
 <script src="../brandedukv15-child/assets/js/color-hex.js?v=20260704a"></script>
 <script src="../brandedukv15-child/assets/js/garment-color-behind-scenes.js?v=20260610n"></script>
+<script src="decoration-rules.js?v=20261017"></script>
 <script>
   // Resolve app.js from the established tool folder instead of from the
   // extensionless document URL, whose native relative base is the site root.
@@ -1247,7 +1248,7 @@
     apiScript.src = new URL("customization-api.js?v=20261002-api-positions", document.baseURI).href;
     apiScript.onload = function () {
       var appScript = document.createElement("script");
-      appScript.src = new URL("app.js?v=20261007-tablet-file", document.baseURI).href;
+      appScript.src = new URL("app.js?v=20261017-shared-rules", document.baseURI).href;
       appScript.async = false;
       document.body.appendChild(appScript);
     };

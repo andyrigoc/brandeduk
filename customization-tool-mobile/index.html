@@ -91,13 +91,50 @@
       desktopStyles.rel = "stylesheet";
       desktopStyles.href = folderPath + "desktop.css?v=20260811c";
       document.head.appendChild(desktopStyles);
+
+      var guidedStyles = document.createElement("link");
+      guidedStyles.rel = "stylesheet";
+      guidedStyles.href = folderPath + "guided.css?v=20261017-bottom-bar";
+      document.head.appendChild(guidedStyles);
     })();
   </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../mobile/css/bottom-nav.css?v=20261016-newbar" />
 </head>
 
-<body class="tool-with-site-header">
+<body class="tool-with-site-header guided-customizer">
+
+<header class="guided-header">
+  <a href="../shop.html" class="guided-shop-link" aria-label="Shop">&#9776;</a>
+  <a href="../index-mobile.html?force=mobile" aria-label="BrandedUK home">
+    <img src="../brandedukv15-child/assets/images/ui/branded-uk-logo-black-padded.png?v=20260927-logoblack" alt="BrandedUK">
+  </a>
+  <a href="../basket.html" class="guided-basket-link" aria-label="View basket">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M1 2h3l3 13h13l3-10H5"></path><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle></svg>
+    <span id="guidedBasketCount">0</span>
+  </a>
+</header>
+
+<dialog id="guidedMethodDialog" class="guided-method-dialog" aria-labelledby="guidedMethodTitle" aria-describedby="guidedMethodPosition">
+  <div class="guided-dialog-heading">
+    <h2 id="guidedMethodTitle">Choose decoration method</h2>
+    <button id="guidedMethodClose" type="button" aria-label="Close decoration method popup">&times;</button>
+  </div>
+  <p id="guidedMethodPosition"></p>
+  <div id="guidedMethodChoices" class="guided-dialog-methods">
+    <button id="guidedChooseEmbroidery" type="button" data-popup-method="embroidery">EMBROIDERY</button>
+    <button id="guidedChoosePrint" type="button" data-popup-method="print">PRINTING</button>
+  </div>
+  <p id="guidedMethodNotice" class="guided-dialog-notice" role="status" hidden></p>
+  <a id="guidedMethodContact" class="guided-dialog-contact" href="tel:02089742722" hidden>Call 0208 974 2722 for a quote</a>
+  <div id="guidedArtworkChoices" hidden>
+    <button id="guidedPopupUpload" class="guided-dialog-upload" type="button">+ Upload a new logo</button>
+    <p class="guided-dialog-reuse-label">Or use an uploaded logo</p>
+    <div id="guidedPopupLibrary" class="guided-dialog-library"></div>
+    <button id="guidedChangeMethod" class="guided-dialog-back" type="button">&larr; Change technique</button>
+  </div>
+</dialog>
 
 <div id="customizerLoadingOverlay" class="customizer-loading-overlay" aria-live="polite" aria-busy="true">
   <div class="branded-orbit-loader" role="status" aria-label="Loading customiser">
@@ -160,6 +197,61 @@
 <div class="customiser-app">
 
   <section id="mainEditor" class="screen active-screen">
+
+    <div class="guided-overview">
+      <ol class="guided-steps" aria-label="Your order progress">
+        <li><span class="guided-step-check">&#10003;</span><div><strong>Product</strong><small id="guidedStepCode"></small></div></li>
+        <li><span class="guided-step-check">&#10003;</span><div><strong>Colour</strong><small id="guidedStepColour"></small></div></li>
+        <li><span class="guided-step-check">&#10003;</span><div><strong>Quantity</strong><small id="guidedStepQuantity"></small></div></li>
+        <li aria-current="step"><span class="guided-step-current">4</span><div><strong>Customise</strong><small>Add your design</small></div></li>
+      </ol>
+      <div class="guided-title-row">
+        <button id="guidedBackBtn" type="button">&larr; Back</button>
+        <div><h1 id="guidedTitle">Customise your product</h1><p>Choose a position and upload your logo</p></div>
+      </div>
+      <article class="guided-product">
+        <div class="guided-product-copy">
+          <span id="guidedProductCode"></span>
+          <h2 id="guidedProductName"></h2>
+          <p class="guided-colour"><span id="guidedColourSwatch"></span><span id="guidedProductColour"></span></p>
+          <img id="guidedBrandLogo" alt="" hidden>
+          <strong id="guidedBrandName"></strong>
+        </div>
+        <img id="guidedProductImage" alt="Your selected product" hidden>
+      </article>
+      <p id="guidedMessage" class="guided-message" role="status" hidden></p>
+      <section class="guided-positions-section" aria-labelledby="guidedPositionsTitle">
+        <div class="guided-section-heading"><h2 id="guidedPositionsTitle">Select a position</h2><span id="guidedPositionCounter" aria-live="polite"></span></div>
+        <div id="guidedPositions" class="guided-positions" aria-label="Available decoration positions" aria-busy="true"></div>
+        <button id="guidedRetryBtn" type="button" class="guided-retry" hidden>Retry loading positions</button>
+      </section>
+      <section class="guided-library-section" aria-labelledby="guidedLibraryTitle">
+        <div class="guided-section-heading"><h2 id="guidedLibraryTitle">Your uploaded logos (0)</h2><button id="guidedManageLogos" type="button" aria-pressed="false">Manage</button></div>
+        <div id="guidedLibrary" class="guided-library"></div>
+        <p class="guided-upload-hint">PNG, JPG, WEBP or SVG &middot; Maximum 25 MB.</p>
+      </section>
+      <label class="guided-notes-label" for="guidedNotes">Notes</label>
+      <textarea id="guidedNotes" class="guided-notes" maxlength="1000" rows="2" placeholder="Logo size, specific colours or any other artwork details..."></textarea>
+      <details class="guided-advanced">
+        <summary>Advanced editor &amp; text options</summary>
+        <p>Adjust logo size and placement, or add text using the existing editor.</p>
+        <button id="guidedAdvancedBtn" type="button">Open advanced editor</button>
+      </details>
+      <div class="guided-bar" role="region" aria-label="Basket actions">
+        <div class="guided-bar-summary">
+          <p id="guidedPriceSummary" class="guided-price-summary"></p>
+          <span id="guidedSaveStatus" class="guided-save-status" role="img" aria-label="All changes saved" title="All changes saved" data-state="saved">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m8 12.5 2.6 2.5L16 9.5"></path></svg>
+          </span>
+        </div>
+        <div class="guided-bar-actions">
+          <button id="guidedAddProduct" class="guided-nav-btn guided-nav-btn--product" type="button"><span aria-hidden="true">+</span> ADD PRODUCT</button>
+          <button id="guidedGoToBasket" class="guided-nav-btn guided-nav-btn--basket" type="button">VIEW BASKET <span aria-hidden="true">&rarr;</span></button>
+        </div>
+      </div>
+    </div>
+
+    <button id="guidedReturnBtn" class="guided-return" type="button">Done &mdash; return to logo options</button>
 
     <!-- Top navigation + tab bar (wrapped for desktop layout) -->
     <div class="editor-top">
@@ -382,8 +474,6 @@
         <div class="main-quality-mask" id="mainQualityMask" style="width:100%;border-radius:0 6px 6px 0"></div>
       </div>
     </div>
-
-    <button class="confirm-quality-btn" id="confirmQualityBtn" type="button" disabled>CONFIRM &amp; UPDATE BASKET</button>
 
     <!-- Quality warning -->
     <div class="quality-warning" id="qualityWarning" style="display:none">
@@ -1067,13 +1157,20 @@
 <script src="../brandedukv15-child/assets/js/color-eyedropper.js?v=20260610n"></script>
 <script src="../brandedukv15-child/assets/js/color-hex.js?v=20260704a"></script>
 <script src="../brandedukv15-child/assets/js/garment-color-behind-scenes.js?v=20260610n"></script>
+<script src="../brandedukv15-child/assets/js/api-config.js"></script>
+<script src="../customization-tool/decoration-rules.js?v=20261017"></script>
 <script>
   // Resolve app.js from the established tool folder instead of from the
   // extensionless document URL, whose native relative base is the site root.
   (function loadCustomizationToolApp() {
     var appScript = document.createElement("script");
-    appScript.src = new URL("app.js?v=20260923-pricing-parity", document.baseURI).href;
+    appScript.src = new URL("app.js?v=20261017-popup-only", document.baseURI).href;
     appScript.async = false;
+    appScript.onload = function () {
+      var guidedScript = document.createElement("script");
+      guidedScript.src = new URL("guided.js?v=20261017-bottom-bar", document.baseURI).href;
+      document.body.appendChild(guidedScript);
+    };
     document.body.appendChild(appScript);
   })();
 </script>

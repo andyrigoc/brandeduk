@@ -56,15 +56,8 @@ const customizationRouteParams = new URLSearchParams(window.location.search);
 const customizationApi = window.BrandedCustomizationApi;
 state.customizationApiEnabled = Boolean(customizationApi?.isEnabled());
 const CUSTOMISATION_ENGINE_VERSION = "1.0";
-const MAX_CUSTOMISATIONS_PER_PRODUCT = 5;
-const CUSTOMISATION_POSITION_RULES = Object.freeze({
-  "left-chest": { conflictsWith: ["centre-chest", "large-front"] },
-  "right-chest": { conflictsWith: ["centre-chest", "large-front"] },
-  "centre-chest": { conflictsWith: ["left-chest", "right-chest", "large-front"] },
-  "large-front": { conflictsWith: ["left-chest", "right-chest", "centre-chest"] },
-  "lower-front": { conflictsWith: [] },
-  "large-back": { conflictsWith: ["centre-back"] }
-});
+const MAX_CUSTOMISATIONS_PER_PRODUCT = window.BrandedDecorationRules.maxPositions;
+const CUSTOMISATION_POSITION_RULES = window.BrandedDecorationRules.conflicts;
 // PC layout is universal on desktop: the embedded order popup, explicit
 // customize-pc entries and plain full-page desktop visits all share it.
 const customizationEmbedParam = customizationRouteParams.get("embedded") || "";
@@ -5999,78 +5992,15 @@ function createArtworkId(source) {
 // aggregates DTF + Screen (best of the two, since either can serve the job).
 const POA_NOTICE_COPY = "POA – This option may be available depending on the garment, artwork and quantity. Please contact us for confirmation.";
 
-const METHOD_RULE_RANK = { yes: 0, poa: 1, no: 2 };
-
-function worstMethodRule(first, second) {
-  return METHOD_RULE_RANK[second] > METHOD_RULE_RANK[first] ? second : first;
-}
-
-function bestMethodRule(first, second) {
-  return METHOD_RULE_RANK[second] < METHOD_RULE_RANK[first] ? second : first;
-}
-
-const CATEGORY_METHOD_RULES = {
-  tshirts: { dtf: "yes", screen: "yes", embroidery: "poa" },
-  polos: { dtf: "yes", screen: "yes", embroidery: "yes" },
-  sweatshirts: { dtf: "yes", screen: "yes", embroidery: "yes" },
-  hoodies: { dtf: "yes", screen: "yes", embroidery: "yes" },
-  shirts: { dtf: "yes", screen: "poa", embroidery: "yes" },
-  fleece: { dtf: "poa", screen: "no", embroidery: "yes" },
-  jackets: { dtf: "poa", screen: "no", embroidery: "yes" },
-  "gilets-body-warmers": { dtf: "poa", screen: "no", embroidery: "yes" },
-  "safety-vests": { dtf: "yes", screen: "yes", embroidery: "poa" },
-  trousers: { dtf: "poa", screen: "no", embroidery: "yes" },
-  shorts: { dtf: "poa", screen: "no", embroidery: "yes" },
-  sweatpants: { dtf: "poa", screen: "no", embroidery: "poa" },
-  aprons: { dtf: "yes", screen: "yes", embroidery: "yes" },
-  bags: { dtf: "yes", screen: "yes", embroidery: "yes" },
-  caps: { dtf: "poa", screen: "no", embroidery: "yes" },
-  hats: { dtf: "poa", screen: "no", embroidery: "yes" },
-  beanies: { dtf: "no", screen: "no", embroidery: "yes" }
-};
-
-// Garment-name refinements from the uniform-site matrix (premium tees,
-// technical fabrics, waterproof shells, knitwear, accessories…).
-const PRODUCT_NAME_METHOD_OVERRIDES = [
-  { pattern: /premium|heavy|ultra|ring ?spun/i, rules: { embroidery: "yes" } },
-  { pattern: /performance|technical|polyester|breathable|active|training/i, rules: { screen: "poa" } },
-  { pattern: /oxford|formal|dress shirt|blouse/i, rules: { dtf: "poa", screen: "no" } },
-  { pattern: /\bknit|jumper|cardigan/i, rules: { dtf: "poa", screen: "no", embroidery: "yes" } },
-  { pattern: /\bwool\b/i, rules: { dtf: "no", screen: "no", embroidery: "poa" } },
-  { pattern: /softshell|windbreaker|wind ?shirt|bomber/i, rules: { dtf: "yes" } },
-  { pattern: /waterproof|padded|puffer|parka|quilted|insulated|down\b/i, rules: { dtf: "poa", screen: "no" } },
-  { pattern: /laptop|messenger|cooler|tool bag|holdall|kit bag/i, rules: { dtf: "poa", screen: "no" } },
-  { pattern: /umbrella/i, rules: { dtf: "poa", screen: "yes", embroidery: "no" } },
-  { pattern: /towel|blanket|robe|gown/i, rules: { dtf: "poa", screen: "no", embroidery: "yes" } },
-  { pattern: /legging/i, rules: { dtf: "poa", screen: "no", embroidery: "no" } },
-  { pattern: /baby|bodysuit/i, rules: { embroidery: "no" } },
-  { pattern: /basketball|football shirt|sports vest/i, rules: { embroidery: "poa" } },
-  { pattern: /glove/i, rules: { dtf: "no", screen: "no", embroidery: "poa" } },
-  { pattern: /helmet|hard hat/i, rules: { dtf: "poa", screen: "no", embroidery: "no" } },
-  { pattern: /balaclava/i, rules: { dtf: "no", screen: "no", embroidery: "poa" } },
-  { pattern: /\bsocks?\b/i, rules: { dtf: "poa", screen: "no", embroidery: "poa" } }
-];
+const worstMethodRule = window.BrandedDecorationRules.worst;
+const bestMethodRule = window.BrandedDecorationRules.best;
+const POSITION_METHOD_RULES = window.BrandedDecorationRules.positions;
 
 function getCategoryMethodRules() {
-  const slug = state.customizationProductTypeSlug || "tshirts";
-  const rules = { ...(CATEGORY_METHOD_RULES[slug] || { dtf: "yes", screen: "yes", embroidery: "yes" }) };
-  const name = String(state.productName || "");
-  PRODUCT_NAME_METHOD_OVERRIDES.forEach(({ pattern, rules: overrides }) => {
-    if (pattern.test(name)) Object.assign(rules, overrides);
-  });
-  return rules;
+  return window.BrandedDecorationRules.categoryRules(
+    state.customizationProductTypeSlug || "tshirts", state.productName
+  );
 }
-
-// Position rules: large/lower placements never offer direct embroidery.
-const POSITION_METHOD_RULES = {
-  "large-front": { embroidery: "no" },
-  "large-front-above-pocket": { embroidery: "poa" },
-  "large-back": { embroidery: "no" },
-  "lower-front": { embroidery: "poa" },
-  "lower-back": { embroidery: "poa" },
-  "left-leg": { embroidery: "poa" },
-  "right-leg": { embroidery: "poa" }
-};
 
 function getAllowedMethodsForPositionKey(positionKey) {
   if (state.customizationApiEnabled) {
@@ -9432,4 +9362,3 @@ document.getElementById("straightenBtn").addEventListener("click", () => {
   editorTop.appendChild(rightWrap);
   updateConfirmButtonState();
 })();
-

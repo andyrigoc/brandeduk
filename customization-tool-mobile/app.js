@@ -18,6 +18,7 @@ const state = {
   decorationType: null,
   textType: null,
   uploadedLogo: null,
+  uploadedLogoName: "",
   originalUploadedLogo: null,
   copyrightConfirmed: false,
   text: "",
@@ -33,7 +34,11 @@ const state = {
   logoZIndex: 40,
   areaDesigns: {},
   areaTextDesigns: {},
-  pendingDecorationType: null
+  pendingDecorationType: null,
+  basketItemId: null,
+  customizationNotes: "",
+  guidedReady: false,
+  logoUploadBusy: false
 };
 
 const customizationRouteParams = new URLSearchParams(window.location.search);
@@ -532,7 +537,7 @@ const FALLBACK_COLOURS = [
 
 let colours = [...FALLBACK_COLOURS];
 let colourImageByName = new Map();
-const API_BASE_URL = "https://api.brandeduk.com/api";
+const API_BASE_URL = `${window.resolveBrandedApiBase()}/api`;
 
 // Quantity-tiered application pricing (Consigliato column, VAT excluded).
 const APPLICATION_PRICE_TIERS = {
@@ -1099,6 +1104,9 @@ function normalizeDecorationMethod(method) {
 }
 
 function getCurrentBasketItemIndex(basket) {
+  if (state.basketItemId) {
+    return basket.findIndex((item) => String(item.id) === state.basketItemId);
+  }
   const indexRaw = sessionStorage.getItem("customizingBasketIndex");
   const sessionIndex = indexRaw === null ? -1 : parseInt(indexRaw, 10);
   if (Number.isInteger(sessionIndex) && sessionIndex >= 0 && basket[sessionIndex]) return sessionIndex;
@@ -1173,6 +1181,48 @@ function applySelectedProductContext() {
 
   const params = new URLSearchParams(window.location.search);
   const urlCode = String(params.get("code") || "").trim();
+  const basket = readQuoteBasket();
+  const requestedId = params.get("itemId");
+  const requestedIndex = Number.parseInt(sessionStorage.getItem("customizingBasketIndex"), 10);
+  const basketItem = requestedId
+    ? basket.find((item) => String(item.id) === requestedId)
+    : basket[requestedIndex];
+  if (requestedId) state.basketItemId = requestedId;
+  if (basketItem && (!urlCode || String(basketItem.productCode || basketItem.code).toLowerCase() === urlCode.toLowerCase())) {
+    state.basketItemId = String(basketItem.id);
+    params.set("itemId", state.basketItemId);
+    window.history.replaceState({}, "", `${window.location.pathname}?${params}`);
+    selectedProductData = {
+      ...selectedProductData,
+      ...basketItem,
+      code: basketItem.productCode || basketItem.code,
+      name: basketItem.productName || basketItem.name,
+      image: basketItem.colorImage || basketItem.image,
+      colors: basketItem.colorsSnapshot || selectedProductData?.colors
+    };
+    state.customizationNotes = String(basketItem.customizationNotes || "");
+    state.basePrice = Number(basketItem.basePrice || basketItem.unitPrice || state.basePrice);
+    state.priceBreaks = basketItem.priceBreaks || [];
+    const quantities = basketItem.quantities || {};
+    state.sizes = Object.entries(quantities).map(([size, qty]) => ({ size, qty: Number(qty) }));
+    if (!state.sizes.length) state.sizes = [{ size: basketItem.size || "One Size", qty: getItemQty(basketItem) }];
+    state.totalQty = state.sizes.reduce((sum, entry) => sum + entry.qty, 0);
+    mainQtyInput.value = state.totalQty;
+    sizesContainer.replaceChildren(...state.sizes.map(({ size, qty }) => {
+      const row = document.createElement("div");
+      row.className = "size-row";
+      const select = document.createElement("select");
+      select.className = "size-select";
+      select.add(new Option(size, size));
+      const input = document.createElement("input");
+      input.className = "size-qty";
+      input.type = "number";
+      input.min = "1";
+      input.value = qty;
+      row.append(select, input);
+      return row;
+    }));
+  }
 
   // Never let product data left in the session by a previously viewed item
   // choose the garment/configuration for a different code in the URL.
@@ -1447,7 +1497,8 @@ function updateConfirmButtonState() {
   const hasSavedText = Object.values(state.areaTextDesigns || {}).some(
     (design) => Boolean(String(design?.text || "").trim())
   );
-  confirmQualityBtn.disabled = !(hasConfirmedCurrentLogo || hasSavedPosition || hasCurrentText || hasSavedText);
+  confirmQualityBtn.disabled = state.logoUploadBusy
+    || !(hasConfirmedCurrentLogo || hasSavedPosition || hasCurrentText || hasSavedText || (state.guidedReady && state.basketItemId));
 }
 
 function getConfiguredPosition(positionSlug) {
@@ -1822,6 +1873,7 @@ function updatePositionDesignUi() {
 
   updateViewTabDesignStatus(designs, textDesigns);
   updateConfirmButtonState();
+  window.dispatchEvent(new CustomEvent("customizer:change"));
 }
 
 function waitForLogoImage(image) {
@@ -1982,11 +2034,10 @@ async function switchToDesignArea(nextArea, options = {}) {
 }
 
 function hydrateAreaDesignsFromBasketContext() {
-  const indexRaw = sessionStorage.getItem("customizingBasketIndex");
-  const itemIndex = indexRaw === null ? -1 : parseInt(indexRaw, 10);
+  const basket = readQuoteBasket();
+  const itemIndex = getCurrentBasketItemIndex(basket);
   if (!Number.isInteger(itemIndex) || itemIndex < 0) return false;
 
-  const basket = readQuoteBasket();
   const item = basket[itemIndex];
   if (!item) return false;
 
@@ -2056,6 +2107,11 @@ function hydrateAreaDesignsFromBasketContext() {
   const requestedArea = sessionStorage.getItem("editingPosition");
   const initialArea = getDesignAreaKey(requestedArea || item.designPreview?.area || decoratedAreas[0]);
   state.selectedArea = (hydrated[initialArea] || hydratedTexts[initialArea]) ? initialArea : decoratedAreas[0];
+  const initialPosition = getConfiguredPosition(initialArea);
+  if (initialPosition) {
+    state.selectedPosition = initialArea;
+    state.selectedArea = configuredPositionArea(initialPosition);
+  }
   return true;
 }
 
@@ -2218,6 +2274,7 @@ function openScreen(screenId) {
     syncTextEditorFieldsFromState();
   }
   window.scrollTo(0, 0);
+  window.dispatchEvent(new CustomEvent("customizer:screen", { detail: screenId }));
 }
 
 document.querySelectorAll("[data-open]").forEach(button => {
@@ -2412,6 +2469,7 @@ function rewriteCustomizationConfigImages(config, productSlug) {
   config.positions.forEach((position) => {
     const key = position?.slug || position?.label || "";
     const remote = String(position?.imageUrl || position?.image_url || "").trim();
+    position.apiImageUrl = remote;
     const preferred = preferLocalPositionImage(slug, key, remote);
     if (preferred) {
       position.imageUrl = preferred;
@@ -2798,9 +2856,9 @@ function resolveConfiguredGarmentImage(area, positionSlug = "") {
 function getConfiguredViewPositions() {
   return Array.isArray(state.customizationConfig?.positions)
     ? state.customizationConfig.positions.filter((position) => (
-      normalizeProductTypeSlug(position?.slug)
+      position.isActive !== false && normalizeProductTypeSlug(position?.slug)
       && String(position?.imageUrl || position?.image_url || "").trim()
-    ))
+    )).sort((first, second) => Number(first.sortOrder || 0) - Number(second.sortOrder || 0))
     : [];
 }
 
@@ -2894,6 +2952,7 @@ async function loadCustomizationConfigForCurrentProduct() {
         state.customizationConfigKey = "";
         configureViewTabsForProduct();
       }
+      console.error("Unable to load customization positions", { slug, variantKey, error });
       return false;
     }
   })();
@@ -3930,6 +3989,7 @@ function buildBasketItemFromState() {
     logos,
     texts,
     textDesigns: legacyTextDesigns,
+    customizationNotes: String(state.customizationNotes || "").trim(),
     designPreview
   };
 }
@@ -3959,7 +4019,14 @@ function upsertBasketItemFromState() {
   const basket = readQuoteBasket();
   const nextItem = compactBasketItemForStorage(buildBasketItemFromState());
 
-  const inferredIndex = hasSessionBasketIndex && basket[sessionBasketIndex] ? sessionBasketIndex : -1;
+  const lockedIndex = state.basketItemId
+    ? basket.findIndex((item) => String(item.id) === state.basketItemId)
+    : -1;
+  if (state.basketItemId && lockedIndex < 0) {
+    throw new Error("This product is no longer in your basket. Please return to the basket.");
+  }
+  const inferredIndex = state.basketItemId ? lockedIndex
+    : (hasSessionBasketIndex && basket[sessionBasketIndex] ? sessionBasketIndex : -1);
   const fallbackIndex = basket.findIndex((item) => {
     const sameCode = String(item?.productCode || item?.code || "") === String(nextItem.productCode);
     const sameColor = String(item?.color || "").toLowerCase() === String(nextItem.color || "").toLowerCase();
@@ -3997,9 +4064,10 @@ function upsertBasketItemFromState() {
       positions: mergedPositions,
       positionDesigns: mergedPositionDesigns,
       logos: mergedLogos,
-      colorHex: nextColorHex || prevColorHex || "",
-      colorImage: (previousPreview && nextLooksNeutral) ? previousPreview : (nextItem.colorImage || previousPreview || ""),
-      image: (previousPreview && nextLooksNeutral) ? previousPreview : (nextItem.image || previousPreview || ""),
+      color: isBasketContext ? prevItem.color : nextItem.color,
+      colorHex: isBasketContext ? (prevColorHex || nextColorHex || "") : (nextColorHex || prevColorHex || ""),
+      colorImage: isBasketContext && previousPreview ? previousPreview : ((previousPreview && nextLooksNeutral) ? previousPreview : (nextItem.colorImage || previousPreview || "")),
+      image: isBasketContext && previousPreview ? previousPreview : ((previousPreview && nextLooksNeutral) ? previousPreview : (nextItem.image || previousPreview || "")),
       quantities: isBasketContext ? (prevItem.quantities || nextItem.quantities) : nextItem.quantities,
       qty: isBasketContext ? (prevItem.qty || nextItem.qty) : nextItem.qty,
       size: isBasketContext ? (prevItem.size || nextItem.size) : nextItem.size,
@@ -4470,27 +4538,31 @@ const sessionLogoLibrary = [];
 function getSessionLogoLibrary() {
   const seen = new Set();
   const out = [];
-  const add = (src, method) => {
+  const add = (src, method, name) => {
     const key = String(src || "").trim();
     if (!key || seen.has(key)) return;
     seen.add(key);
-    out.push({ logo: key, method: method || "logo" });
+    out.push({ logo: key, method: method || "logo", name: name || "Your logo" });
   };
-  sessionLogoLibrary.forEach((entry) => add(entry.logo, entry.method));
+  sessionLogoLibrary.forEach((entry) => add(entry.logo, entry.method, entry.name));
   Object.values(state.areaDesigns || {}).forEach((entry) => add(entry?.logo, entry?.method));
   if (state.uploadedLogo) add(state.uploadedLogo, state.decorationType);
   try {
     const parsed = JSON.parse(sessionStorage.getItem("toolReusableLogos") || "[]");
-    if (Array.isArray(parsed)) parsed.forEach((entry) => entry && add(entry.logo, entry.method));
+    if (Array.isArray(parsed)) parsed.forEach((entry) => entry && add(entry.logo, entry.method, entry.name));
   } catch (e) { /* ignore */ }
   return out;
 }
 
-function rememberUploadedLogo(src, method) {
+function rememberUploadedLogo(src, method, name = state.uploadedLogoName) {
   const key = String(src || "").trim();
   if (!key) return;
-  if (sessionLogoLibrary.some((entry) => entry.logo === key)) return;
-  sessionLogoLibrary.push({ logo: key, method: method || state.decorationType || "logo" });
+  const existing = sessionLogoLibrary.find((entry) => entry.logo === key);
+  if (existing) {
+    if (name && name !== "Your logo") existing.name = name;
+    return;
+  }
+  sessionLogoLibrary.push({ logo: key, method: method || state.decorationType || "logo", name: name || "Your logo" });
 }
 
 function reuseLibraryLogo(src) {
@@ -4877,6 +4949,13 @@ document.getElementById("logoFileInput").addEventListener("change", async event 
   const file = event.target.files[0];
   if (!file) return;
 
+  if (!/\.(png|jpe?g|webp|svg)$/i.test(file.name) || file.size > 25 * 1024 * 1024) {
+    alert("Please choose a PNG, JPG, WEBP or SVG image up to 25 MB.");
+    event.target.value = "";
+    return;
+  }
+  state.logoUploadBusy = true;
+  window.dispatchEvent(new CustomEvent("customizer:change"));
   try {
     const optimizedLogo = await optimizeLogoFileForBasket(file);
     const preparedLogo = removeBackgroundCheck?.checked
@@ -4885,6 +4964,7 @@ document.getElementById("logoFileInput").addEventListener("change", async event 
     state.decorationType = state.pendingDecorationType || state.decorationType || "print";
     state.pendingDecorationType = null;
     state.uploadedLogo = preparedLogo;
+    state.uploadedLogoName = file.name;
     state.originalUploadedLogo = optimizedLogo;
 
     const copyrightPreview = document.getElementById("copyrightImagePreview");
@@ -4905,7 +4985,9 @@ document.getElementById("logoFileInput").addEventListener("change", async event 
     console.error("Logo upload failed", error);
     alert("We couldn't read that logo file. Please try another PNG, JPG, WEBP or SVG image.");
   } finally {
+    state.logoUploadBusy = false;
     event.target.value = "";
+    window.dispatchEvent(new CustomEvent("customizer:change"));
   }
 });
 
@@ -4966,12 +5048,14 @@ document.getElementById("copyrightOkBtn").addEventListener("click", () => {
   showLogoOnCanvas(state.uploadedLogo);
   calculatePrice();
   updateConfirmButtonState();
+  window.dispatchEvent(new CustomEvent("customizer:logo-confirmed"));
 });
 
 document.querySelectorAll('#copyrightPage [data-open="mainEditor"]').forEach((button) => {
   button.addEventListener("click", () => {
     state.pendingDecorationType = null;
-    restoreAreaDesign(state.selectedArea);
+    restoreAreaDesign(getDesignAreaKey());
+    window.dispatchEvent(new CustomEvent("customizer:logo-cancelled"));
   });
 });
 
@@ -5145,6 +5229,23 @@ function clearLogo() {
   updatePositionDesignUi();
 }
 
+function getGuidedValidationError() {
+  const designs = Object.values(getDraftAreaDesigns()).filter((design) => design?.logo);
+  const textDesigns = Object.values(getDraftTextDesigns()).filter((design) => String(design?.text || "").trim());
+  const rules = window.BrandedDecorationRules;
+  const used = new Set([...designs, ...textDesigns].map((design) => design.area));
+  if (used.size > rules.maxPositions) return `You can customise up to ${rules.maxPositions} positions per product.`;
+  for (const design of designs) {
+    if (!getConfiguredPosition(design.area)) return "A saved position is no longer available. Please remove it before confirming.";
+    const allowed = rules.allowedMethods(state.customizationProductTypeSlug, state.productName, design.area);
+    const method = design.method === "embroidery" ? "embroidery" : "print";
+    if (allowed[method] !== "yes") return `${getDesignAreaLabel(design.area)}: please choose an available technique or contact us for a quote.`;
+    const conflicts = rules.conflicts[design.area]?.conflictsWith || [];
+    if (conflicts.some((key) => used.has(key))) return `${getDesignAreaLabel(design.area)} overlaps another selected position. Please remove one.`;
+  }
+  return "";
+}
+
 if (confirmQualityBtn) {
   confirmQualityBtn.addEventListener("click", () => {
     captureCurrentAreaDesign();
@@ -5153,8 +5254,14 @@ if (confirmQualityBtn) {
     const textDesigns = Object.values(state.areaTextDesigns || {}).filter(
       (design) => Boolean(String(design?.text || "").trim())
     );
-    if (designs.length === 0 && textDesigns.length === 0) {
+    if (designs.length === 0 && textDesigns.length === 0 && !state.basketItemId) {
       alert("Please add a logo or text before confirming.");
+      return;
+    }
+
+    const validationError = getGuidedValidationError();
+    if (validationError) {
+      alert(validationError);
       return;
     }
 
@@ -5168,7 +5275,7 @@ if (confirmQualityBtn) {
       result = upsertBasketItemFromState();
     } catch (error) {
       console.error("Confirm failed", error);
-      alert("Something went wrong saving your design. Please try again.");
+      alert(error.message || "Something went wrong saving your design. Please try again.");
       return;
     }
 
@@ -5176,6 +5283,7 @@ if (confirmQualityBtn) {
       alert("Your basket is full and couldn't be saved. Please remove an item from the basket and try again.");
       return;
     }
+    window.dispatchEvent(new CustomEvent("customizer:saved"));
 
     const previousText = confirmQualityBtn.textContent;
     confirmQualityBtn.classList.add("is-confirmed");
@@ -6454,7 +6562,6 @@ startCustomizerLoadingProgress();
 setCustomizerLoadingStatus("Loading colours and mockups...");
 
 applySelectedProductContext();
-hydrateAreaDesignsFromBasketContext();
 
 setupVatToggle();
 setupCustomizerBreadcrumb();
@@ -6470,14 +6577,16 @@ const hydratePromise = withTimeout(hydrateSelectedProductFromApi(), 15000);
 
 Promise.allSettled([initialAreaPromise, customizationConfigPromise, hydratePromise])
   .then(() => withTimeout(preloadCurrentColourSet(), 800))
-  .then(() => Promise.all([
-    restoreAreaDesign(),
-    restoreAreaTextDesign()
-  ]))
+  .then(() => {
+    hydrateAreaDesignsFromBasketContext();
+    return Promise.all([restoreAreaDesign(), restoreAreaTextDesign()]);
+  })
   .finally(() => {
+    state.guidedReady = true;
     updatePositionDesignUi();
     finishCustomizerLoading();
-    maybeHandleBasketLogoChoice();
+    window.dispatchEvent(new CustomEvent("customizer:ready"));
+    if (!document.body.classList.contains("guided-customizer")) maybeHandleBasketLogoChoice();
   });
 
 /* =====================================================

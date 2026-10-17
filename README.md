@@ -41,6 +41,53 @@ dist/                    # Distribution ZIPs
 3. Right-click any `.html` file → "Open with Live Server"
 4. Port: `5501` (configured in `.vscode/settings.json`)
 
+## Guided mobile logo customizer
+
+The mobile **Add your logo now** flow opens `customization-tool-mobile/index.html`.
+`guided.css` and `guided.js` provide the product summary, position carousel, logo
+library, the per-position technique popup and notes. The existing mobile `app.js`
+continues to handle artwork, placement, pricing and basket serialization.
+The desktop and mobile tools share technique/conflict rules through
+`customization-tool/decoration-rules.js`.
+
+- Product, colour and size quantities remain attached to the existing basket item;
+  the customizer pins its ID in the URL rather than relying on an array index.
+- There is no confirm/save button: every change is autosaved to the existing
+  basket line (removing a logo also clears legacy copies). A fixed bottom bar shows
+  the decoration total and save status, with **+ Add product** (opens the mobile
+  shop) and **View basket** (opens the basket); both save any pending change first.
+- Position cards scroll continuously (swipe, or mouse drag in desktop previews);
+  there are no paging arrows or dots.
+- Uploaded logos are kept for the browser session and logos already used on any
+  basket line are offered again, so artwork never has to be uploaded twice.
+- Position previews come from the customization configuration API. The advanced
+  editor remains available below the notes.
+- There is no global technique selector. The plus button opens a compact
+  Embroidery/Printing popup before artwork selection; existing logos can then be
+  reused, or a new image uploaded. Tapping a library logo opens the same popup for
+  the active position, and tapping an assigned logo changes only that position's
+  technique. Overlapping positions are removed only once the new logo is assigned.
+- The guided upload accepts PNG, JPG, WEBP and SVG up to 25 MB. Other artwork
+  formats are not advertised as supported by this image-based flow.
+
+For an API-enabled local preview, use `npm run dev` (or set `DEV_PORT=5511`
+before running it). A plain static server does not implement the `/__api` proxy;
+VS Code Live Server is static too, so stop it before using the same port.
+On a desktop browser, add `force=mobile` to preview the mobile route.
+
+Focused checks:
+
+```powershell
+node --test tests\guided-customizer.test.cjs
+node tests\guided-customizer.browser.cjs
+```
+
+The browser check uses Playwright and Microsoft Edge in an isolated context.
+Playwright is not a project dependency; install it separately (for example
+`npm install --no-save playwright`). It expects the `npm run dev` server at
+`http://127.0.0.1:5510`; override with `CUSTOMIZER_TEST_URL`. It never changes
+the basket in the user's preview browser.
+
 ## 📋 Requirements
 
 - **WordPress**: 6.0+
