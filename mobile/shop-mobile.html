@@ -2006,7 +2006,7 @@
                 <div class="product-info">
                     <div class="product-code">
                         ${product.code}
-                        ${(() => { const bn = product.brand || ''; if (!bn || ['absolute','ralawise'].some(ex => bn.toLowerCase().includes(ex))) return ''; const logo = getBrandLogo(bn); return logo ? `<img src="${logo}" alt="${bn}" class="brand-logo" title="${bn}">` : `<span class="brand-name">${bn}</span>`; })()}
+                        ${(() => { const bn = product.brand || ''; if (!bn || ['absolute','ralawise'].some(ex => bn.toLowerCase().includes(ex))) return ''; const safe = String(bn).replace(/&/g,'&amp;').replace(/</g,'&lt;'); return `<span class="brand-name">${safe}</span>`; })()}
                     </div>
                     <div class="product-name">${(product.name||'').replace(/[\u00AE\u2122\u00A9]/g,'')}</div>
                     <div class="product-price" data-price-min="${minPrice}" data-price-max="${maxPrice}">
