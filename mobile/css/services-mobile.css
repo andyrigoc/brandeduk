@@ -1,419 +1,74 @@
-/* Mobile Services page (mobile/services-mobile.html) */
-:root {
-    --svm-navy: #273469;
-    --svm-orange: #ff6b00;
-    --svm-card: #1e2235;
-    --svm-rating: #3b2066;
-    --svm-pink: #d4b5e8;
-    --svm-text-dim: #c9c3d2;
-    --svm-dot-empty: rgba(255, 255, 255, 0.25);
-    --svm-bar-height: 64px;
-}
-
+/* Mobile Services page (mobile/services-mobile.html). The page content uses the PC markup and services.css. */
 body.services-mobile-page {
-    background: #f7f7f8;
-    color: #161821;
+    background: #ffffff;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    padding-top: 0;
     padding-bottom: calc(var(--bottom-nav-height, 64px) + var(--safe-area-bottom, 0px));
 }
 
-.svm-sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
+/* The mobile header is fixed, so links to #embroidery etc. need room above each block. */
+.services-mobile-page .service-block {
+    scroll-margin-top: calc(var(--header-height, 128px) + 12px);
 }
 
-/* ── Header bar ── */
-.svm-bar {
-    position: sticky;
-    top: 0;
-    z-index: 90;
-    min-height: var(--svm-bar-height);
-    display: grid;
-    grid-template-columns: 42px minmax(0, 1fr) auto;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 12px;
-    background: #fff;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.svm-back {
-    width: 40px;
-    height: 40px;
-    display: grid;
-    place-items: center;
-    color: var(--svm-navy);
-}
-
-.svm-brand {
-    display: block;
-    color: var(--svm-navy);
-    font-size: 13px;
-    font-weight: 800;
-    line-height: 1.2;
-}
-
-.svm-brand span {
-    color: var(--svm-orange);
-}
-
-.svm-bar-title {
-    margin: 1px 0 0;
-    font-size: 17px;
-    font-weight: 700;
-    line-height: 1.2;
-    color: #111827;
-}
-
-.svm-bar-actions {
-    display: flex;
-    gap: 8px;
-}
-
-.svm-icon-btn {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    display: grid;
-    place-items: center;
-    color: #fff;
-    background: var(--svm-navy);
-}
-
-.svm-icon-btn--wa {
-    background: #25d366;
-}
-
-/* ── Intro ── */
-.svm-main {
-    max-width: 640px;
-    margin: 0 auto;
-    padding: 20px 16px 32px;
-}
-
-.svm-hero {
-    margin-bottom: 18px;
-}
-
-.svm-eyebrow {
-    margin: 0 0 8px;
-    color: #6d4fe5;
-    font-size: 12px;
-    font-weight: 800;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-}
-
-.svm-hero h1 {
-    margin: 0 0 10px;
-    font-family: 'Poppins', 'Inter', sans-serif;
-    font-size: 30px;
-    font-weight: 800;
-    line-height: 1.1;
-    color: #111827;
-}
-
-.svm-deck {
-    margin: 0 0 16px;
-    font-size: 15px;
-    line-height: 1.6;
-    color: #374151;
-}
-
-.svm-facts {
-    list-style: none;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin: 0 0 16px;
-}
-
-.svm-facts li {
-    background: #fff;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 10px 12px;
-    font-size: 13px;
-    line-height: 1.35;
-    color: #374151;
-}
-
-.svm-facts li strong {
-    display: block;
-    color: var(--svm-navy);
-    font-size: 14px;
-}
-
-.svm-facts li:last-child:nth-child(odd) {
-    grid-column: 1 / -1;
-}
-
-/* ── Buttons ── */
-.svm-actions {
-    display: grid;
-    gap: 10px;
-}
-
-.svm-btn {
-    min-height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 12px 16px;
-    border: 0;
-    border-radius: 14px;
-    font: inherit;
-    font-size: 16px;
-    font-weight: 700;
-    text-align: center;
-    cursor: pointer;
-}
-
-.svm-btn--primary {
-    background: var(--svm-orange);
-    color: #fff;
-}
-
-.svm-btn--call {
-    background: var(--svm-navy);
-    color: #fff;
-}
-
-.svm-btn--wa {
-    background: #25d366;
-    color: #0b3d1f;
-}
-
-.svm-btn small {
-    font-weight: 600;
-    opacity: .9;
-}
-
-/* ── Jump chips ── */
-.svm-jump {
-    display: flex;
-    gap: 8px;
-    overflow-x: auto;
-    margin: 22px -16px 18px;
-    padding: 2px 16px 6px;
-    scrollbar-width: none;
-}
-
-.svm-jump::-webkit-scrollbar {
-    display: none;
-}
-
-.svm-jump a {
-    flex: 0 0 auto;
-    min-height: 40px;
-    display: inline-flex;
-    align-items: center;
-    padding: 0 14px;
-    border-radius: 999px;
-    background: #fff;
-    border: 1px solid #d9dbe3;
-    color: var(--svm-navy);
-    font-size: 14px;
-    font-weight: 600;
-    white-space: nowrap;
-}
-
-/* ── Service cards ── */
-.svm-service {
-    margin: 0 0 28px;
-    scroll-margin-top: calc(var(--svm-bar-height) + 12px);
-}
-
-.svm-card {
-    background: var(--svm-card);
-    border-radius: 16px;
-    overflow: hidden;
-    margin-bottom: 10px;
-}
-
-.svm-media {
+/* Service Image Carousel: mirrors the styles inlined in services.html, keep both in sync. */
+.service-carousel {
     position: relative;
-    aspect-ratio: 16 / 10;
-    background: #2a2f45;
-}
-
-.svm-media img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-}
-
-.svm-slides {
-    position: relative;
-    height: 100%;
     overflow: hidden;
-    touch-action: pan-y;
+    border-radius: 16px;
 }
 
-.svm-slide {
+.service-carousel__track {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.service-carousel__slide {
     position: absolute;
-    inset: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     opacity: 0;
-    transition: opacity .8s ease-in-out;
+    transition: opacity 0.8s ease-in-out;
 }
 
-.svm-slide.is-active {
+.service-carousel__slide.active {
     opacity: 1;
     z-index: 1;
 }
 
-.svm-dots {
+.service-carousel__slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 16px;
+}
+
+.service-carousel__indicators {
     position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 6px;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
-    justify-content: center;
+    gap: 8px;
     z-index: 2;
 }
 
-.svm-dots button {
-    width: 28px;
-    height: 28px;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    display: grid;
-    place-items: center;
-    cursor: pointer;
-}
-
-.svm-dots button::before {
-    content: "";
+.service-carousel__dot {
     width: 8px;
     height: 8px;
-    border-radius: 4px;
-    background: rgba(255, 255, 255, .55);
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, .15);
-    transition: width .2s ease, background .2s ease;
-}
-
-.svm-dots button[aria-current="true"]::before {
-    width: 20px;
-    background: #fff;
-}
-
-.svm-text {
-    padding: 20px 18px 22px;
-}
-
-.svm-text h2 {
-    margin: 0 0 10px;
-    font-family: 'Poppins', 'Inter', sans-serif;
-    font-size: 22px;
-    font-weight: 800;
-    line-height: 1.2;
-    text-transform: uppercase;
-    letter-spacing: .02em;
-    color: var(--svm-pink);
-}
-
-.svm-text p {
-    margin: 0;
-    font-size: 15px;
-    line-height: 1.65;
-    color: var(--svm-text-dim);
-}
-
-/* ── Rating cards ── */
-.svm-ratings {
-    list-style: none;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin: 0;
-}
-
-.svm-rating {
-    background: var(--svm-rating);
-    border-radius: 12px;
-    padding: 14px 14px 16px;
-}
-
-.svm-rating h3 {
-    margin: 0;
-    font-size: 12px;
-    font-weight: 800;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-    color: #fff;
-}
-
-.svm-rating-dots {
-    display: flex;
-    gap: 5px;
-    margin: 8px 0 10px;
-}
-
-.svm-rating-dots i {
-    width: 12px;
-    height: 12px;
     border-radius: 50%;
-    background: var(--svm-dot-empty);
+    background: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-.svm-rating-dots i.on {
+.service-carousel__dot.active {
     background: #fff;
-}
-
-.svm-rating p {
-    margin: 0;
-    font-size: 13px;
-    line-height: 1.5;
-    color: var(--svm-text-dim);
-}
-
-.svm-rating p strong {
-    color: #fff;
-}
-
-/* ── Closing CTA ── */
-.svm-cta {
-    margin-top: 8px;
-    padding: 22px 18px;
-    border-radius: 16px;
-    background: #fff;
-    border: 1px solid #e5e7eb;
-}
-
-.svm-cta h2 {
-    margin: 0 0 8px;
-    font-family: 'Poppins', 'Inter', sans-serif;
-    font-size: 22px;
-    font-weight: 800;
-    line-height: 1.2;
-    color: #111827;
-}
-
-.svm-cta p {
-    margin: 0 0 16px;
-    font-size: 15px;
-    line-height: 1.6;
-    color: #374151;
-}
-
-.svm-cta .svm-small {
-    margin: 14px 0 0;
-    font-size: 13px;
-    color: #6b7280;
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .svm-slide,
-    .svm-dots button::before {
-        transition: none;
-    }
+    width: 24px;
+    border-radius: 4px;
 }

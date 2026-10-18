@@ -1,0 +1,439 @@
+/* =============================================
+   BrandedUK mobile footer (dark accordion)
+   Markup: mobile/footer/footer.tpl. No :root variables here -
+   footer.css already defines globals that pages depend on.
+   ============================================= */
+
+.mfooter {
+  --mf-bg: #0c0c0c;
+  --mf-text: #f3f3f1;
+  --mf-muted: rgba(255, 255, 255, 0.7);
+  --mf-subtle: rgba(255, 255, 255, 0.5);
+  --mf-line: rgba(255, 255, 255, 0.09);
+  --mf-orange: #ff6a00;
+  position: relative;
+  overflow: hidden;
+  margin: 0;
+  padding: 28px 0 0;
+  color: var(--mf-text);
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--mf-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+.mfooter *,
+.mfooter *::before,
+.mfooter *::after {
+  box-sizing: border-box;
+}
+
+.mfooter a {
+  color: inherit;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mfooter a:focus-visible,
+.mfooter summary:focus-visible {
+  outline: 2px solid var(--mf-orange);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.mfooter svg {
+  display: block;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.mfooter .mfooter__fill {
+  fill: currentColor;
+  stroke: none;
+}
+
+.mfooter__inner {
+  position: relative;
+  z-index: 1;
+  padding: 0 20px;
+}
+
+.mfooter__intro {
+  margin: 0 0 18px;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+/* --- Accordion --- */
+.mfooter__nav {
+  border-top: 1px solid var(--mf-line);
+}
+
+.mfooter__group {
+  border-bottom: 1px solid var(--mf-line);
+}
+
+.mfooter__summary {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 54px;
+  padding: 0 2px;
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.18s ease;
+}
+
+.mfooter__summary::-webkit-details-marker {
+  display: none;
+}
+
+.mfooter__summary:active {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.mfooter__icon {
+  flex: 0 0 22px;
+  width: 22px;
+  height: 22px;
+  color: #fff;
+}
+
+.mfooter__title {
+  flex: 1;
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.mfooter__chev {
+  flex: 0 0 auto;
+  width: 9px;
+  height: 9px;
+  margin: -4px 6px 0 0;
+  border-right: 1.8px solid rgba(255, 255, 255, 0.85);
+  border-bottom: 1.8px solid rgba(255, 255, 255, 0.85);
+  transform: rotate(45deg);
+  transition: transform 0.22s ease, margin 0.22s ease;
+}
+
+.mfooter__group[open] .mfooter__chev {
+  margin-top: 4px;
+  transform: rotate(-135deg);
+}
+
+.mfooter__links {
+  margin: 0;
+  padding: 0 2px 12px 38px;
+  list-style: none;
+}
+
+.mfooter__group[open] .mfooter__links {
+  animation: mfooterReveal 0.22s ease;
+}
+
+@keyframes mfooterReveal {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.mfooter__links a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 38px;
+  color: var(--mf-muted);
+  font-size: 13.5px;
+  line-height: 1.3;
+  transition: color 0.18s ease;
+}
+
+.mfooter__links a::after {
+  content: "";
+  flex: 0 0 auto;
+  width: 6px;
+  height: 6px;
+  margin-right: 6px;
+  border-top: 1.5px solid rgba(255, 255, 255, 0.45);
+  border-right: 1.5px solid rgba(255, 255, 255, 0.45);
+  transform: rotate(45deg);
+}
+
+.mfooter__links a:hover,
+.mfooter__links a:active {
+  color: #fff;
+}
+
+/* --- Contact cards --- */
+.mfooter__contacts {
+  display: grid;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.mfooter__card {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 12px;
+}
+
+a.mfooter__card:active {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.mfooter__card-icon {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  color: var(--mf-orange);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+}
+
+.mfooter__card-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.mfooter__card-body {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mfooter__card-label {
+  color: var(--mf-subtle);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.mfooter__card-main {
+  overflow-wrap: anywhere;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.mfooter__card-arrow {
+  width: 8px;
+  height: 8px;
+  margin-right: 4px;
+  border-top: 1.6px solid rgba(255, 255, 255, 0.55);
+  border-right: 1.6px solid rgba(255, 255, 255, 0.55);
+  transform: rotate(45deg);
+}
+
+/* --- Social --- */
+.mfooter__socials {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 26px;
+}
+
+.mfooter__socials a {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 50%;
+  transition: color 0.18s ease, border-color 0.18s ease;
+}
+
+.mfooter__socials a:hover,
+.mfooter__socials a:active {
+  color: var(--mf-orange);
+  border-color: var(--mf-orange);
+}
+
+.mfooter__socials svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* --- Payments --- */
+.mfooter__payments {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.mfooter__pay {
+  display: inline-flex;
+  flex: 0 1 62px;
+  min-width: 52px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 0 6px;
+  color: #111;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  background: #fff;
+  border-radius: 6px;
+}
+
+.mfooter__pay svg {
+  width: 30px;
+  height: 20px;
+  stroke: none;
+}
+
+.mfooter__pay--visa {
+  color: #1a1f71;
+  font-size: 15px;
+  font-style: italic;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+}
+
+.mfooter__pay--amex {
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  background: #016fd0;
+}
+
+.mfooter__pay--apple svg,
+.mfooter__pay--gpay svg {
+  width: 15px;
+  height: 15px;
+}
+
+.mfooter__pay--apple svg {
+  fill: #111;
+}
+
+.mfooter__pay--gpay {
+  color: #5f6368;
+  font-weight: 600;
+}
+
+/* --- Legal + company --- */
+.mfooter__legal {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 0;
+  margin-top: 22px;
+}
+
+.mfooter__legal a {
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 11.5px;
+  line-height: 1.3;
+}
+
+.mfooter__legal a + a::before {
+  content: "|";
+  margin: 0 8px;
+  color: rgba(255, 255, 255, 0.25);
+}
+
+.mfooter__legal a[data-cookie-settings] {
+  flex-basis: 100%;
+  margin-top: 4px;
+  text-align: center;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.mfooter__legal a[data-cookie-settings]::before {
+  content: none;
+}
+
+.mfooter__legal a:hover,
+.mfooter__legal a:active {
+  color: #fff;
+}
+
+.mfooter__company {
+  margin: 14px 0 0;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 11px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* --- Wordmark --- */
+.mfooter__watermark {
+  display: block;
+  margin-top: 14px;
+  padding: 0 8px 6px;
+  overflow: hidden;
+  font-size: clamp(56px, 19.5vw, 150px);
+  font-weight: 900;
+  line-height: 0.86;
+  letter-spacing: -0.075em;
+  text-align: center;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.mfooter__watermark-word,
+.mfooter__watermark-uk {
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.mfooter__watermark-word {
+  background-image: linear-gradient(180deg, #5a5a5a 0%, #333 100%);
+}
+
+.mfooter__watermark-uk {
+  padding-right: 0.06em;
+  background-image: linear-gradient(180deg, #ff7a1a 0%, #c9530c 100%);
+}
+
+@media (min-width: 700px) {
+  /* Pages with the PC footer show it from 700px up. */
+  body:has([data-pc-footer]) .mfooter {
+    display: none;
+  }
+
+  .mfooter__inner {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .mfooter__watermark {
+    font-size: 150px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mfooter *,
+  .mfooter *::before,
+  .mfooter *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

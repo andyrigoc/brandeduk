@@ -475,6 +475,186 @@
             background: linear-gradient(135deg, #273469, #1E2749); color: #fff; border: none;
             border-radius: 14px; font-size: 15px; font-weight: 600; cursor: pointer; text-decoration: none;
         }
+        .empty-basket-mobile,
+        .breadcrumb-basket { display: none; }
+
+        @media (max-width: 699px) {
+            body.basket-page.basket-is-empty .basket-header,
+            body.basket-page.basket-is-empty .quote-footer { display: none !important; }
+            body.basket-page.basket-is-empty .basket-content { padding: 0 16px 150px !important; }
+
+            body.basket-page.basket-is-empty .site-breadcrumbs {
+                min-height: 64px;
+                padding: 0 16px;
+                background: #fff;
+                border-bottom: 0;
+                font-size: 12px;
+                letter-spacing: .6px;
+            }
+            body.basket-page.basket-is-empty .breadcrumb-back-btn {
+                display: inline-flex !important;
+                align-items: center;
+                justify-content: center;
+                flex: 0 0 auto;
+                width: 40px;
+                height: 40px;
+                margin-right: 14px;
+                border-radius: 12px;
+                background: #f3f4f6 !important;
+            }
+            body.basket-page.basket-is-empty .breadcrumb-back-btn svg { width: 16px; height: 16px; stroke: #111827; }
+            body.basket-page.basket-is-empty .breadcrumb-trail a { color: #6b7280; }
+            body.basket-page.basket-is-empty .breadcrumb-current { color: #111827; font-weight: 700; }
+            body.basket-page.basket-is-empty .breadcrumb-basket {
+                display: inline-flex;
+                position: relative;
+                margin-left: auto;
+                color: #111827;
+            }
+            .breadcrumb-basket > span {
+                position: absolute;
+                top: -6px;
+                right: -8px;
+                min-width: 18px;
+                height: 18px;
+                border-radius: 9px;
+                background: #ff6b00;
+                color: #fff;
+                font-size: 11px;
+                font-weight: 700;
+                line-height: 18px;
+                text-align: center;
+                letter-spacing: 0;
+            }
+
+            .empty-basket { padding: 4px 0 0; }
+            .empty-basket > :not(.empty-basket-mobile) { display: none; }
+            .empty-basket-mobile { display: block; }
+            .ebm-illustration svg { display: block; width: 236px; max-width: 70%; margin: 0 auto 14px; }
+            .empty-basket .ebm-title {
+                margin: 0 0 10px;
+                font-size: 27px;
+                font-weight: 800;
+                letter-spacing: -.4px;
+                color: #111827;
+            }
+            .empty-basket .ebm-text {
+                margin: 0 auto 22px;
+                font-size: 14.5px;
+                line-height: 1.55;
+                color: #6b7280;
+            }
+            .ebm-shop-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+                width: min(100%, 320px);
+                height: 54px;
+                margin: 0 auto 26px;
+                border-radius: 27px;
+                background: #ff6b00;
+                color: #fff;
+                font-size: 17px;
+                font-weight: 700;
+                text-decoration: none;
+                box-shadow: 0 8px 18px rgba(255, 107, 0, .25);
+            }
+            .ebm-shop-btn:active { background: #e85f00; }
+            .ebm-why {
+                padding: 18px 10px 16px;
+                border-radius: 16px;
+                background: #f6f6f7;
+            }
+            .ebm-why h3,
+            .ebm-industries h3 {
+                margin: 0;
+                font-size: 17px;
+                font-weight: 800;
+                color: #111827;
+            }
+            .ebm-why ul {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                margin: 14px 0 0;
+                padding: 0;
+                list-style: none;
+            }
+            .ebm-why li {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 8px;
+                padding: 0 4px;
+                font-size: 12.5px;
+                line-height: 1.35;
+                color: #374151;
+            }
+            .ebm-why li + li { border-left: 1px solid #e3e4e8; }
+            .ebm-why li svg { width: 34px; height: 34px; color: #111827; }
+            .ebm-industries { margin-top: 24px; text-align: left; }
+            .ebm-industries-head {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 12px;
+            }
+            .ebm-industries-head a {
+                color: #ff6b00;
+                font-size: 14px;
+                font-weight: 700;
+                text-decoration: none;
+            }
+            .ebm-industry-row {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 10px;
+            }
+            .ebm-industry {
+                position: relative;
+                display: block;
+                aspect-ratio: 3 / 4;
+                overflow: hidden;
+                border-radius: 12px;
+                background: #e5e7eb;
+                text-decoration: none;
+            }
+            .ebm-industry img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                object-position: var(--crop, 20%) center;
+            }
+            .ebm-industry::before {
+                content: "";
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, .7));
+            }
+            .ebm-industry span {
+                position: absolute;
+                left: 0;
+                right: 0;
+                bottom: 30px;
+                padding: 0 3px;
+                color: #fff;
+                font-size: 10.5px;
+                font-weight: 700;
+                text-align: center;
+                text-shadow: 0 1px 2px rgba(0, 0, 0, .45);
+            }
+            .ebm-industry::after {
+                content: "";
+                position: absolute;
+                left: 50%;
+                bottom: 8px;
+                width: 18px;
+                height: 18px;
+                margin-left: -9px;
+                border-radius: 50%;
+                background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23111827' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6'/%3E%3C/svg%3E") center / 10px no-repeat;
+            }
+        }
 
         /* ===== ITEM ROW (per size) - Workwear Express style ===== */
         .basket-item-row {
@@ -2647,6 +2827,10 @@
             </svg>
         </button>
         <div class="breadcrumb-trail" id="breadcrumbTrail"></div>
+        <span class="breadcrumb-basket" role="img" aria-label="Basket: 0 items">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.5 3h3l2.6 12.2a1.6 1.6 0 0 0 1.6 1.3h9.4a1.6 1.6 0 0 0 1.6-1.2L21.5 7H6"/><circle cx="9.5" cy="20.5" r="1.3"/><circle cx="18" cy="20.5" r="1.3"/></svg>
+            <span aria-hidden="true">0</span>
+        </span>
     </nav>
 
     <!-- Basket Header -->
@@ -2679,6 +2863,68 @@
                 </svg>
                 Browse Products
             </a>
+            <div class="empty-basket-mobile">
+                <div class="ebm-illustration" aria-hidden="true">
+                    <svg viewBox="0 0 240 180" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="122" cy="92" r="80" fill="#f8efe5"/>
+                        <path d="M40 132c22 34 112 40 146 8 16-16 20-44 21-70" stroke="#1f2937" stroke-width="1.4" stroke-dasharray="2 6"/>
+                        <path d="M197 54l37-22-17 34-8-10z" fill="#fff" stroke="#1f2937" stroke-width="1.8"/>
+                        <path d="M209 56l25-24" stroke="#1f2937" stroke-width="1.8"/>
+                        <path d="M18 118h30a7 7 0 0 0-2-13.6 10.5 10.5 0 0 0-20-2.6A7.4 7.4 0 0 0 18 118z" fill="#fff" stroke="#1f2937" stroke-width="1.6"/>
+                        <path d="M184 160h30a7 7 0 0 0-2-13.6 10.5 10.5 0 0 0-20-2.6 7.4 7.4 0 0 0-8 16.2z" fill="#fff" stroke="#1f2937" stroke-width="1.6"/>
+                        <path d="M104 30l6 11M129 20v14M154 30l-6 11" stroke="#ff6b00" stroke-width="5"/>
+                        <path d="M58 56h20l17 64h70l15-50H84" stroke="#111827" stroke-width="7"/>
+                        <circle cx="106" cy="143" r="9" fill="#fff" stroke="#111827" stroke-width="6.5"/>
+                        <circle cx="156" cy="143" r="9" fill="#fff" stroke="#111827" stroke-width="6.5"/>
+                    </svg>
+                </div>
+                <h2 class="ebm-title">Your basket is empty</h2>
+                <p class="ebm-text">Looks like you haven&rsquo;t added any products yet.<br>Let&rsquo;s create your perfect workwear.</p>
+                <a class="ebm-shop-btn" href="/index-mobile.html?force=mobile">Start Shopping
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                </a>
+                <section class="ebm-why" aria-labelledby="ebmWhyTitle">
+                    <h3 id="ebmWhyTitle">Why choose Branded UK?</h3>
+                    <ul>
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 3.5 3 6.5l2 4.5 2.5-1V20.5h9V10l2.5 1 2-4.5-5.5-3c-.6 1.7-2 2.8-3.5 2.8s-2.9-1.1-3.5-2.8z"/></svg>
+                            <span>Wide range<br>of products</span>
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.2-4.6L16.4 4.2a2 2 0 0 1 2.8 0l.6.6a2 2 0 0 1 0 2.8L8.6 18.8z"/><path d="M14.5 6.1l3.4 3.4"/></svg>
+                            <span>Customisation<br>made easy</span>
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6h12v10.5H2z"/><path d="M14 9.5h4l3.5 3.5v3.5H14"/><circle cx="6" cy="18" r="1.8" fill="#fff"/><circle cx="17.5" cy="18" r="1.8" fill="#fff"/></svg>
+                            <span>Fast &amp; reliable<br>quotes</span>
+                        </li>
+                    </ul>
+                </section>
+                <section class="ebm-industries" aria-labelledby="ebmIndustriesTitle">
+                    <div class="ebm-industries-head">
+                        <h3 id="ebmIndustriesTitle">Shop by Industry</h3>
+                        <a href="/industries.html">View all <span aria-hidden="true">&rarr;</span></a>
+                    </div>
+                    <div class="ebm-industry-row">
+                        <a class="ebm-industry" href="/industries/construction.html" style="--crop: 0%">
+                            <img src="/brandedukv15-child/assets/images/industries/construction-800.webp" alt="" loading="lazy" decoding="async">
+                            <span>Construction</span>
+                        </a>
+                        <a class="ebm-industry" href="/industries/hospitality.html" style="--crop: 6%">
+                            <img src="/brandedukv15-child/assets/images/industries/hospitality-800.webp" alt="" loading="lazy" decoding="async">
+                            <span>Hospitality</span>
+                        </a>
+                        <a class="ebm-industry" href="/industries/cleaning.html" style="--crop: 6%">
+                            <img src="/brandedukv15-child/assets/images/industries/cleaning-800.webp" alt="" loading="lazy" decoding="async">
+                            <span>Cleaning</span>
+                        </a>
+                        <a class="ebm-industry" href="/industries/sports.html" style="--crop: 16%">
+                            <img src="/brandedukv15-child/assets/images/industries/sports-800.webp" alt="" loading="lazy" decoding="async">
+                            <span>Sport</span>
+                        </a>
+                    </div>
+                </section>
+            </div>
         </div>
 
         <!-- Basket Content (visible when items exist) -->
@@ -4053,6 +4299,7 @@
         const actionBar = document.getElementById('actionBar');
         const clearBtn = document.getElementById('clearBasketBtn');
         const clearBtnDesktop = document.getElementById('clearBasketBtnDesktop');
+        document.body.classList.toggle('basket-is-empty', basket.length === 0);
 
         if (basket.length === 0) {
             emptyState.style.display = 'block';
@@ -6693,7 +6940,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <div data-mobile-footer></div>
     <script src="mobile/js/popup-contact.js?v=20261003-consent"></script>
     <script src="mobile/footer/footer.js?v=20261005-mobilefix" defer></script>
-    <script src="mobile/js/breadcrumbs.js?v=20260403b"></script>
+    <script src="mobile/js/breadcrumbs.js?v=20261018-basket"></script>
 </body>
 </html>
 

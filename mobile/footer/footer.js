@@ -73,12 +73,40 @@
       el.textContent = String(new Date().getFullYear());
     });
 
-    initIsoSocial();
-    initFooterPopups();
-    initLondonClock();
-    initQuoteButton();
-    initBarMenu();
+    initFooterAccordion();
+    initWatermarkLink();
+    ensureContactPopupScript();
     initBottomNavigation();
+  }
+
+  /* --- Footer accordion: one group open at a time --- */
+  function initFooterAccordion() {
+    document.querySelectorAll('.mfooter__nav').forEach(function (nav) {
+      if (nav.__mfooterAccordion) return;
+      nav.__mfooterAccordion = true;
+      var groups = nav.querySelectorAll('details.mfooter__group');
+      nav.addEventListener('toggle', function (event) {
+        var opened = event.target;
+        if (!opened.open || !opened.classList || !opened.classList.contains('mfooter__group')) return;
+        groups.forEach(function (group) {
+          if (group !== opened && group.open) group.open = false;
+        });
+      }, true);
+    });
+  }
+
+  /* --- Wordmark: scroll up instead of reloading when already on the home page --- */
+  function initWatermarkLink() {
+    document.querySelectorAll('.mfooter__watermark').forEach(function (link) {
+      if (link.__mfooterHome) return;
+      link.__mfooterHome = true;
+      link.addEventListener('click', function (event) {
+        var path = window.location.pathname.replace(/\.html$/, '');
+        if (!/\/index-mobile$/.test(path)) return;
+        event.preventDefault();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    });
   }
 
   /* --- Shared Mobile Bottom Navigation --- */
@@ -95,115 +123,7 @@
     nav.insertBefore(home, nav.firstChild);
   }
 
-  /* --- 1. Isometric 3D Social Icons (touch) --- */
-  function initIsoSocial() {
-    if (window.__isoSocialInit) return;
-    var isoLinks = document.querySelectorAll('.social.footer-social-3d li a');
-    if (!isoLinks.length) return;
-    window.__isoSocialInit = true;
-
-    isoLinks.forEach(function (link) {
-      link.addEventListener('click', function () {
-        isoLinks.forEach(function (l) { l.classList.remove('iso-active'); });
-        link.classList.add('iso-active');
-      });
-    });
-
-    document.addEventListener('click', function (e) {
-      var container = document.querySelector('.social.footer-social-3d');
-      if (container && !container.contains(e.target)) {
-        isoLinks.forEach(function (l) { l.classList.remove('iso-active'); });
-      }
-    });
-  }
-
-  /* --- 2. Footer Popups --- */
-  function initFooterPopups() {
-    document.querySelectorAll('[data-popup]').forEach(function (link) {
-      link.addEventListener('click', function (e) {
-        e.preventDefault();
-        var id = 'popup-' + this.getAttribute('data-popup');
-        var overlay = document.getElementById(id);
-        if (overlay) overlay.classList.add('active');
-      });
-    });
-
-    document.querySelectorAll('.footer-popup-overlay').forEach(function (overlay) {
-      overlay.addEventListener('click', function (e) {
-        if (e.target === this) this.classList.remove('active');
-      });
-      var btn = overlay.querySelector('.footer-popup-close');
-      if (btn) {
-        btn.addEventListener('click', function () {
-          overlay.classList.remove('active');
-        });
-      }
-    });
-  }
-
-  /* --- 3. London Clock (CSS + JS) --- */
-  function initLondonClock() {
-    var clock = document.querySelector('.clock');
-    if (!clock) return;
-
-    var secondHand = document.getElementById('second-hand');
-    var minuteHand = document.getElementById('minute-hand');
-    var hourHand   = document.getElementById('hour-hand');
-    var ticksWrap  = clock.querySelector('.ticks');
-
-    /* Generate 60 tick marks */
-    if (ticksWrap) {
-      var size = clock.offsetWidth;
-      for (var i = 1; i <= 60; i++) {
-        var span = document.createElement('span');
-        var deg = (i / 60) * 360;
-        var isHour = (i % 5 === 0);
-        var tickW = isHour ? 5 : 3;
-        var dist = size / 2 - tickW;
-        span.style.transform = 'rotate(' + deg + 'deg) translateX(' + dist + 'px)';
-        if (isHour) span.className = 'hour-mark';
-        ticksWrap.appendChild(span);
-      }
-    }
-
-    /* Get London time */
-    function getLondonTime() {
-      var now = new Date();
-      var parts = new Intl.DateTimeFormat('en-GB', {
-        timeZone: 'Europe/London',
-        hour: '2-digit', minute: '2-digit', second: '2-digit',
-        hour12: false
-      }).formatToParts(now);
-      function getPart(type) {
-        return Number(parts.find(function (p) { return p.type === type; }).value);
-      }
-      return { hours: getPart('hour'), minutes: getPart('minute'), seconds: getPart('second') };
-    }
-
-    /* Rotate hands every second */
-    function tick() {
-      var t = getLondonTime();
-      var sDeg = (t.seconds / 60) * 360 - 180;
-      var mDeg = ((t.minutes + t.seconds / 60) / 60) * 360 - 180;
-      var hDeg = (((t.hours % 12) + t.minutes / 60 + t.seconds / 3600) / 12) * 360 - 180;
-
-      secondHand.style.transform = 'rotate(' + sDeg + 'deg)';
-      minuteHand.style.transform = 'rotate(' + mDeg + 'deg)';
-      hourHand.style.transform   = 'rotate(' + hDeg + 'deg)';
-    }
-
-    tick();
-    setInterval(tick, 1000);
-  }
-
-  /* --- 4. Quote Button: opens the Get in touch popup --- */
-  function initQuoteButton() {
-    document.querySelectorAll('footer .quote-btn').forEach(function (btn) {
-      btn.setAttribute('data-open-contact', '1');
-    });
-    ensureContactPopupScript();
-  }
-
+  /* --- "Request a Quote" uses the shared Get in touch popup --- */
   function ensureContactPopupScript() {
     if (typeof window.openContactPopup === 'function') return;
     var loaded = Array.prototype.some.call(document.querySelectorAll('script[src]'), function (script) {
@@ -213,60 +133,6 @@
     var script = document.createElement('script');
     script.src = new URL('../js/popup-contact.js?v=20261003-consent', footerScriptUrl).href;
     document.body.appendChild(script);
-  }
-
-  /* --- 5. Hamburger / Purple Sidebar --- */
-  function initBarMenu() {
-    var menu    = document.getElementById('barMenu');
-    var trigger = document.getElementById('barMenuTrigger');
-    var panel   = document.getElementById('barMenuPanel');
-    var closeBtn = document.getElementById('barMenuClose');
-    if (!menu || !trigger || !panel) return;
-
-    var menuLinks = panel.querySelectorAll('a');
-
-    function openMenu() {
-      menu.classList.add('is-active');
-      panel.classList.add('is-active');
-      trigger.setAttribute('aria-expanded', 'true');
-      document.body.style.overflow = 'hidden';
-    }
-
-    function closeMenu() {
-      menu.classList.remove('is-active');
-      panel.classList.remove('is-active');
-      trigger.setAttribute('aria-expanded', 'false');
-      document.body.style.overflow = '';
-    }
-
-    trigger.addEventListener('click', function (e) {
-      e.preventDefault();
-      e.stopPropagation();
-      panel.classList.contains('is-active') ? closeMenu() : openMenu();
-    });
-
-    if (closeBtn) {
-      closeBtn.addEventListener('click', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        closeMenu();
-      });
-    }
-
-    menuLinks.forEach(function (link) {
-      if (!link.hasAttribute('data-popup') && !link.closest('.footer-social-3d')) {
-        link.addEventListener('click', closeMenu);
-      }
-    });
-
-    document.addEventListener('click', function (e) {
-      if (!panel.classList.contains('is-active')) return;
-      if (!panel.contains(e.target) && !trigger.contains(e.target)) closeMenu();
-    });
-
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') closeMenu();
-    });
   }
 
   /* --- Boot --- */

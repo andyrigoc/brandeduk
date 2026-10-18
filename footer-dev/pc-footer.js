@@ -102,10 +102,18 @@
     payments: ["VISA", "MC", "AMEX", "APPLE PAY", "G PAY"]
   };
 
+  const siteRoot = footerScriptUrl ? new URL("../", footerScriptUrl).href : "/";
+
+  /* Footer URLs are written from the site root; pages in /blog/ or /industries/ would otherwise resolve them inside their own folder. */
+  function siteUrl(url) {
+    if (!url || /^(?:[a-z][a-z0-9+.-]*:|\/|#)/i.test(url)) return url || "#";
+    return new URL(url, siteRoot).href;
+  }
+
   function createLink(label, url, action) {
     const link = document.createElement("a");
     link.textContent = label;
-    link.href = url || "#";
+    link.href = siteUrl(url);
     if (action) link.dataset.footerAction = action;
     if (action === "contact") link.dataset.openContact = "1";
     return link;
@@ -205,6 +213,7 @@
     });
 
     const watermark = frame.querySelector(".buk-footer__watermark");
+    watermark.href = siteUrl("home-pc.html");
     watermark.addEventListener("click", (event) => {
       if (!/home-pc\.html$/.test(window.location.pathname)) return;
       event.preventDefault();

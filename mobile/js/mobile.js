@@ -11,15 +11,14 @@ document.addEventListener('DOMContentLoaded', function() {
     initBrandsMarqueeLogos();
 });
 
-// Helper to handle relative paths since this script runs on both root (index-mobile.html) and mobile/ folders
+// Root-relative so links also work from nested folders such as /blog/articles/.
 function getMobileBaseUrl() {
-    return window.location.pathname.indexOf('/mobile/') !== -1 ? '' : 'mobile/';
+    return '/mobile/';
 }
 
 function getCanonicalShopUrl(queryString = '') {
-    const prefix = window.location.pathname.indexOf('/mobile/') !== -1 ? '' : 'mobile/';
     const query = queryString ? (queryString.charAt(0) === '?' ? queryString : `?${queryString}`) : '';
-    return `${prefix}shop-mobile.html${query}`;
+    return `/mobile/shop-mobile.html${query}`;
 }
 
 function initBrandsMarqueeLogos() {
@@ -339,7 +338,7 @@ function initSearch() {
 
             products.slice(0, 8).forEach(product => {
                 const detailUrl = `${baseUrl}customize-mobile.html?code=${product.value}`;
-                const imgUrl = product.image || '../brandedukv15-child/assets/images/ui/no-image.png';
+                const imgUrl = product.image || '/brandedukv15-child/assets/images/ui/no-image.png';
                 const safeName = (product.label || '').replace(/'/g, "\\'");
                 const brand = product.brand || product.brand_name || '';
                 const priceVal = Number(product.price);
@@ -351,7 +350,7 @@ function initSearch() {
                 html += `
                     <a href="${detailUrl}" class="suggestion-item" data-product-code="${product.value}"
                        onclick="sessionStorage.setItem('selectedProduct','${product.value}');sessionStorage.setItem('selectedProductData',JSON.stringify({code:'${product.value}',name:'${safeName}'}));">
-                        <img src="${imgUrl}" class="suggestion-item-image" onerror="this.src='../brandedukv15-child/assets/images/ui/no-image.png'">
+                        <img src="${imgUrl}" class="suggestion-item-image" onerror="this.src='/brandedukv15-child/assets/images/ui/no-image.png'">
                         <div class="suggestion-item-content">
                             <div class="suggestion-item-label">${highlight(product.label)}</div>
                             <div class="suggestion-item-sub"><span>Code: ${product.value}</span></div>

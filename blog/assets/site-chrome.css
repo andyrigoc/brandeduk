@@ -1,0 +1,50 @@
+/* Site header, menu and footers on blog pages: the mobile v2 header below 700px, the PC header above. */
+@media (max-width: 699px) {
+    body.blog-chrome {
+        padding-top: var(--header-height, 128px) !important;
+        padding-bottom: calc(var(--bottom-nav-height, 64px) + var(--safe-area-bottom, 0px));
+    }
+
+    /* The home wraps this fixed header in .header-with-promo for its stacking; here that class is the hidden PC header. */
+    body.blog-chrome .mobile-header--v2 {
+        z-index: 1200;
+    }
+
+    body.blog-chrome .site-header,
+    body.blog-chrome .top-promo-bar,
+    body.blog-chrome .header-with-promo,
+    body.blog-chrome [data-pc-footer] {
+        display: none !important;
+    }
+}
+
+@media (min-width: 700px) {
+    body.blog-chrome {
+        padding-bottom: 0;
+    }
+
+    body.blog-chrome .mobile-header,
+    body.blog-chrome .slide-menu,
+    body.blog-chrome .menu-overlay,
+    body.blog-chrome .bottom-nav,
+    body.blog-chrome [data-mobile-footer] {
+        display: none !important;
+    }
+
+    /* header-v2.css reserves the mobile header height on this wrapper; above 700px it only holds the PC promo bar. */
+    body.blog-chrome .header-with-promo {
+        min-height: 0;
+    }
+
+    /* Match the ticker styling used on home/shop (see mobile/css/terms.css). */
+    body.blog-chrome .top-promo-bar {
+        margin-top: 0;
+        background: linear-gradient(135deg, #273469 0%, #1a244d 100%);
+        border-top: 0;
+        border-bottom: 0;
+    }
+
+    body.blog-chrome .site-header {
+        line-height: normal;
+    }
+}

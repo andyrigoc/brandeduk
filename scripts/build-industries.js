@@ -35,7 +35,7 @@ const HUB_FILE = path.join(ROOT, 'industries.html');
 
 const API = 'https://api.brandeduk.com';
 const SITE = 'https://www.brandeduk.com';
-const ASSET_VERSION = '20261012-ind6';
+const ASSET_VERSION = '20261018-mheader';
 const HIDDEN_BRAND_NAMES = ['absolute', 'ralawise'];
 const ON_SITE_ONLY = process.argv.includes('--on-site-only');
 const MISSING_REPORT_DIR = (() => {
@@ -407,7 +407,7 @@ function headStart() {
 
       gtag('config', 'AW-438771987');
     </script>
-    <script defer src="/brandedukv15-child/assets/js/cookie-consent.js?v=20261008"></script>
+    <script defer src="/brandedukv15-child/assets/js/cookie-consent.js?v=20261016"></script>
     <script defer src="/brandedukv15-child/assets/js/ads-conversions.js?v=20261009"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#273469">`;
@@ -419,10 +419,12 @@ function headAssets() {
     <link rel="stylesheet" href="/brandedukv15-child/assets/css/components/pc-header.css?v=20261012-homechrome">
     <link rel="stylesheet" href="/brandedukv15-child/assets/css/components/promo-bar.css?v=20260425a">
     <link rel="stylesheet" href="/mobile/css/mobile.css?v=20260923-home-nav">
+    <link rel="stylesheet" href="/mobile/css/header-v2.css?v=20261017-search-vat-spacing">
     <link rel="stylesheet" href="/mobile/footer/footer.css?v=20260409B">
     <link rel="stylesheet" href="/footer-dev/pc-footer.css?v=20261009-phones">
     <link rel="stylesheet" href="/brandedukv15-child/assets/css/pages/industries.css?v=${ASSET_VERSION}">
     <script src="/brandedukv15-child/assets/js/shared-config.js?v=20261005-megafit"></script>
+    <script src="/brandedukv15-child/assets/js/api-config.js?v=20261016-apiproxy"></script>
     <script src="/brandedukv15-child/assets/js/pc-header-template.js?v=20261015-nodeals"></script>
     <script src="/brandedukv15-child/assets/js/pc-header.js?v=20261012-navmore"></script>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
@@ -434,19 +436,168 @@ function headAssets() {
     <script src="/footer-dev/pc-footer.js?v=20261012-services" defer></script>`;
 }
 
-function mobileBar(backHref, label) {
-    return `    <header class="ind-mobile-bar">
-        <a class="ind-back" href="${esc(backHref)}" aria-label="Back">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="m15 18-6-6 6-6"></path>
-            </svg>
-        </a>
-        <div>
-            <span class="ind-brand">Branded<span>UK</span></span>
-            <span class="ind-mobile-title">${esc(label)}</span>
+/* Same header and menu as the mobile home (index-mobile.html). industries.js opens the menu and runs
+   search, VAT and the basket count; mobile/js/header-menu.js switches the menu panels. */
+const PHONE_PATH = 'M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z';
+
+function mobileHeader() {
+    return `    <header class="mobile-header mobile-header--v2">
+        <div class="mh-bar">
+            <button type="button" class="mh-icon-btn" id="menuToggle" aria-label="Open menu" aria-expanded="false" aria-controls="slideMenu">
+                <svg class="mh-icon-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+                    <line x1="4" y1="7" x2="20" y2="7"></line>
+                    <line x1="4" y1="12" x2="20" y2="12"></line>
+                    <line x1="4" y1="17" x2="20" y2="17"></line>
+                </svg>
+                <svg class="mh-icon-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                </svg>
+            </button>
+            <a href="/index-mobile.html?force=mobile" class="mobile-logo-center mh-logo" aria-label="brandedUK home">
+                <img class="mobile-logo-badge" src="/brandedukv15-child/assets/videos/use-the-provided-circular-1727756126.gif?v=20261001-newgif" alt="" width="64" height="64">
+                <img class="mobile-logo-word" src="/brandedukv15-child/assets/images/ui/Branded UK Logo on Transparent Background.png?v=20261002-logocombo" alt="branded" width="120" height="52">
+            </a>
+            <div class="mh-actions">
+                <a href="tel:02089742722" class="mh-icon-btn" aria-label="Call 020 8974 2722">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="${PHONE_PATH}"></path>
+                    </svg>
+                </a>
+                <a href="/basket.html#orderSummary" class="mh-icon-btn mh-cart" aria-label="View basket">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                    <span class="mh-cart-count" id="cartBadge" hidden>0</span>
+                </a>
+            </div>
+        </div>
+        <div class="mh-search">
+            <div class="mh-search-control">
+                <div class="search-wrapper-expand">
+                    <input type="text" placeholder="Search 9,000+ products..." id="searchInput" autocomplete="off" class="search-input-expand" aria-label="Search products">
+                    <svg class="search-icon-expand" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                </div>
+                <span class="mh-search-divider" aria-hidden="true"></span>
+                <div class="mh-search-vat vat-toggle-mobile" id="vatToggleContainer">
+                    <span class="vat-label vat-label--exc">EXC VAT</span>
+                    <input type="checkbox" id="vatToggleCheckbox" class="vat-checkbox">
+                    <label for="vatToggleCheckbox" class="vat-toggle-label">Toggle VAT</label>
+                    <span class="vat-label vat-label--inc">INC VAT</span>
+                </div>
+            </div>
         </div>
     </header>
     <header class="site-header"></header>`;
+}
+
+function mobileMenu() {
+    const helpIcon = '<span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M9.4 9.6a2.6 2.6 0 1 1 3.4 2.5c-.8.4-1.3 1-1.3 1.9"/></svg></span>';
+    const productRow = '<button type="button" class="mh-row" data-mh-open="products"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-product" src="/brandedukv15-child/assets/images/icons/menu/shop-product.png?v=20261016-file" alt="" width="46" height="46"></span>Shop by Product<span class="mh-chev" aria-hidden="true"></span></button>';
+    const industryRow = '<button type="button" class="mh-row" data-mh-open="industries"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-industry" src="/brandedukv15-child/assets/images/icons/menu/shop-by-industry.png?v=20261016-file" alt="" width="46" height="46"></span>Shop by Industry<span class="mh-chev" aria-hidden="true"></span></button>';
+    const dealsRow = '<a class="mh-row" href="/bundles.html"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-deals" src="/brandedukv15-child/assets/images/icons/menu/deals-bundles.png?v=20261016-nobg" alt="" width="46" height="46"></span>Deals &amp; Bundles<span class="mh-chev" aria-hidden="true"></span></a>';
+    const helpRow = `<button type="button" class="mh-row" data-mh-open="help">${helpIcon}Help &amp; Support<span class="mh-chev" aria-hidden="true"></span></button>`;
+    const productTypes = [
+        ['tshirts', 'icon-shirt-71%201.png', 'T-Shirts'],
+        ['polos', 'Polo.png', 'Polo Shirts'],
+        ['[]=hoodies&amp;productType[]=sweatshirts', 'icon-hoodies-71%201.png', 'Hoodies &amp; Sweatshirts'],
+        ['[]=jackets&amp;productType[]=softshells', 'Jacket.png', 'Jackets &amp; Softshell'],
+        ['safety-vests', 'Hi%20Vis.png', 'Hi-Vis Clothing'],
+        ['trousers', 'Trousers.png', 'Work Trousers'],
+        ['aprons', 'Apron.png', 'Work &amp; Uniforms'],
+        ['fleece', 'Fleece.png', 'Fleeces'],
+        ['caps', 'Cap.png', 'Headwear']
+    ].map(([type, icon, label]) => `
+            <a class="mh-row" href="/shop-pc.html?productType${type.startsWith('[]') ? type : '=' + type}"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="/brandedukv15-child/assets/images/ui/icons/categories/${icon}" alt=""></span>${label}<span class="mh-chev" aria-hidden="true"></span></a>`).join('');
+    const industryLinks = [
+        ['construction', '<path d="M5 15.5a7 7 0 0 1 14 0"/><path d="M3.5 15.5h17v2.2h-17z"/>', 'Construction'],
+        ['hospitality', '<path d="M7 4v6.2a2 2 0 1 0 2 0V4"/><path d="M8 12.2V20"/><path d="M15 4c2.2 1.6 2.2 4 0 5.6V20"/>', 'Hospitality'],
+        ['healthcare', '<path d="M10 4.5h4v15h-4z"/><path d="M4.5 10h15v4h-15z"/>', 'Healthcare'],
+        ['education', '<path d="M3 10.5 12 6l9 4.5L12 15z"/><path d="M7 12.2v3.6c1.6 1.6 8.4 1.6 10 0v-3.6"/>', 'Schools &amp; Leavers'],
+        ['corporate', '<rect x="3.5" y="8" width="17" height="11" rx="1.6"/><path d="M8.5 8V6.2A1.8 1.8 0 0 1 10.3 4.4h3.4A1.8 1.8 0 0 1 15.5 6.2V8"/>', 'Corporate'],
+        ['sports', '<path d="M8 4.5h8v5.2a4 4 0 0 1-8 0z"/><path d="M12 13.7V16.5"/><path d="M9.2 19.5h5.6"/>', 'Sports'],
+        ['cleaning', '', 'Cleaning'],
+        ['logistics', '', 'Logistics'],
+        ['retail', '', 'Retail']
+    ].map(([slug, icon, label]) => `
+            <a class="mh-row" href="/industries/${slug}.html">${icon ? `<span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24">${icon}</svg></span>` : ''}${label}<span class="mh-chev" aria-hidden="true"></span></a>`).join('');
+
+    return `    <div class="menu-overlay" id="menuOverlay"></div>
+    <nav class="slide-menu slide-menu--v2" id="slideMenu" aria-label="Menu">
+        <div class="mh-drawer-top">
+            <button type="button" class="mh-icon-btn mh-back" id="mhBack" hidden aria-label="Back to menu">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18 9 12l6-6"></path></svg>
+            </button>
+        </div>
+        <div class="mh-panels">
+        <div class="mh-view" data-mh-view="main">
+        <div class="mh-view-scroll">
+            <div class="mh-menu-block">
+            ${productRow}
+            ${industryRow}
+            ${dealsRow}
+            </div>
+            <div class="mh-menu-block">
+            ${helpRow}
+            <button type="button" class="mh-row" data-mh-quote><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3.5h7.2L19 8.2V20.5H7z"/><path d="M14.2 3.5V8.2H19"/><path d="M9.5 13h5"/><path d="M9.5 16.5h5"/></svg></span>Request a Quote</button>
+            <a class="mh-row" href="/track-order.html"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="2.5" y="8" width="11" height="7.5" rx="1"/><path d="M13.5 11H17l3 2.6v1.9h-6.5"/><circle cx="6.5" cy="17.8" r="1.5"/><circle cx="17.2" cy="17.8" r="1.5"/></svg></span>Track Your Order<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="/about.html"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 11v5"/><path d="M12 8h.01"/></svg></span>About Us<span class="mh-chev" aria-hidden="true"></span></a>
+            <button type="button" class="mh-row" data-mh-quote><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="${PHONE_PATH}"/></svg></span>Contact Us</button>
+            <div class="mh-contact-stack">
+            <a class="mh-contact mh-contact--call" href="tel:02089742722">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="${PHONE_PATH}"/></svg>
+                <span><strong>Call Us</strong><small>020 8974 2722</small></span>
+            </a>
+            <a class="mh-contact mh-contact--email" href="mailto:info@brandeduk.com">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                <span><strong>Email Us</strong><small>info@brandeduk.com</small></span>
+            </a>
+            </div>
+            </div>
+        </div>
+        </div>
+        <div class="mh-view" data-mh-view="products" hidden>
+            <div class="mh-section-title"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-product" src="/brandedukv15-child/assets/images/icons/menu/shop-product.png?v=20261016-file" alt="" width="46" height="46"></span>Shop by Product</div>
+            <div class="mh-view-scroll">${productTypes}
+            <a class="mh-row mh-row--eco" href="/shop-pc.html?accreditation=recycled"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="/brandedukv15-child/assets/images/ui/icons/categories/Recycle.png" alt=""></span>Sustainable / Recycled &amp; Organic<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="/shop-pc.html">View All Categories<span class="mh-chev" aria-hidden="true"></span></a>
+                <div class="mh-sibling-group">
+            ${industryRow}
+            ${dealsRow}
+            ${helpRow}
+                </div>
+            </div>
+        </div>
+        <div class="mh-view" data-mh-view="industries" hidden>
+            <div class="mh-section-title"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-industry" src="/brandedukv15-child/assets/images/icons/menu/shop-by-industry.png?v=20261016-file" alt="" width="46" height="46"></span>Shop by Industry</div>
+            <div class="mh-view-scroll">${industryLinks}
+            <a class="mh-row" href="/industries.html">View All Industries<span class="mh-chev" aria-hidden="true"></span></a>
+                <div class="mh-sibling-group">
+            ${productRow}
+            ${dealsRow}
+            ${helpRow}
+                </div>
+            </div>
+        </div>
+        <div class="mh-view" data-mh-view="help" hidden>
+            <div class="mh-section-title">${helpIcon}Help &amp; Support</div>
+            <div class="mh-view-scroll">
+            <a class="mh-row" href="/index-mobile.html?force=mobile#faq">${helpIcon}Help &amp; FAQs<span class="mh-chev" aria-hidden="true"></span></a>
+            <a class="mh-row" href="/pricing-guide.html">Delivery &amp; Returns<span class="mh-chev" aria-hidden="true"></span></a>
+                <div class="mh-sibling-group">
+            ${productRow}
+            ${industryRow}
+            ${dealsRow}
+                </div>
+            </div>
+        </div>
+        </div>
+    </nav>`;
 }
 
 function pageEnd(options) {
@@ -457,6 +608,8 @@ function pageEnd(options) {
         </button>` : '';
     return `    <div data-pc-footer></div>
     <div data-mobile-footer></div>
+
+${mobileMenu()}
 
     <nav class="bottom-nav" aria-label="Mobile navigation">
         <a href="/index-mobile.html?force=mobile" class="nav-item" data-home-nav>
@@ -486,6 +639,7 @@ function pageEnd(options) {
     <script>if (window.BrandedPcHeader) window.BrandedPcHeader.mount();</script>
     <script src="/brandedukv15-child/assets/js/vat-toggle.js?v=20251230"></script>
     <script src="/brandedukv15-child/assets/js/pages/industries.js?v=${ASSET_VERSION}" defer></script>
+    <script src="/mobile/js/header-menu.js?v=20261017-tunicfix" defer></script>
     <script src="/mobile/js/popup-contact.js?v=20261003-consent" defer></script>
     <script src="/mobile/footer/footer.js?v=20261002-cta-equal" defer></script>
 </body>
@@ -848,7 +1002,7 @@ ${jsonLd}
 ${headAssets()}
 </head>
 <body class="ind-page ind-page--sector" data-sector="${slug}" data-ind-data="${CLIENT_DATA_URL}/${slug}.json?v=${ASSET_VERSION}">
-${mobileBar('/industries', sector.title)}
+${mobileHeader()}
 
     <main class="ind-main">
         <nav class="ind-breadcrumb" aria-label="Breadcrumb">
@@ -985,7 +1139,7 @@ ${jsonLd}
 ${headAssets()}
 </head>
 <body class="ind-page ind-page--hub">
-${mobileBar('/index-mobile.html?force=mobile', 'Shop by Industry')}
+${mobileHeader()}
 
     <main class="ind-main">
         <nav class="ind-breadcrumb" aria-label="Breadcrumb">

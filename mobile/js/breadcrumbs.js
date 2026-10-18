@@ -269,12 +269,12 @@
                 break;
 
             case 'basket':
-                crumbs.push({ label: 'Quote Basket', href: null });
+                crumbs.push({ label: 'Basket', href: null });
                 break;
 
             case 'checkout':
                 crumbs.push({
-                    label: 'Quote Basket',
+                    label: 'Basket',
                     href: prefix + 'basket.html'
                 });
                 crumbs.push({ label: 'Checkout', href: null });
@@ -282,7 +282,7 @@
 
             case 'quote':
                 crumbs.push({
-                    label: 'Quote Basket',
+                    label: 'Basket',
                     href: prefix + 'basket.html'
                 });
                 crumbs.push({ label: 'Request Quote', href: null });

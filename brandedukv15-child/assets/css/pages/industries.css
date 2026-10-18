@@ -47,52 +47,7 @@
     max-width: 100%;
 }
 
-/* ------------------------------------------------------------------ mobile bar + bottom nav */
-
-.ind-mobile-bar {
-    min-height: 64px;
-    display: grid;
-    grid-template-columns: 42px minmax(0, 1fr);
-    align-items: center;
-    gap: 8px;
-    padding: 8px 12px;
-    background: #fff;
-    border-bottom: 1px solid var(--ind-line);
-    position: sticky;
-    top: 0;
-    z-index: 90;
-}
-
-.ind-back {
-    width: 38px;
-    height: 38px;
-    display: grid;
-    place-items: center;
-    color: var(--ind-navy);
-}
-
-.ind-brand {
-    display: block;
-    color: var(--ind-navy);
-    font-size: 14px;
-    font-weight: 800;
-}
-
-.ind-brand span {
-    color: #ff6b00;
-}
-
-.ind-mobile-title {
-    display: block;
-    margin-top: 1px;
-    font-size: 17px;
-    font-weight: 700;
-    line-height: 1.2;
-    color: #111827;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
+/* ------------------------------------------------------------------ bottom nav */
 
 .ind-page .bottom-nav {
     position: fixed;
@@ -1652,8 +1607,13 @@
 
 @media (max-width: 699px) {
     body.ind-page {
-        padding-top: 0 !important;
+        padding-top: var(--header-height, 128px) !important;
         padding-bottom: calc(var(--bottom-nav-height) + var(--safe-area-bottom));
+    }
+
+    /* The home wraps this fixed header in .header-with-promo for its stacking; here that class is the hidden PC header. */
+    body.ind-page .mobile-header--v2 {
+        z-index: 1200;
     }
 
     .ind-page .site-header,
@@ -1694,7 +1654,7 @@
     }
 
     .ind-jump {
-        top: 64px;
+        top: var(--header-height, 128px);
         margin: 0 -14px;
         padding: 8px 14px;
     }
@@ -1725,7 +1685,7 @@
 
     .ind-group {
         margin-top: 26px;
-        scroll-margin-top: 130px;
+        scroll-margin-top: calc(var(--header-height, 128px) + 66px);
     }
 
     .ind-group__head h2 {
@@ -1810,7 +1770,9 @@
 }
 
 @media (min-width: 700px) {
-    .ind-mobile-bar,
+    .ind-page .mobile-header,
+    .ind-page .slide-menu,
+    .ind-page .menu-overlay,
     .ind-page .bottom-nav,
     .ind-page [data-mobile-footer] {
         display: none !important;
