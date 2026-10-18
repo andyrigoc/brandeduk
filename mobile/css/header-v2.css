@@ -263,6 +263,11 @@ body:has(.mobile-header--v2) .mobile-header--v2 {
     padding-top: 0;
 }
 
+/* The wrapper above already reserves the fixed header height; breadcrumbs.css adds it again on product pages. */
+.header-with-promo:has(.mobile-header--v2) + .site-breadcrumbs {
+    margin-top: 0;
+}
+
 #menuToggle {
     width: 38px;
     height: 38px;

@@ -16,7 +16,7 @@
             var promoBox = promo.getBoundingClientRect();
             if (promoBox.height > 0 && promoBox.bottom > top - 1) top = promoBox.bottom;
         }
-        var bottom = 72;
+        var bottom = 0;
         if (nav) bottom = Math.max(0, window.innerHeight - nav.getBoundingClientRect().top);
         document.documentElement.style.setProperty('--mh-menu-top', Math.round(top) + 'px');
         document.documentElement.style.setProperty('--mh-menu-bottom', Math.round(bottom) + 'px');
@@ -37,6 +37,12 @@
         toggle.classList.toggle('is-open', open);
         toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
         toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    }
+
+    function openDrawer() {
+        if (menu) menu.classList.add('active');
+        if (overlay) overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
     }
 
     function closeDrawer() {
@@ -208,14 +214,20 @@
     });
 
     if (toggle && menu) {
+        // Pages without mobile.js (basket, checkout) rely on these; with mobile.js both open/close the same way.
         toggle.addEventListener('click', function (event) {
             placeMenu();
             if (menu.classList.contains('active')) {
                 event.preventDefault();
                 event.stopImmediatePropagation();
                 closeDrawer();
+                return;
             }
+            openDrawer();
         }, true);
+        var closeButton = document.getElementById('closeMenu');
+        if (closeButton) closeButton.addEventListener('click', closeDrawer);
+        if (overlay) overlay.addEventListener('click', closeDrawer);
 
         new MutationObserver(function () {
             var open = menu.classList.contains('active');

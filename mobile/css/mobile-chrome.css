@@ -1,0 +1,41 @@
+/* Pages that keep their own header on PC: the home mobile header, menu and bottom nav below 700px only. */
+@media (max-width: 699px) {
+    /* Not .header-with-promo: on PC-header pages that class is the PC wrapper and gets hidden on mobile. */
+    .mobile-chrome-header {
+        position: relative;
+        z-index: 1200;
+        min-height: var(--header-height, 128px);
+    }
+
+    /* header-v2.css reserves the header height on .header-with-promo; here that is the PC header wrapper. */
+    body.mobile-chrome .header-with-promo:not(.mobile-chrome-header) {
+        min-height: 0;
+    }
+
+    /* Centred or padded page bodies: the wrapper stays out of their layout and the body makes room instead. */
+    body.mobile-chrome--padded .mobile-chrome-header {
+        position: absolute;
+        min-height: 0;
+    }
+
+    body.mobile-chrome--padded {
+        padding-top: calc(var(--header-height, 128px) + 16px) !important;
+    }
+
+    body.mobile-chrome [data-hide-on-mobile] {
+        display: none !important;
+    }
+
+    body.mobile-chrome--nav {
+        padding-bottom: calc(var(--bottom-nav-height, 64px) + env(safe-area-inset-bottom, 0px));
+    }
+}
+
+@media (min-width: 700px) {
+    .mobile-chrome-header,
+    body.mobile-chrome .slide-menu,
+    body.mobile-chrome .menu-overlay,
+    body.mobile-chrome .bottom-nav {
+        display: none !important;
+    }
+}

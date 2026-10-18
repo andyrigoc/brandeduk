@@ -639,7 +639,7 @@ ${mobileMenu()}
     <script>if (window.BrandedPcHeader) window.BrandedPcHeader.mount();</script>
     <script src="/brandedukv15-child/assets/js/vat-toggle.js?v=20251230"></script>
     <script src="/brandedukv15-child/assets/js/pages/industries.js?v=${ASSET_VERSION}" defer></script>
-    <script src="/mobile/js/header-menu.js?v=20261017-tunicfix" defer></script>
+    <script src="/mobile/js/header-menu.js?v=20261018-drawer" defer></script>
     <script src="/mobile/js/popup-contact.js?v=20261003-consent" defer></script>
     <script src="/mobile/footer/footer.js?v=20261002-cta-equal" defer></script>
 </body>

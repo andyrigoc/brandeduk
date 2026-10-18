@@ -53,7 +53,7 @@
     <meta name="description" content="Customize your workwear with embroidery or printing. Upload your logo, choose positions, and see live previews of your branded clothing.">
     <title>Customize Your Workwear - BrandedUK</title>
     <link rel="stylesheet" href="mobile/css/mobile.css?v=20261002-logocombo">
-    <link rel="stylesheet" href="mobile/css/header-v2.css?v=20261016-azlist">
+    <link rel="stylesheet" href="mobile/css/header-v2.css?v=20261018-searchgap">
     <link rel="stylesheet" href="mobile/css/bottom-nav.css?v=20261016-newbar">
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20261002-logocombo">
     <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20261002-chatlogo">
@@ -184,19 +184,22 @@
             </div>
         </div>
         <div class="mh-search">
-            <div class="search-wrapper-expand">
-                <input type="text" placeholder="Search 9,000+ products..." id="searchInput" autocomplete="off" class="search-input-expand" aria-label="Search products">
-                <svg class="search-icon-expand" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <path d="m21 21-4.35-4.35"></path>
-                </svg>
-                <div class="search-autocomplete" id="mobileSearchAutocomplete"></div>
-            </div>
-            <div class="mh-search-vat vat-toggle-mobile" id="vatToggleContainer">
-                <span class="vat-label vat-label--exc">EXC VAT</span>
-                <input type="checkbox" id="vatToggleCheckbox" class="vat-checkbox">
-                <label for="vatToggleCheckbox" class="vat-toggle-label">Toggle VAT</label>
-                <span class="vat-label vat-label--inc">INC VAT</span>
+            <div class="mh-search-control">
+                <div class="search-wrapper-expand">
+                    <input type="text" placeholder="Search 9,000+ products..." id="searchInput" autocomplete="off" class="search-input-expand" aria-label="Search products">
+                    <svg class="search-icon-expand" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                    <div class="search-autocomplete" id="mobileSearchAutocomplete"></div>
+                </div>
+                <span class="mh-search-divider" aria-hidden="true"></span>
+                <div class="mh-search-vat vat-toggle-mobile" id="vatToggleContainer">
+                    <span class="vat-label vat-label--exc">EXC VAT</span>
+                    <input type="checkbox" id="vatToggleCheckbox" class="vat-checkbox">
+                    <label for="vatToggleCheckbox" class="vat-toggle-label">Toggle VAT</label>
+                    <span class="vat-label vat-label--inc">INC VAT</span>
+                </div>
             </div>
         </div>
     </header>
@@ -1303,7 +1306,7 @@
     </div>
 
     <script src="mobile/js/mobile.js?v=20260730a"></script>
-    <script src="mobile/js/header-menu.js?v=20261017-tunicfix"></script>
+    <script src="mobile/js/header-menu.js?v=20261018-drawer"></script>
     <script src="mobile/js/bottom-nav.js?v=20261016-newbar"></script>
     <script src="brandedukv15-child/assets/js/upload/logo-upload.js?v=20260403a"></script>
     <script src="brandedukv15-child/assets/js/color-eyedropper.js?v=20260610n"></script>
