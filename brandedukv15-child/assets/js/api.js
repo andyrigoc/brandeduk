@@ -322,6 +322,45 @@ const BrandedAPI = (function () {
         }).filter(Boolean)));
     }
 
+    // The catalogue files beanies, bucket hats, bandanas, scarves and neck warmers under "Caps".
+    const NOT_A_CAP = /\bbeanie\b|bucket hat|bandana|zandana|neck ?warmer|\bscarf\b|chef hat/i;
+    const capsListCache = {};
+
+    async function getCapsOnly(params, fetchOptions) {
+        const base = Object.assign({}, params);
+        delete base.page;
+        delete base.limit;
+        const key = buildQueryString(base);
+        if (!capsListCache[key]) {
+            capsListCache[key] = (async () => {
+                const first = await apiRequest('/api/products', Object.assign({}, base, { page: 1, limit: MAX_LIMIT }), fetchOptions);
+                const pages = Math.min(Math.ceil((first.total || 0) / MAX_LIMIT), 10);
+                const rest = [];
+                for (let page = 2; page <= pages; page++) {
+                    rest.push(apiRequest('/api/products', Object.assign({}, base, { page, limit: MAX_LIMIT }), fetchOptions));
+                }
+                const raw = (first.items || []).concat(...(await Promise.all(rest)).map((response) => response.items || []));
+                return {
+                    items: raw.map(transformProduct).filter((item) => !NOT_A_CAP.test(String(item.name || ''))),
+                    priceRange: first.priceRange
+                };
+            })().catch((error) => {
+                delete capsListCache[key];
+                throw error;
+            });
+        }
+        const list = await capsListCache[key];
+        const page = params.page || 1;
+        const limit = params.limit || DEFAULT_LIMIT;
+        return {
+            items: list.items.slice((page - 1) * limit, page * limit),
+            page: page,
+            limit: limit,
+            total: list.items.length,
+            priceRange: list.priceRange || { min: 0, max: 200 }
+        };
+    }
+
     /**
      * Get products with filters
      * @param {Object} options - Filter options (can include array params like gender[]: ['male', 'female'])
@@ -410,16 +449,23 @@ const BrandedAPI = (function () {
         }
 
         const fetchOptions = options.signal ? { signal: options.signal } : {};
-        const response = await apiRequest('/api/products', params, fetchOptions);
-
-        let allItems = (response.items || []).map(transformProduct);
-        let total = response.total || 0;
 
         const typeKeys = [];
         if (params.productType) typeKeys.push(String(params.productType).toLowerCase());
         if (Array.isArray(params['productType[]'])) {
             params['productType[]'].forEach((value) => typeKeys.push(String(value).toLowerCase()));
         }
+        const capsSearch = params.q && /^caps?$/i.test(params.q);
+        const capsType = !params.q && typeKeys.length === 1 && typeKeys[0] === 'caps';
+        if (capsSearch || capsType) {
+            return getCapsOnly(params, fetchOptions);
+        }
+
+        const response = await apiRequest('/api/products', params, fetchOptions);
+
+        let allItems = (response.items || []).map(transformProduct);
+        let total = response.total || 0;
+
         const extraFilter = Object.keys(params).some((key) => !['page', 'limit', 'sort', 'productType', 'productType[]'].includes(key));
         const onlyType = !params.q && !extraFilter && typeKeys.length === 1 ? typeKeys[0] : '';
         const wantsChefJackets = onlyType === 'chef-jackets' || onlyType === 'chef jackets';

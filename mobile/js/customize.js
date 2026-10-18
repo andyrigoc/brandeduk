@@ -9733,13 +9733,7 @@
 
         // Add to Basket: enable as soon as sizes are selected
         if (addBtn) {
-            if (hasSizes) {
-                addBtn.disabled = false;
-                addBtn.style.opacity = '1';
-            } else {
-                addBtn.disabled = true;
-                addBtn.style.opacity = '0.5';
-            }
+            addBtn.disabled = !hasSizes;
         }
     }
 

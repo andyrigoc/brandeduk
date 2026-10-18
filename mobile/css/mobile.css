@@ -6906,7 +6906,6 @@ a {
     width: 50%;
     height: 50%;
     object-fit: contain;
-    opacity: 0.8;
 }
 
 .product-img-placeholder.large {
@@ -8503,7 +8502,7 @@ a {
 
 .categories-filter-scroll {
     position: sticky;
-    top: calc(var(--header-height, 102px) + 10px);
+    top: var(--header-height, 102px);
     z-index: 90;
     padding: 8px 12px;
     background: #fff;

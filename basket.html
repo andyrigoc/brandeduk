@@ -4232,6 +4232,9 @@
             if (sideToggle) sideToggle.checked = includeVAT;
             if (mobileToggle) mobileToggle.checked = includeVAT;
             if (tabletToggle) tabletToggle.checked = includeVAT;
+            // header-v2.css positions the knob and highlights the labels from .is-on, not :checked.
+            const mobileContainer = document.getElementById('vatToggleContainer');
+            if (mobileContainer) mobileContainer.classList.toggle('is-on', includeVAT);
             // Re-query after pc-header.js may have replaced the header markup.
             const liveHeaderToggles = Array.from(document.querySelectorAll('.header-top-vat-toggle'));
             liveHeaderToggles.forEach((btn) => {

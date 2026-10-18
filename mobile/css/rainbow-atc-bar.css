@@ -123,7 +123,7 @@
 }
 
 .action-bar.action-bar--atc .button.rainbow-atc:disabled {
-    opacity: 0.58;
+    opacity: 1;
     color: #ffffff;
     cursor: not-allowed;
 }
