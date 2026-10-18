@@ -563,9 +563,44 @@ const APPLICATION_PRICE_TIERS = {
   ]
 };
 
-function getApplicationUnitPrice(method, quantity) {
-  const tiers = APPLICATION_PRICE_TIERS[method] || APPLICATION_PRICE_TIERS.print;
+// Large Front + Large Back print are a flat rate at every quantity, as in the basket.
+const LARGE_PRINT_FLAT_RATE = 7.70;
+
+function isLargePrintPosition(position) {
+  const key = String(position || "").trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  return /^large-(front|back)/.test(key) || /^(front|back)-large/.test(key);
+}
+
+// Standard rates returned by the pricing API, keyed by "method|quantity".
+// The tiers above are only used until the API answers or when it is down.
+const apiApplicationPrices = new Map();
+
+async function loadApplicationPrices(quantity) {
   const qty = Math.max(1, Number(quantity) || 1);
+  await Promise.all(["embroidery", "print"].map(async (bucket) => {
+    const key = `${bucket}|${qty}`;
+    if (apiApplicationPrices.has(key)) return;
+    try {
+      const params = new URLSearchParams({
+        method: bucket === "print" ? "dtf" : bucket,
+        quantity: String(qty),
+        priceClass: "standard"
+      });
+      const response = await fetch(`${API_BASE_URL}/customization-pricing?${params}`);
+      const body = response.ok ? await response.json() : null;
+      const price = Number((body?.data || body)?.unitPrice);
+      if (Number.isFinite(price) && price > 0) apiApplicationPrices.set(key, price);
+    } catch (error) {
+      console.warn("Customization pricing API unavailable; using the standard tiers.", error);
+    }
+  }));
+}
+
+function getApplicationUnitPrice(method, quantity) {
+  const qty = Math.max(1, Number(quantity) || 1);
+  const apiPrice = apiApplicationPrices.get(`${method}|${qty}`);
+  if (apiPrice) return apiPrice;
+  const tiers = APPLICATION_PRICE_TIERS[method] || APPLICATION_PRICE_TIERS.print;
   const tier = tiers.find((item) => qty >= item.min && qty <= item.max) || tiers[tiers.length - 1];
   return tier.price;
 }
@@ -1137,8 +1172,9 @@ function getProductPricingQuantity(currentQty) {
   return Math.max(1, total + (currentIndex < 0 ? currentQty : 0));
 }
 
-function getLogoUnitPrice(method, quantity = getProductPricingQuantity(state.totalQty)) {
+function getLogoUnitPrice(method, quantity = getProductPricingQuantity(state.totalQty), position = "") {
   const bucket = normalizeDecorationMethod(method) === "embroidery" ? "embroidery" : "print";
+  if (bucket === "print" && isLargePrintPosition(position)) return LARGE_PRINT_FLAT_RATE;
   return getApplicationUnitPrice(bucket, quantity);
 }
 
@@ -1839,10 +1875,10 @@ function updatePositionDesignUi() {
   if (positionDesignPrice) {
     const quantity = Math.max(1, parseInt(state.totalQty || mainQtyInput?.value || 1, 10) || 1);
     const method = normalizeDecorationMethod(currentDesign?.method || state.decorationType);
-    const currentUnitPrice = hasLogo ? getLogoUnitPrice(method) : (hasText ? 1.5 : 0);
+    const currentUnitPrice = hasLogo ? getLogoUnitPrice(method, undefined, currentArea) : (hasText ? 1.5 : 0);
     let totalDecorationUnitPrice = 0;
-    Object.values(designs).forEach((design) => {
-      if (design?.logo) totalDecorationUnitPrice += getLogoUnitPrice(design.method);
+    Object.entries(designs).forEach(([area, design]) => {
+      if (design?.logo) totalDecorationUnitPrice += getLogoUnitPrice(design.method, undefined, area);
     });
     Object.values(textDesigns).forEach((design) => {
       if (String(design?.text || "").trim()) totalDecorationUnitPrice += 1.5;
@@ -3305,8 +3341,8 @@ function calculatePrice() {
   );
   let unit = tier ? Number(tier.price) : state.basePrice;
 
-  Object.values(getDraftAreaDesigns()).forEach((design) => {
-    if (design?.logo) unit += getLogoUnitPrice(design.method, pricingQty);
+  Object.entries(getDraftAreaDesigns()).forEach(([area, design]) => {
+    if (design?.logo) unit += getLogoUnitPrice(design.method, pricingQty, area);
   });
   Object.values(getDraftTextDesigns()).forEach((design) => {
     if (String(design?.text || "").trim()) unit += 1.5;
@@ -3763,8 +3799,7 @@ function repriceBasketProductCode(basket, productCode) {
 
     const updateLogoPrice = (logo) => {
       if (!logo || typeof logo !== "object" || !getLogoSource(logo)) return;
-      const bucket = normalizeDecorationMethod(logo.method) === "embroidery" ? "embroidery" : "print";
-      logo.unitPrice = getApplicationUnitPrice(bucket, totalQty);
+      logo.unitPrice = getLogoUnitPrice(logo.method, totalQty, logo.position || logo.area);
     };
     if (Array.isArray(item.logos)) item.logos.forEach(updateLogoPrice);
     if (Array.isArray(item.positions)) item.positions.forEach(updateLogoPrice);
@@ -3896,7 +3931,7 @@ function buildBasketItemFromState() {
       position: design.area,
       positionLabel: getDesignAreaLabel(design.area),
       logo: design.logo,
-      unitPrice: getLogoUnitPrice(method, pricingQty),
+      unitPrice: getLogoUnitPrice(method, pricingQty, design.area),
       qualityPct: parseInt(design.qualityPct || 0, 10) || 0,
       logoRotation: parseFloat(design.rotation || 0) || 0,
       placement: design.placement || null,

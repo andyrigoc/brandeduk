@@ -94,7 +94,7 @@
 
       var guidedStyles = document.createElement("link");
       guidedStyles.rel = "stylesheet";
-      guidedStyles.href = folderPath + "guided.css?v=20261017-bottom-bar";
+      guidedStyles.href = folderPath + "guided.css?v=20261018-method-prices";
       document.head.appendChild(guidedStyles);
     })();
   </script>
@@ -117,14 +117,11 @@
 </header>
 
 <dialog id="guidedMethodDialog" class="guided-method-dialog" aria-labelledby="guidedMethodTitle" aria-describedby="guidedMethodPosition">
-  <div class="guided-dialog-heading">
-    <h2 id="guidedMethodTitle">Choose decoration method</h2>
-    <button id="guidedMethodClose" type="button" aria-label="Close decoration method popup">&times;</button>
-  </div>
+  <h2 id="guidedMethodTitle">Choose decoration</h2>
   <p id="guidedMethodPosition"></p>
   <div id="guidedMethodChoices" class="guided-dialog-methods">
-    <button id="guidedChooseEmbroidery" type="button" data-popup-method="embroidery">EMBROIDERY</button>
-    <button id="guidedChoosePrint" type="button" data-popup-method="print">PRINTING</button>
+    <button id="guidedChooseEmbroidery" type="button" data-popup-method="embroidery"><span>EMBROIDERY</span><em></em></button>
+    <button id="guidedChoosePrint" type="button" data-popup-method="print"><span>PRINT</span><em></em></button>
   </div>
   <p id="guidedMethodNotice" class="guided-dialog-notice" role="status" hidden></p>
   <a id="guidedMethodContact" class="guided-dialog-contact" href="tel:02089742722" hidden>Call 0208 974 2722 for a quote</a>
@@ -134,6 +131,7 @@
     <div id="guidedPopupLibrary" class="guided-dialog-library"></div>
     <button id="guidedChangeMethod" class="guided-dialog-back" type="button">&larr; Change technique</button>
   </div>
+  <button id="guidedMethodClose" class="guided-dialog-cancel" type="button">Cancel</button>
 </dialog>
 
 <div id="customizerLoadingOverlay" class="customizer-loading-overlay" aria-live="polite" aria-busy="true">
@@ -223,11 +221,13 @@
       <section class="guided-positions-section" aria-labelledby="guidedPositionsTitle">
         <div class="guided-section-heading"><h2 id="guidedPositionsTitle">Select a position</h2><span id="guidedPositionCounter" aria-live="polite"></span></div>
         <div id="guidedPositions" class="guided-positions" aria-label="Available decoration positions" aria-busy="true"></div>
+        <p id="guidedPositionHint" class="guided-position-hint" hidden>Tap + to add your logo</p>
         <button id="guidedRetryBtn" type="button" class="guided-retry" hidden>Retry loading positions</button>
       </section>
       <section class="guided-library-section" aria-labelledby="guidedLibraryTitle">
         <div class="guided-section-heading"><h2 id="guidedLibraryTitle">Your uploaded logos (0)</h2><button id="guidedManageLogos" type="button" aria-pressed="false">Manage</button></div>
         <div id="guidedLibrary" class="guided-library"></div>
+        <p id="guidedDragHint" class="guided-drag-hint" hidden>Hold a logo and drag it onto a position.</p>
         <p class="guided-upload-hint">PNG, JPG, WEBP or SVG &middot; Maximum 25 MB.</p>
       </section>
       <label class="guided-notes-label" for="guidedNotes">Notes</label>
@@ -1164,11 +1164,11 @@
   // extensionless document URL, whose native relative base is the site root.
   (function loadCustomizationToolApp() {
     var appScript = document.createElement("script");
-    appScript.src = new URL("app.js?v=20261017-popup-only", document.baseURI).href;
+    appScript.src = new URL("app.js?v=20261018-api-prices", document.baseURI).href;
     appScript.async = false;
     appScript.onload = function () {
       var guidedScript = document.createElement("script");
-      guidedScript.src = new URL("guided.js?v=20261017-bottom-bar", document.baseURI).href;
+      guidedScript.src = new URL("guided.js?v=20261018-method-prices", document.baseURI).href;
       document.body.appendChild(guidedScript);
     };
     document.body.appendChild(appScript);

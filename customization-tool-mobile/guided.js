@@ -22,6 +22,7 @@
   let uploadContext = null;
   let preservePendingMethod = false;
   const hiddenLibraryLogos = new Set();
+  const libraryEntries = new WeakMap();
 
   function message(text) {
     byId("guidedMessage").textContent = text;
@@ -247,10 +248,10 @@
     const { position, intent, entry } = popupContext;
     const current = getDraftAreaDesigns()[position];
     const currentMethod = current?.logo ? (current.method === "embroidery" ? "embroidery" : "print") : "";
-    byId("guidedMethodTitle").textContent = "Choose decoration method";
-    byId("guidedMethodPosition").textContent = entry
-      ? `${getDesignAreaLabel(position)} \u00b7 ${entry.name || "Your logo"}`
-      : getDesignAreaLabel(position);
+    byId("guidedMethodTitle").textContent = "Choose decoration";
+    const positionName = document.createElement("b");
+    positionName.textContent = getDesignAreaLabel(position);
+    byId("guidedMethodPosition").replaceChildren("How should we apply your logo on ", positionName, "?");
     byId("guidedMethodChoices").hidden = false;
     byId("guidedArtworkChoices").hidden = true;
     const allowed = methods(position);
@@ -260,11 +261,14 @@
       : "";
     byId("guidedMethodNotice").hidden = !unavailable;
     byId("guidedMethodContact").hidden = !unavailable;
+    const pricingQty = getProductPricingQuantity(state.totalQty);
     methodDialog.querySelectorAll("[data-popup-method]").forEach((button) => {
       const method = button.dataset.popupMethod;
       const status = allowed[method];
-      const label = method === "embroidery" ? "EMBROIDERY" : "PRINTING";
-      button.textContent = `${label}${status === "poa" ? " \u00b7 POA" : status === "no" ? " \u00b7 UNAVAILABLE" : ""}`;
+      const price = toDisplayAmount(getLogoUnitPrice(method, pricingQty, position));
+      button.querySelector("em").textContent = status === "no" ? "Not available"
+        : status === "poa" ? "Price on request"
+          : `\u00a3${price.toFixed(2)} each${isVatOn() ? " inc. VAT" : ""}`;
       button.disabled = status === "no";
       button.setAttribute("aria-pressed", String(intent === "change" && currentMethod === method));
     });
@@ -305,7 +309,7 @@
       return;
     }
     byId("guidedMethodTitle").textContent = "Add your logo";
-    byId("guidedMethodPosition").textContent = `${getDesignAreaLabel(position)} \u00b7 ${method === "embroidery" ? "Embroidery" : "Printing"}`;
+    byId("guidedMethodPosition").textContent = `${getDesignAreaLabel(position)} \u00b7 ${method === "embroidery" ? "Embroidery" : "Print"}`;
     byId("guidedMethodChoices").hidden = true;
     byId("guidedMethodNotice").hidden = true;
     byId("guidedMethodContact").hidden = true;
@@ -378,7 +382,7 @@
 
     const logoButton = document.createElement("button");
     logoButton.type = "button";
-    logoButton.className = "guided-position-logo";
+    logoButton.className = `guided-position-logo${design?.logo ? "" : " is-empty"}`;
     logoButton.setAttribute("aria-label", design?.logo ? `Change technique on ${position.label}` : `Add logo on ${position.label}`);
     if (design?.logo) {
       const logo = document.createElement("img");
@@ -408,9 +412,25 @@
     return card;
   }
 
+  // The hint lives outside the scrolling strip so the strip never clips it.
+  function placeHint() {
+    const hint = byId("guidedPositionHint");
+    const card = positionsEl.querySelector(".guided-position.is-active");
+    if (hint.hidden || hint.classList.contains("is-off") || !card) return;
+    const strip = positionsEl.getBoundingClientRect();
+    const box = card.getBoundingClientRect();
+    const cardLeft = box.left - strip.left;
+    const left = Math.max(0, Math.min(cardLeft, strip.width - hint.offsetWidth));
+    const arrow = Math.max(12, Math.min(cardLeft + box.width / 2 - left, hint.offsetWidth - 12));
+    hint.style.visibility = box.right <= strip.left || box.left >= strip.right ? "hidden" : "";
+    hint.style.setProperty("--hint-left", `${left}px`);
+    hint.style.setProperty("--hint-arrow", `${arrow}px`);
+  }
+
   function renderLibrary() {
     const entries = library();
     byId("guidedLibraryTitle").textContent = `Your uploaded logos (${entries.length})`;
+    byId("guidedDragHint").hidden = !entries.length;
     byId("guidedManageLogos").textContent = managing ? "Done" : "Manage";
     byId("guidedManageLogos").setAttribute("aria-pressed", String(managing));
     const cells = entries.map((entry) => {
@@ -423,9 +443,11 @@
       const image = document.createElement("img");
       image.src = entry.logo;
       image.alt = entry.name || "Uploaded logo";
+      image.draggable = false;
       const name = document.createElement("small");
       name.textContent = entry.name || "Your logo";
       use.append(image, name);
+      libraryEntries.set(use, entry);
       use.addEventListener("click", () => openMethodPopup(getDesignAreaKey(), "reuse", entry));
       cell.append(use);
       if (managing) {
@@ -486,11 +508,15 @@
     const selectedIndex = positions.findIndex((position) => position.slug === getDesignAreaKey());
     byId("guidedPositionCounter").textContent = positions.length ? `${selectedIndex + 1} / ${positions.length}` : "";
     byId("guidedRetryBtn").hidden = positions.length > 0;
+    byId("guidedPositionHint").hidden = !positions.length;
+    byId("guidedPositionHint").classList.toggle("is-off", !positionsEl.querySelector(".guided-position.is-active")
+      || Boolean(designs[getDesignAreaKey()]?.logo || getDraftTextDesigns()[getDesignAreaKey()]?.text));
+    placeHint();
     renderLibrary();
     const qty = state.totalQty;
     const pricingQty = getProductPricingQuantity(qty);
-    const decorationTotal = Object.values(designs).reduce((sum, design) => (
-      sum + (design?.logo ? getLogoUnitPrice(design.method, pricingQty) * qty : 0)
+    const decorationTotal = Object.entries(designs).reduce((sum, [area, design]) => (
+      sum + (design?.logo ? getLogoUnitPrice(design.method, pricingQty, area) * qty : 0)
     ), 0) + Object.values(getDraftTextDesigns()).filter((design) => design?.text).length * 1.5 * qty;
     byId("guidedPriceSummary").textContent = decorationTotal > 0
       ? `${qty} items \u00b7 Decoration \u00a3${toDisplayAmount(decorationTotal).toFixed(2)} ${vatSuffixLabel()}`
@@ -530,6 +556,11 @@
     if (!state.uploadedLogo) state.decorationType = defaultMethod(getDesignAreaKey());
     render();
     persist();
+    loadApplicationPrices(getProductPricingQuantity(state.totalQty)).then(() => {
+      calculatePrice();
+      scheduleRender();
+      if (methodDialog.open && !byId("guidedMethodChoices").hidden) showMethodChoices();
+    });
   }
 
   notesEl.addEventListener("input", () => {
@@ -594,10 +625,114 @@
     positionsEl.classList.remove("is-dragging");
     drag = null;
   };
+  positionsEl.addEventListener("scroll", placeHint, { passive: true });
+  window.addEventListener("resize", placeHint);
   positionsEl.addEventListener("pointerup", endDrag);
   positionsEl.addEventListener("pointercancel", endDrag);
   positionsEl.addEventListener("click", (event) => {
     if (!suppressClick) return;
+    event.preventDefault();
+    event.stopPropagation();
+  }, true);
+
+  // Library logos can be dropped onto a position card. Touch needs a short
+  // hold first so ordinary swipes still scroll the page and the logo strip.
+  let logoDrag = null;
+  let suppressLibraryClick = false;
+
+  function dropTargetAt(x, y) {
+    return document.elementFromPoint(x, y)?.closest("#guidedPositions .guided-position") || null;
+  }
+
+  function setDropTarget(card) {
+    if (logoDrag.target === card) return;
+    logoDrag.target?.classList.remove("is-drop-target");
+    logoDrag.target = card;
+    card?.classList.add("is-drop-target");
+  }
+
+  function moveGhost() {
+    logoDrag.ghost.style.transform = `translate(${logoDrag.x}px, ${logoDrag.y}px)`;
+  }
+
+  function followLogoDrag() {
+    const { x, y } = logoDrag;
+    const strip = positionsEl.getBoundingClientRect();
+    if (y >= strip.top - 24 && y <= strip.bottom + 24) {
+      if (x < strip.left + 40) positionsEl.scrollLeft -= 8;
+      else if (x > strip.right - 40) positionsEl.scrollLeft += 8;
+    }
+    const barTop = document.querySelector(".guided-bar")?.getBoundingClientRect().top || window.innerHeight;
+    if (y < 60) window.scrollBy(0, -10);
+    else if (y > barTop - 30) window.scrollBy(0, 10);
+    setDropTarget(dropTargetAt(x, y));
+    logoDrag.frame = requestAnimationFrame(followLogoDrag);
+  }
+
+  function startLogoDrag() {
+    clearTimeout(logoDrag.timer);
+    logoDrag.active = true;
+    const ghost = document.createElement("div");
+    ghost.className = "guided-drag-ghost";
+    const image = document.createElement("img");
+    image.src = logoDrag.entry.logo;
+    image.alt = "";
+    ghost.append(image);
+    document.body.append(ghost);
+    logoDrag.ghost = ghost;
+    document.body.classList.add("guided-logo-dragging");
+    moveGhost();
+    navigator.vibrate?.(15);
+    logoDrag.frame = requestAnimationFrame(followLogoDrag);
+  }
+
+  function endLogoDrag(event) {
+    const current = logoDrag;
+    if (!current || (event && event.pointerId !== current.id)) return;
+    logoDrag = null;
+    clearTimeout(current.timer);
+    if (!current.active) return;
+    cancelAnimationFrame(current.frame);
+    current.ghost.remove();
+    current.target?.classList.remove("is-drop-target");
+    document.body.classList.remove("guided-logo-dragging");
+    suppressLibraryClick = true;
+    setTimeout(() => { suppressLibraryClick = false; }, 0);
+    const card = event?.type === "pointerup" ? dropTargetAt(event.clientX, event.clientY) : null;
+    if (card) openMethodPopup(card.dataset.position, "reuse", current.entry);
+  }
+
+  libraryEl.addEventListener("pointerdown", (event) => {
+    const entry = libraryEntries.get(event.target.closest(".guided-library-use"));
+    if (!entry || logoDrag || !event.isPrimary || (event.pointerType === "mouse" && event.button !== 0)) return;
+    logoDrag = {
+      id: event.pointerId, entry, mouse: event.pointerType === "mouse", active: false, target: null,
+      startX: event.clientX, startY: event.clientY, x: event.clientX, y: event.clientY
+    };
+    if (!logoDrag.mouse) logoDrag.timer = setTimeout(startLogoDrag, 300);
+  });
+  window.addEventListener("pointermove", (event) => {
+    if (!logoDrag || event.pointerId !== logoDrag.id) return;
+    logoDrag.x = event.clientX;
+    logoDrag.y = event.clientY;
+    if (logoDrag.active) {
+      moveGhost();
+      return;
+    }
+    if (Math.hypot(event.clientX - logoDrag.startX, event.clientY - logoDrag.startY) < 8) return;
+    if (logoDrag.mouse) startLogoDrag();
+    else endLogoDrag();
+  });
+  window.addEventListener("pointerup", endLogoDrag);
+  window.addEventListener("pointercancel", endLogoDrag);
+  document.addEventListener("touchmove", (event) => {
+    if (logoDrag?.active) event.preventDefault();
+  }, { passive: false });
+  libraryEl.addEventListener("contextmenu", (event) => {
+    if (event.target.closest(".guided-library-use")) event.preventDefault();
+  });
+  libraryEl.addEventListener("click", (event) => {
+    if (!suppressLibraryClick) return;
     event.preventDefault();
     event.stopPropagation();
   }, true);
