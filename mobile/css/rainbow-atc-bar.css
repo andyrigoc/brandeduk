@@ -151,6 +151,7 @@
 
 .action-bar.action-bar--atc .button__text {
     position: relative;
+    left: -10px;
     z-index: 5;
     display: block;
     padding-left: 24px;

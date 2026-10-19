@@ -523,6 +523,12 @@
 
     var openBtn = ensureFloatButton();
     var popup = ensurePopup();
+    var dismissBtn = document.createElement('button');
+    dismissBtn.type = 'button';
+    dismissBtn.className = 'wa-float-close';
+    dismissBtn.setAttribute('aria-label', 'Hide support chat');
+    dismissBtn.textContent = '\u00d7';
+    document.body.appendChild(dismissBtn);
 
     var closeBtn = document.getElementById('closeWhatsappPopup');
     var minimizeBtn = document.getElementById('minimizeWhatsappPopup');
@@ -546,10 +552,36 @@
     var startX = 0, startY = 0;
     var btnStartX = 0, btnStartY = 0;
     var dragThreshold = 8;
+    var activePointer = null;
 
     var dismissKey = 'wa-dismissed';
-    sessionStorage.removeItem(dismissKey);
-    if (openBtn) openBtn.classList.remove('is-dismissed');
+    if (sessionStorage.getItem(dismissKey) === '1') dismissFloatingButton();
+
+    function syncDismissButton() {
+        var rect = openBtn.getBoundingClientRect();
+        dismissBtn.style.left = Math.min(window.innerWidth - 28, Math.max(0, rect.right - 14)) + 'px';
+        dismissBtn.style.top = Math.max(0, rect.top - 14) + 'px';
+        dismissBtn.hidden = openBtn.classList.contains('is-dismissed') || isDragging;
+    }
+
+    function dismissFloatingButton() {
+        openBtn.classList.add('is-dismissed');
+        openBtn.setAttribute('aria-hidden', 'true');
+        openBtn.tabIndex = -1;
+        dismissBtn.hidden = true;
+        sessionStorage.setItem(dismissKey, '1');
+    }
+
+    dismissBtn.addEventListener('click', dismissFloatingButton);
+    window.addEventListener('resize', function () {
+        var rect = openBtn.getBoundingClientRect();
+        if (openBtn.style.top && openBtn.style.top !== 'auto') {
+            openBtn.style.top = Math.max(14, Math.min(rect.top, window.innerHeight - rect.height - 14)) + 'px';
+            snapToEdge();
+        }
+        syncDismissButton();
+    });
+    syncDismissButton();
 
     function getBtnCenter() {
         var rect = openBtn.getBoundingClientRect();
@@ -581,6 +613,8 @@
             openBtn.style.left = 'auto';
             openBtn.style.right = '18px';
         }
+        syncDismissButton();
+        setTimeout(syncDismissButton, 320);
     }
 
     function restoreFloatingButton() {
@@ -599,6 +633,8 @@
         openBtn.removeAttribute('hidden');
         openBtn.removeAttribute('aria-hidden');
         openBtn.tabIndex = 0;
+        syncDismissButton();
+        setTimeout(syncDismissButton, 320);
         try {
             document.documentElement.classList.remove('buk-crisp-chat-open');
             if (document.body) document.body.classList.remove('buk-crisp-chat-open');
@@ -896,24 +932,26 @@
         sendToWhatsApp(msg);
     }
 
-    // Touch drag (only if float exists)
+    // Pointer capture keeps mouse, pen and touch drags on the same path.
     if (openBtn) {
-        openBtn.addEventListener('touchstart', function (e) {
+        openBtn.addEventListener('pointerdown', function (e) {
+            if (!e.isPrimary || e.button !== 0) return;
             if (openBtn.classList.contains('is-dismissed')) return;
-            var touch = e.touches[0];
-            startX = touch.clientX;
-            startY = touch.clientY;
+            activePointer = e.pointerId;
+            openBtn.setPointerCapture(e.pointerId);
+            startX = e.clientX;
+            startY = e.clientY;
             var rect = openBtn.getBoundingClientRect();
             btnStartX = rect.left;
             btnStartY = rect.top;
             wasDragged = false;
         }, { passive: true });
 
-        openBtn.addEventListener('touchmove', function (e) {
+        openBtn.addEventListener('pointermove', function (e) {
+            if (e.pointerId !== activePointer) return;
             if (openBtn.classList.contains('is-dismissed')) return;
-            var touch = e.touches[0];
-            var dx = touch.clientX - startX;
-            var dy = touch.clientY - startY;
+            var dx = e.clientX - startX;
+            var dy = e.clientY - startY;
 
             if (!isDragging && (Math.abs(dx) > dragThreshold || Math.abs(dy) > dragThreshold)) {
                 isDragging = true;
@@ -922,12 +960,13 @@
                 dismissZone.classList.add('is-visible');
                 openBtn.style.right = 'auto';
                 openBtn.style.bottom = 'auto';
+                dismissBtn.hidden = true;
             }
 
             if (isDragging) {
                 e.preventDefault();
-                var newX = Math.max(0, Math.min(btnStartX + dx, window.innerWidth - 56));
-                var newY = Math.max(0, Math.min(btnStartY + dy, window.innerHeight - 56));
+                var newX = Math.max(14, Math.min(btnStartX + dx, window.innerWidth - openBtn.offsetWidth - 14));
+                var newY = Math.max(14, Math.min(btnStartY + dy, window.innerHeight - openBtn.offsetHeight - 14));
                 openBtn.style.left = newX + 'px';
                 openBtn.style.top = newY + 'px';
 
@@ -941,29 +980,26 @@
             }
         }, { passive: false });
 
-        openBtn.addEventListener('touchend', function () {
+        function finishDrag(e) {
+            if (e.pointerId !== activePointer) return;
+            activePointer = null;
             if (!isDragging) return;
+            var dismissed = e.type === 'pointerup' && isOverDismiss();
             isDragging = false;
             openBtn.classList.remove('is-dragging');
             openBtn.classList.remove('is-over-dismiss');
             dismissZone.classList.remove('is-visible');
             dismissZone.classList.remove('is-hover');
 
-            if (isOverDismiss()) {
-                openBtn.classList.add('is-dismissed');
-                sessionStorage.setItem(dismissKey, '1');
-                setTimeout(function () {
-                    openBtn.classList.remove('is-dismissed');
-                    openBtn.style.left = 'auto';
-                    openBtn.style.right = '18px';
-                    openBtn.style.top = 'auto';
-                    openBtn.style.bottom = '82px';
-                    sessionStorage.removeItem(dismissKey);
-                }, 60000);
+            if (dismissed) {
+                dismissFloatingButton();
             } else {
                 snapToEdge();
             }
-        });
+        }
+        openBtn.addEventListener('pointerup', finishDrag);
+        openBtn.addEventListener('pointercancel', finishDrag);
+        openBtn.addEventListener('lostpointercapture', finishDrag);
 
         openBtn.addEventListener('click', function (e) {
             if (wasDragged) {
