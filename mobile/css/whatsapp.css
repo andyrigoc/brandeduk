@@ -41,6 +41,17 @@
     height: 26px;
     display: block;
 }
+@media (max-width: 699px) {
+    .whatsapp-float {
+        width: 44px;
+        height: 44px;
+        box-shadow: 0 6px 16px rgba(253, 127, 71, 0.34);
+    }
+    .whatsapp-float svg {
+        width: 20px;
+        height: 20px;
+    }
+}
 .whatsapp-float.is-dragging {
     cursor: grabbing;
     transition: box-shadow 0.15s ease;

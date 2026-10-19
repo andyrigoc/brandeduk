@@ -67,7 +67,7 @@
     <link rel="preload" as="fetch" href="brandedukv15-child/assets/images/ui/cart-icon-loader.json" crossorigin media="(min-width: 700px)">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/cart-lottie-icon.css?v=20260927-cartlottie2">
     <script src="brandedukv15-child/assets/js/cart-lottie-icon.js?v=20260927-cartlottie2" data-header-cart></script>
-    <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20261002-chatlogo">
+    <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20261019-smallchat">
 
     <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260102b">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -3963,6 +3963,34 @@
             if (!grouped[key]) grouped[key] = [];
             grouped[key].push(idx);
         });
+
+        // A logo added from one row's "Add logo" goes under every size of that product+colour.
+        let logoAddSource = null;
+        try { logoAddSource = JSON.parse(sessionStorage.getItem('basketLogoAddSource') || 'null'); } catch (e) { /* ignore */ }
+        sessionStorage.removeItem('basketLogoAddSource');
+        const addSourceRow = logoAddSource && logoAddSource.id
+            ? newBasket.find(row => row.id === logoAddSource.id)
+            : null;
+        if (addSourceRow) {
+            const previousPositions = logoAddSource.positions || [];
+            const addedLogos = (addSourceRow.logos || []).filter(l => !previousPositions.includes(l.position));
+            const sourceKey = getItemCode(addSourceRow) + '|' + getItemColor(addSourceRow);
+            (grouped[sourceKey] || []).forEach(idx => {
+                const row = newBasket[idx];
+                if (row === addSourceRow || addedLogos.length === 0) return;
+                if (!row.logos) row.logos = [];
+                addedLogos.forEach(logo => {
+                    if (row.logos.some(l => l.position === logo.position)) return;
+                    row.logos.push(JSON.parse(JSON.stringify(logo)));
+                    changed = true;
+                });
+                if (row.pendingLogoPrompt || row.logosRemoved) {
+                    delete row.pendingLogoPrompt;
+                    delete row.logosRemoved;
+                    changed = true;
+                }
+            });
+        }
         Object.values(grouped).forEach(indices => {
             if (indices.length < 2) return;
             // Find the richest logos array (most logos)
@@ -3978,7 +4006,7 @@
             if (bestLogos.length === 0) return;
             // Apply to all items missing logos
             indices.forEach(idx => {
-                if (newBasket[idx].pendingLogoPrompt) return;
+                if (newBasket[idx].pendingLogoPrompt || newBasket[idx].logosRemoved) return;
                 const current = newBasket[idx].logos || [];
                 if (current.length === 0) {
                     newBasket[idx].logos = JSON.parse(JSON.stringify(bestLogos));
@@ -5565,6 +5593,8 @@
         if (itemIndex < 0 || itemIndex >= basket.length) return;
         if (!basket[itemIndex].logos) return;
         basket[itemIndex].logos.splice(logoIndex, 1);
+        // Keeps the sibling-size propagation from putting a logo back on a row the customer cleared.
+        if (basket[itemIndex].logos.length === 0) basket[itemIndex].logosRemoved = true;
         saveBasket(basket);
         renderBasket();
         if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
@@ -5803,6 +5833,10 @@
         if (!item) return;
 
         sessionStorage.setItem('customizingBasketIndex', itemIndex.toString());
+        sessionStorage.setItem('basketLogoAddSource', JSON.stringify({
+            id: item.id || '',
+            positions: (item.logos || []).map(l => l.position)
+        }));
         sessionStorage.removeItem('basketEditSingleItem');
         sessionStorage.removeItem('basketEditItemId');
         sessionStorage.removeItem('editingLogoIndex');

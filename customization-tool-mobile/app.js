@@ -4110,6 +4110,29 @@ function upsertBasketItemFromState() {
       unitPrice: isBasketContext ? basketContextUnitPrice : nextItem.unitPrice,
       id: previousId
     });
+
+    // Same rule as the PC order popup: the design goes on every size of this product+colour,
+    // unless the tool was opened from one basket row (that row is edited on its own).
+    if (String(routeParams.get("from") || "").toLowerCase() !== "basket") {
+      const designedRow = basket[matchIndex];
+      const garmentKey = (item) => `${String(item?.productCode || item?.code || "").trim().toLowerCase()}|${String(item?.color || "").trim().toLowerCase()}`;
+      const designedKey = garmentKey(designedRow);
+      basket.forEach((row, index) => {
+        if (index === matchIndex || garmentKey(row) !== designedKey) return;
+        const sibling = compactBasketItemForStorage({
+          ...row,
+          positions: [],
+          positionDesigns: {},
+          logos: JSON.parse(JSON.stringify(designedRow.logos || [])),
+          texts: JSON.parse(JSON.stringify(designedRow.texts || [])),
+          textDesigns: designedRow.textDesigns ? JSON.parse(JSON.stringify(designedRow.textDesigns)) : row.textDesigns,
+          designPreview: designedRow.designPreview || row.designPreview,
+          customizationNotes: designedRow.customizationNotes || row.customizationNotes
+        });
+        delete sibling.pendingLogoPrompt;
+        basket[index] = sibling;
+      });
+    }
   } else {
     basket.push(compactBasketItemForStorage(nextItem));
   }

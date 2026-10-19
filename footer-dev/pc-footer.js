@@ -253,7 +253,7 @@
   if (!document.querySelector('link[data-buk-whatsapp-css="1"], link[href*="whatsapp.css"]')) {
     var link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = new URL("/mobile/css/whatsapp.css?v=20261002-chatlogo", window.location.origin).href;
+    link.href = new URL("/mobile/css/whatsapp.css?v=20261019-smallchat", window.location.origin).href;
     link.setAttribute("data-buk-whatsapp-css", "1");
     document.head.appendChild(link);
   }
