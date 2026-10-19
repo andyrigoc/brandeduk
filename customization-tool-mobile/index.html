@@ -81,7 +81,7 @@
       // runs when Vercel serves the extensionless /customization-tool URL.
       var toolStyles = document.createElement("link");
       toolStyles.rel = "stylesheet";
-      toolStyles.href = folderPath + "style.css?v=20261016-newbar";
+      toolStyles.href = folderPath + "style.css?v=20261019-consent";
       document.head.appendChild(toolStyles);
 
       // Desktop is a responsive presentation of this same customisation
@@ -94,7 +94,7 @@
 
       var guidedStyles = document.createElement("link");
       guidedStyles.rel = "stylesheet";
-      guidedStyles.href = folderPath + "guided.css?v=20261018-method-prices";
+      guidedStyles.href = folderPath + "guided.css?v=20261019-compact";
       document.head.appendChild(guidedStyles);
     })();
   </script>
@@ -132,6 +132,23 @@
     <button id="guidedChangeMethod" class="guided-dialog-back" type="button">&larr; Change technique</button>
   </div>
   <button id="guidedMethodClose" class="guided-dialog-cancel" type="button">Cancel</button>
+</dialog>
+
+<dialog id="guidedAllDialog" class="guided-method-dialog guided-all-dialog" aria-labelledby="guidedAllTitle">
+  <h2 id="guidedAllTitle">All positions</h2>
+  <p class="guided-all-sub">Tap a position to select it.</p>
+  <div id="guidedAllGrid" class="guided-all-grid"></div>
+  <button id="guidedAllClose" class="guided-dialog-cancel" type="button">Close</button>
+</dialog>
+
+<dialog id="guidedConfirmDialog" class="guided-method-dialog guided-confirm-dialog" aria-labelledby="guidedConfirmTitle" aria-describedby="guidedConfirmText">
+  <div class="guided-confirm-icon" aria-hidden="true"><i class="fas fa-layer-group"></i></div>
+  <h2 id="guidedConfirmTitle">Replace customisation?</h2>
+  <p id="guidedConfirmText"></p>
+  <div class="guided-confirm-actions">
+    <button id="guidedConfirmCancel" class="guided-confirm-btn guided-confirm-btn--cancel" type="button">Keep current</button>
+    <button id="guidedConfirmOk" class="guided-confirm-btn guided-confirm-btn--ok" type="button">Replace</button>
+  </div>
 </dialog>
 
 <div id="customizerLoadingOverlay" class="customizer-loading-overlay" aria-live="polite" aria-busy="true">
@@ -201,7 +218,7 @@
         <li><span class="guided-step-check">&#10003;</span><div><strong>Product</strong><small id="guidedStepCode"></small></div></li>
         <li><span class="guided-step-check">&#10003;</span><div><strong>Colour</strong><small id="guidedStepColour"></small></div></li>
         <li><span class="guided-step-check">&#10003;</span><div><strong>Quantity</strong><small id="guidedStepQuantity"></small></div></li>
-        <li aria-current="step"><span class="guided-step-current">4</span><div><strong>Customise</strong><small>Add your design</small></div></li>
+        <li aria-current="step" id="guidedStepCustomise"><span class="guided-step-current" id="guidedStepCustomiseDot">4</span><div><strong>Customise</strong><small id="guidedStepCustomiseSub">Add your design</small></div></li>
       </ol>
       <div class="guided-title-row">
         <button id="guidedBackBtn" type="button">&larr; Back</button>
@@ -219,9 +236,11 @@
       </article>
       <p id="guidedMessage" class="guided-message" role="status" hidden></p>
       <section class="guided-positions-section" aria-labelledby="guidedPositionsTitle">
-        <div class="guided-section-heading"><h2 id="guidedPositionsTitle">Select a position</h2><span id="guidedPositionCounter" aria-live="polite"></span></div>
-        <div id="guidedPositions" class="guided-positions" aria-label="Available decoration positions" aria-busy="true"></div>
-        <p id="guidedPositionHint" class="guided-position-hint" hidden>Tap + to add your logo</p>
+        <div class="guided-section-heading"><h2 id="guidedPositionsTitle">Select a position</h2><div class="guided-heading-tools"><span id="guidedPositionCounter" class="guided-position-counter" aria-hidden="true"></span><button id="guidedViewAll" class="guided-view-all" type="button" aria-haspopup="dialog" hidden><i class="fas fa-th-large" aria-hidden="true"></i> <span id="guidedViewAllText">View all</span></button></div></div>
+        <div class="guided-positions-wrap">
+          <div id="guidedPositions" class="guided-positions" aria-label="Available decoration positions" aria-busy="true"></div>
+        </div>
+        <p id="guidedPositionHint" class="guided-position-hint" hidden>Tap + to add your logo</p><div id="guidedSwipeRow" class="guided-swipe-row" hidden><button id="guidedPositionsPrev" class="guided-swipe-arrow" type="button" aria-label="Show previous positions" disabled><i class="fas fa-angle-double-left" aria-hidden="true"></i></button><span>Swipe for more positions</span><button id="guidedPositionsNext" class="guided-swipe-arrow" type="button" aria-label="Show more positions"><i class="fas fa-angle-double-right" aria-hidden="true"></i></button></div>
         <button id="guidedRetryBtn" type="button" class="guided-retry" hidden>Retry loading positions</button>
       </section>
       <section class="guided-library-section" aria-labelledby="guidedLibraryTitle">
@@ -245,8 +264,8 @@
           </span>
         </div>
         <div class="guided-bar-actions">
-          <button id="guidedAddProduct" class="guided-nav-btn guided-nav-btn--product" type="button"><span aria-hidden="true">+</span> ADD PRODUCT</button>
-          <button id="guidedGoToBasket" class="guided-nav-btn guided-nav-btn--basket" type="button">VIEW BASKET <span aria-hidden="true">&rarr;</span></button>
+          <button id="guidedAddProduct" class="guided-nav-btn guided-nav-btn--product" type="button"><span aria-hidden="true">+</span> ADD ANOTHER PRODUCT</button>
+          <button id="guidedGoToBasket" class="guided-nav-btn guided-nav-btn--basket" type="button">GO TO BASKET <span aria-hidden="true">&rarr;</span></button>
         </div>
       </div>
     </div>
@@ -1168,7 +1187,7 @@
     appScript.async = false;
     appScript.onload = function () {
       var guidedScript = document.createElement("script");
-      guidedScript.src = new URL("guided.js?v=20261018-method-prices", document.baseURI).href;
+      guidedScript.src = new URL("guided.js?v=20261019-compact", document.baseURI).href;
       document.body.appendChild(guidedScript);
     };
     document.body.appendChild(appScript);

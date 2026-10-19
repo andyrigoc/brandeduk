@@ -1589,12 +1589,12 @@ button.tool-bottom-nav-item {
   gap: 12px;
   align-items: flex-start;
   margin: 0;
-  color: #6d3fe0;
+  color: #15803d;
   font-size: 12px;
   font-weight: 700;
   line-height: 1.4;
-  background: #f5f1ff;
-  border-color: #ebe3ff;
+  background: #f0fdf4;
+  border-color: #bbf7d0;
   transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -1611,18 +1611,18 @@ button.tool-bottom-nav-item {
 
 @keyframes copyrightAttentionPulse {
   0% {
-    border-color: #ebe3ff;
-    box-shadow: 0 0 0 0 rgba(109, 63, 224, 0.18);
+    border-color: #bbf7d0;
+    box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.18);
     transform: translateY(0);
   }
   35% {
-    border-color: #9f7aea;
-    box-shadow: 0 0 0 3px rgba(109, 63, 224, 0.22);
+    border-color: #4ade80;
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.22);
     transform: translateY(-1px);
   }
   100% {
-    border-color: #ebe3ff;
-    box-shadow: 0 0 0 0 rgba(109, 63, 224, 0);
+    border-color: #bbf7d0;
+    box-shadow: 0 0 0 0 rgba(22, 163, 74, 0);
     transform: translateY(0);
   }
 }
@@ -1632,7 +1632,7 @@ button.tool-bottom-nav-item {
   width: 14px;
   height: 14px;
   flex-shrink: 0;
-  accent-color: #6d3fe0;
+  accent-color: #16a34a;
 }
 
 .copyright-check-copy {
@@ -1668,9 +1668,9 @@ button.tool-bottom-nav-item {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #f3efff;
-  border: 1px solid #e8defd;
-  color: #6d3fe0;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #ea580c;
   flex-shrink: 0;
 }
 
@@ -1712,7 +1712,7 @@ button.tool-bottom-nav-item {
 }
 
 .copyright-actions .btn-black {
-  background: linear-gradient(90deg, #5c2edb 0%, #7b40e7 100%);
+  background: linear-gradient(90deg, #16a34a 0%, #22c55e 100%);
 }
 
 .copyright-actions .btn-grey {

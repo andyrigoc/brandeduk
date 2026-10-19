@@ -74,6 +74,12 @@
         width: 20px;
         height: 20px;
     }
+    /* Mobile pages open chat from the bottom bar, so the floating bubble is hidden there. */
+    body:has(.bottom-nav [data-open-whatsapp]) .whatsapp-float,
+    body:has(.bottom-nav [data-open-whatsapp]) .wa-float-close,
+    body:has(.bottom-nav [data-open-whatsapp]) .wa-dismiss-zone {
+        display: none !important;
+    }
 }
 .whatsapp-float.is-dragging {
     cursor: grabbing;

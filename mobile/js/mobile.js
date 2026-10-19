@@ -925,7 +925,8 @@ function updateLiveBadge() {
         document.getElementById('cartBadge'),
         document.getElementById('cartCount'),
         document.getElementById('navCartBadge'),
-        document.getElementById('menuCartCount')
+        document.getElementById('menuCartCount'),
+        document.getElementById('headerBasketBadge')
     ].filter(Boolean);
     
     if (badges.length === 0) return;
@@ -935,15 +936,16 @@ function updateLiveBadge() {
     // Get items from basket — total garment quantity, not distinct product types
     try {
         const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
-        totalItems = typeof getBasketTotalQty === 'function' ? getBasketTotalQty(basket) : basket.length;
+        totalItems = getBasketTotalQty(basket);
     } catch (e) {
         console.error('Error reading basket:', e);
     }
     
     // Update all badge elements
     badges.forEach(badge => {
+        badge.textContent = totalItems > 99 ? '99+' : String(totalItems);
+        badge.setAttribute('data-count', String(totalItems));
         if (totalItems > 0) {
-            badge.textContent = totalItems > 99 ? '99+' : String(totalItems);
             badge.hidden = false;
             badge.style.display = 'flex';
         } else {
@@ -955,6 +957,8 @@ function updateLiveBadge() {
 
 // Export to global scope
 window.updateLiveBadge = updateLiveBadge;
+window.addEventListener('basketUpdated', updateLiveBadge);
+window.addEventListener('pageshow', updateLiveBadge);
 
 // Update badge when page loads
 document.addEventListener('DOMContentLoaded', () => {
@@ -962,7 +966,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Also update when storage changes (from other tabs)
     window.addEventListener('storage', (e) => {
-        if (e.key === 'quoteBasket') {
+        if (e.key === 'quoteBasket' || e.key === null) {
             updateLiveBadge();
         }
     });

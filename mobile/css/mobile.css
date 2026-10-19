@@ -1153,18 +1153,18 @@ a {
     gap: 8px;
     width: 100%;
     padding: 12px;
-    border: 2px dashed var(--gray-300);
+    border: 2px dashed #f97316;
     border-radius: var(--radius-md);
     font-size: 14px;
-    font-weight: 500;
-    color: var(--purple);
-    background: var(--gray-50);
+    font-weight: 600;
+    color: #ea580c;
+    background: #fff7ed;
     transition: all var(--transition-fast);
 }
 
 .add-size-btn:active {
-    background: var(--gray-100);
-    border-color: var(--purple);
+    background: #ffedd5;
+    border-color: #ea580c;
 }
 
 /* Save Selection Button */

@@ -1,0 +1,161 @@
+/* Mobile customise page: 4-step order progress under the breadcrumbs.
+   States: todo (grey) → is-current (orange) → is-done (green + tick). */
+.order-steps {
+    --os-todo: #9ca3af;
+    --os-current: #ea580c;
+    --os-done: #16a34a;
+    list-style: none;
+    margin: 0;
+    padding: 8px 10px 9px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    background: #fff;
+    border-bottom: 1px solid #e5e7eb;
+    font-family: 'Inter', sans-serif;
+    position: relative;
+    z-index: 89;
+}
+
+.order-step {
+    position: relative;
+    min-width: 0;
+}
+
+/* Connector line to the next step */
+.order-step:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 13px;
+    left: calc(50% + 16px);
+    right: calc(-50% + 16px);
+    height: 2px;
+    border-radius: 2px;
+    background: #e5e7eb;
+    transition: background-color 0.3s ease;
+}
+
+.order-step.is-done:not(:last-child)::after {
+    background: var(--os-done);
+}
+
+.order-step__btn {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 0 2px;
+    border: 0;
+    background: none;
+    font: inherit;
+    color: var(--os-todo);
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.order-step__btn:focus-visible {
+    outline: 2px solid var(--os-current);
+    outline-offset: 2px;
+    border-radius: 8px;
+}
+
+.order-step__dot {
+    position: relative;
+    z-index: 1;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    background: #fff;
+    border: 2px solid #d1d5db;
+    color: var(--os-todo);
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.order-step__text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 0;
+    max-width: 100%;
+    line-height: 1.15;
+}
+
+.order-step__label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #6b7280;
+    transition: color 0.3s ease;
+}
+
+.order-step__sub {
+    max-width: 100%;
+    font-size: 9.5px;
+    font-weight: 500;
+    color: var(--os-todo);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Current step */
+.order-step.is-current .order-step__dot {
+    background: var(--os-current);
+    border-color: var(--os-current);
+    color: #fff;
+    box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.18);
+}
+
+.order-step.is-current .order-step__label {
+    color: var(--os-current);
+}
+
+.order-step.is-current .order-step__sub {
+    color: #9a3412;
+}
+
+/* Completed step: number swaps for a tick */
+.order-step.is-done .order-step__dot {
+    background: var(--os-done);
+    border-color: var(--os-done);
+    color: transparent;
+}
+
+.order-step.is-done .order-step__dot::after {
+    content: "";
+    position: absolute;
+    width: 6px;
+    height: 11px;
+    margin-top: -2px;
+    border: solid #fff;
+    border-width: 0 2.5px 2.5px 0;
+    transform: rotate(45deg);
+}
+
+.order-step.is-done .order-step__label {
+    color: #14532d;
+}
+
+.order-step.is-done .order-step__sub {
+    color: var(--os-done);
+}
+
+/* Keep the content gap the breadcrumbs rule used to provide */
+.order-steps + .customize-main {
+    margin-top: 0 !important;
+    padding-top: 8px !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .order-step__dot,
+    .order-step__label,
+    .order-step:not(:last-child)::after {
+        transition: none;
+    }
+}

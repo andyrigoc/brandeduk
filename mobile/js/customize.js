@@ -5010,6 +5010,18 @@
         });
         setTimeout(scrollToQtyAnchor, 120);
         setTimeout(scrollToQtyAnchor, 380);
+        setTimeout(openFirstEmptySizePicker, 750);
+    }
+
+    /** After the colour scroll settles, open the first empty size dropdown so the user can pick a size straight away. */
+    function openFirstEmptySizePicker() {
+        const select = Array.from(document.querySelectorAll('#selectedSizes .size-select'))
+            .find(function (s) { return !s.value && s.offsetParent !== null; });
+        if (!select) return;
+        try { select.focus({ preventScroll: true }); } catch (e) { select.focus(); }
+        if (typeof select.showPicker === 'function') {
+            try { select.showPicker(); } catch (e) { /* needs user activation; focus is enough */ }
+        }
     }
 
     // Render color buttons with product thumbnails
@@ -8564,31 +8576,9 @@
         updateOrderCard();
     }
 
-    function getStoredBasketEntryCount(basket) {
-        const groups = new Set();
-        (Array.isArray(basket) ? basket : []).forEach((item, index) => {
-            const code = String(item?.productCode || item?.code || '').trim().toLowerCase();
-            const color = String(item?.color || item?.selectedColorName || '').trim().toLowerCase();
-            groups.add(code ? `${code}::${color}` : String(item?.id || index));
-        });
-        return groups.size;
-    }
-
     // === Update Basket Count Badge in Navigation ===
     function updateBasketCount() {
-        const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
-        const totalItems = getStoredBasketEntryCount(basket);
-        
-        // Update all basket badges in navigation
-        const badges = document.querySelectorAll('.nav-badge');
-        badges.forEach(badge => {
-            if (totalItems > 0) {
-                badge.textContent = totalItems > 99 ? '99+' : totalItems;
-                badge.style.display = 'flex';
-            } else {
-                badge.style.display = 'none';
-            }
-        });
+        window.updateLiveBadge();
     }
 
     // === Update Basket Items List with full basket-like controls ===
@@ -10234,6 +10224,20 @@
     /** True only after user uploads/applies a logo on the current item (stable logo-step gate). */
     let _logoConfiguredForCurrentItem = false;
 
+    /** Read-only snapshot for the mobile order-steps bar (js/order-steps.js). */
+    window.BrandedCustomizeProgress = function () {
+        const designs = Object.values(state.positionDesigns || {}).filter(function (d) {
+            return d && (d.logo || (d.text && String(d.text).trim()) || d.clipart);
+        });
+        return {
+            productCode: (state.product && (state.product.code || state.product.sku)) || '',
+            colorName: state.selectedColorName || '',
+            quantity: Number(state.quantity) || 0,
+            designCount: designs.length,
+            logoConfigured: _logoConfiguredForCurrentItem || designs.length > 0
+        };
+    };
+
     /**
      * Reset the 3-second auto-save timer. Called whenever state changes
      * (qty change, color change, logo change, position change).
@@ -11596,12 +11600,12 @@
                     <span style="font-size:15px;color:#16a34a;font-weight:700;">Total: £${displayTotal} <span style="font-size:11px;font-weight:400;">${vatLabel}</span></span>
                 </div>
                 <div class="quote-added-actions" style="display:flex;flex-direction:column;gap:10px;">
-                    <button class="btn-primary" id="addLogoNowBtn" style="width:100%;padding:14px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;border:none;color:#fff;background:linear-gradient(135deg,#273469,#1E2749);display:flex;align-items:center;justify-content:center;gap:8px;">
+                    <button class="btn-primary" id="addLogoNowBtn" style="width:100%;padding:14px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;border:none;color:#fff;background:linear-gradient(135deg,#f97316,#ea580c);display:flex;align-items:center;justify-content:center;gap:8px;">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
                         Add your logo now
                     </button>
-                    <button class="btn-secondary" id="viewBasketBtn" style="width:100%;padding:12px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;border:1px solid #15803d;background:#16a34a;color:#ffffff;">View Basket</button>
-                    <button class="btn-secondary" id="continueShoppingBtn" style="width:100%;padding:12px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;border:2px dashed #7c3aed;background:#ffffff;color:#7c3aed;">Continue Shopping</button>
+                    <button class="btn-secondary" id="viewBasketBtn" style="width:100%;padding:12px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;border:1px solid rgba(21,128,61,0.55);background:rgba(22,163,74,0.82);color:#ffffff;">View Basket</button>
+                    <button class="btn-secondary" id="continueShoppingBtn" style="width:100%;padding:12px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;border:2px dashed #2563eb;background:#ffffff;color:#2563eb;">Continue Shopping</button>
                 </div>
             </div>
         `;
@@ -11745,51 +11749,12 @@
 
     // === Cart Badge ===
     function updateCartBadge() {
-        // Try all badge IDs (header and bottom nav)
-        const badges = [
-            document.getElementById('cartBadge'),
-            document.getElementById('cartCount'),
-            document.getElementById('navCartBadge')
-        ].filter(Boolean);
-        
-        if (badges.length === 0) return;
-
-        try {
-            const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
-            const totalItems = getStoredBasketEntryCount(basket);
-            
-            badges.forEach(badge => {
-                badge.textContent = totalItems;
-                badge.style.display = totalItems > 0 ? 'flex' : 'none';
-            });
-        } catch (e) {
-            badges.forEach(badge => {
-                badge.style.display = 'none';
-            });
-        }
+        window.updateLiveBadge();
     }
 
-    // The navigation badge represents saved basket entries, not garment units
-    // currently selected in the editor.
+    // Both navigation badges count saved garment units, not the editor selection.
     function updateLiveBadge() {
-        const badges = [
-            document.getElementById('cartBadge'),
-            document.getElementById('cartCount'),
-            document.getElementById('navCartBadge')
-        ].filter(Boolean);
-        
-        if (badges.length === 0) return;
-
-        let totalItems = 0;
-        try {
-            const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
-            totalItems = getStoredBasketEntryCount(basket);
-        } catch (e) {}
-        
-        badges.forEach(badge => {
-            badge.textContent = totalItems;
-            badge.style.display = totalItems > 0 ? 'flex' : 'none';
-        });
+        window.updateLiveBadge();
     }
 
     // === Initialize on DOM Ready ===
@@ -11838,4 +11803,3 @@
     });
 
 })();
-

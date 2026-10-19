@@ -194,6 +194,39 @@
     }
   }
 
+  function confirmReplace(position, conflicts) {
+    const dialog = byId("guidedConfirmDialog");
+    if (!dialog?.showModal) {
+      return Promise.resolve(window.confirm(`${getDesignAreaLabel(position)} overlaps ${conflicts.map(getDesignAreaLabel).join(", ")}. Replace those customisations?`));
+    }
+    const text = byId("guidedConfirmText");
+    const bold = (value) => { const b = document.createElement("b"); b.textContent = value; return b; };
+    text.replaceChildren(
+      bold(getDesignAreaLabel(position)),
+      " overlaps ",
+      bold(conflicts.map(getDesignAreaLabel).join(", ")),
+      ". Adding a logo here will remove the existing customisation from that position."
+    );
+    return new Promise((resolve) => {
+      const ok = byId("guidedConfirmOk");
+      const cancel = byId("guidedConfirmCancel");
+      const finish = (result) => {
+        ok.removeEventListener("click", onOk);
+        cancel.removeEventListener("click", onCancel);
+        dialog.removeEventListener("cancel", onCancel);
+        if (dialog.open) dialog.close();
+        resolve(result);
+      };
+      const onOk = () => finish(true);
+      const onCancel = (event) => { event?.preventDefault?.(); finish(false); };
+      ok.addEventListener("click", onOk);
+      cancel.addEventListener("click", onCancel);
+      dialog.addEventListener("cancel", onCancel);
+      dialog.showModal();
+      ok.focus();
+    });
+  }
+
   // Conflicting positions are only removed once the new logo is actually
   // assigned, so cancelling the popup or the file picker never loses work.
   async function checkAssignment(position) {
@@ -212,7 +245,7 @@
       rules.conflicts[position]?.conflictsWith.includes(key)
       || rules.conflicts[key]?.conflictsWith.includes(position)
     ));
-    if (conflicts.length && !window.confirm(`${getDesignAreaLabel(position)} overlaps ${conflicts.map(getDesignAreaLabel).join(", ")}. Replace those customisations?`)) return null;
+    if (conflicts.length && !await confirmReplace(position, conflicts)) return null;
     message("");
     return conflicts;
   }
@@ -412,19 +445,73 @@
     return card;
   }
 
+  function updateCarouselCues() {
+    const overflow = positionsEl.scrollWidth - positionsEl.clientWidth;
+    const cards = positionsEl.querySelectorAll(".guided-position");
+    const hint = byId("guidedPositionHint");
+    const noOverflow = overflow <= 4;
+    byId("guidedSwipeRow").hidden = noOverflow && (hint.hidden || hint.classList.contains("is-off"));
+    byId("guidedSwipeRow").classList.toggle("is-static", noOverflow);
+    byId("guidedPositionsNext").disabled = positionsEl.scrollLeft >= overflow - 4;
+    byId("guidedPositionsPrev").disabled = positionsEl.scrollLeft <= 4;
+    const right = positionsEl.getBoundingClientRect().right + 2;
+    const visible = [...cards].filter((card) => card.getBoundingClientRect().right <= right).length;
+    byId("guidedPositionCounter").textContent = cards.length ? `${Math.max(1, visible)} / ${cards.length}` : "";
+  }
+
+  function scrollPositions(direction) {
+    const card = positionsEl.querySelector(".guided-position");
+    const step = card ? card.getBoundingClientRect().width + 7 : positionsEl.clientWidth * 0.8;
+    positionsEl.scrollBy({ left: step * direction, behavior: "smooth" });
+  }
+
+  function renderAllPositions() {
+    const designs = getDraftAreaDesigns();
+    const activeKey = getDesignAreaKey();
+    const cells = getConfiguredViewPositions().map((position) => {
+      const key = normalizeProductTypeSlug(position.slug);
+      const design = designs[key];
+      const cell = document.createElement("button");
+      cell.type = "button";
+      cell.className = `guided-all-item${key === activeKey ? " is-active" : ""}${design?.logo ? " has-logo" : ""}`;
+      cell.setAttribute("aria-pressed", String(key === activeKey));
+      const image = document.createElement("img");
+      image.src = position.apiImageUrl || resolveConfiguredGarmentImage(configuredPositionArea(position), key);
+      image.alt = "";
+      const label = document.createElement("strong");
+      label.textContent = position.label;
+      const status = document.createElement("small");
+      status.textContent = design?.logo ? `\u2713 ${design.method === "embroidery" ? "Embroidery" : "Print"}` : "+ Add logo";
+      cell.append(image, label, status);
+      cell.addEventListener("click", () => {
+        byId("guidedAllDialog").close();
+        selectPosition(key);
+      });
+      return cell;
+    });
+    byId("guidedAllGrid").replaceChildren(...cells);
+  }
+
   // The hint lives outside the scrolling strip so the strip never clips it.
+  // It overlays the swipe row, which moves to the free side.
   function placeHint() {
     const hint = byId("guidedPositionHint");
+    const row = byId("guidedSwipeRow");
     const card = positionsEl.querySelector(".guided-position.is-active");
+    row.classList.remove("align-start", "align-end");
     if (hint.hidden || hint.classList.contains("is-off") || !card) return;
     const strip = positionsEl.getBoundingClientRect();
+    const section = hint.offsetParent?.getBoundingClientRect() || strip;
     const box = card.getBoundingClientRect();
     const cardLeft = box.left - strip.left;
     const left = Math.max(0, Math.min(cardLeft, strip.width - hint.offsetWidth));
     const arrow = Math.max(12, Math.min(cardLeft + box.width / 2 - left, hint.offsetWidth - 12));
-    hint.style.visibility = box.right <= strip.left || box.left >= strip.right ? "hidden" : "";
-    hint.style.setProperty("--hint-left", `${left}px`);
+    const offscreen = box.right <= strip.left || box.left >= strip.right;
+    hint.style.visibility = offscreen ? "hidden" : "";
+    hint.style.top = `${strip.bottom - section.top + 9}px`;
+    hint.style.setProperty("--hint-left", `${left + strip.left - section.left}px`);
     hint.style.setProperty("--hint-arrow", `${arrow}px`);
+    if (!offscreen) row.classList.add(left + hint.offsetWidth / 2 < strip.width / 2 ? "align-end" : "align-start");
   }
 
   function renderLibrary() {
@@ -506,11 +593,15 @@
     positionsEl.scrollLeft = scrollLeft;
     positionsEl.setAttribute("aria-busy", String(switching || state.logoUploadBusy));
     const selectedIndex = positions.findIndex((position) => position.slug === getDesignAreaKey());
-    byId("guidedPositionCounter").textContent = positions.length ? `${selectedIndex + 1} / ${positions.length}` : "";
+    byId("guidedViewAll").hidden = positions.length < 3;
+    byId("guidedViewAllText").textContent = `View all ${positions.length}`;
+    byId("guidedViewAll").setAttribute("aria-label", `View all ${positions.length} positions${selectedIndex >= 0 ? `, ${selectedIndex + 1} selected` : ""}`);
+    if (byId("guidedAllDialog").open) renderAllPositions();
     byId("guidedRetryBtn").hidden = positions.length > 0;
     byId("guidedPositionHint").hidden = !positions.length;
     byId("guidedPositionHint").classList.toggle("is-off", !positionsEl.querySelector(".guided-position.is-active")
       || Boolean(designs[getDesignAreaKey()]?.logo || getDraftTextDesigns()[getDesignAreaKey()]?.text));
+    updateCarouselCues();
     placeHint();
     renderLibrary();
     const qty = state.totalQty;
@@ -521,6 +612,15 @@
     byId("guidedPriceSummary").textContent = decorationTotal > 0
       ? `${qty} items \u00b7 Decoration \u00a3${toDisplayAmount(decorationTotal).toFixed(2)} ${vatSuffixLabel()}`
       : `${qty} items \u00b7 No logo added yet`;
+    const logoCount = Object.values(designs).filter((design) => design?.logo).length;
+    const customiseDot = byId("guidedStepCustomiseDot");
+    if (customiseDot) {
+      customiseDot.classList.toggle("is-done", logoCount > 0);
+      customiseDot.innerHTML = logoCount > 0 ? "&#10003;" : "4";
+      byId("guidedStepCustomiseSub").textContent = logoCount > 0
+        ? `${logoCount} logo${logoCount === 1 ? "" : "s"} added`
+        : "Add your design";
+    }
     byId("guidedGoToBasket").disabled = state.logoUploadBusy;
     byId("guidedAddProduct").disabled = state.logoUploadBusy;
     if (!item) message("This product is no longer in your basket. Go back to choose your product.");
@@ -626,6 +726,16 @@
     drag = null;
   };
   positionsEl.addEventListener("scroll", placeHint, { passive: true });
+  positionsEl.addEventListener("scroll", updateCarouselCues, { passive: true });
+  byId("guidedPositionsNext").addEventListener("click", () => scrollPositions(1));
+  byId("guidedPositionsPrev").addEventListener("click", () => scrollPositions(-1));
+  byId("guidedViewAll").addEventListener("click", () => {
+    renderAllPositions();
+    byId("guidedAllDialog").showModal();
+    byId("guidedAllGrid").querySelector(".is-active")?.focus();
+  });
+  byId("guidedAllClose").addEventListener("click", () => byId("guidedAllDialog").close());
+  window.addEventListener("resize", updateCarouselCues);
   window.addEventListener("resize", placeHint);
   positionsEl.addEventListener("pointerup", endDrag);
   positionsEl.addEventListener("pointercancel", endDrag);

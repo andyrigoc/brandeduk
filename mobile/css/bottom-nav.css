@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Mobile bottom bar: Home · Shop · Customise · Basket · Account
+   Mobile bottom bar: Home · Shop · Customise · Account · Chat
    Pairs with mobile/js/bottom-nav.js (the chooser sheet behind "Customise").
    On the product list (shop.html) the center tile is "Filter" instead.
    Load after mobile.css on pages using <nav class="bottom-nav bottom-nav--v2">.
