@@ -8,394 +8,1996 @@
       "metaDescription": "Hi-vis vests, jackets and tops, work trousers, softshells and winter workwear for construction and trade teams. Branded with your company logo.",
       "intro": "Hi-vis vests and jackets, work trousers, softshells and winter essentials for site and trade teams. Choose your styles, then add your company logo by embroidery or print, depending on the garment.",
       "url": "/industries/construction",
-      "pdfTotal": 51,
+      "pdfTotal": 258,
       "groups": [
         {
-          "name": "Hi-vis vests",
+          "name": "Base Layers & Thermals",
           "items": [
             {
-              "code": "YK001",
-              "brand": "Yoko",
-              "name": "Hi-vis 2-band-and-braces waistcoat (HVW100)",
+              "code": "JC232",
+              "brand": "AWDis",
+              "name": "AWDis Just Cool Active recycled baselayer",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
-              "code": "YK002",
-              "brand": "Yoko",
-              "name": "Multifunctional executive hi-vis waistcoat (HVW801)",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "YK107",
-              "brand": "Yoko",
-              "name": "Hi-vis two-tone waistcoat (HVW122)",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PW002",
+              "code": "PW141",
               "brand": "Portwest",
-              "name": "Hi-vis two-band-and-brace vest (C470)",
+              "name": "Portwest Thermal t-shirt long sleeved (B123)",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
-              "code": "R200X",
-              "brand": "Result Core",
-              "name": "Core hi-vis vest",
+              "code": "RG290",
+              "brand": "Regatta",
+              "name": "Regatta Professional Thermal long johns",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
-              "code": "RG465",
-              "brand": "Regatta High Visibility",
-              "name": "Pro hi-vis vest",
+              "code": "PW142",
+              "brand": "Portwest",
+              "name": "Portwest Thermal trousers (B121)",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
-              "code": "UC801",
-              "brand": "Uneek Clothing",
-              "name": "Hi Vis Safety Waistcoat",
-              "source": "Uneek 2026",
+              "code": "BY099",
+              "brand": "Build",
+              "name": "Build Your Brand Women's stretch Jersey leggings",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Boots",
+          "items": [
+            {
+              "code": "PW302",
+              "brand": "Portwest",
+              "name": "Portwest Steelite™ protector boot S1P (FW10)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "RG565",
+              "brand": "Regatta",
+              "name": "Regatta Safety Footwear Gritstone S3 safety hiker boot",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW863",
+              "brand": "Portwest",
+              "name": "Portwest Steelite™ S1P Protector Boots",
+              "source": "PenCarrie 2026",
               "onSite": false
             },
             {
-              "code": "UC802",
-              "brand": "Uneek Clothing",
-              "name": "Long Sleeve Hi Vis Safety Waistcoat",
-              "source": "Uneek 2026",
+              "code": "PW817",
+              "brand": "Portwest",
+              "name": "Portwest Steelite™ Welted SBP HRO Safety Boots",
+              "source": "PenCarrie 2026",
+              "onSite": false
+            },
+            {
+              "code": "PW331",
+              "brand": "Portwest",
+              "name": "Portwest Steelite™ Neptune rigger boot S5 CI (FW75)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "R460X",
+              "brand": "Result",
+              "name": "Result Workguard Kane safety dealer boot",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "RG570",
+              "brand": "Regatta",
+              "name": "Regatta Safety Footwear Waterproof S3 Dealer boots",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Eye Protection",
+          "items": [
+            {
+              "code": "PW033",
+              "brand": "Portwest",
+              "name": "Portwest Profile safety spectacle (PW34)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW046",
+              "brand": "Portwest",
+              "name": "Portwest Fossa spectacle (PW15)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW030",
+              "brand": "Portwest",
+              "name": "Portwest Visitor Safety Spectacles",
+              "source": "PenCarrie 2026",
+              "onSite": false
+            },
+            {
+              "code": "PW040",
+              "brand": "Portwest",
+              "name": "Portwest Endurance Visor Hard Hat",
+              "source": "PenCarrie 2026",
               "onSite": false
             }
           ]
         },
         {
-          "name": "Hi-vis jackets",
+          "name": "Fleeces",
           "items": [
             {
-              "code": "YK043",
-              "brand": "Yoko",
-              "name": "Hi-vis classic bomber jacket (HVP211)",
+              "code": "UC604",
+              "brand": "300GSM",
+              "name": "300GSM Classic Full Zip Fleece Jacket",
+              "source": "Uneek 2026",
+              "onSite": true
+            },
+            {
+              "code": "UC601",
+              "brand": "380GSM",
+              "name": "380GSM Heavyweight Full Zip Fleece Jacket",
+              "source": "Uneek 2026",
+              "onSite": true
+            },
+            {
+              "code": "RG131",
+              "brand": "Regatta",
+              "name": "Regatta Professional Classic microfleece",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
-              "code": "YK045",
-              "brand": "Yoko",
-              "name": "Hi-vis classic motorway jacket (HVP300)",
+              "code": "RG122",
+              "brand": "Regatta",
+              "name": "Regatta Professional Thor III fleece",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
-              "code": "YK048",
+              "code": "RG115",
+              "brand": "Regatta",
+              "name": "Regatta Professional Micro Fleece Bodywarmer",
+              "source": "PenCarrie 2026",
+              "onSite": false
+            },
+            {
+              "code": "UC608",
+              "brand": "300GSM",
+              "name": "300GSM Ladies Classic Full Zip Fleece Jacket",
+              "source": "Uneek 2026",
+              "onSite": true
+            },
+            {
+              "code": "UX5",
+              "brand": "280GSM",
+              "name": "280GSM UX Full Zip Fleece",
+              "source": "Uneek 2026",
+              "onSite": true
+            },
+            {
+              "code": "RG123",
+              "brand": "Regatta",
+              "name": "Regatta Professional Women's Thor III fleece",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "UC605",
+              "brand": "Classic",
+              "name": "Classic Reversible Fleece Jacket",
+              "source": "Uneek 2026",
+              "onSite": true
+            },
+            {
+              "code": "CR315",
+              "brand": "Craghoppers",
+              "name": "Craghoppers Expert Corey 200 fleece jacket",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "8700M",
+              "brand": "Russell",
+              "name": "Russell Athletic Full-zip outdoor fleece",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "R907X",
+              "brand": "Result",
+              "name": "Result Recycled Recycled microfleece jacket",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KB911",
+              "brand": "Kariban",
+              "name": "Kariban Falco full zip microfleece jacket",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "R116X",
+              "brand": "Result",
+              "name": "Result Core Core microfleece gilet",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR803",
+              "brand": "Premier",
+              "name": "Premier Artisan fleece gilet",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "RG352",
+              "brand": "Regatta",
+              "name": "Regatta Honestly Made Honestly Made recycled full-zip fleece",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "RG189",
+              "brand": "Regatta",
+              "name": "Regatta Professional Thor 350 fleece",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "B280R",
+              "brand": "Beechfield",
+              "name": "Beechfield Recycled fleece snood",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Gilets & Bodywarmers",
+          "items": [
+            {
+              "code": "R238X",
+              "brand": "Result",
+              "name": "Result Recycled Compass padded softshell gilet",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "R208X",
+              "brand": "Result",
+              "name": "Result Core Core bodywarmer",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "RG642",
+              "brand": "Regatta",
+              "name": "Regatta Professional Essential thermal bodywarmer",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "R332X",
+              "brand": "Result",
+              "name": "Result Safeguard Reversible soft padded gilet",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Gloves",
+          "items": [
+            {
+              "code": "PW074",
+              "brand": "Portwest",
+              "name": "Portwest Flexo grip nitrile glove (A310)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW081",
+              "brand": "Portwest",
+              "name": "Portwest PU palm glove (A120)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW075",
+              "brand": "Portwest",
+              "name": "Portwest Dexti grip glove (A320)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW072",
+              "brand": "Portwest",
+              "name": "Portwest Classic grip glove - latex (A150)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW561",
+              "brand": "Portwest",
+              "name": "Portwest Cold 13 Latex aqua gloves (AP01)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW071",
+              "brand": "Portwest",
+              "name": "Portwest Thermal grip glove (A140)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW070",
+              "brand": "Portwest",
+              "name": "Portwest Nylon polka dot glove (A110)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW558",
+              "brand": "Portwest",
+              "name": "Portwest CS cut E18 PU gloves (A660)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW087",
+              "brand": "Portwest",
+              "name": "Portwest Dermiflex glove (A350)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW082",
+              "brand": "Portwest",
+              "name": "Portwest Canadian rigger glove (A210)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BC490",
+              "brand": "Beechfield",
+              "name": "Beechfield Touchscreen smart gloves",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR998",
+              "brand": "Premier",
+              "name": "Premier Touch gloves, powered by HeiQ Viroblock (one pair)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW560",
+              "brand": "Portwest",
+              "name": "Portwest CT cut C21 Nitrile gloves (CT21)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW562",
+              "brand": "Portwest",
+              "name": "Portwest Cut D13 Nitrile aqua gloves (AP50)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Hats & Caps",
+          "items": [
+            {
+              "code": "BC045",
+              "brand": "Beechfield",
+              "name": "Beechfield Original cuffed beanie",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BC640",
+              "brand": "Beechfield",
+              "name": "Beechfield Snapback trucker",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BC010",
+              "brand": "Beechfield",
+              "name": "Beechfield Original 5-panel cap",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BC015",
+              "brand": "Beechfield",
+              "name": "Beechfield Ultimate 5-panel cap",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "RC80X",
+              "brand": "Result",
+              "name": "Result Headwear Houston 5-panel printer's cap",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BC15C",
+              "brand": "Beechfield",
+              "name": "Beechfield Ultimate 5-panel cap - sandwich peak",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BC450",
+              "brand": "Beechfield",
+              "name": "Beechfield Snowstar® beanie",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BC059",
+              "brand": "Beechfield",
+              "name": "Beechfield Authentic baseball cap",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "RC84X",
+              "brand": "Result",
+              "name": "Result Headwear Boston 5-panel polycotton printer's cap",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "RC28X",
+              "brand": "Result",
+              "name": "Result Winter Essentials Pom pom beanie",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "RC029",
+              "brand": "Result",
+              "name": "Result Winter Essentials Woolly ski hat",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "RC81X",
+              "brand": "Result",
+              "name": "Result Headwear Memphis 6-panel brushed cotton low profile cap",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BC486",
+              "brand": "Beechfield",
+              "name": "Beechfield Corkscrew pom pom beanie",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BC044",
+              "brand": "Beechfield",
+              "name": "Beechfield Two-tone pull-on beanie",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BC653",
+              "brand": "Beechfield",
+              "name": "Beechfield Low-profile 6-panel dad cap",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "YP023",
+              "brand": "Flexfit",
+              "name": "Flexfit by Yupoong Retro trucker cap (6606)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "RC033",
+              "brand": "Result",
+              "name": "Result Winter Essentials Heavyweight Thinsulate™ hat",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BC443",
+              "brand": "Beechfield",
+              "name": "Beechfield Snowstar® patch beanie",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "RG661",
+              "brand": "Regatta",
+              "name": "Regatta Professional Axton Cuffed Beanie",
+              "source": "PenCarrie 2026",
+              "onSite": false
+            },
+            {
+              "code": "BC020",
+              "brand": "Beechfield",
+              "name": "Beechfield Athleisure 6-panel cap",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BC426",
+              "brand": "Beechfield",
+              "name": "Beechfield Original pom pom beanie",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "RC981",
+              "brand": "Result",
+              "name": "Result Recycled Core recycled low-profile cap",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BC447",
+              "brand": "Beechfield",
+              "name": "Beechfield Thinsulate™ beanie",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BC655",
+              "brand": "Beechfield",
+              "name": "Beechfield Low-profile vintage cap",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BC171",
+              "brand": "Beechfield",
+              "name": "Beechfield Teamwear competition cap",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BC456",
+              "brand": "Beechfield",
+              "name": "Beechfield Fair Isle snowstar® beanie",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "RC31X",
+              "brand": "Result",
+              "name": "Result Winter Essentials Core Softex® beanie",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BC84R",
+              "brand": "Beechfield",
+              "name": "Beechfield Recycled polyester bucket hat",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "YP268",
+              "brand": "Flexfit",
+              "name": "Flexfit by Yupoong Flexfit 110 arch cap",
+              "source": "Ralawise 2026",
+              "onSite": false
+            },
+            {
+              "code": "BC182",
+              "brand": "Beechfield",
+              "name": "Beechfield Coolmax® flow mesh cap",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Head Protection",
+          "items": [
+            {
+              "code": "PW039",
+              "brand": "Portwest",
+              "name": "Portwest Expertbase safety helmet (PW50)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW220",
+              "brand": "Portwest",
+              "name": "Portwest bump cap (PW59)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW362",
+              "brand": "Portwest",
+              "name": "Portwest AirTech bump cap (PS59)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW099",
+              "brand": "Portwest",
+              "name": "Portwest Vent bump cap (PW69) EN812",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Hearing Protection",
+          "items": [
+            {
+              "code": "PW038",
+              "brand": "Portwest",
+              "name": "Portwest Classic Ear Protectors",
+              "source": "PenCarrie 2026",
+              "onSite": false
+            },
+            {
+              "code": "RI028",
+              "brand": "Ribbon",
+              "name": "Ribbon Luxury fur ear muffs",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Hi-Vis Fleeces",
+          "items": [
+            {
+              "code": "RTRF648",
+              "brand": "Regatta",
+              "name": "Regatta Pro Contract Hi Vis Thor 280 Fleece F/Z Adult",
+              "source": "Absolute Apparel 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Hi-Vis Hoodies",
+          "items": [
+            {
+              "code": "YK012",
               "brand": "Yoko",
-              "name": "Hi-vis two-tone motorway jacket (HVP302)",
+              "name": "Yoko Hi-vis zip hoodie (HVK07)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Hi-Vis Jackets & Coats",
+          "items": [
+            {
+              "code": "UC804",
+              "brand": "Hi",
+              "name": "Hi Vis Bomber Jacket",
+              "source": "Uneek 2026",
+              "onSite": true
+            },
+            {
+              "code": "UC806",
+              "brand": "Childrens",
+              "name": "Childrens Hi Vis Waist Coat",
+              "source": "Uneek 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW420",
+              "brand": "Portwest",
+              "name": "Portwest PW3 Hi-vis winter jacket (T400)",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
               "code": "PW001",
               "brand": "Portwest",
-              "name": "Hi-vis bomber jacket (S463/S226)",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "RG477",
-              "brand": "Regatta High Visibility",
-              "name": "Hi-vis Pro contract Dover jacket",
+              "name": "Portwest Hi-vis bomber jacket (S463/S226)",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
               "code": "UC803",
-              "brand": "Uneek Clothing",
+              "brand": "Hi",
               "name": "Hi Vis Road Safety Jacket",
               "source": "Uneek 2026",
-              "onSite": false
-            },
-            {
-              "code": "UC804",
-              "brand": "Uneek Clothing",
-              "name": "Hi Vis Bomber Jacket",
-              "source": "Uneek 2026",
-              "onSite": false
-            }
-          ]
-        },
-        {
-          "name": "Hi-vis tops",
-          "items": [
-            {
-              "code": "YK020",
-              "brand": "Yoko",
-              "name": "Hi-vis short sleeve polo (HVJ210)",
-              "source": "Ralawise 2026",
               "onSite": true
             },
             {
-              "code": "YK030",
-              "brand": "Yoko",
-              "name": "Hi-vis sweatshirt (HVJ510)",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "YK012",
-              "brand": "Yoko",
-              "name": "Hi-vis zip hoodie (HVK07)",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "YK025",
-              "brand": "Yoko",
-              "name": "Hi-vis short sleeve t-shirt (HVJ410)",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "RG476",
-              "brand": "Regatta High Visibility",
-              "name": "Hi-vis Pro contract polo",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "RG488",
-              "brand": "Regatta High Visibility",
-              "name": "Hi-Vis Pro contract hoodie",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "UC808",
-              "brand": "Uneek Clothing",
-              "name": "Hi Vis Poloshirt",
-              "source": "Uneek 2026",
-              "onSite": false
-            },
-            {
-              "code": "UC810",
-              "brand": "Uneek Clothing",
-              "name": "Hi Vis T Shirt",
-              "source": "Uneek 2026",
-              "onSite": false
-            },
-            {
-              "code": "UC813",
-              "brand": "Uneek Clothing",
-              "name": "Hi Vis Sweatshirt",
-              "source": "Uneek 2026",
-              "onSite": false
-            },
-            {
-              "code": "UC814",
-              "brand": "Uneek Clothing",
-              "name": "Hi Vis Hooded Sweatshirt",
-              "source": "Uneek 2026",
-              "onSite": false
-            }
-          ]
-        },
-        {
-          "name": "Work trousers",
-          "items": [
-            {
-              "code": "YK073",
-              "brand": "Yoko",
-              "name": "Hi-vis polycotton cargo trousers with kneepad pockets (HV018T/3M)",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "R308X",
-              "brand": "Result Workguard",
-              "name": "Work-Guard action trousers",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PW123",
+              "code": "PW011",
               "brand": "Portwest",
-              "name": "WX2 work trousers (CD884) regular fit",
+              "name": "Portwest Hi-vis rain jacket (H440)",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
-              "code": "RG170",
-              "brand": "Regatta Professional",
-              "name": "Pro cargo trousers",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "SH056",
-              "brand": "Scruffs",
-              "name": "Worker trousers",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PW065",
+              "code": "PW003",
               "brand": "Portwest",
-              "name": "Liverpool zip coverall (C813)",
+              "name": "Portwest Hi-vis traffic jacket (S460)",
               "source": "Ralawise 2026",
               "onSite": true
-            },
-            {
-              "code": "R321X",
-              "brand": "Result Workguard",
-              "name": "Work-Guard lite coverall",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "UC807",
-              "brand": "Uneek Clothing",
-              "name": "Hi Vis Trouser",
-              "source": "Uneek 2026",
-              "onSite": false
-            },
-            {
-              "code": "UC903",
-              "brand": "Uneek Clothing",
-              "name": "Action Trouser - Reg, Long",
-              "source": "Uneek 2026",
-              "onSite": false
-            },
-            {
-              "code": "UC904",
-              "brand": "Uneek Clothing",
-              "name": "Cargo Regular with Knee Pad Pockets - Reg & Long",
-              "source": "Uneek 2026",
-              "onSite": false
-            },
-            {
-              "code": "UC906",
-              "brand": "Uneek Clothing",
-              "name": "SupePro Trousers - Short, Reg & Long",
-              "source": "Uneek 2026",
-              "onSite": false
-            },
-            {
-              "code": "GR91",
-              "brand": "Uneek Clothing",
-              "name": "245GSM Eco Workwear Cargo Trouser",
-              "source": "Uneek 2026",
-              "onSite": false,
-              "apiCode": "GR91R",
-              "apiCodeNote": "The API lists this trouser by leg length (GR91R regular, GR91L long, GR91S short); the page shows the regular leg."
             }
           ]
         },
         {
-          "name": "Softshells & fleece",
+          "name": "Hi-Vis Polo Shirts",
           "items": [
             {
-              "code": "R231M",
-              "brand": "Result Core",
-              "name": "Printable softshell with recycled fleece inner",
+              "code": "PW024",
+              "brand": "Portwest",
+              "name": "Portwest Hi-vis short sleeved polo (S477/RT22)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Hi-Vis Softshells",
+          "items": [
+            {
+              "code": "RTRA712",
+              "brand": "Regatta",
+              "name": "Regatta Pro Contract Hi Vis Ablaze 270 2 Layer Softshell F/Z Adult",
+              "source": "Absolute Apparel 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Hi-Vis T-Shirts",
+          "items": [
+            {
+              "code": "YK031",
+              "brand": "Yoko",
+              "name": "Yoko Hi-vis ¼ zip sweatshirt (HVK06)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Hi-Vis Trousers",
+          "items": [
+            {
+              "code": "YK013",
+              "brand": "Yoko",
+              "name": "Yoko Hi-vis jogging pants (HV016T)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Hi-Vis Vests",
+          "items": [
+            {
+              "code": "RG289",
+              "brand": "Regatta",
+              "name": "Regatta Professional Thermal long sleeve vest",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "RG288",
+              "brand": "Regatta",
+              "name": "Regatta Professional Thermal Short Sleeve Vest",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW002",
+              "brand": "Portwest",
+              "name": "Portwest Hi-vis two-band-and-brace vest (C470)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "ST207",
+              "brand": "Stormtech",
+              "name": "Stormtech Women’s Avalante fleece vest",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "YK001",
+              "brand": "Yoko",
+              "name": "Yoko Hi-vis 2-band-and-braces waistcoat (HVW100)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW924",
+              "brand": "Portwest",
+              "name": "Portwest Hi-vis executive vest (S476)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "YK002",
+              "brand": "Yoko",
+              "name": "Yoko Multifunctional executive hi-vis waistcoat (HVW801)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "RG469",
+              "brand": "Regatta",
+              "name": "Regatta High Visibility Pro hi-vis executive vest",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "R200X",
+              "brand": "Result",
+              "name": "Result Core Core hi-vis vest",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "YK056",
+              "brand": "Yoko",
+              "name": "Yoko Hi-vis zip ID reflective border waistcoat (HVW103)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "AA91",
+              "brand": "Warrior",
+              "name": "Warrior Hi Vis 120 Safety Vest Adult",
+              "source": "Absolute Apparel 2026",
+              "onSite": true
+            },
+            {
+              "code": "YK107",
+              "brand": "Yoko",
+              "name": "Yoko Hi-vis two-tone waistcoat (HVW122)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "YK006",
+              "brand": "Yoko",
+              "name": "Yoko Top cool open mesh 2-band-and-braces waistcoat (HVW120)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "R200J",
+              "brand": "Result",
+              "name": "Result Core Core junior vest",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Hi-Vis Waistcoats",
+          "items": [
+            {
+              "code": "UC801",
+              "brand": "Hi",
+              "name": "Hi Vis Safety Waistcoat",
+              "source": "Uneek 2026",
+              "onSite": true
+            },
+            {
+              "code": "UC802",
+              "brand": "Long",
+              "name": "Long Sleeve Hi Vis Safety Waistcoat",
+              "source": "Uneek 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Hi-Vis Waterproof Trousers",
+          "items": [
+            {
+              "code": "PW012",
+              "brand": "Portwest",
+              "name": "Portwest Hi-Vis Rain Trousers",
+              "source": "PenCarrie 2026",
+              "onSite": false
+            },
+            {
+              "code": "YK070",
+              "brand": "Yoko",
+              "name": "Yoko Hi-vis waterproof overtrousers (HVS461)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Jackets & Coats",
+          "items": [
+            {
+              "code": "RG633",
+              "brand": "Regatta",
+              "name": "Regatta Professional 4-Tex stretch waterproof shell jacket",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW175",
+              "brand": "Portwest",
+              "name": "Portwest Lab coat (2852)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "R221M",
+              "brand": "Result",
+              "name": "Result Core Core channel jacket",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "RE95A",
+              "brand": "Result",
+              "name": "Result Waterproof jacket and trouser set",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "RG059",
+              "brand": "Regatta",
+              "name": "Regatta Professional Classic 3-in-1 jacket",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KB677",
+              "brand": "Kariban",
+              "name": "Kariban Quilted parka",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW166",
+              "brand": "Portwest",
+              "name": "Portwest Classic rain jacket (S440)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "CR307",
+              "brand": "Craghoppers",
+              "name": "Craghoppers Expert Expolite thermal jacket",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Knee Pads",
+          "items": [
+            {
+              "code": "PW102",
+              "brand": "Portwest",
+              "name": "Portwest Kneepad (S156)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "CR780",
+              "brand": "Craghoppers",
+              "name": "Craghoppers Workwear Normanton Knee Pads",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Knitwear",
+          "items": [
+            {
+              "code": "HB720",
+              "brand": "Henbury",
+              "name": "Henbury 12 gauge v-neck jumper",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Other",
+          "items": [
+            {
+              "code": "KB616",
+              "brand": "Kariban",
+              "name": "Kariban Windbreaker",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "SX701",
+              "brand": "Stanley/Stella",
+              "name": "Stanley/Stella Unisex Creator 2.0 iconic t-shirt (STTU169)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Polo Shirts",
+          "items": [
+            {
+              "code": "BK556",
+              "brand": "Brook",
+              "name": "Brook Taverner Casper Knitted Long Sleeve Polo Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "SS255",
+              "brand": "Fruit",
+              "name": "Fruit of the Loom Premium polo",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "UC101",
+              "brand": "220GSM",
+              "name": "220GSM Classic Pique Poloshirt",
+              "source": "Uneek 2026",
+              "onSite": true
+            },
+            {
+              "code": "SS402",
+              "brand": "Fruit",
+              "name": "Fruit of the Loom 65/35 Polo",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "J599M",
+              "brand": "Russell",
+              "name": "Russell Athletic Hard-wearing 60°C wash polo",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "UC106",
+              "brand": "220GSM",
+              "name": "220GSM Ladies Pique Poloshirt",
+              "source": "Uneek 2026",
+              "onSite": true
+            },
+            {
+              "code": "UX1",
+              "brand": "180GSM",
+              "name": "180GSM UX Polo",
+              "source": "Uneek 2026",
+              "onSite": true
+            },
+            {
+              "code": "HB475",
+              "brand": "Henbury",
+              "name": "Henbury Coolplus® polo shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "UC114",
+              "brand": "180GSM",
+              "name": "180GSM Mens Active Cotton Poloshirt",
+              "source": "Uneek 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK613",
+              "brand": "Brook",
+              "name": "Brook Taverner Hampton Premium Cotton Polo Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "JC040",
+              "brand": "AWDis",
+              "name": "AWDis Just Cool Cool polo",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "UC112",
+              "brand": "220GSM",
+              "name": "220GSM Classic Cotton Poloshirt",
+              "source": "Uneek 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK403",
+              "brand": "Kustom",
+              "name": "Kustom Kit Klassic polo with Superwash® 60°C (classic fit)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "AQ010",
+              "brand": "Asquith",
+              "name": "Asquith & Fox The Asquith & Fox polo",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "UC113",
+              "brand": "220GSM",
+              "name": "220GSM Longsleeve Classic Poloshirt",
+              "source": "Uneek 2026",
+              "onSite": true
+            },
+            {
+              "code": "SS505",
+              "brand": "Fruit",
+              "name": "Fruit of the Loom Women's premium polo",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "UC103",
+              "brand": "220GSM",
+              "name": "220GSM Childrens Classic Poloshirt",
+              "source": "Uneek 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR630",
+              "brand": "Premier",
+              "name": "Premier Coolchecker® plus piqué polo",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW109",
+              "brand": "Portwest",
+              "name": "Portwest Two-tone polo (S479)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KB232",
+              "brand": "Kariban",
+              "name": "Kariban Flags short sleeve bi-colour polo shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "RG615",
+              "brand": "Regatta",
+              "name": "Regatta Professional Pro 65/35 long sleeve polo",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Respiratory Protection",
+          "items": [
+            {
+              "code": "HL041",
+              "brand": "Home",
+              "name": "Home & Living Travel set (neck pillow, eye mask and fleece blanket)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Safety Shoes & Trainers",
+          "items": [
+            {
+              "code": "PW304",
+              "brand": "Portwest",
+              "name": "Portwest Steelite Lusun safety trainer S1P (FW34)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW300",
+              "brand": "Portwest",
+              "name": "Portwest Steelite™ laced safety shoe S2 (FW80)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW303",
+              "brand": "Portwest",
+              "name": "Portwest Steelite™ protector shoe S1P (FW14)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW301",
+              "brand": "Portwest",
+              "name": "Portwest Steelite safety clog SB (FW82)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "R456X",
+              "brand": "Result",
+              "name": "Result Workguard All-black safety trainer",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "RG568",
+              "brand": "Regatta",
+              "name": "Regatta Safety Footwear Mudstone S1P safety trainers",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "RG567",
+              "brand": "Regatta",
+              "name": "Regatta Safety Footwear Sandstone SB safety trainers",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "RG598",
+              "brand": "Regatta",
+              "name": "Regatta Safety Footwear Clayton S3 Safety Trainers",
+              "source": "PenCarrie 2026",
+              "onSite": false
+            },
+            {
+              "code": "R348X",
+              "brand": "Result",
+              "name": "Result Workguard Lightweight safety trainer",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BG337",
+              "brand": "Bagbase",
+              "name": "Bagbase Matte PU shoe/accessory bag",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Scrubs",
+          "items": [
+            {
+              "code": "UC922",
+              "brand": "Scrubs",
+              "name": "Scrubs Trouser",
+              "source": "Uneek 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Shirts & Blouses",
+          "items": [
+            {
+              "code": "RE33A",
+              "brand": "Result",
+              "name": "Result PolarTherm™ top",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW290",
+              "brand": "Portwest",
+              "name": "Portwest KX3 Ripstop trouser (T802) regular fit",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Socks",
+          "items": [
+            {
+              "code": "S293X",
+              "brand": "Spiro",
+              "name": "Spiro 3-pack sports sneaker socks",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Softshells",
+          "items": [
+            {
+              "code": "SN130",
+              "brand": "Regatta",
+              "name": "Regatta Professional Ablaze printable softshell",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "RG154",
+              "brand": "Regatta",
+              "name": "Regatta Professional Flux softshell bodywarmer",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
               "code": "RG150",
-              "brand": "Regatta Professional",
-              "name": "Uproar softshell",
+              "brand": "Regatta",
+              "name": "Regatta Professional Uproar softshell",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
-              "code": "PW135",
-              "brand": "Portwest",
-              "name": "WX2 2-layer softshell",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "R330X",
-              "brand": "Result Workguard",
-              "name": "Work-Guard heavy-duty microfleece",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "RG473",
-              "brand": "Regatta High Visibility",
-              "name": "Hi-vis Pro contract Ablaze 2-layer softshell",
+              "code": "SN131",
+              "brand": "Regatta",
+              "name": "Regatta Professional Women's Ablaze printable softshell",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
               "code": "UC612",
-              "brand": "Uneek Clothing",
+              "brand": "Classic",
               "name": "Classic Full Zip Soft Shell Jacket",
               "source": "Uneek 2026",
-              "onSite": false
+              "onSite": true
+            },
+            {
+              "code": "RG594",
+              "brand": "Regatta",
+              "name": "Regatta Professional Navigate 2-layer hooded softshell jacket",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "R121A",
+              "brand": "Result",
+              "name": "Result Classic softshell jacket",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "RG145",
+              "brand": "Regatta",
+              "name": "Regatta Professional Classic softshell bodywarmer",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "RG073",
+              "brand": "Regatta",
+              "name": "Regatta Professional Classic softshell",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "R232M",
+              "brand": "Result",
+              "name": "Result Core Printable softshell bodywarmer with recycled fleece inner",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "R231M",
+              "brand": "Result",
+              "name": "Result Core Printable softshell with recycled fleece inner",
+              "source": "Ralawise 2026",
+              "onSite": true
             },
             {
               "code": "UX10",
-              "brand": "Uneek Clothing",
+              "brand": "325GSM",
               "name": "325GSM UX Printable Soft Shell Jacket",
               "source": "Uneek 2026",
-              "onSite": false
+              "onSite": true
             },
             {
-              "code": "UC601",
-              "brand": "Uneek Clothing",
-              "name": "380GSM Heavyweight Full Zip Fleece Jacket",
-              "source": "Uneek 2026",
-              "onSite": false
+              "code": "RG157",
+              "brand": "Regatta",
+              "name": "Regatta Professional Hydroforce 3-layer softshell",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "R232F",
+              "brand": "Result",
+              "name": "Result Core Womens printable softshell bodywarmer with recycled fleece inner",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "RG350",
+              "brand": "Regatta",
+              "name": "Regatta Honestly Made Honestly Made recycled softshell jacket",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "RG151",
+              "brand": "Regatta",
+              "name": "Regatta Professional Women's Uproar softshell",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "RG630",
+              "brand": "Regatta",
+              "name": "Regatta Professional 4-Tex stretch 3-layer softshell jacket",
+              "source": "Ralawise 2026",
+              "onSite": true
             }
           ]
         },
         {
-          "name": "Winter & accessories",
+          "name": "Suit Jackets & Blazers",
           "items": [
             {
-              "code": "YK105",
-              "brand": "Yoko",
-              "name": "Hi-vis padded bodywarmer (HV005)",
+              "code": "RE95J",
+              "brand": "Result",
+              "name": "Result Junior waterproof jacket and trouser set",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Sweatshirts",
+          "items": [
+            {
+              "code": "KB912",
+              "brand": "Kariban",
+              "name": "Kariban Enzo zip neck microfleece jacket",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
-              "code": "BC045",
-              "brand": "Beechfield",
-              "name": "Original cuffed beanie",
+              "code": "UC602",
+              "brand": "300GSM",
+              "name": "300GSM Classic 1/4 Zip Fleece Jacket",
+              "source": "Uneek 2026",
+              "onSite": true
+            },
+            {
+              "code": "SS405",
+              "brand": "Fruit",
+              "name": "Fruit of the Loom Classic 80/20 elasticated sweatpants",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
-              "code": "R147X",
-              "brand": "Result Winter Essentials",
-              "name": "Classic fully-lined Thinsulate™ gloves",
+              "code": "SS324",
+              "brand": "Fruit",
+              "name": "Fruit of the Loom Classic 80/20 open leg sweatpants",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "T-Shirts",
+          "items": [
+            {
+              "code": "GD005",
+              "brand": "Gildan",
+              "name": "Gildan Heavy Cotton™ adult t-shirt",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
-              "code": "UC640",
-              "brand": "Uneek Clothing",
-              "name": "Super Pro Body Warmer",
+              "code": "GD002",
+              "brand": "Gildan",
+              "name": "Gildan Ultra Cotton™ adult t-shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "UC301",
+              "brand": "180GSM",
+              "name": "180GSM Classic T-shirt",
               "source": "Uneek 2026",
+              "onSite": true
+            },
+            {
+              "code": "JC001",
+              "brand": "AWDis",
+              "name": "AWDis Just Cool Cool T",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "SS048",
+              "brand": "Fruit",
+              "name": "Fruit of the Loom Original T",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "GD001",
+              "brand": "Gildan",
+              "name": "Gildan Softstyle™ adult ringspun t-shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "SS030",
+              "brand": "Fruit",
+              "name": "Fruit of the Loom Valueweight T",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "SS008",
+              "brand": "Fruit",
+              "name": "Fruit of the Loom Heavy cotton T",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "TJ039",
+              "brand": "Tee",
+              "name": "Tee Jays Luxury shirt comfort fit (4020)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "S287X",
+              "brand": "Spiro",
+              "name": "Spiro Performance Aircool tee",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "SS032",
+              "brand": "Fruit",
+              "name": "Fruit of the Loom Valueweight long sleeve T",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "UC302",
+              "brand": "200GSM",
+              "name": "200GSM Heavyweight T-Shirt",
+              "source": "Uneek 2026",
+              "onSite": true
+            },
+            {
+              "code": "SS044",
+              "brand": "Fruit",
+              "name": "Fruit of the Loom Super premium T",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "J180M",
+              "brand": "Russell",
+              "name": "Russell Athletic Super ringspun classic t-shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "SS088",
+              "brand": "Fruit",
+              "name": "Fruit of the Loom Kids original T",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "TR010",
+              "brand": "TriDri®",
+              "name": "TriDri® Men's TriDri® performance t-shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "JC003",
+              "brand": "AWDis",
+              "name": "AWDis Just Cool Contrast cool T",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "J215M",
+              "brand": "Russell",
+              "name": "Russell Athletic Classic heavyweight ringspun t-shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "CV01H",
+              "brand": "Bella",
+              "name": "Bella Canvas Unisex heather CVC short sleeve t-shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW668",
+              "brand": "Portwest",
+              "name": "Portwest Hi-Vis Two Tone Sweatshirt",
+              "source": "PenCarrie 2026",
               "onSite": false
             },
             {
-              "code": "UC619",
-              "brand": "Uneek Clothing",
-              "name": "Padded Bodywarmer",
+              "code": "PW543",
+              "brand": "Portwest",
+              "name": "Portwest KX3 Sport tech sweatshirt (KX377)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "UC321",
+              "brand": "180GSM",
+              "name": "180GSM Polycotton Workwear T-Shirt",
               "source": "Uneek 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Towels & Slippers",
+          "items": [
+            {
+              "code": "TC001",
+              "brand": "Towel",
+              "name": "Towel City Luxury range face cloth",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Trousers",
+          "items": [
+            {
+              "code": "CR706",
+              "brand": "Craghoppers",
+              "name": "Craghoppers Bedale stretch cargo workwear trousers",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "UC902",
+              "brand": "Cargo",
+              "name": "Cargo Trouser - Short, Reg & Long",
+              "source": "Uneek 2026",
+              "onSite": true
+            },
+            {
+              "code": "NM042",
+              "brand": "New",
+              "name": "New Morning Studios Basic track pants",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW334",
+              "brand": "Portwest",
+              "name": "Portwest Combat trousers (C701)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "NN600",
+              "brand": "Onna",
+              "name": "Onna by Premier Women’s Relentless Onna-stretch cargo pants",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "UC905",
+              "brand": "Ladies",
+              "name": "Ladies Cargo Trousers",
+              "source": "Uneek 2026",
+              "onSite": true
+            },
+            {
+              "code": "RG745",
+              "brand": "Regatta",
+              "name": "Regatta Professional Pro Essential cargo trousers",
+              "source": "Ralawise 2026",
               "onSite": false
             },
             {
-              "code": "UC410",
-              "brand": "Uneek Clothing",
-              "name": "Heavyweight Cuffed Beanie",
+              "code": "SH054",
+              "brand": "Scruffs",
+              "name": "Scruffs Worker plus trousers",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR560",
+              "brand": "Premier",
+              "name": "Premier Performance chino jeans",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "UC904",
+              "brand": "Cargo",
+              "name": "Cargo Regular with Knee Pad Pockets - Reg & Long",
               "source": "Uneek 2026",
+              "onSite": true
+            },
+            {
+              "code": "FR622",
+              "brand": "Front",
+              "name": "Front Row Women's stretch chinos",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR701",
+              "brand": "Premier",
+              "name": "Premier Clip-on trouser braces",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "RG232",
+              "brand": "Regatta",
+              "name": "Regatta Professional New action trousers",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "UC901",
+              "brand": "Workwear",
+              "name": "Workwear Trouser - Reg & Long",
+              "source": "Uneek 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW363",
+              "brand": "Portwest",
+              "name": "Portwest Stretch slim combat trousers (S231) slim fit",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "UC903",
+              "brand": "Action",
+              "name": "Action Trouser - Reg, Long",
+              "source": "Uneek 2026",
+              "onSite": true
+            },
+            {
+              "code": "SH027",
+              "brand": "Scruffs",
+              "name": "Scruffs Trade Flex trousers",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW101",
+              "brand": "Portwest",
+              "name": "Portwest Action trousers (S887) regular fit",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "HB650",
+              "brand": "Henbury",
+              "name": "Henbury Stretch chinos with flex waistband",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW100",
+              "brand": "Portwest",
+              "name": "Portwest Texo contrast trousers (TX11)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "RG235",
+              "brand": "Regatta",
+              "name": "Regatta Professional Women's action trousers unlined",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "AQ050",
+              "brand": "Asquith",
+              "name": "Asquith & Fox Men's Classic fit chinos",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR570",
+              "brand": "Premier",
+              "name": "Premier Women's performance chino jeans",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW455",
+              "brand": "Portwest",
+              "name": "Portwest Bizweld™ Flame Resistant Trousers",
+              "source": "PenCarrie 2026",
               "onSite": false
+            },
+            {
+              "code": "HB651",
+              "brand": "Henbury",
+              "name": "Henbury Women's stretch chinos",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW291",
+              "brand": "Portwest",
+              "name": "Portwest KX3 Flexi trouser (T803) slim fit",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW369",
+              "brand": "Portwest",
+              "name": "Portwest PW3 Holster work trousers (T602) regular fit",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "RX600",
+              "brand": "ProRTX",
+              "name": "ProRTX Pro workwear cargo trousers",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR552",
+              "brand": "Premier",
+              "name": "Premier Pull-on chef’s trousers",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "FR621",
+              "brand": "Front",
+              "name": "Front Row Stretch chinos",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "J001M",
+              "brand": "Russell",
+              "name": "Russell Athletic Polycotton twill workwear trousers",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW359",
+              "brand": "Portwest",
+              "name": "Portwest Women's stretch cargo trousers (S233) slim fit",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "UC906",
+              "brand": "SupePro",
+              "name": "SupePro Trousers - Short, Reg & Long",
+              "source": "Uneek 2026",
+              "onSite": true
+            },
+            {
+              "code": "J015M",
+              "brand": "Russell",
+              "name": "Russell Athletic Heavy-duty workwear trousers",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK512",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Liberty Slim Leg Chino Trousers",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW707",
+              "brand": "Portwest",
+              "name": "Portwest Ladies Action Trousers",
+              "source": "PenCarrie 2026",
+              "onSite": false
+            },
+            {
+              "code": "SS446",
+              "brand": "Fruit",
+              "name": "Fruit of the Loom Iconic premium elasticated cuff jog pants",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW124",
+              "brand": "Portwest",
+              "name": "Portwest WX2 stretch holster trousers (CD883) slim fit",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "NN500",
+              "brand": "Onna",
+              "name": "Onna by Premier Relentless Onna-stretch cargo pants",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "AQ060",
+              "brand": "Asquith",
+              "name": "Asquith & Fox Women's Classic fit chinos",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "RG634",
+              "brand": "Regatta",
+              "name": "Regatta Professional Infiltrate stretch holster trousers",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "HB640",
+              "brand": "Henbury",
+              "name": "Henbury 65/35 flat fronted chino trousers",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Waistcoats",
+          "items": [
+            {
+              "code": "PR622",
+              "brand": "Premier",
+              "name": "Premier Lined polyester waistcoat",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Waterproof Trousers",
+          "items": [
+            {
+              "code": "R226X",
+              "brand": "Result",
+              "name": "Result Core Core rain trousers",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW167",
+              "brand": "Portwest",
+              "name": "Portwest Classic rain trousers (S441)",
+              "source": "Ralawise 2026",
+              "onSite": true
             }
           ]
         }
@@ -407,282 +2009,107 @@
       "metaDescription": "Tabards, tunics, polos, trousers, aprons and fleece layers for cleaning and housekeeping teams, personalised with your company logo.",
       "intro": "Tabards, tunics, polos, trousers and practical layers for cleaning, housekeeping and facilities teams. Add your company logo so your staff are easy to recognise on every job.",
       "url": "/industries/cleaning",
-      "pdfTotal": 36,
+      "pdfTotal": 11,
       "groups": [
         {
-          "name": "Tabards & tunics",
+          "name": "Boots",
           "items": [
+            {
+              "code": "PW082",
+              "brand": "Portwest",
+              "name": "Portwest Canadian rigger glove (A210)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Coveralls & Overalls",
+          "items": [
+            {
+              "code": "PW200",
+              "brand": "Portwest",
+              "name": "Portwest Euro work coverall (S999)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Gloves",
+          "items": [
+            {
+              "code": "PW071",
+              "brand": "Portwest",
+              "name": "Portwest Thermal grip glove (A140)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW072",
+              "brand": "Portwest",
+              "name": "Portwest Classic grip glove - latex (A150)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW074",
+              "brand": "Portwest",
+              "name": "Portwest Flexo grip nitrile glove (A310)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Tabards",
+          "items": [
+            {
+              "code": "UC920",
+              "brand": "Heavyweight",
+              "name": "Heavyweight Tabard",
+              "source": "Uneek 2026",
+              "onSite": true
+            },
             {
               "code": "PR171",
               "brand": "Premier",
-              "name": "Pocket tabard",
+              "name": "Premier Pocket tabard",
               "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "DE111",
+              "brand": "Dennys",
+              "name": "Dennys Tabard with Pocket",
+              "source": "PenCarrie 2026",
               "onSite": true
             },
             {
               "code": "PR172",
               "brand": "Premier",
-              "name": "Long length pocket tabard",
+              "name": "Premier Long length pocket tabard",
               "source": "Ralawise 2026",
               "onSite": true
-            },
+            }
+          ]
+        },
+        {
+          "name": "Tunics",
+          "items": [
             {
               "code": "PR177",
               "brand": "Premier",
-              "name": "Wrap-around tunic",
+              "name": "Premier Wrap-around tunic",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
               "code": "PR174",
               "brand": "Premier",
-              "name": "Waterproof wrap around tunic",
+              "name": "Premier Waterproof wrap around tunic",
               "source": "Ralawise 2026",
               "onSite": true
-            },
-            {
-              "code": "PR603",
-              "brand": "Premier",
-              "name": "Essential 3-pocket work coat",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "UC920",
-              "brand": "Uneek Clothing",
-              "name": "Heavyweight Tabard",
-              "source": "Uneek 2026",
-              "onSite": false
-            },
-            {
-              "code": "DV250",
-              "brand": "Warrior",
-              "name": "Pocket Tabard",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "DE111",
-              "brand": "Dennys",
-              "name": "Tabard with Pocket",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "UC921",
-              "brand": "Uneek Clothing",
-              "name": "Scrubs Tunic",
-              "source": "Uneek 2026",
-              "onSite": false
-            }
-          ]
-        },
-        {
-          "name": "Polos & tees",
-          "items": [
-            {
-              "code": "PR630",
-              "brand": "Premier",
-              "name": "Coolchecker® plus piqué polo",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR616",
-              "brand": "Premier",
-              "name": "Women's Coolchecker® piqué polo",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "KK400",
-              "brand": "Kustom Kit",
-              "name": "Workwear polo with Superwash® 60°C (classic fit)",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "GD001",
-              "brand": "Gildan",
-              "name": "Softstyle™ adult ringspun t-shirt",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "UC127",
-              "brand": "Uneek Clothing",
-              "name": "200GSM Mens Ultra Cool Workwear Poloshirt",
-              "source": "Uneek 2026",
-              "onSite": false
-            },
-            {
-              "code": "UC128",
-              "brand": "Uneek Clothing",
-              "name": "200GSM Ladies Ultra Cool Workwear Poloshirt",
-              "source": "Uneek 2026",
-              "onSite": false
-            },
-            {
-              "code": "UC321",
-              "brand": "Uneek Clothing",
-              "name": "180GSM Polycotton Workwear T-Shirt",
-              "source": "Uneek 2026",
-              "onSite": false
-            },
-            {
-              "code": "WK274",
-              "brand": "WK Designed To Work",
-              "name": "Anti-Bacterial Piqué Polo Shirt",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "WK275",
-              "brand": "WK Designed To Work",
-              "name": "Ladies Anti-Bacterial Piqué Polo Shirt",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "WK306",
-              "brand": "WK Designed To Work",
-              "name": "Anti-Bacterial Short Sleeve T-Shirt",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            }
-          ]
-        },
-        {
-          "name": "Trousers",
-          "items": [
-            {
-              "code": "NN500",
-              "brand": "Onna by Premier",
-              "name": "Relentless Onna-stretch cargo pants",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "NN600",
-              "brand": "Onna by Premier",
-              "name": "Women’s Relentless Onna-stretch cargo pants",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "RG232",
-              "brand": "Regatta Professional",
-              "name": "New action trousers",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "UC905",
-              "brand": "Uneek Clothing",
-              "name": "Ladies Cargo Trousers",
-              "source": "Uneek 2026",
-              "onSite": false
-            },
-            {
-              "code": "UC901",
-              "brand": "Uneek Clothing",
-              "name": "Workwear Trouser - Reg & Long",
-              "source": "Uneek 2026",
-              "onSite": false
-            },
-            {
-              "code": "WK739",
-              "brand": "WK Designed To Work",
-              "name": "Ladies Day to Day Trousers",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            }
-          ]
-        },
-        {
-          "name": "Aprons",
-          "items": [
-            {
-              "code": "PR115",
-              "brand": "Premier",
-              "name": "Waterproof bib apron",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR165",
-              "brand": "Premier",
-              "name": "Essential bib apron",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "UC940",
-              "brand": "Uneek Clothing",
-              "name": "Bib Apron With Pocket",
-              "source": "Uneek 2026",
-              "onSite": false
-            }
-          ]
-        },
-        {
-          "name": "Layers & outerwear",
-          "items": [
-            {
-              "code": "R114X",
-              "brand": "Result Core",
-              "name": "Core microfleece jacket",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR830",
-              "brand": "Premier",
-              "name": "‘Recyclight’ full-zip microfleece",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "R231M",
-              "brand": "Result Core",
-              "name": "Printable softshell with recycled fleece inner",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "R231F",
-              "brand": "Result Core",
-              "name": "Womens printable softshell with recycled fleece inner",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR840",
-              "brand": "Premier",
-              "name": "'Recyclight Ultra' full-zip microfleece",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR842",
-              "brand": "Premier",
-              "name": "Women's 'Recyclight Ultra' full-zip microfleece",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "UC609",
-              "brand": "Uneek Clothing",
-              "name": "210GSM Lightweight Full Zip Microfleece Jacket",
-              "source": "Uneek 2026",
-              "onSite": false
-            },
-            {
-              "code": "UC618",
-              "brand": "Uneek Clothing",
-              "name": "210GSM Microfleece Gilet",
-              "source": "Uneek 2026",
-              "onSite": false
             }
           ]
         }
@@ -694,7 +2121,7 @@
       "metaDescription": "Bib and waist aprons, chef jackets and trousers, bar shirts, waistcoats and polos for restaurants, cafés, bars and hotels, branded with your logo.",
       "intro": "Aprons, chef jackets and trousers, bar and waiter shirts, waistcoats and front-of-house polos for restaurants, cafés, pubs and hotels. Add your logo to give your team a consistent look from kitchen to counter.",
       "url": "/industries/hospitality",
-      "pdfTotal": 176,
+      "pdfTotal": 185,
       "groups": [
         {
           "name": "Aprons",
@@ -816,6 +2243,13 @@
               "brand": "Dennys",
               "name": "Dennys Polyester Bib Apron",
               "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR110",
+              "brand": "Premier",
+              "name": "Premier Striped bib apron",
+              "source": "Ralawise 2026",
               "onSite": true
             }
           ]
@@ -976,6 +2410,20 @@
               "name": "Premier Essential Coolchecker® long sleeve chef’s shirt",
               "source": "Ralawise 2026",
               "onSite": true
+            },
+            {
+              "code": "PR902",
+              "brand": "Premier",
+              "name": "Premier Chefs Coolchecker® short sleeve jacket",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR904",
+              "brand": "Premier",
+              "name": "Premier Chef's 'Recyclight' Short Sleeve Shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
             }
           ]
         },
@@ -1036,6 +2484,13 @@
               "brand": "Dennys",
               "name": "Dennys Elasticated Chef's Trousers",
               "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR557",
+              "brand": "Premier",
+              "name": "Premier Chef's 'Recyclight' Cargo Trousers",
+              "source": "Ralawise 2026",
               "onSite": true
             }
           ]
@@ -1805,6 +3260,13 @@
               "name": "Brook Taverner One Mars Trousers",
               "source": "PenCarrie 2026",
               "onSite": true
+            },
+            {
+              "code": "PW101",
+              "brand": "Portwest",
+              "name": "Portwest Action trousers (S887) regular fit",
+              "source": "Ralawise 2026",
+              "onSite": true
             }
           ]
         },
@@ -1985,6 +3447,49 @@
           ]
         },
         {
+          "name": "Gloves",
+          "items": [
+            {
+              "code": "PW074",
+              "brand": "Portwest",
+              "name": "Portwest Flexo grip nitrile glove (A310)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW071",
+              "brand": "Portwest",
+              "name": "Portwest Thermal grip glove (A140)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Jackets & Coats",
+          "items": [
+            {
+              "code": "PW175",
+              "brand": "Portwest",
+              "name": "Portwest Lab coat (2852)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Safety Shoes & Trainers",
+          "items": [
+            {
+              "code": "PW303",
+              "brand": "Portwest",
+              "name": "Portwest Steelite™ protector shoe S1P (FW14)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
           "name": "Accessories",
           "items": [
             {
@@ -2018,24 +3523,307 @@
       "metaDescription": "Tunics, stretch trousers, polos, cardigans, fleeces and reception shirts for clinics, care homes, salons and healthcare teams, with your logo.",
       "intro": "Tunics, stretch trousers, polos, layers and reception shirts for clinics, care settings, salons and spas. Add your organisation’s logo for a smart, recognisable team uniform.",
       "url": "/industries/healthcare",
-      "pdfTotal": 42,
+      "pdfTotal": 41,
       "groups": [
+        {
+          "name": "Boots",
+          "items": [
+            {
+              "code": "PW817",
+              "brand": "Portwest",
+              "name": "Portwest Steelite™ Welted SBP HRO Safety Boots",
+              "source": "PenCarrie 2026",
+              "onSite": false
+            },
+            {
+              "code": "PW302",
+              "brand": "Portwest",
+              "name": "Portwest Steelite™ protector boot S1P (FW10)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Dresses",
+          "items": [
+            {
+              "code": "BK451",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Jersey Stretch Neptune Dress",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Jackets & Coats",
+          "items": [
+            {
+              "code": "PW175",
+              "brand": "Portwest",
+              "name": "Portwest Lab coat (2852)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW125",
+              "brand": "Portwest",
+              "name": "Portwest WX2 stretch work jacket (CD885)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW185",
+              "brand": "Portwest",
+              "name": "Portwest Howie coat – Texpel finish",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW551",
+              "brand": "Portwest",
+              "name": "Portwest Women’s professional rain jacket (S614)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "RG052",
+              "brand": "Regatta",
+              "name": "Regatta Professional Women's Beauford insulated jacket",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "CR302",
+              "brand": "Craghoppers",
+              "name": "Craghoppers Expert Ladies Kiwi Pro Stretch Long Jacket",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "LE011",
+              "brand": "Le",
+              "name": "Le Chef Long Sleeve Luxe Jacket",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Knitwear",
+          "items": [
+            {
+              "code": "KB966",
+              "brand": "Kariban",
+              "name": "Kariban Ladies' V-neck jumper",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Polo Shirts",
+          "items": [
+            {
+              "code": "KB232",
+              "brand": "Kariban",
+              "name": "Kariban Flags short sleeve bi-colour polo shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "HB477",
+              "brand": "Henbury",
+              "name": "Henbury Women’s sleeveless Coolplus® polo shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Safety Shoes & Trainers",
+          "items": [
+            {
+              "code": "PW300",
+              "brand": "Portwest",
+              "name": "Portwest Steelite™ laced safety shoe S2 (FW80)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW301",
+              "brand": "Portwest",
+              "name": "Portwest Steelite safety clog SB (FW82)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW303",
+              "brand": "Portwest",
+              "name": "Portwest Steelite™ protector shoe S1P (FW14)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BG337",
+              "brand": "Bagbase",
+              "name": "Bagbase Matte PU shoe/accessory bag",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
         {
           "name": "Scrubs",
           "items": [
             {
+              "code": "NN370",
+              "brand": "Onna",
+              "name": "Onna by Premier Women’s Unstoppable fresh underscrub baselayer",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
               "code": "UC921",
-              "brand": "Uneek Clothing",
+              "brand": "Scrubs",
               "name": "Scrubs Tunic",
               "source": "Uneek 2026",
-              "onSite": false
+              "onSite": true
+            },
+            {
+              "code": "NN270",
+              "brand": "Onna",
+              "name": "Onna by Premier Unstoppable fresh underscrub baselayer",
+              "source": "Ralawise 2026",
+              "onSite": true
             },
             {
               "code": "UC922",
-              "brand": "Uneek Clothing",
+              "brand": "Scrubs",
               "name": "Scrubs Trouser",
               "source": "Uneek 2026",
-              "onSite": false
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Shirts & Blouses",
+          "items": [
+            {
+              "code": "JC038",
+              "brand": "AWDis",
+              "name": "AWDis Just Cool Women's cool cowl neck top",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "TL562",
+              "brand": "Tombo",
+              "name": "Tombo Long-sleeved ¼ zip top",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR244",
+              "brand": "Premier",
+              "name": "Premier Stretch fit cotton poplin long sleeve shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR344",
+              "brand": "Premier",
+              "name": "Premier Women's stretch fit cotton poplin long sleeve blouse",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "HB511",
+              "brand": "Henbury",
+              "name": "Henbury Women's classic long sleeve Oxford shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR234",
+              "brand": "Premier",
+              "name": "Premier Signature Oxford long sleeve shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Tabards",
+          "items": [
+            {
+              "code": "PR171",
+              "brand": "Premier",
+              "name": "Premier Pocket tabard",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Trousers",
+          "items": [
+            {
+              "code": "NN600",
+              "brand": "Onna",
+              "name": "Onna by Premier Women’s Relentless Onna-stretch cargo pants",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "NN500",
+              "brand": "Onna",
+              "name": "Onna by Premier Relentless Onna-stretch cargo pants",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "NN610",
+              "brand": "Onna",
+              "name": "Onna by Premier Women’s Energized Onna-stretch jogger pants",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "FR621",
+              "brand": "Front",
+              "name": "Front Row Stretch chinos",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK512",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Liberty Slim Leg Chino Trousers",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW359",
+              "brand": "Portwest",
+              "name": "Portwest Women's stretch cargo trousers (S233) slim fit",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "CR706",
+              "brand": "Craghoppers",
+              "name": "Craghoppers Bedale stretch cargo workwear trousers",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR701",
+              "brand": "Premier",
+              "name": "Premier Clip-on trouser braces",
+              "source": "Ralawise 2026",
+              "onSite": true
             }
           ]
         },
@@ -2044,307 +3832,37 @@
           "items": [
             {
               "code": "NN200",
-              "brand": "Onna by Premier",
-              "name": "Limitless Onna-stretch tunic",
+              "brand": "Onna",
+              "name": "Onna by Premier Limitless Onna-stretch tunic",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
               "code": "NN300",
-              "brand": "Onna by Premier",
-              "name": "Women’s Limitless Onna-stretch tunic",
+              "brand": "Onna",
+              "name": "Onna by Premier Women’s Limitless Onna-stretch tunic",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
               "code": "NN310",
-              "brand": "Onna by Premier",
-              "name": "Women’s Invincible Onna-stretch tunic",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR681",
-              "brand": "Premier",
-              "name": "Mika beauty and spa tunic",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR682",
-              "brand": "Premier",
-              "name": "Orchid beauty and spa tunic",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR683",
-              "brand": "Premier",
-              "name": "Blossom beauty and spa tunic",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR686",
-              "brand": "Premier",
-              "name": "Camellia beauty and spa tunic",
+              "brand": "Onna",
+              "name": "Onna by Premier Women’s Invincible Onna-stretch tunic",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
               "code": "UC923",
-              "brand": "Uneek Clothing",
+              "brand": "Ladies",
               "name": "Ladies Heavyweight Tunic",
               "source": "Uneek 2026",
-              "onSite": false
+              "onSite": true
             },
             {
               "code": "UC924",
-              "brand": "Uneek Clothing",
+              "brand": "Mens",
               "name": "Mens Heavyweight Tunic",
               "source": "Uneek 2026",
-              "onSite": false
-            },
-            {
-              "code": "BK519",
-              "brand": "Brook Taverner",
-              "name": "Ladies Lockhart Tunic",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            }
-          ]
-        },
-        {
-          "name": "Trousers & baselayers",
-          "items": [
-            {
-              "code": "NN500",
-              "brand": "Onna by Premier",
-              "name": "Relentless Onna-stretch cargo pants",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "NN600",
-              "brand": "Onna by Premier",
-              "name": "Women’s Relentless Onna-stretch cargo pants",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "NN610",
-              "brand": "Onna by Premier",
-              "name": "Women’s Energized Onna-stretch jogger pants",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "NN270",
-              "brand": "Onna by Premier",
-              "name": "Unstoppable fresh underscrub baselayer",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "NN370",
-              "brand": "Onna by Premier",
-              "name": "Women’s Unstoppable fresh underscrub baselayer",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "WK739",
-              "brand": "WK Designed To Work",
-              "name": "Ladies Day to Day Trousers",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "UC905",
-              "brand": "Uneek Clothing",
-              "name": "Ladies Cargo Trousers",
-              "source": "Uneek 2026",
-              "onSite": false
-            }
-          ]
-        },
-        {
-          "name": "Polos",
-          "items": [
-            {
-              "code": "PR615",
-              "brand": "Premier",
-              "name": "Coolchecker® piqué polo",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR616",
-              "brand": "Premier",
-              "name": "Women's Coolchecker® piqué polo",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "HB475",
-              "brand": "Henbury",
-              "name": "Coolplus® polo shirt",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "HB476",
-              "brand": "Henbury",
-              "name": "Women's Coolplus® polo shirt",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "WK274",
-              "brand": "WK Designed To Work",
-              "name": "Anti-Bacterial Piqué Polo Shirt",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "WK275",
-              "brand": "WK Designed To Work",
-              "name": "Ladies Anti-Bacterial Piqué Polo Shirt",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "WK306",
-              "brand": "WK Designed To Work",
-              "name": "Anti-Bacterial Short Sleeve T-Shirt",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "UC125",
-              "brand": "Uneek Clothing",
-              "name": "140GSM Mens Ultra Cool Poloshirt",
-              "source": "Uneek 2026",
-              "onSite": false
-            },
-            {
-              "code": "UC126",
-              "brand": "Uneek Clothing",
-              "name": "140GSM Ladies Ultra Cool Poloshirt",
-              "source": "Uneek 2026",
-              "onSite": false
-            }
-          ]
-        },
-        {
-          "name": "Layers",
-          "items": [
-            {
-              "code": "PR697",
-              "brand": "Premier",
-              "name": "Women's button-through knitted cardigan",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "HB718",
-              "brand": "Henbury",
-              "name": "Unisex zip-through cardigan",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "R114X",
-              "brand": "Result Core",
-              "name": "Core microfleece jacket",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR830",
-              "brand": "Premier",
-              "name": "‘Recyclight’ full-zip microfleece",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "NN800",
-              "brand": "Onna by Premier",
-              "name": "'Agility' men's panelled fleece jacket",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "NN802",
-              "brand": "Onna by Premier",
-              "name": "'Agility' women's panelled fleece jacket",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "UC609",
-              "brand": "Uneek Clothing",
-              "name": "210GSM Lightweight Full Zip Microfleece Jacket",
-              "source": "Uneek 2026",
-              "onSite": false
-            },
-            {
-              "code": "UC207",
-              "brand": "Uneek Clothing",
-              "name": "300 GSM Childrens Classic Cardigan",
-              "source": "Uneek 2026",
-              "onSite": false
-            }
-          ]
-        },
-        {
-          "name": "Lab coats & salon gowns",
-          "items": [
-            {
-              "code": "PW175",
-              "brand": "Portwest",
-              "name": "Lab coat (2852)",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR116",
-              "brand": "Premier",
-              "name": "Waterproof salon gown",
-              "source": "Ralawise 2026",
-              "onSite": true
-            }
-          ]
-        },
-        {
-          "name": "Reception & admin shirts",
-          "items": [
-            {
-              "code": "HB590",
-              "brand": "Henbury",
-              "name": "Wicking antibacterial long sleeve shirt",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "HB591",
-              "brand": "Henbury",
-              "name": "Women's wicking antibacterial long sleeve shirt",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "HB595",
-              "brand": "Henbury",
-              "name": "Wicking antibacterial short sleeve shirt",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "HB596",
-              "brand": "Henbury",
-              "name": "Women's wicking antibacterial short sleeve shirt",
-              "source": "Ralawise 2026",
               "onSite": true
             }
           ]
@@ -2630,152 +4148,140 @@
       "metaDescription": "Oxford shirts, blouses, polos, knitwear, softshells and gilets for offices and client-facing teams, embroidered or printed with your logo.",
       "intro": "Oxford shirts, blouses, polos, knitwear and outerwear for offices, reception desks and client-facing teams. A discreet embroidered logo gives your staff a professional, consistent look.",
       "url": "/industries/corporate",
-      "pdfTotal": 41,
+      "pdfTotal": 285,
       "groups": [
         {
-          "name": "Shirts & blouses",
+          "name": "Bib & Brace",
           "items": [
             {
-              "code": "KK105",
-              "brand": "Kustom Kit",
-              "name": "Corporate Oxford shirt long-sleeved (classic fit)",
-              "source": "Ralawise 2026",
+              "code": "NS5010",
+              "brand": "Native",
+              "name": "Native Spirit Ladies Dungarees Dress",
+              "source": "PenCarrie 2026",
               "onSite": true
-            },
-            {
-              "code": "KK104",
-              "brand": "Kustom Kit",
-              "name": "Business shirt long-sleeved (classic fit)",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR234",
-              "brand": "Premier",
-              "name": "Signature Oxford long sleeve shirt",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "KK701",
-              "brand": "Kustom Kit",
-              "name": "Women's corporate Oxford blouse short-sleeved (tailored fit)",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR300",
-              "brand": "Premier",
-              "name": "Women's poplin long sleeve blouse",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "BK582",
-              "brand": "Brook Taverner",
-              "name": "Toronto Long Sleeve Oxford Shirt",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "BK583",
-              "brand": "Brook Taverner",
-              "name": "Ladies Aspen Long Sleeve Oxford Shirt",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "BK586",
-              "brand": "Brook Taverner",
-              "name": "Lawrence Long Sleeve Stretch Oxford Shirt",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "BK587",
-              "brand": "Brook Taverner",
-              "name": "Ladies Mirabel Long Sleeve Stretch Oxford Shirt",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "932M",
-              "brand": "Russell Athletic Collection",
-              "name": "Long Sleeve Easy Care Oxford Shirt",
-              "source": "PenCarrie 2026",
-              "onSite": false,
-              "apiCode": "J932M",
-              "apiCodeNote": "Same Russell shirt, listed in the API under its Ralawise code."
-            },
-            {
-              "code": "932F",
-              "brand": "Russell Athletic Collection",
-              "name": "Ladies Long Sleeve Easy Care Oxford Shirt",
-              "source": "PenCarrie 2026",
-              "onSite": false,
-              "apiCode": "J932F",
-              "apiCodeNote": "Same Russell shirt, listed in the API under its Ralawise code."
             }
           ]
         },
         {
-          "name": "Polos",
+          "name": "Dresses",
           "items": [
             {
-              "code": "HB400",
-              "brand": "Henbury",
-              "name": "65/35 Classic piqué polo shirt",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "HB401",
-              "brand": "Henbury",
-              "name": "Women's 65/35 polo shirt",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "KK403",
-              "brand": "Kustom Kit",
-              "name": "Klassic polo with Superwash® 60°C (classic fit)",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "KK703",
-              "brand": "Kustom Kit",
-              "name": "Klassic polo women's with Superwash® 60°C (classic fit)",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "UC108",
-              "brand": "Uneek Clothing",
-              "name": "220GSM Deluxe Poloshirt",
-              "source": "Uneek 2026",
-              "onSite": false
-            },
-            {
-              "code": "UC112",
-              "brand": "Uneek Clothing",
-              "name": "220GSM Classic Cotton Poloshirt",
-              "source": "Uneek 2026",
-              "onSite": false
-            },
-            {
-              "code": "BK613",
-              "brand": "Brook Taverner",
-              "name": "Hampton Premium Cotton Polo Shirt",
+              "code": "BK510",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Jersey Stretch Belinda Dress",
               "source": "PenCarrie 2026",
-              "onSite": false
+              "onSite": true
             },
             {
-              "code": "BK614",
-              "brand": "Brook Taverner",
-              "name": "Ladies Arlington Premium Cotton Polo Shirt",
+              "code": "BK451",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Jersey Stretch Neptune Dress",
               "source": "PenCarrie 2026",
-              "onSite": false
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Fleeces",
+          "items": [
+            {
+              "code": "BK524",
+              "brand": "Brook",
+              "name": "Brook Taverner Unisex Baltimore Fleece Jacket",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK525",
+              "brand": "Brook",
+              "name": "Brook Taverner Unisex Cincinnati Fleece Gilet",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "KB582",
+              "brand": "Kariban",
+              "name": "Kariban Sherpa-lined fleece overshirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Gilets & Bodywarmers",
+          "items": [
+            {
+              "code": "BK529",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Madison Quilted Gilet",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK528",
+              "brand": "Brook",
+              "name": "Brook Taverner Tampa Quilted Gilet",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Hi-Vis T-Shirts",
+          "items": [
+            {
+              "code": "RX730",
+              "brand": "ProRTX",
+              "name": "ProRTX High Visibility High visibility sweatshirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW425",
+              "brand": "Portwest",
+              "name": "Portwest Women’s PW3 Hi-vis ¼-zip sweatshirt (T173)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Jackets & Coats",
+          "items": [
+            {
+              "code": "BK489",
+              "brand": "Brook",
+              "name": "Brook Taverner Midland Padded Raincoat",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK486",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Venice Core Padded Jacket",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK526",
+              "brand": "Brook",
+              "name": "Brook Taverner Orlando Quilted Jacket",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "TJ038",
+              "brand": "Tee",
+              "name": "Tee Jays Women’s casual twill shirt (4003)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KB579",
+              "brand": "Kariban",
+              "name": "Kariban Sherpa-lined checked shirt jacket",
+              "source": "Ralawise 2026",
+              "onSite": true
             }
           ]
         },
@@ -2783,166 +4289,1954 @@
           "name": "Knitwear",
           "items": [
             {
+              "code": "AQ042",
+              "brand": "Asquith",
+              "name": "Asquith & Fox Men's cotton blend v-neck sweater",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "RC34X",
+              "brand": "Result",
+              "name": "Result Winter Essentials Double-knit Thinsulate™ printers beanie",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "NP08F",
+              "brand": "Nimbus",
+              "name": "Nimbus Women’s Montana – knitted fleece jacket",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK554",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Augusta V Neck Cardigan",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK557",
+              "brand": "Brook",
+              "name": "Brook Taverner Lincoln Knitted Zip Gilet",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "HB720",
+              "brand": "Henbury",
+              "name": "Henbury 12 gauge v-neck jumper",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "HB760",
+              "brand": "Henbury",
+              "name": "Henbury Cashmere touch acrylic v-neck jumper",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "HB724",
+              "brand": "Henbury",
+              "name": "Henbury Sleeveless v-neck jumper",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "HB721",
+              "brand": "Henbury",
+              "name": "Henbury Women's 12 gauge v-neck jumper",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KB965",
+              "brand": "Kariban",
+              "name": "Kariban Men's V-neck jumper",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KB966",
+              "brand": "Kariban",
+              "name": "Kariban Ladies' V-neck jumper",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "N113M",
+              "brand": "Nimbus",
+              "name": "Nimbus Beaufort – extra fine Cashwool® merino knit",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "NB92M",
+              "brand": "Nimbus",
+              "name": "Nimbus Ashbury – classy luxury merino blend",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "N112M",
+              "brand": "Nimbus",
+              "name": "Nimbus Brighton – elegant v-neck knit",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "NB92F",
+              "brand": "Nimbus",
+              "name": "Nimbus Women’s Ashbury – classy luxury merino blend",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Other",
+          "items": [
+            {
+              "code": "KB533",
+              "brand": "Kariban",
+              "name": "Kariban Men's long-sleeved Oxford shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "NB121",
+              "brand": "Nimbus",
+              "name": "Nimbus Brighton 1/4-zip",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR338",
+              "brand": "Premier",
+              "name": "Premier Ladies Long Sleeve Striped Oxford Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "ST082",
+              "brand": "Stormtech",
+              "name": "Stormtech Milano 1/4-zip pullover",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Polo Shirts",
+          "items": [
+            {
+              "code": "BK614",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Arlington Premium Cotton Polo Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK556",
+              "brand": "Brook",
+              "name": "Brook Taverner Casper Knitted Long Sleeve Polo Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK613",
+              "brand": "Brook",
+              "name": "Brook Taverner Hampton Premium Cotton Polo Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "HB477",
+              "brand": "Henbury",
+              "name": "Henbury Women’s sleeveless Coolplus® polo shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK403",
+              "brand": "Kustom",
+              "name": "Kustom Kit Klassic polo with Superwash® 60°C (classic fit)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Safety Shoes & Trainers",
+          "items": [
+            {
+              "code": "PW303",
+              "brand": "Portwest",
+              "name": "Portwest Steelite™ protector shoe S1P (FW14)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW300",
+              "brand": "Portwest",
+              "name": "Portwest Steelite™ laced safety shoe S2 (FW80)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Shirts & Blouses",
+          "items": [
+            {
+              "code": "BK582",
+              "brand": "Brook",
+              "name": "Brook Taverner Toronto Long Sleeve Oxford Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "HB515",
+              "brand": "Henbury",
+              "name": "Henbury Short sleeve classic Oxford shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "RE33A",
+              "brand": "Result",
+              "name": "Result PolarTherm™ top",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR200",
+              "brand": "Premier",
+              "name": "Premier Long sleeve poplin shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR307",
+              "brand": "Premier",
+              "name": "Premier Women's supreme poplin long sleeve shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "JC038",
+              "brand": "AWDis",
+              "name": "AWDis Just Cool Women's cool cowl neck top",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK154",
+              "brand": "Brook",
+              "name": "Brook Taverner Alba Long Sleeve Slim Fit Poplin Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK130",
+              "brand": "Brook",
+              "name": "Brook Taverner Pisa Long Sleeve Slim Fit Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK591",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Silvi Fitted Long Sleeve Blouse",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK590",
+              "brand": "Brook",
+              "name": "Brook Taverner Ortona Classic Fit Long Sleeve Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK152",
+              "brand": "Brook",
+              "name": "Brook Taverner Rosello Short Sleeve Poplin Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK131",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Trevi Long Sleeve Poplin Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK586",
+              "brand": "Brook",
+              "name": "Brook Taverner Lawrence Long Sleeve Stretch Oxford Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK150",
+              "brand": "Brook",
+              "name": "Brook Taverner Rapino Long Sleeve Poplin Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK587",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Mirabel Long Sleeve Stretch Oxford Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK580",
+              "brand": "Brook",
+              "name": "Brook Taverner Montana Gingham Long Sleeve Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK134",
+              "brand": "Brook",
+              "name": "Brook Taverner Juno Long Sleeve Poplin Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK135",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Selene Long Sleeve Poplin Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK578",
+              "brand": "Brook",
+              "name": "Brook Taverner Volterra Long Sleeve Grandad Collar Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK583",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Aspen Long Sleeve Oxford Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK133",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Soave Short Sleeve Poplin Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK140",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Felina Short Sleeve Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK581",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Kansas Gingham Long Sleeve Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK153",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Paduli Short Sleeve Poplin Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK151",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Palena Long Sleeve Poplin Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK142",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Verona Short Sleeve Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR302",
+              "brand": "Premier",
+              "name": "Premier Women's short sleeve poplin blouse",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR258",
+              "brand": "Premier",
+              "name": "Premier Banded collar grandad long sleeve shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR202",
+              "brand": "Premier",
+              "name": "Premier Short sleeve poplin shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK187",
+              "brand": "Kustom",
+              "name": "Kustom Kit Premium Oxford shirt short-sleeved (tailored fit)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR300",
+              "brand": "Premier",
+              "name": "Premier Women's poplin long sleeve blouse",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "J923M",
+              "brand": "Russell",
+              "name": "Russell Athletic Collection Short sleeve easycare tailored Oxford shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK133",
+              "brand": "Kustom",
+              "name": "Kustom Kit Pilot shirt short-sleeved (tailored fit)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR346",
+              "brand": "Premier",
+              "name": "Premier Women's stretch fit cotton poplin short sleeve blouse",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK360",
+              "brand": "Kustom",
+              "name": "Kustom Kit Women's workplace Oxford blouse short-sleeved (tailored fit)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "HB511",
+              "brand": "Henbury",
+              "name": "Henbury Women's classic long sleeve Oxford shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "HB516",
+              "brand": "Henbury",
+              "name": "Henbury Women's short sleeve classic Oxford shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR344",
+              "brand": "Premier",
+              "name": "Premier Women's stretch fit cotton poplin long sleeve blouse",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR210",
+              "brand": "Premier",
+              "name": "Premier Long sleeve pilot shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR212",
+              "brand": "Premier",
+              "name": "Premier Short sleeve pilot shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR244",
+              "brand": "Premier",
+              "name": "Premier Stretch fit cotton poplin long sleeve shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "HB597",
+              "brand": "Henbury",
+              "name": "Henbury Women's pleat front short sleeve blouse",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "HB510",
+              "brand": "Henbury",
+              "name": "Henbury Long sleeve classic Oxford shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "HB512",
+              "brand": "Henbury",
+              "name": "Henbury Modern long sleeve Oxford shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "HB517",
+              "brand": "Henbury",
+              "name": "Henbury Modern short sleeve Oxford shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "HB590",
+              "brand": "Henbury",
+              "name": "Henbury Wicking antibacterial long sleeve shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "HB595",
+              "brand": "Henbury",
+              "name": "Henbury Wicking antibacterial short sleeve shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "HB513",
+              "brand": "Henbury",
+              "name": "Henbury Women's modern long sleeve Oxford shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "HB518",
+              "brand": "Henbury",
+              "name": "Henbury Women's modern short sleeve Oxford shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "HB598",
+              "brand": "Henbury",
+              "name": "Henbury Women's pleat front long sleeve blouse",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "HB591",
+              "brand": "Henbury",
+              "name": "Henbury Women's wicking antibacterial long sleeve shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "HB596",
+              "brand": "Henbury",
+              "name": "Henbury Women's wicking antibacterial short sleeve shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KB519",
+              "brand": "Kariban",
+              "name": "Kariban Men's long-sleeved denim shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KB535",
+              "brand": "Kariban",
+              "name": "Kariban Men's short-sleeved Oxford shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK104",
+              "brand": "Kustom",
+              "name": "Kustom Kit Business shirt long-sleeved (classic fit)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK102",
+              "brand": "Kustom",
+              "name": "Kustom Kit Business shirt short-sleeved (classic fit)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK386",
+              "brand": "Kustom",
+              "name": "Kustom Kit City business shirt long-sleeved (tailored fit)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK190",
+              "brand": "Kustom",
+              "name": "Kustom Kit Contrast premium Oxford shirt (button-down collar) long-sleeved (tailored fit)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK161",
+              "brand": "Kustom",
+              "name": "Kustom Kit Mandarin collar shirt long-sleeved (tailored fit)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK105",
+              "brand": "Kustom",
+              "name": "Kustom Kit Corporate Oxford shirt long-sleeved (classic fit)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK109",
+              "brand": "Kustom",
+              "name": "Kustom Kit Corporate Oxford shirt short-sleeved (classic fit)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK142",
+              "brand": "Kustom",
+              "name": "Kustom Kit Poplin shirt long-sleeved (tailored fit)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK141",
+              "brand": "Kustom",
+              "name": "Kustom Kit Poplin shirt short-sleeved (tailored fit)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK192",
+              "brand": "Kustom",
+              "name": "Kustom Kit Business shirt long-sleeved (slim fit)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK184",
+              "brand": "Kustom",
+              "name": "Kustom Kit Slim fit workwear Oxford shirt long-sleeved (slim fit)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK183",
+              "brand": "Kustom",
+              "name": "Kustom Kit Slim fit workwear Oxford shirt short sleeve",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK182",
+              "brand": "Kustom",
+              "name": "Kustom Kit Stretch Oxford shirt long-sleeved (slim fit)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK118",
+              "brand": "Kustom",
+              "name": "Kustom Kit Executive premium Oxford shirt long-sleeved (classic fit)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK143",
+              "brand": "Kustom",
+              "name": "Kustom Kit Long sleeve Superwash® 60° piqué shirt (tailored fit)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK131",
+              "brand": "Kustom",
+              "name": "Kustom Kit Tailored business shirt long-sleeved (tailored fit)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK188",
+              "brand": "Kustom",
+              "name": "Kustom Kit Premium Oxford shirt long-sleeved (tailored fit)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "K743F",
+              "brand": "Kustom",
+              "name": "Kustom Kit Business blouse long-sleeved (tailored fit)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "K742F",
+              "brand": "Kustom",
+              "name": "Kustom Kit Business blouse short-sleeved (tailored fit)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK715",
+              "brand": "Kustom",
+              "name": "Kustom Kit Contiental ¾ sleeve blouse womens",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK727",
+              "brand": "Kustom",
+              "name": "Kustom Kit Women's continental blouse mandarin collar cap sleeve (tailored fit)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK702",
+              "brand": "Kustom",
+              "name": "Kustom Kit Women's corporate Oxford blouse long-sleeved (tailored fit)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK701",
+              "brand": "Kustom",
+              "name": "Kustom Kit Women's corporate Oxford blouse short-sleeved (tailored fit)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK261",
+              "brand": "Kustom",
+              "name": "Kustom Kit Women's mandarin collar shirt long-sleeved (tailored fit)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK242",
+              "brand": "Kustom",
+              "name": "Kustom Kit Women's poplin shirt long sleeve",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK241",
+              "brand": "Kustom",
+              "name": "Kustom Kit Women's poplin shirt short sleeve",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK782",
+              "brand": "Kustom",
+              "name": "Kustom Kit Women's stretch Oxford shirt long-sleeved (tailored fit)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK361",
+              "brand": "Kustom",
+              "name": "Kustom Kit Women's workplace Oxford blouse long-sleeved (tailored fit)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK140",
+              "brand": "Kustom",
+              "name": "Kustom Kit Workforce shirt long-sleeved (classic fit)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK100",
+              "brand": "Kustom",
+              "name": "Kustom Kit Workforce shirt short-sleeved (classic fit)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK351",
+              "brand": "Kustom",
+              "name": "Kustom Kit Workplace Oxford shirt long-sleeved (classic fit)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK350",
+              "brand": "Kustom",
+              "name": "Kustom Kit Workplace Oxford shirt short-sleeved (classic fit)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "NS503",
+              "brand": "Native",
+              "name": "Native Spirit Ladies Washed Long Sleeve Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "NS502",
+              "brand": "Native",
+              "name": "Native Spirit Washed Long Sleeve Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "03198",
+              "brand": "NEOBLU",
+              "name": "NEOBLU Balthazar Jersey Long Sleeve Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "03199",
+              "brand": "NEOBLU",
+              "name": "NEOBLU Ladies Balthazar Jersey Long Sleeve Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "N103M",
+              "brand": "Nimbus",
+              "name": "Nimbus Kingston – stretch deluxe piqué shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "N101M",
+              "brand": "Nimbus",
+              "name": "Nimbus Portland modern fit – super non-iron business shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "N102M",
+              "brand": "Nimbus",
+              "name": "Nimbus Portland slim fit – super non-iron business shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "NB45M",
+              "brand": "Nimbus",
+              "name": "Nimbus Rochester modern fit – classic Oxford shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "NB66M",
+              "brand": "Nimbus",
+              "name": "Nimbus Rochester Slim Fit – classic Oxford shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "N108M",
+              "brand": "Nimbus",
+              "name": "Nimbus Torrance modern fit – raw and stylish denim shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "NB65M",
+              "brand": "Nimbus",
+              "name": "Nimbus Torrance slim fit – raw and stylish denim shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "N103F",
+              "brand": "Nimbus",
+              "name": "Nimbus Women’s Kingston – stretch deluxe piqué shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "N101F",
+              "brand": "Nimbus",
+              "name": "Nimbus Women’s Portland – super non-iron business shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "NB45F",
+              "brand": "Nimbus",
+              "name": "Nimbus Women’s Rochester – classic Oxford shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "NM009",
+              "brand": "New",
+              "name": "New Morning Studios Regular fit long sleeve shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR204",
+              "brand": "Premier",
+              "name": "Premier Poplin fitted long sleeve shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR238",
+              "brand": "Premier",
+              "name": "Premier Long Sleeve Striped Oxford Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR220",
+              "brand": "Premier",
+              "name": "Premier Microcheck (Gingham) long sleeve cotton shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR222",
+              "brand": "Premier",
+              "name": "Premier Jeans stitch denim shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR252",
+              "brand": "Premier",
+              "name": "Premier Maxton check long sleeve shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR221",
+              "brand": "Premier",
+              "name": "Premier Microcheck (Gingham) short sleeve cotton shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR350",
+              "brand": "Premier",
+              "name": "Premier Women's Mulligan check cotton long sleeve shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR250",
+              "brand": "Premier",
+              "name": "Premier Mulligan check cotton long sleeve shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR234",
+              "brand": "Premier",
+              "name": "Premier Signature Oxford long sleeve shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR236",
+              "brand": "Premier",
+              "name": "Premier Signature Oxford short sleeve shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR246",
+              "brand": "Premier",
+              "name": "Premier Stretch fit cotton poplin short sleeve shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR207",
+              "brand": "Premier",
+              "name": "Premier Supreme poplin long sleeve shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR209",
+              "brand": "Premier",
+              "name": "Premier Supreme poplin short sleeve shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR305",
+              "brand": "Premier",
+              "name": "Premier Women's ¾ sleeve poplin blouse",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR358",
+              "brand": "Premier",
+              "name": "Premier Women's banded collar 'grandad' shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR320",
+              "brand": "Premier",
+              "name": "Premier Women's Microcheck (Gingham) long sleeve cotton shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR322",
+              "brand": "Premier",
+              "name": "Premier Women's jeans stitch denim shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR310",
+              "brand": "Premier",
+              "name": "Premier Women's long sleeve pilot shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR352",
+              "brand": "Premier",
+              "name": "Premier Women's Maxton check long sleeve shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR321",
+              "brand": "Premier",
+              "name": "Premier Women's Microcheck (Gingham) short sleeve cotton shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR312",
+              "brand": "Premier",
+              "name": "Premier Women's short sleeve pilot blouse",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR334",
+              "brand": "Premier",
+              "name": "Premier Women's signature Oxford long sleeve shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR336",
+              "brand": "Premier",
+              "name": "Premier Women's signature Oxford short sleeve shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR309",
+              "brand": "Premier",
+              "name": "Premier Women's supreme poplin short sleeve shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "J962M",
+              "brand": "Russell",
+              "name": "Russell Athletic Collection Long sleeve herringbone shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "J932M",
+              "brand": "Russell",
+              "name": "Russell Athletic Collection Long sleeve easycare Oxford shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "J934M",
+              "brand": "Russell",
+              "name": "Russell Athletic Collection Long sleeve polycotton easycare poplin shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "J924M",
+              "brand": "Russell",
+              "name": "Russell Athletic Collection Long sleeve polycotton easycare fitted poplin shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "J936M",
+              "brand": "Russell",
+              "name": "Russell Athletic Collection Long sleeve pure cotton easycare poplin shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "J958M",
+              "brand": "Russell",
+              "name": "Russell Athletic Collection Long sleeve tailored ultimate non-iron shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "J956M",
+              "brand": "Russell",
+              "name": "Russell Athletic Collection Long sleeve ultimate non-iron shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "J960M",
+              "brand": "Russell",
+              "name": "Russell Athletic Collection Long sleeve ultimate stretch shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "J922M",
+              "brand": "Russell",
+              "name": "Russell Athletic Collection Long sleeve easycare tailored Oxford shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "J946M",
+              "brand": "Russell",
+              "name": "Russell Athletic Collection Long sleeve easycare fitted shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "J947M",
+              "brand": "Russell",
+              "name": "Russell Athletic Collection Short sleeve easycare fitted shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "J933M",
+              "brand": "Russell",
+              "name": "Russell Athletic Collection Short sleeve easycare Oxford shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "J963M",
+              "brand": "Russell",
+              "name": "Russell Athletic Collection Short sleeve herringbone shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "J935M",
+              "brand": "Russell",
+              "name": "Russell Athletic Collection Short sleeve polycotton easycare poplin shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "J957M",
+              "brand": "Russell",
+              "name": "Russell Athletic Collection Short sleeve ultimate non-iron shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "J946F",
+              "brand": "Russell",
+              "name": "Russell Athletic Collection Women's ¾ sleeve easycare fitted shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "J932F",
+              "brand": "Russell",
+              "name": "Russell Athletic Collection Women's long sleeve easycare Oxford shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "J962F",
+              "brand": "Russell",
+              "name": "Russell Athletic Collection Women's long sleeve herringbone shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "J934F",
+              "brand": "Russell",
+              "name": "Russell Athletic Collection Women's long sleeve polycotton easycare poplin shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "J924F",
+              "brand": "Russell",
+              "name": "Russell Athletic Collection Women's long sleeve polycotton easycare fitted poplin shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "J956F",
+              "brand": "Russell",
+              "name": "Russell Athletic Collection Women's long sleeve ultimate non-iron shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "J963F",
+              "brand": "Russell",
+              "name": "Russell Athletic Collection Women's short sleeve herringbone shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "J933F",
+              "brand": "Russell",
+              "name": "Russell Athletic Collection Women's short sleeve Oxford shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "J935F",
+              "brand": "Russell",
+              "name": "Russell Athletic Collection Women's short sleeve polycotton easycare poplin shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "J957F",
+              "brand": "Russell",
+              "name": "Russell Athletic Collection Women's short sleeve ultimate non-iron shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "02100",
+              "brand": "SOL'S",
+              "name": "SOL'S Barry Long Sleeve Denim Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "17000",
+              "brand": "SOL'S",
+              "name": "SOL'S Brighton Long Sleeve Fitted Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "02101",
+              "brand": "SOL'S",
+              "name": "SOL'S Ladies Barry Denim Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "17010",
+              "brand": "SOL'S",
+              "name": "SOL'S Ladies Effect 3/4 Sleeve Fitted Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Skirts",
+          "items": [
+            {
+              "code": "BK360",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Concept Sigma Skirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK460",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies One Pluto Skirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Suit Jackets & Blazers",
+          "items": [
+            {
+              "code": "BK210",
+              "brand": "Brook",
+              "name": "Brook Taverner Eclipse Phene Jacket",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK300",
+              "brand": "Brook",
+              "name": "Brook Taverner Concept Zeus Jacket",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK270",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Eclipse Cordelia Jacket",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK350",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Concept Hebe Jacket",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK506",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Jersey Stretch Libra Jacket",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK505",
+              "brand": "Brook",
+              "name": "Brook Taverner Jersey Stretch Rory Jacket",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Sweatshirts",
+          "items": [
+            {
+              "code": "AQ048",
+              "brand": "Asquith",
+              "name": "Asquith & Fox Men's cotton blend ¼ zip sweater",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "ST209",
+              "brand": "Stormtech",
+              "name": "Stormtech Women’s Avalante ¼-zip fleece",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW182",
+              "brand": "Portwest",
+              "name": "Portwest Merino wool crew neck long sleeve top",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK555",
+              "brand": "Brook",
+              "name": "Brook Taverner Dallas 1/4 Zip Jumper",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK546",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Taylor 1/4 Zip Jumper",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK547",
+              "brand": "Brook",
+              "name": "Brook Taverner Copenhagen 1/4 Zip Jumper",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "KB456",
+              "brand": "Kariban",
+              "name": "Kariban Men's full zip sweat jacket",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
               "code": "HB729",
               "brand": "Henbury",
-              "name": "¼ zip jumper",
+              "name": "Henbury ¼ zip jumper",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "HB862",
+              "brand": "Henbury",
+              "name": "Henbury ¼ zip top with wicking finish",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK352",
+              "brand": "Kustom",
+              "name": "Kustom Kit Arundel v-neck sweater long sleeve (classic fit)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK353",
+              "brand": "Kustom",
+              "name": "Kustom Kit Women's Arundel sweater long sleeve (classic fit)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR400",
+              "brand": "Premier",
+              "name": "Premier 'Essential' acrylic v-neck sweater",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR699",
+              "brand": "Premier",
+              "name": "Premier Sleeveless knitted sweater",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
               "code": "PR694",
               "brand": "Premier",
-              "name": "V-neck knitted sweater",
+              "name": "Premier V-neck knitted sweater",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
               "code": "PR696",
               "brand": "Premier",
-              "name": "Women's v-neck knitted sweater",
+              "name": "Premier Women's v-neck knitted sweater",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
-              "code": "HB718",
+              "code": "PR695",
+              "brand": "Premier",
+              "name": "Premier ¼ zip knitted sweater",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "RX200",
+              "brand": "Pro",
+              "name": "Pro RTX Pro Acrylic V Neck Sweater",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "J710M",
+              "brand": "Russell",
+              "name": "Russell Athletic Collection V-neck knitted sweater",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "J716M",
+              "brand": "Russell",
+              "name": "Russell Athletic Collection V-neck sleeveless knitted sweater",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "J710F",
+              "brand": "Russell",
+              "name": "Russell Athletic Collection Women's v-neck knitted sweater",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "90000",
+              "brand": "SOL'S",
+              "name": "SOL'S Galaxy Cotton Acrylic V Neck Sweater",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "H721",
               "brand": "Henbury",
-              "name": "Unisex zip-through cardigan",
+              "name": "Henbury Ladies Lightweight Cotton Acrylic V Neck Sweater",
+              "source": "PenCarrie 2026",
+              "onSite": false
+            },
+            {
+              "code": "TL562",
+              "brand": "Tombo",
+              "name": "Tombo Long-sleeved ¼ zip top",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
-              "code": "KK254",
-              "brand": "Kustom Kit",
-              "name": "Regular fit Arundel 1/4-zip sweater",
+              "code": "TL563",
+              "brand": "Tombo",
+              "name": "Tombo Women's long-sleeved ¼ zip top",
               "source": "Ralawise 2026",
               "onSite": true
-            },
-            {
-              "code": "BK555",
-              "brand": "Brook Taverner",
-              "name": "Dallas 1/4 Zip Jumper",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "BK546",
-              "brand": "Brook Taverner",
-              "name": "Ladies Taylor 1/4 Zip Jumper",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "BK554",
-              "brand": "Brook Taverner",
-              "name": "Ladies Augusta V Neck Cardigan",
-              "source": "PenCarrie 2026",
-              "onSite": false
             }
           ]
         },
         {
-          "name": "Outerwear",
+          "name": "T-Shirts",
           "items": [
             {
-              "code": "RG150",
-              "brand": "Regatta Professional",
-              "name": "Uproar softshell",
+              "code": "TJ018",
+              "brand": "Tee",
+              "name": "Tee Jays Half-zip sweatshirt (5438)",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
-              "code": "RG151",
-              "brand": "Regatta Professional",
-              "name": "Women's Uproar softshell",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "R231M",
-              "brand": "Result Core",
-              "name": "Printable softshell with recycled fleece inner",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "R231F",
-              "brand": "Result Core",
-              "name": "Womens printable softshell with recycled fleece inner",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "RG340",
-              "brand": "Regatta Professional",
-              "name": "Navigate thermal bodywarmer",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR811",
-              "brand": "Premier",
-              "name": "‘Recyclight’ padded gilet",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "UC611",
-              "brand": "Uneek Clothing",
-              "name": "Deluxe Full Zip Soft Shell Jacket",
-              "source": "Uneek 2026",
-              "onSite": false
-            },
-            {
-              "code": "UC613",
-              "brand": "Uneek Clothing",
-              "name": "Ladies Classic Soft Shell Jacket",
-              "source": "Uneek 2026",
-              "onSite": false
-            },
-            {
-              "code": "BK480",
-              "brand": "Brook Taverner",
-              "name": "Lee Core Fleece Jacket",
+              "code": "T5438",
+              "brand": "Tee",
+              "name": "Tee Jays Half Zip Sweatshirt",
               "source": "PenCarrie 2026",
               "onSite": false
             },
             {
-              "code": "BK481",
-              "brand": "Brook Taverner",
-              "name": "Ladies Clare Core Fleece Jacket",
-              "source": "PenCarrie 2026",
-              "onSite": false
+              "code": "HB842",
+              "brand": "Henbury",
+              "name": "Henbury Unisex sustainable ¼-zip sweatshirt",
+              "source": "Ralawise 2026",
+              "onSite": true
             },
             {
-              "code": "BK492",
-              "brand": "Brook Taverner",
-              "name": "Newport Hybrid Jacket",
-              "source": "PenCarrie 2026",
-              "onSite": false
+              "code": "KK335",
+              "brand": "Kustom",
+              "name": "Kustom Kit Regular fit ¼-zip sweatshirt",
+              "source": "Ralawise 2026",
+              "onSite": true
             },
             {
-              "code": "BK493",
-              "brand": "Brook Taverner",
-              "name": "Ladies Enid Hybrid Jacket",
+              "code": "JC031",
+              "brand": "AWDis",
+              "name": "AWDis Just Cool Cool ½ zip sweatshirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "NM003",
+              "brand": "New",
+              "name": "New Morning Studios Oversized Jersey tee",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW543",
+              "brand": "Portwest",
+              "name": "Portwest KX3 Sport tech sweatshirt (KX377)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "RX305",
+              "brand": "ProRTX",
+              "name": "ProRTX Pro ¼-neck zip sweatshirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "J270M",
+              "brand": "Russell",
+              "name": "Russell Athletic Authentic ¼ zip sweatshirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "02088",
+              "brand": "SOL'S",
+              "name": "SOL'S Stan Contrast Zip Neck Sweatshirt",
               "source": "PenCarrie 2026",
-              "onSite": false
+              "onSite": true
+            },
+            {
+              "code": "04234",
+              "brand": "SOL'S",
+              "name": "SOL'S Unisex Conrad 1/4 Zip Sweatshirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "TJ063",
+              "brand": "Tee",
+              "name": "Tee Jays Half-zip (6010)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "TJ058",
+              "brand": "Tee",
+              "name": "Tee Jays Ribbed interlock half-zip (5506)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "TJ043",
+              "brand": "Tee",
+              "name": "Tee Jays Active stretch shirt (4030)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "TJ042",
+              "brand": "Tee",
+              "name": "Tee Jays Women’s stretch luxury shirt (4025)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "TJ041",
+              "brand": "Tee",
+              "name": "Tee Jays Stretch luxury shirt (4024)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "TJ040",
+              "brand": "Tee",
+              "name": "Tee Jays Luxury shirt slim fit (4021)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "TJ039",
+              "brand": "Tee",
+              "name": "Tee Jays Luxury shirt comfort fit (4020)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "TJ038",
+              "brand": "Tee",
+              "name": "Tee Jays Women’s casual twill shirt (4003)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "TJ037",
+              "brand": "Tee",
+              "name": "Tee Jays Casual twill shirt (4002)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "TJ036",
+              "brand": "Tee",
+              "name": "Tee Jays Women’s perfect Oxford shirt (4001)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "TJ035",
+              "brand": "Tee",
+              "name": "Tee Jays Perfect Oxford shirt (4000)",
+              "source": "Ralawise 2026",
+              "onSite": true
             }
           ]
         },
         {
-          "name": "Accessories",
+          "name": "Trousers",
           "items": [
             {
-              "code": "PR750",
-              "brand": "Premier",
-              "name": "'Colours' satin tie",
+              "code": "AQ050",
+              "brand": "Asquith",
+              "name": "Asquith & Fox Men's Classic fit chinos",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
-              "code": "PR700",
+              "code": "AQ060",
+              "brand": "Asquith",
+              "name": "Asquith & Fox Women's Classic fit chinos",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW101",
+              "brand": "Portwest",
+              "name": "Portwest Action trousers (S887) regular fit",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK301",
+              "brand": "Brook",
+              "name": "Brook Taverner Concept Apollo Trousers",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK211",
+              "brand": "Brook",
+              "name": "Brook Taverner Eclipse Phene Trousers",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK401",
+              "brand": "Brook",
+              "name": "Brook Taverner One Mars Trousers",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK512",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Liberty Slim Leg Chino Trousers",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK515",
+              "brand": "Brook",
+              "name": "Brook Taverner Oliver Tailored Trousers",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK271",
+              "brand": "Brook",
+              "name": "Brook Taverner Eclipse Ladies Bianca Trousers",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK304",
+              "brand": "Brook",
+              "name": "Brook Taverner Concept Atlas Trousers",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK303",
+              "brand": "Brook",
+              "name": "Brook Taverner Concept Delta Trousers",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK361",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Concept Aura Trousers",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK213",
+              "brand": "Brook",
+              "name": "Brook Taverner Eclipse Pegasus Trousers",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK511",
+              "brand": "Brook",
+              "name": "Brook Taverner Leo Slim Fit Chino Trousers",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK514",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Carmel Chino Cargo Trousers",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK461",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies One Venus Trousers",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK516",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Eleanor Tailored Trousers",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK513",
+              "brand": "Brook",
+              "name": "Brook Taverner Durham Chino Cargo Trousers",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR701",
               "brand": "Premier",
-              "name": "Work tie",
+              "name": "Premier Clip-on trouser braces",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "FR622",
+              "brand": "Front",
+              "name": "Front Row Women's stretch chinos",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "FR621",
+              "brand": "Front",
+              "name": "Front Row Stretch chinos",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "HB650",
+              "brand": "Henbury",
+              "name": "Henbury Stretch chinos with flex waistband",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "HB651",
+              "brand": "Henbury",
+              "name": "Henbury Women's stretch chinos",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "NS737",
+              "brand": "Native",
+              "name": "Native Spirit Ladies Chino Trousers",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "PW359",
+              "brand": "Portwest",
+              "name": "Portwest Women's stretch cargo trousers (S233) slim fit",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR570",
+              "brand": "Premier",
+              "name": "Premier Women's performance chino jeans",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR560",
+              "brand": "Premier",
+              "name": "Premier Performance chino jeans",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "AQ059",
+              "brand": "Asquith",
+              "name": "Asquith & Fox Men’s ultimate chinos",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Tunics",
+          "items": [
+            {
+              "code": "BK519",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Lockhart Tunic",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Waistcoats",
+          "items": [
+            {
+              "code": "PR622",
+              "brand": "Premier",
+              "name": "Premier Lined polyester waistcoat",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK320",
+              "brand": "Brook",
+              "name": "Brook Taverner Concept Gamma Waistcoat",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK520",
+              "brand": "Brook",
+              "name": "Brook Taverner Memphis Tweed Waistcoat",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK521",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Nashville Tweed Waistcoat",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK370",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Concept Omega Waistcoat",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK470",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies One Luna Waistcoat",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK420",
+              "brand": "Brook",
+              "name": "Brook Taverner One Mercury Waistcoat",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR623",
+              "brand": "Premier",
+              "name": "Premier Women's lined polyester waistcoat",
               "source": "Ralawise 2026",
               "onSite": true
             }
