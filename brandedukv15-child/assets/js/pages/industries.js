@@ -52,7 +52,7 @@
     }
 
     function styles(count) {
-        return count + (count === 1 ? ' style' : ' styles');
+        return count + (count === 1 ? ' item' : ' items');
     }
 
     /* Same destinations product-detail.html redirects /product/<code> to, without the extra hop. */
@@ -729,7 +729,7 @@
             .then(setup)
             .catch(function (error) {
                 console.warn('[industries] Filter data not loaded:', error && error.message);
-                if (moreStatus) moreStatus.innerHTML = 'More styles could not be loaded. <a href="/shop-pc.html">Browse the full shop</a>.';
+                if (moreStatus) moreStatus.innerHTML = 'More items could not be loaded. <a href="/shop-pc.html">Browse the full shop</a>.';
             });
     }
 

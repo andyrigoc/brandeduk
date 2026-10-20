@@ -57,8 +57,9 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     -webkit-tap-highlight-color: transparent;
 }
+.wa-float-close,
 .wa-float-close[hidden] {
-    display: none;
+    display: none !important;
 }
 .wa-float-close:focus-visible {
     outline: 2px solid var(--buk-chat-orange);

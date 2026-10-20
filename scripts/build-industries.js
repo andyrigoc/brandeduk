@@ -5,7 +5,7 @@
  *
  *   node --use-system-ca scripts/build-industries.js --fetch   refresh the product snapshot from the API, then build
  *   node scripts/build-industries.js                           rebuild the HTML from the saved snapshot
- *   node --use-system-ca scripts/build-industries.js --fetch-missing   only re-check codes the last fetch did not find
+ *   node --use-system-ca scripts/build-industries.js --fetch-missing   only fetch codes the last fetch did not find or that are new in industries.json
  *   node --use-system-ca scripts/build-industries.js --fetch-sectors   only refresh the API sector products + filter values
  *
  * Every PDF code the API returns is shown, whatever the PDF says about its site status.
@@ -221,8 +221,9 @@ async function fetchSnapshot(data, previous) {
         }
     }
     if (previous) {
+        /* Re-check codes the last fetch did not find, plus codes added to industries.json since then. */
         const retry = new Set((previous.missing || []).map((entry) => entry.code));
-        for (const code of Array.from(codes.keys())) if (!retry.has(code)) codes.delete(code);
+        for (const code of Array.from(codes.keys())) if (!retry.has(code) && previous.products[code]) codes.delete(code);
     }
 
     const products = previous ? { ...previous.products } : {};
@@ -433,7 +434,7 @@ function headAssets() {
     <link rel="preload" as="fetch" href="/brandedukv15-child/assets/images/ui/cart-icon-loader.json" crossorigin media="(min-width: 700px)">
     <link rel="stylesheet" href="/brandedukv15-child/assets/css/components/cart-lottie-icon.css?v=20260927-cartlottie2">
     <script src="/brandedukv15-child/assets/js/cart-lottie-icon.js?v=20260927-cartlottie2" data-header-cart></script>
-    <script src="/footer-dev/pc-footer.js?v=20261012-services" defer></script>`;
+    <script src="/footer-dev/pc-footer.js?v=20261020-noclose" defer></script>`;
 }
 
 /* Same header and menu as the mobile home (index-mobile.html). industries.js opens the menu and runs
@@ -634,10 +635,10 @@ ${mobileMenu()}
 
     <script>if (window.BrandedPcHeader) window.BrandedPcHeader.mount();</script>
     <script src="/brandedukv15-child/assets/js/vat-toggle.js?v=20251230"></script>
-    <script src="/brandedukv15-child/assets/js/pages/industries.js?v=20261020-suggest" defer></script>
+    <script src="/brandedukv15-child/assets/js/pages/industries.js?v=20261020-items" defer></script>
     <script src="/mobile/js/header-menu.js?v=20261018-drawer" defer></script>
     <script src="/mobile/js/popup-contact.js?v=20261003-consent" defer></script>
-    <script src="/mobile/footer/footer.js?v=20261002-cta-equal" defer></script>
+    <script src="/mobile/footer/footer.js?v=20261020-noclose" defer></script>
 </body>
 </html>
 `;
@@ -800,7 +801,7 @@ function filtersBody(options, priceMin, priceMax) {
     return `<div class="ind-filters__body" data-ind-filters>
                 <div class="filter-group">
                     <h4>Search products</h4>
-                    <input type="search" class="filter-search" placeholder="Search these styles" aria-label="Search these styles" data-ind-search>
+                    <input type="search" class="filter-search" placeholder="Search these items" aria-label="Search these items" data-ind-search>
                 </div>
                 <div class="price-range-section expanded" data-price-min="${priceMin}" data-price-max="${priceMax}">
                     <div class="price-range-header" role="button" tabindex="0" aria-expanded="true">
@@ -834,7 +835,7 @@ function filtersDrawer() {
         </div>
         <div class="filters-dropup__body" data-ind-drawer-body></div>
         <div class="ind-drawer-foot">
-            <button type="button" class="ind-btn ind-btn--primary" data-ind-close-filters>Show <span data-ind-visible-count></span> styles</button>
+            <button type="button" class="ind-btn ind-btn--primary" data-ind-close-filters>Show <span data-ind-visible-count></span> items</button>
         </div>
     </div>
 `;
@@ -949,7 +950,7 @@ function buildSector(slug, sector, data, snapshot, sectorData, logoMap, report) 
     const jsonLd = JSON.stringify({ '@context': 'https://schema.org', '@graph': [breadcrumb, collection] }, null, 2).replace(/</g, '\\u003c');
 
     const quoteMessage = `Hi, I would like a bulk quote for ${sector.title.toLowerCase()}.`;
-    const styles = (count) => `${count} ${count === 1 ? 'style' : 'styles'}`;
+    const styles = (count) => `${count} ${count === 1 ? 'item' : 'items'}`;
     const jumpLinks = groups.map((group) => `<a href="/industries/${slug}#${group.id}" data-ind-chip="${group.id}">${esc(group.name)} <span>${group.cards.length}</span></a>`)
         .concat(extras.length ? [`<a href="/industries/${slug}#${moreId}" data-ind-chip="${moreId}">${esc(moreTitle)} <span>${extras.length}</span></a>`] : [])
         .join('\n                    ');
@@ -968,10 +969,10 @@ function buildSector(slug, sector, data, snapshot, sectorData, logoMap, report) 
                     <h2 id="${moreId}-title">${esc(moreTitle)}</h2>
                     <span class="ind-group__count" data-ind-group-count>${styles(extras.length)}</span>
                 </div>
-                <p class="ind-more__intro">More styles from our ${esc(sector.title.toLowerCase())} range, best sellers first.</p>
+                <p class="ind-more__intro">More items from our ${esc(sector.title.toLowerCase())} range, best sellers first.</p>
                 <div class="products-grid" data-ind-more-grid aria-live="polite"></div>
                 <div class="ind-more__actions">
-                    <p class="ind-more__status" data-ind-more-status>Loading styles&hellip;</p>
+                    <p class="ind-more__status" data-ind-more-status>Loading items&hellip;</p>
                     <button type="button" class="ind-btn ind-btn--ghost" data-ind-more-btn hidden>Show more</button>
                 </div>
             </section>` : '';
@@ -996,7 +997,7 @@ function buildSector(slug, sector, data, snapshot, sectorData, logoMap, report) 
 ${jsonLd}
     </script>
 ${headAssets()}
-<link rel="stylesheet" href="/mobile/css/chat-nav-icon.css?v=20261020b">
+    <link rel="stylesheet" href="/mobile/css/chat-nav-icon.css?v=20261020b">
 </head>
 <body class="ind-page ind-page--sector" data-sector="${slug}" data-ind-data="${CLIENT_DATA_URL}/${slug}.json?v=${ASSET_VERSION}">
 ${mobileHeader()}
@@ -1014,7 +1015,7 @@ ${mobileHeader()}
                 <p class="ind-meta">${styles(totalStyles)} &middot; Prices shown <span data-ind-vat-label>ex VAT</span> &middot; Standard production 7&ndash;10 working days after artwork approval</p>
                 <div class="ind-cta-row">
                     <a class="ind-btn ind-btn--primary" href="/bulk-orders" data-open-contact="1" data-contact-message="${esc(quoteMessage)}">Get a bulk quote</a>
-                    <a class="ind-btn ind-btn--ghost" href="/industries">All industries</a>
+                    <a class="ind-btn ind-btn--ghost" href="/index.html#industries">All industries</a>
                 </div>
             </div>
             <div class="ind-hero__media">
@@ -1046,7 +1047,7 @@ ${mobileHeader()}
                     <div class="ind-active-filters" data-ind-active-filters></div>
                 </div>
                 <div class="ind-empty" data-ind-empty hidden>
-                    <h2>No styles match these filters</h2>
+                    <h2>No items match these filters</h2>
                     <p>Try removing a filter, or ask us for a bulk quote and we will find the right style for you.</p>
                     <button type="button" class="ind-btn ind-btn--ghost" data-ind-clear>Clear all filters</button>
                 </div>
@@ -1092,7 +1093,7 @@ function buildHub(data, report) {
                 <span class="ind-sector-card__media">${sectorImage(slug, sector.title, { lazy: true, sizes: '(min-width: 1100px) 360px, (min-width: 700px) 45vw, 100vw' })}</span>
                 <span class="ind-sector-card__body">
                     <span class="ind-sector-card__title">${esc(sector.title)}</span>
-                    <span class="ind-sector-card__count">${counts[slug]} styles</span>
+                    <span class="ind-sector-card__count">${counts[slug]} items</span>
                     <span class="ind-sector-card__cta">Explore <span aria-hidden="true">&rarr;</span></span>
                 </span>
             </a>`;
@@ -1134,7 +1135,7 @@ function buildHub(data, report) {
 ${jsonLd}
     </script>
 ${headAssets()}
-<link rel="stylesheet" href="/mobile/css/chat-nav-icon.css?v=20261020b">
+    <link rel="stylesheet" href="/mobile/css/chat-nav-icon.css?v=20261020b">
 </head>
 <body class="ind-page ind-page--hub">
 ${mobileHeader()}

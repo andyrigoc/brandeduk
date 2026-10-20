@@ -694,1252 +694,1319 @@
       "metaDescription": "Bib and waist aprons, chef jackets and trousers, bar shirts, waistcoats and polos for restaurants, cafés, bars and hotels, branded with your logo.",
       "intro": "Aprons, chef jackets and trousers, bar and waiter shirts, waistcoats and front-of-house polos for restaurants, cafés, pubs and hotels. Add your logo to give your team a consistent look from kitchen to counter.",
       "url": "/industries/hospitality",
-      "pdfTotal": 170,
+      "pdfTotal": 176,
       "groups": [
         {
-          "name": "Bib aprons",
+          "name": "Aprons",
           "items": [
             {
-              "code": "PR102",
+              "code": "PR155",
               "brand": "Premier",
-              "name": "100% Organic Cotton Bib Apron",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR110",
-              "brand": "Premier",
-              "name": "Striped bib apron",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR112",
-              "brand": "Premier",
-              "name": "Cotton bib apron, organic and Fairtrade certified",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR113",
-              "brand": "Premier",
-              "name": "Cotton denim bib apron, organic and Fairtrade certified",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR115",
-              "brand": "Premier",
-              "name": "Waterproof bib apron",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR120",
-              "brand": "Premier",
-              "name": "Recycled Polyester & Organic Cotton Apron",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR121",
-              "brand": "Premier",
-              "name": "‘Barley’ Contrast Stitch Bib Apron",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR123",
-              "brand": "Premier",
-              "name": "Espresso bib apron",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR126",
-              "brand": "Premier",
-              "name": "Jeans stitch bib apron",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR127",
-              "brand": "Premier",
-              "name": "Domain contrast denim bib apron",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR129",
-              "brand": "Premier",
-              "name": "Cross back 'barista' bib apron",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR130",
-              "brand": "Premier",
-              "name": "Calibre heavy cotton canvas bib apron",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR132",
-              "brand": "Premier",
-              "name": "Chino cotton bib apron",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR134",
-              "brand": "Premier",
-              "name": "District waxed-look denim bib apron",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR136",
-              "brand": "Premier",
-              "name": "Division waxed-look denim bib apron with faux leather",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR144",
-              "brand": "Premier",
-              "name": "Annex Oxford bib apron",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR150",
-              "brand": "Premier",
-              "name": "Colours bib apron",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR154",
-              "brand": "Premier",
-              "name": "Colours bib apron with pocket",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR159",
-              "brand": "Premier",
-              "name": "Colours 2-in-1 apron",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR165",
-              "brand": "Premier",
-              "name": "Essential bib apron",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR181",
-              "brand": "Premier",
-              "name": "‘Artisan’s choice’ double-pocket canvas apron",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR182",
-              "brand": "Premier",
-              "name": "Clip ‘n’ Clasp cross-back bib apron",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR024",
-              "brand": "Premier",
-              "name": "‘Utility 2.0’ vest apron",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PX150",
-              "brand": "Premier",
-              "name": "Colours bib apron - XL",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "WM364",
-              "brand": "Westford Mill",
-              "name": "Fairtrade cotton adult craft apron",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR122",
-              "brand": "Premier",
-              "name": "Regenerate Bib Apron",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "PR162",
-              "brand": "Premier",
-              "name": "Contrast Bib Apron",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "DE100",
-              "brand": "Dennys",
-              "name": "Polyester Bib Apron",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "DE101",
-              "brand": "Dennys",
-              "name": "Polyester Bib Apron with Pocket",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "DE121",
-              "brand": "Dennys",
-              "name": "Bib Apron with Pocket",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "DE141",
-              "brand": "Dennys",
-              "name": "Cross Back Apron",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "DE142",
-              "brand": "Dennys",
-              "name": "Canvas Apron with Metal Eyelets",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "DE143",
-              "brand": "Dennys",
-              "name": "Canvas Apron with Front Split",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "DE145",
-              "brand": "Dennys",
-              "name": "Stripe Bib Apron",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "LE100",
-              "brand": "Le Chef",
-              "name": "Utility Bib Apron",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "LE102",
-              "brand": "Le Chef",
-              "name": "Crossover Bib Apron",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "LE024",
-              "brand": "Le Chef",
-              "name": "Canvas Apron with Leather Tabs",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "04454",
-              "brand": "NEOBLU",
-              "name": "Edgar Poly/Cotton Bib Apron",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "04455",
-              "brand": "NEOBLU",
-              "name": "Erold Cotton Bib Apron",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "88010",
-              "brand": "SOL'S",
-              "name": "Gala Long Bib Apron",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "BR500",
-              "brand": "Brand Lab",
-              "name": "Adjustable Bib Apron",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "BR501",
-              "brand": "Brand Lab",
-              "name": "Adjustable Bib Pocket Apron",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "BR506",
-              "brand": "Brand Lab",
-              "name": "Classic Bib Apron",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "UC940",
-              "brand": "Uneek Clothing",
-              "name": "Bib Apron With Pocket",
-              "source": "Uneek 2026",
-              "onSite": false
-            }
-          ]
-        },
-        {
-          "name": "Waist, bistro & bar aprons",
-          "items": [
-            {
-              "code": "PR105",
-              "brand": "Premier",
-              "name": "Waist apron",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR114",
-              "brand": "Premier",
-              "name": "Cotton waist apron, organic and Fairtrade certified",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR125",
-              "brand": "Premier",
-              "name": "Jeans stitch denim waist apron",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR128",
-              "brand": "Premier",
-              "name": "Domain contrast denim waist apron",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR135",
-              "brand": "Premier",
-              "name": "Division waxed-look denim waist apron",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR137",
-              "brand": "Premier",
-              "name": "Calibre heavy cotton canvas pocket apron",
+              "name": "Premier Colours 3-pocket apron",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
               "code": "PR138",
               "brand": "Premier",
-              "name": "Metro utility hip apron",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR141",
-              "brand": "Premier",
-              "name": "‘Colours collection’ mid-length pocket apron",
+              "name": "Premier Metro utility hip apron",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
               "code": "PR151",
               "brand": "Premier",
-              "name": "Colours mid-length apron",
+              "name": "Premier Colours mid-length apron",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
-              "code": "PR155",
+              "code": "PR125",
               "brand": "Premier",
-              "name": "Colours 3-pocket apron",
+              "name": "Premier Jeans stitch denim waist apron",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
               "code": "PR158",
               "brand": "Premier",
-              "name": "Colours bar apron",
+              "name": "Premier Colours bar apron",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
-              "code": "PR023",
+              "code": "PR128",
               "brand": "Premier",
-              "name": "‘Utility 2.0’ ripstop apron",
+              "name": "Premier Domain contrast denim waist apron",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
-              "code": "PR190",
+              "code": "PR105",
               "brand": "Premier",
-              "name": "‘Swap & Pop’ Customisable Apron – Body",
+              "name": "Premier Waist apron",
               "source": "Ralawise 2026",
               "onSite": true
-            },
-            {
-              "code": "PR191",
-              "brand": "Premier",
-              "name": "‘Swap & Pop’ Customisable Apron – Straps",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "DE106",
-              "brand": "Dennys",
-              "name": "Polyester Waist Apron with Pocket",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "DE115",
-              "brand": "Dennys",
-              "name": "Low Cost Apron",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "DE116",
-              "brand": "Dennys",
-              "name": "Low Cost Apron with Pocket",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "DE117",
-              "brand": "Dennys",
-              "name": "Poly/cotton Apron with Side Pocket",
-              "source": "PenCarrie 2026",
-              "onSite": false
             },
             {
               "code": "DE122",
               "brand": "Dennys",
-              "name": "Waist Apron with Pocket",
+              "name": "Dennys Waist Apron with Pocket",
               "source": "PenCarrie 2026",
-              "onSite": false
+              "onSite": true
             },
             {
-              "code": "DE123",
-              "brand": "Dennys",
-              "name": "Bar Apron with Pocket",
-              "source": "PenCarrie 2026",
-              "onSite": false
+              "code": "PR114",
+              "brand": "Premier",
+              "name": "Premier Cotton waist apron, organic and Fairtrade certified",
+              "source": "Ralawise 2026",
+              "onSite": true
             },
             {
-              "code": "DE124",
-              "brand": "Dennys",
-              "name": "Wrap Over Waist Apron",
-              "source": "PenCarrie 2026",
-              "onSite": false,
-              "apiCode": "DDP33",
-              "apiCodeNote": "Same Dennys apron, listed in the API under its Ralawise code."
-            },
-            {
-              "code": "DE125",
-              "brand": "Dennys",
-              "name": "Zip Pocket Apron",
-              "source": "PenCarrie 2026",
-              "onSite": false
+              "code": "PR135",
+              "brand": "Premier",
+              "name": "Premier Division waxed-look denim waist apron",
+              "source": "Ralawise 2026",
+              "onSite": true
             },
             {
               "code": "DE126",
               "brand": "Dennys",
-              "name": "Money Pocket Apron",
+              "name": "Dennys Money Pocket Apron",
               "source": "PenCarrie 2026",
-              "onSite": false
+              "onSite": true
             },
             {
-              "code": "DE127",
+              "code": "DE121",
               "brand": "Dennys",
-              "name": "Denim Waist Apron",
+              "name": "Dennys Bib Apron with Pocket",
               "source": "PenCarrie 2026",
-              "onSite": false
+              "onSite": true
             },
             {
-              "code": "LE101",
-              "brand": "Le Chef",
-              "name": "Utility Waist Apron",
+              "code": "DE123",
+              "brand": "Dennys",
+              "name": "Dennys Bar Apron with Pocket",
               "source": "PenCarrie 2026",
-              "onSite": false
+              "onSite": true
             },
             {
-              "code": "04456",
-              "brand": "NEOBLU",
-              "name": "Emile Cotton Waist Apron",
-              "source": "PenCarrie 2026",
-              "onSite": false
+              "code": "PR154",
+              "brand": "Premier",
+              "name": "Premier Colours bib apron with pocket",
+              "source": "Ralawise 2026",
+              "onSite": true
             },
             {
-              "code": "88020",
-              "brand": "SOL'S",
-              "name": "Greenwich Apron",
+              "code": "PR150",
+              "brand": "Premier",
+              "name": "Premier Colours bib apron",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR115",
+              "brand": "Premier",
+              "name": "Premier Waterproof bib apron",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "DE100",
+              "brand": "Dennys",
+              "name": "Dennys Polyester Bib Apron",
               "source": "PenCarrie 2026",
-              "onSite": false
+              "onSite": true
             }
           ]
         },
         {
-          "name": "Tabards & tunic aprons",
+          "name": "Chef Jackets & Shirts",
           "items": [
-            {
-              "code": "PR171",
-              "brand": "Premier",
-              "name": "Pocket tabard",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR172",
-              "brand": "Premier",
-              "name": "Long length pocket tabard",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR174",
-              "brand": "Premier",
-              "name": "Waterproof wrap around tunic",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR177",
-              "brand": "Premier",
-              "name": "Wrap-around tunic",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "DE111",
-              "brand": "Dennys",
-              "name": "Tabard with Pocket",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "DV250",
-              "brand": "Warrior",
-              "name": "Pocket Tabard",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "UC920",
-              "brand": "Uneek Clothing",
-              "name": "Heavyweight Tabard",
-              "source": "Uneek 2026",
-              "onSite": false
-            }
-          ]
-        },
-        {
-          "name": "Chef jackets",
-          "items": [
-            {
-              "code": "PR656",
-              "brand": "Premier",
-              "name": "Short sleeve chef’s jacket",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
             {
               "code": "PR657",
               "brand": "Premier",
-              "name": "Long sleeve chef’s jacket",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR660",
-              "brand": "Premier",
-              "name": "Denim chef's jacket",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR664",
-              "brand": "Premier",
-              "name": "Studded front short sleeve chef's jacket",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR665",
-              "brand": "Premier",
-              "name": "Studded front long sleeve chef's jacket",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR670",
-              "brand": "Premier",
-              "name": "Women's short sleeve chef's jacket",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR671",
-              "brand": "Premier",
-              "name": "Women's long sleeve chef's jacket",
+              "name": "Premier Long sleeve chef’s jacket",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
               "code": "PR900",
               "brand": "Premier",
-              "name": "Chef's essential short sleeve jacket",
+              "name": "Premier Chef's essential short sleeve jacket",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
-              "code": "PR901",
+              "code": "PR664",
               "brand": "Premier",
-              "name": "Chef's essential long sleeve jacket",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR902",
-              "brand": "Premier",
-              "name": "Chefs Coolchecker® short sleeve jacket",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR903",
-              "brand": "Premier",
-              "name": "Chef's Coolchecker® long sleeve jacket",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR906",
-              "brand": "Premier",
-              "name": "Chef's zip-close short sleeve jacket",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "AF001",
-              "brand": "Dennys",
-              "name": "Long Sleeve Chef's Jacket",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "AF002",
-              "brand": "Dennys",
-              "name": "Short Sleeve Chef's Jacket",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "AF005",
-              "brand": "ADC",
-              "name": "Short Sleeve Coolmax® Chef's Jacket",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "AF007",
-              "brand": "ADC",
-              "name": "Short Sleeve Asymmetric Chef's Jacket",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "DE001",
-              "brand": "Dennys",
-              "name": "Long Sleeve Press Stud Chef's Jacket",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "DE002",
-              "brand": "Dennys",
-              "name": "Short Sleeve Press Stud Chef's Jacket",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "DE005",
-              "brand": "Dennys",
-              "name": "Ladies Long Sleeve Premium Chef's Jacket",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "DE006",
-              "brand": "Dennys",
-              "name": "Ladies Short Sleeve Premium Chef's Jacket",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "LE001",
-              "brand": "Le Chef",
-              "name": "Long Sleeve Academy Tunic",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "LE002",
-              "brand": "Le Chef",
-              "name": "Short Sleeve Academy Tunic",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "LE003",
-              "brand": "Le Chef",
-              "name": "Short Sleeve Executive Jacket",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "LE004",
-              "brand": "Le Chef",
-              "name": "StayCool® Prep Jacket",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "LE011",
-              "brand": "Le Chef",
-              "name": "Long Sleeve Luxe Jacket",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "LE013",
-              "brand": "Le Chef",
-              "name": "Staycool® Tencel™/Polyester Short Sleeve Jacket",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "LE015",
-              "brand": "Le Chef",
-              "name": "Staycool® Tencel™/Polyester Short Sleeve Tunic",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "04458",
-              "brand": "NEOBLU",
-              "name": "Long Sleeve Chef's Jacket",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "04459",
-              "brand": "NEOBLU",
-              "name": "Ladies Long Sleeve Chef's Jacket",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            }
-          ]
-        },
-        {
-          "name": "Chef shirts & tees",
-          "items": [
-            {
-              "code": "PR646",
-              "brand": "Premier",
-              "name": "Essential Coolchecker® short sleeve chef’s shirt",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR647",
-              "brand": "Premier",
-              "name": "Essential Coolchecker® long sleeve chef’s shirt",
+              "name": "Premier Studded front short sleeve chef's jacket",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
               "code": "PR649",
               "brand": "Premier",
-              "name": "Chef's Coolchecker® t-shirt",
+              "name": "Premier Chef's Coolchecker® t-shirt",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
-              "code": "PR904",
+              "code": "PR901",
               "brand": "Premier",
-              "name": "Chef's 'Recyclight' Short Sleeve Shirt",
+              "name": "Premier Chef's essential long sleeve jacket",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
-              "code": "DE146",
-              "brand": "Dennys",
-              "name": "StayCool® Chef T-Shirt",
-              "source": "PenCarrie 2026",
-              "onSite": false
+              "code": "PR656",
+              "brand": "Premier",
+              "name": "Premier Short sleeve chef’s jacket",
+              "source": "Ralawise 2026",
+              "onSite": true
             },
             {
-              "code": "LE008",
-              "brand": "Le Chef",
-              "name": "Knitted Piqué Chef's Shirt",
+              "code": "PR665",
+              "brand": "Premier",
+              "name": "Premier Studded front long sleeve chef's jacket",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR906",
+              "brand": "Premier",
+              "name": "Premier Chef's zip-close short sleeve jacket",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR670",
+              "brand": "Premier",
+              "name": "Premier Women's short sleeve chef's jacket",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR671",
+              "brand": "Premier",
+              "name": "Premier Women's long sleeve chef's jacket",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR660",
+              "brand": "Premier",
+              "name": "Premier Denim chef's jacket",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR903",
+              "brand": "Premier",
+              "name": "Premier Chef's Coolchecker® long sleeve jacket",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR646",
+              "brand": "Premier",
+              "name": "Premier Essential Coolchecker® short sleeve chef’s shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "LE003",
+              "brand": "Le",
+              "name": "Le Chef Short Sleeve Executive Jacket",
               "source": "PenCarrie 2026",
-              "onSite": false
+              "onSite": true
+            },
+            {
+              "code": "LE011",
+              "brand": "Le",
+              "name": "Le Chef Long Sleeve Luxe Jacket",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "LE004",
+              "brand": "Le",
+              "name": "Le Chef StayCool® Prep Jacket",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "DE006",
+              "brand": "Dennys",
+              "name": "Dennys Ladies Short Sleeve Premium Chef's Jacket",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "DE001",
+              "brand": "Dennys",
+              "name": "Dennys Long Sleeve Press Stud Chef's Jacket",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "DE002",
+              "brand": "Dennys",
+              "name": "Dennys Short Sleeve Press Stud Chef's Jacket",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "DD08S",
+              "brand": "Dennys",
+              "name": "Dennys Chef S/S Jacket",
+              "source": "Absolute Apparel 2026",
+              "onSite": true
+            },
+            {
+              "code": "DD08",
+              "brand": "Dennys",
+              "name": "Dennys Chef L/S Jacket",
+              "source": "Absolute Apparel 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR647",
+              "brand": "Premier",
+              "name": "Premier Essential Coolchecker® long sleeve chef’s shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
             }
           ]
         },
         {
-          "name": "Chef trousers",
+          "name": "Chef Trousers",
           "items": [
-            {
-              "code": "PR552",
-              "brand": "Premier",
-              "name": "Pull-on chef’s trousers",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
             {
               "code": "PR553",
               "brand": "Premier",
-              "name": "Essential chef's trousers",
+              "name": "Premier Essential chef's trousers",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
-              "code": "PR554",
+              "code": "PR552",
               "brand": "Premier",
-              "name": "Chef's select slim leg trousers",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR555",
-              "brand": "Premier",
-              "name": "Chef's essential cargo pocket trousers",
+              "name": "Premier Pull-on chef’s trousers",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
               "code": "PR556",
               "brand": "Premier",
-              "name": "Chef's artisan jogger bottoms",
+              "name": "Premier Chef's artisan jogger bottoms",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
-              "code": "PR557",
+              "code": "PR554",
               "brand": "Premier",
-              "name": "Chef's 'Recyclight' Cargo Trousers",
+              "name": "Premier Chef's select slim leg trousers",
               "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR555",
+              "brand": "Premier",
+              "name": "Premier Chef's essential cargo pocket trousers",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "LE020",
+              "brand": "Le",
+              "name": "Le Chef Professional Trousers",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "DE020",
+              "brand": "Dennys",
+              "name": "Dennys Unisex Elasticated Chef's Trousers",
+              "source": "PenCarrie 2026",
               "onSite": true
             },
             {
               "code": "AF020",
               "brand": "Dennys",
-              "name": "Elasticated Chef's Trousers",
+              "name": "Dennys Elasticated Chef's Trousers",
               "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "AF021",
-              "brand": "ADC",
-              "name": "Slim Fit Stretch Trousers",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "AF022",
-              "brand": "ADC",
-              "name": "Ladies Slim Fit Stretch Trousers",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "DE020",
-              "brand": "Dennys",
-              "name": "Unisex Elasticated Chef's Trousers",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "LE020",
-              "brand": "Le Chef",
-              "name": "Professional Trousers",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "LE021",
-              "brand": "Le Chef",
-              "name": "Prep Trousers",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "04457",
-              "brand": "NEOBLU",
-              "name": "Unisex Chef's Trousers",
-              "source": "PenCarrie 2026",
-              "onSite": false
+              "onSite": true
             }
           ]
         },
         {
-          "name": "Chef hats, skull caps & neckwear",
+          "name": "Chef Hats & Headwear",
           "items": [
             {
               "code": "PR648",
               "brand": "Premier",
-              "name": "Turn-up chef's hat",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR653",
-              "brand": "Premier",
-              "name": "Chef's skull cap",
+              "name": "Premier Turn-up chef's hat",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
               "code": "PR658",
               "brand": "Premier",
-              "name": "Chef's zandana",
+              "name": "Premier Chef's zandana",
               "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR653",
+              "brand": "Premier",
+              "name": "Premier Chef's skull cap",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "DE034",
+              "brand": "Dennys",
+              "name": "Dennys Unisex Trilby",
+              "source": "PenCarrie 2026",
               "onSite": true
             },
             {
               "code": "DE030",
               "brand": "Dennys",
-              "name": "Skull Cap Double Band",
+              "name": "Dennys Skull Cap Double Band",
               "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "DE033",
-              "brand": "Dennys",
-              "name": "Tall Chef's Hat",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "DE035",
-              "brand": "Dennys",
-              "name": "Budget Skull Cap",
-              "source": "PenCarrie 2026",
-              "onSite": false
+              "onSite": true
             },
             {
               "code": "LE030",
-              "brand": "Le Chef",
-              "name": "Skull Cap",
+              "brand": "Le",
+              "name": "Le Chef Skull Cap",
               "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "AF030",
-              "brand": "ADC",
-              "name": "Coolmax® Bandana",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            }
-          ]
-        },
-        {
-          "name": "Kitchen footwear",
-          "items": [
-            {
-              "code": "PR910",
-              "brand": "Premier",
-              "name": "Chef’s non-slip ‘Anchor’ clogs",
-              "source": "Ralawise 2026",
               "onSite": true
             }
           ]
         },
         {
-          "name": "Bar & waiter shirts",
+          "name": "Tabards & Tunics",
           "items": [
             {
-              "code": "PR200",
+              "code": "PR177",
               "brand": "Premier",
-              "name": "Long sleeve poplin shirt",
+              "name": "Premier Wrap-around tunic",
               "source": "Ralawise 2026",
               "onSite": true
             },
+            {
+              "code": "DE111",
+              "brand": "Dennys",
+              "name": "Dennys Tabard with Pocket",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Shirts",
+          "items": [
             {
               "code": "PR202",
               "brand": "Premier",
-              "name": "Short sleeve poplin shirt",
+              "name": "Premier Short sleeve poplin shirt",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
-              "code": "PR300",
+              "code": "PR200",
               "brand": "Premier",
-              "name": "Women's poplin long sleeve blouse",
+              "name": "Premier Long sleeve poplin shirt",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
-              "code": "PR302",
+              "code": "PR204",
               "brand": "Premier",
-              "name": "Women's short sleeve poplin blouse",
+              "name": "Premier Poplin fitted long sleeve shirt",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
-              "code": "PR234",
+              "code": "PR244",
               "brand": "Premier",
-              "name": "Signature Oxford long sleeve shirt",
+              "name": "Premier Stretch fit cotton poplin long sleeve shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "J924M",
+              "brand": "Russell",
+              "name": "Russell Athletic Collection Long sleeve polycotton easycare fitted poplin shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "J935M",
+              "brand": "Russell",
+              "name": "Russell Athletic Collection Short sleeve polycotton easycare poplin shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK242",
+              "brand": "Kustom",
+              "name": "Kustom Kit Women's poplin shirt long sleeve",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR246",
+              "brand": "Premier",
+              "name": "Premier Stretch fit cotton poplin short sleeve shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK152",
+              "brand": "Brook",
+              "name": "Brook Taverner Rosello Short Sleeve Poplin Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "J934M",
+              "brand": "Russell",
+              "name": "Russell Athletic Collection Long sleeve polycotton easycare poplin shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK586",
+              "brand": "Brook",
+              "name": "Brook Taverner Lawrence Long Sleeve Stretch Oxford Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR218",
+              "brand": "Premier",
+              "name": "Premier Long John roll-sleeve tee",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK590",
+              "brand": "Brook",
+              "name": "Brook Taverner Ortona Classic Fit Long Sleeve Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK154",
+              "brand": "Brook",
+              "name": "Brook Taverner Alba Long Sleeve Slim Fit Poplin Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK142",
+              "brand": "Kustom",
+              "name": "Kustom Kit Poplin shirt long-sleeved (tailored fit)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK134",
+              "brand": "Brook",
+              "name": "Brook Taverner Juno Long Sleeve Poplin Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK582",
+              "brand": "Brook",
+              "name": "Brook Taverner Toronto Long Sleeve Oxford Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR318",
+              "brand": "Premier",
+              "name": "Premier Women's Long John roll-sleeve tee",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK150",
+              "brand": "Brook",
+              "name": "Brook Taverner Rapino Long Sleeve Poplin Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK141",
+              "brand": "Kustom",
+              "name": "Kustom Kit Poplin shirt short-sleeved (tailored fit)",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR209",
+              "brand": "Premier",
+              "name": "Premier Supreme poplin short sleeve shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR252",
+              "brand": "Premier",
+              "name": "Premier Maxton check long sleeve shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR207",
+              "brand": "Premier",
+              "name": "Premier Supreme poplin long sleeve shirt",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
               "code": "PR258",
               "brand": "Premier",
-              "name": "Banded collar grandad long sleeve shirt",
+              "name": "Premier Banded collar grandad long sleeve shirt",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
-              "code": "PR220",
+              "code": "PR238",
               "brand": "Premier",
-              "name": "Microcheck (Gingham) long sleeve cotton shirt",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR320",
-              "brand": "Premier",
-              "name": "Women's Microcheck (Gingham) long sleeve cotton shirt",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR222",
-              "brand": "Premier",
-              "name": "Jeans stitch denim shirt",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "BK578",
-              "brand": "Brook Taverner",
-              "name": "Volterra Long Sleeve Grandad Collar Shirt",
+              "name": "Premier Long Sleeve Striped Oxford Shirt",
               "source": "PenCarrie 2026",
-              "onSite": false
+              "onSite": true
+            },
+            {
+              "code": "PR250",
+              "brand": "Premier",
+              "name": "Premier Mulligan check cotton long sleeve shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "HB515",
+              "brand": "Henbury",
+              "name": "Henbury Short sleeve classic Oxford shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
             },
             {
               "code": "BK580",
-              "brand": "Brook Taverner",
-              "name": "Montana Gingham Long Sleeve Shirt",
+              "brand": "Brook",
+              "name": "Brook Taverner Montana Gingham Long Sleeve Shirt",
               "source": "PenCarrie 2026",
-              "onSite": false
+              "onSite": true
+            },
+            {
+              "code": "J936M",
+              "brand": "Russell",
+              "name": "Russell Athletic Collection Long sleeve pure cotton easycare poplin shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK130",
+              "brand": "Brook",
+              "name": "Brook Taverner Pisa Long Sleeve Slim Fit Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Blouses & Ladies Tops",
+          "items": [
+            {
+              "code": "PR302",
+              "brand": "Premier",
+              "name": "Premier Women's short sleeve poplin blouse",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR305",
+              "brand": "Premier",
+              "name": "Premier Women's ¾ sleeve poplin blouse",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR300",
+              "brand": "Premier",
+              "name": "Premier Women's poplin long sleeve blouse",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK142",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Verona Short Sleeve Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK140",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Felina Short Sleeve Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK591",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Silvi Fitted Long Sleeve Blouse",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK241",
+              "brand": "Kustom",
+              "name": "Kustom Kit Women's poplin shirt short sleeve",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK151",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Palena Long Sleeve Poplin Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK135",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Selene Long Sleeve Poplin Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR346",
+              "brand": "Premier",
+              "name": "Premier Women's stretch fit cotton poplin short sleeve blouse",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK153",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Paduli Short Sleeve Poplin Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR344",
+              "brand": "Premier",
+              "name": "Premier Women's stretch fit cotton poplin long sleeve blouse",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK587",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Mirabel Long Sleeve Stretch Oxford Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR309",
+              "brand": "Premier",
+              "name": "Premier Women's supreme poplin short sleeve shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR352",
+              "brand": "Premier",
+              "name": "Premier Women's Maxton check long sleeve shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "J935F",
+              "brand": "Russell",
+              "name": "Russell Athletic Collection Women's short sleeve polycotton easycare poplin shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR307",
+              "brand": "Premier",
+              "name": "Premier Women's supreme poplin long sleeve shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR350",
+              "brand": "Premier",
+              "name": "Premier Women's Mulligan check cotton long sleeve shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK133",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Soave Short Sleeve Poplin Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "J924F",
+              "brand": "Russell",
+              "name": "Russell Athletic Collection Women's long sleeve polycotton easycare fitted poplin shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
             },
             {
               "code": "BK581",
-              "brand": "Brook Taverner",
-              "name": "Ladies Kansas Gingham Long Sleeve Shirt",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Kansas Gingham Long Sleeve Shirt",
               "source": "PenCarrie 2026",
-              "onSite": false
+              "onSite": true
+            },
+            {
+              "code": "J934F",
+              "brand": "Russell",
+              "name": "Russell Athletic Collection Women's long sleeve polycotton easycare poplin shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "HB518",
+              "brand": "Henbury",
+              "name": "Henbury Women's modern short sleeve Oxford shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK583",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Aspen Long Sleeve Oxford Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
             }
           ]
         },
         {
-          "name": "Waistcoats, ties & knitwear",
-          "items": [
-            {
-              "code": "PR622",
-              "brand": "Premier",
-              "name": "Lined polyester waistcoat",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR623",
-              "brand": "Premier",
-              "name": "Women's lined polyester waistcoat",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR694",
-              "brand": "Premier",
-              "name": "V-neck knitted sweater",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR696",
-              "brand": "Premier",
-              "name": "Women's v-neck knitted sweater",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR700",
-              "brand": "Premier",
-              "name": "Work tie",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR710",
-              "brand": "Premier",
-              "name": "Clip tie",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "PR750",
-              "brand": "Premier",
-              "name": "'Colours' satin tie",
-              "source": "Ralawise 2026",
-              "onSite": true
-            },
-            {
-              "code": "JA020",
-              "brand": "Joseph Alan",
-              "name": "Waistcoat",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "JA021",
-              "brand": "Joseph Alan",
-              "name": "Ladies Waistcoat",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "03166",
-              "brand": "NEOBLU",
-              "name": "Max Suit Waistcoat",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "03167",
-              "brand": "NEOBLU",
-              "name": "Ladies Max Suit Waistcoat",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "BK320",
-              "brand": "Brook Taverner",
-              "name": "Concept Gamma Waistcoat",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "BK370",
-              "brand": "Brook Taverner",
-              "name": "Ladies Concept Omega Waistcoat",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "BK420",
-              "brand": "Brook Taverner",
-              "name": "One Mercury Waistcoat",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "BK470",
-              "brand": "Brook Taverner",
-              "name": "Ladies One Luna Waistcoat",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "BK520",
-              "brand": "Brook Taverner",
-              "name": "Memphis Tweed Waistcoat",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            },
-            {
-              "code": "BK521",
-              "brand": "Brook Taverner",
-              "name": "Ladies Nashville Tweed Waistcoat",
-              "source": "PenCarrie 2026",
-              "onSite": false
-            }
-          ]
-        },
-        {
-          "name": "Front-of-house polos",
+          "name": "Polo Shirts",
           "items": [
             {
               "code": "PR615",
               "brand": "Premier",
-              "name": "Coolchecker® piqué polo",
+              "name": "Premier Coolchecker® piqué polo",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK403",
+              "brand": "Kustom",
+              "name": "Kustom Kit Klassic polo with Superwash® 60°C (classic fit)",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
               "code": "PR616",
               "brand": "Premier",
-              "name": "Women's Coolchecker® piqué polo",
+              "name": "Premier Women's Coolchecker® piqué polo",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "KK703",
+              "brand": "Kustom",
+              "name": "Kustom Kit Klassic polo women's with Superwash® 60°C (classic fit)",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
               "code": "PR630",
               "brand": "Premier",
-              "name": "Coolchecker® plus piqué polo",
+              "name": "Premier Coolchecker® plus piqué polo",
               "source": "Ralawise 2026",
               "onSite": true
             },
             {
-              "code": "UC101",
-              "brand": "Uneek Clothing",
-              "name": "220GSM Classic Pique Poloshirt",
-              "source": "Uneek 2026",
-              "onSite": false
+              "code": "PR618",
+              "brand": "Premier",
+              "name": "Premier Contrast Coolchecker® polo",
+              "source": "Ralawise 2026",
+              "onSite": true
             },
             {
-              "code": "UC106",
-              "brand": "Uneek Clothing",
-              "name": "220GSM Ladies Pique Poloshirt",
-              "source": "Uneek 2026",
-              "onSite": false
+              "code": "PR612",
+              "brand": "Premier",
+              "name": "Premier Coolchecker® studded polo",
+              "source": "Ralawise 2026",
+              "onSite": true
             },
             {
-              "code": "UC108",
-              "brand": "Uneek Clothing",
-              "name": "220GSM Deluxe Poloshirt",
-              "source": "Uneek 2026",
-              "onSite": false
+              "code": "PR619",
+              "brand": "Premier",
+              "name": "Premier Women's contrast Coolchecker® polo",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR617",
+              "brand": "Premier",
+              "name": "Premier Long sleeve Coolchecker® piqué polo",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR632",
+              "brand": "Premier",
+              "name": "Premier Women's Coolchecker® plus piqué polo",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "HB477",
+              "brand": "Henbury",
+              "name": "Henbury Women’s sleeveless Coolplus® polo shirt",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Waistcoats",
+          "items": [
+            {
+              "code": "PR622",
+              "brand": "Premier",
+              "name": "Premier Lined polyester waistcoat",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK470",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies One Luna Waistcoat",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK370",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Concept Omega Waistcoat",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK521",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Nashville Tweed Waistcoat",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR623",
+              "brand": "Premier",
+              "name": "Premier Women's lined polyester waistcoat",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK520",
+              "brand": "Brook",
+              "name": "Brook Taverner Memphis Tweed Waistcoat",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK320",
+              "brand": "Brook",
+              "name": "Brook Taverner Concept Gamma Waistcoat",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK420",
+              "brand": "Brook",
+              "name": "Brook Taverner One Mercury Waistcoat",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Suit Jackets & Blazers",
+          "items": [
+            {
+              "code": "BK270",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Eclipse Cordelia Jacket",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK350",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Concept Hebe Jacket",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK300",
+              "brand": "Brook",
+              "name": "Brook Taverner Concept Zeus Jacket",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK210",
+              "brand": "Brook",
+              "name": "Brook Taverner Eclipse Phene Jacket",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Trousers & Chinos",
+          "items": [
+            {
+              "code": "AQ050",
+              "brand": "Asquith",
+              "name": "Asquith & Fox Men's Classic fit chinos",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR560",
+              "brand": "Premier",
+              "name": "Premier Performance chino jeans",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR552",
+              "brand": "Premier",
+              "name": "Premier Pull-on chef’s trousers",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR570",
+              "brand": "Premier",
+              "name": "Premier Women's performance chino jeans",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "HB651",
+              "brand": "Henbury",
+              "name": "Henbury Women's stretch chinos",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "FR622",
+              "brand": "Front",
+              "name": "Front Row Women's stretch chinos",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK361",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Concept Aura Trousers",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "FR621",
+              "brand": "Front",
+              "name": "Front Row Stretch chinos",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK303",
+              "brand": "Brook",
+              "name": "Brook Taverner Concept Delta Trousers",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "AQ060",
+              "brand": "Asquith",
+              "name": "Asquith & Fox Women's Classic fit chinos",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "HB650",
+              "brand": "Henbury",
+              "name": "Henbury Stretch chinos with flex waistband",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK461",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies One Venus Trousers",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK271",
+              "brand": "Brook",
+              "name": "Brook Taverner Eclipse Ladies Bianca Trousers",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK301",
+              "brand": "Brook",
+              "name": "Brook Taverner Concept Apollo Trousers",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK211",
+              "brand": "Brook",
+              "name": "Brook Taverner Eclipse Phene Trousers",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK304",
+              "brand": "Brook",
+              "name": "Brook Taverner Concept Atlas Trousers",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK213",
+              "brand": "Brook",
+              "name": "Brook Taverner Eclipse Pegasus Trousers",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "R470M",
+              "brand": "Result",
+              "name": "Result Workguard Super-stretch slim chino",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK401",
+              "brand": "Brook",
+              "name": "Brook Taverner One Mars Trousers",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Dresses & Skirts",
+          "items": [
+            {
+              "code": "BK451",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Jersey Stretch Neptune Dress",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK360",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Concept Sigma Skirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK460",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies One Pluto Skirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Knitwear",
+          "items": [
+            {
+              "code": "BK555",
+              "brand": "Brook",
+              "name": "Brook Taverner Dallas 1/4 Zip Jumper",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "BK554",
+              "brand": "Brook",
+              "name": "Brook Taverner Ladies Augusta V Neck Cardigan",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Towels & Slippers",
+          "items": [
+            {
+              "code": "TC013",
+              "brand": "Towel",
+              "name": "Towel City Luxury range golf towel",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "WM701",
+              "brand": "Westford",
+              "name": "Westford Mill Tea towel",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "TC005",
+              "brand": "Towel",
+              "name": "Towel City Luxury range guest towel",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "TC019",
+              "brand": "Towel",
+              "name": "Towel City Microfibre golf towel",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "TC066",
+              "brand": "Towel",
+              "name": "Towel City Waffle mule slippers",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "TC004",
+              "brand": "Towel",
+              "name": "Towel City Luxury range bath towel",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "TC002",
+              "brand": "Towel",
+              "name": "Towel City Luxury range gym towel",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "TC017",
+              "brand": "Towel",
+              "name": "Towel City Microfibre sports towel",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "TC067",
+              "brand": "Towel",
+              "name": "Towel City Open-toe slippers with hook and loop strap",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "TC018",
+              "brand": "Towel",
+              "name": "Towel City Microfibre bath towel",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "TR092",
+              "brand": "TriDri®",
+              "name": "TriDri® Tridri® microfibre quick dry fitness towel",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "TC003",
+              "brand": "Towel",
+              "name": "Towel City Luxury range hand towel",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "TC001",
+              "brand": "Towel",
+              "name": "Towel City Luxury range face cloth",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "TC006",
+              "brand": "Towel",
+              "name": "Towel City Luxury range bath sheet",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "TC034",
+              "brand": "Towel",
+              "name": "Towel City Printable border hand towel",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "TC042",
+              "brand": "Towel",
+              "name": "Towel City Classic range sports towel",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "TC043",
+              "brand": "Towel",
+              "name": "Towel City Classic range hand towel",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "TC044",
+              "brand": "Towel",
+              "name": "Towel City Classic range bath towel",
+              "source": "Ralawise 2026",
+              "onSite": true
+            }
+          ]
+        },
+        {
+          "name": "Accessories",
+          "items": [
+            {
+              "code": "PR701",
+              "brand": "Premier",
+              "name": "Premier Clip-on trouser braces",
+              "source": "Ralawise 2026",
+              "onSite": true
+            },
+            {
+              "code": "PR338",
+              "brand": "Premier",
+              "name": "Premier Ladies Long Sleeve Striped Oxford Shirt",
+              "source": "PenCarrie 2026",
+              "onSite": true
+            },
+            {
+              "code": "HL201",
+              "brand": "Home",
+              "name": "Home & Living Pro Chef double oven glove",
+              "source": "Ralawise 2026",
+              "onSite": true
             }
           ]
         }

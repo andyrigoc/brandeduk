@@ -67,7 +67,7 @@
     <link rel="preload" as="fetch" href="brandedukv15-child/assets/images/ui/cart-icon-loader.json" crossorigin media="(min-width: 700px)">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/cart-lottie-icon.css?v=20260927-cartlottie2">
     <script src="brandedukv15-child/assets/js/cart-lottie-icon.js?v=20260927-cartlottie2" data-header-cart></script>
-    <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20261019-smallchat">
+    <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20261020-noclose">
 
     <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260102b">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -591,7 +591,8 @@
             }
             .ebm-why li + li { border-left: 1px solid #e3e4e8; }
             .ebm-why li svg { width: 34px; height: 34px; color: #111827; }
-            .ebm-industries { margin-top: 24px; text-align: left; }
+            .ebm-industries { text-align: left; }
+            .ebm-industries + .ebm-why { margin-top: 24px; }
             .ebm-industries-head {
                 display: flex;
                 align-items: center;
@@ -2896,23 +2897,6 @@
                 <a class="ebm-shop-btn" href="/index-mobile.html?force=mobile">Start Shopping
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
                 </a>
-                <section class="ebm-why" aria-labelledby="ebmWhyTitle">
-                    <h3 id="ebmWhyTitle">Why choose Branded UK?</h3>
-                    <ul>
-                        <li>
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 3.5 3 6.5l2 4.5 2.5-1V20.5h9V10l2.5 1 2-4.5-5.5-3c-.6 1.7-2 2.8-3.5 2.8s-2.9-1.1-3.5-2.8z"/></svg>
-                            <span>Wide range<br>of products</span>
-                        </li>
-                        <li>
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.2-4.6L16.4 4.2a2 2 0 0 1 2.8 0l.6.6a2 2 0 0 1 0 2.8L8.6 18.8z"/><path d="M14.5 6.1l3.4 3.4"/></svg>
-                            <span>Customisation<br>made easy</span>
-                        </li>
-                        <li>
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6h12v10.5H2z"/><path d="M14 9.5h4l3.5 3.5v3.5H14"/><circle cx="6" cy="18" r="1.8" fill="#fff"/><circle cx="17.5" cy="18" r="1.8" fill="#fff"/></svg>
-                            <span>Fast &amp; reliable<br>quotes</span>
-                        </li>
-                    </ul>
-                </section>
                 <section class="ebm-industries" aria-labelledby="ebmIndustriesTitle">
                     <div class="ebm-industries-head">
                         <h3 id="ebmIndustriesTitle">Shop by Industry</h3>
@@ -2936,6 +2920,23 @@
                             <span>Sport</span>
                         </a>
                     </div>
+                </section>
+                <section class="ebm-why" aria-labelledby="ebmWhyTitle">
+                    <h3 id="ebmWhyTitle">Why choose Branded UK?</h3>
+                    <ul>
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 3.5 3 6.5l2 4.5 2.5-1V20.5h9V10l2.5 1 2-4.5-5.5-3c-.6 1.7-2 2.8-3.5 2.8s-2.9-1.1-3.5-2.8z"/></svg>
+                            <span>Wide range<br>of products</span>
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.2-4.6L16.4 4.2a2 2 0 0 1 2.8 0l.6.6a2 2 0 0 1 0 2.8L8.6 18.8z"/><path d="M14.5 6.1l3.4 3.4"/></svg>
+                            <span>Customisation<br>made easy</span>
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6h12v10.5H2z"/><path d="M14 9.5h4l3.5 3.5v3.5H14"/><circle cx="6" cy="18" r="1.8" fill="#fff"/><circle cx="17.5" cy="18" r="1.8" fill="#fff"/></svg>
+                            <span>Fast &amp; reliable<br>quotes</span>
+                        </li>
+                    </ul>
                 </section>
             </div>
         </div>
@@ -6995,7 +6996,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <!-- Footer (injected from /mobile/footer/footer.html) -->
     <div data-mobile-footer></div>
     <script src="mobile/js/popup-contact.js?v=20261003-consent"></script>
-    <script src="mobile/footer/footer.js?v=20261005-mobilefix" defer></script>
+    <script src="mobile/footer/footer.js?v=20261020-noclose" defer></script>
     <script src="mobile/js/breadcrumbs.js?v=20261018-basket"></script>
 
     <div class="menu-overlay" id="menuOverlay"></div>
