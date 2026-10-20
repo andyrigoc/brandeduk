@@ -1,0 +1,66 @@
+/* Animated chat icon used by the "Chat" item of the mobile bottom bar. */
+
+/* Current page in the bottom bar: orange (footer.css turns --purple violet). */
+.bottom-nav:not(.bottom-nav--v2) > .nav-item.active {
+    color: #ff7100;
+}
+
+.chat-nav-icon {
+    position: relative;
+    display: block;
+    flex: none;
+    width: 28px;
+    height: 28px;
+    /* Keeps the label aligned with the 22px icons of the other items. */
+    margin: -3px 0;
+    border-radius: 50%;
+    background: #ff7100;
+    box-shadow: 0 2px 6px rgba(255, 113, 0, 0.35);
+}
+
+.chat-nav-bubble {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    width: 16px;
+    height: 12px;
+    border: 2px solid #fff;
+    border-radius: 7px 7px 7px 0;
+    transform: translate(-50%, -50%);
+    box-sizing: content-box;
+}
+
+.chat-nav-dot {
+    display: block;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: #fff;
+}
+
+.chat-nav-dot:nth-child(1) { animation: chat-nav-dot1 1s linear infinite; }
+.chat-nav-dot:nth-child(2) { animation: chat-nav-dot2 1s linear infinite; }
+.chat-nav-dot:nth-child(3) { animation: chat-nav-dot3 1s linear infinite; }
+
+@keyframes chat-nav-dot1 {
+    0%, 90%, 100% { transform: translateY(0); }
+    70% { transform: translateY(-3px); }
+}
+
+@keyframes chat-nav-dot2 {
+    0%, 90%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+}
+
+@keyframes chat-nav-dot3 {
+    0%, 90%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-3px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .chat-nav-dot { animation: none !important; }
+}

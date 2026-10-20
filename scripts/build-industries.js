@@ -419,7 +419,7 @@ function headAssets() {
     <link rel="stylesheet" href="/brandedukv15-child/assets/css/components/pc-header.css?v=20261012-homechrome">
     <link rel="stylesheet" href="/brandedukv15-child/assets/css/components/promo-bar.css?v=20260425a">
     <link rel="stylesheet" href="/mobile/css/mobile.css?v=20260923-home-nav">
-    <link rel="stylesheet" href="/mobile/css/header-v2.css?v=20261017-search-vat-spacing">
+    <link rel="stylesheet" href="/mobile/css/header-v2.css?v=20261020-suggest">
     <link rel="stylesheet" href="/mobile/footer/footer.css?v=20260409B">
     <link rel="stylesheet" href="/footer-dev/pc-footer.css?v=20261009-phones">
     <link rel="stylesheet" href="/brandedukv15-child/assets/css/pages/industries.css?v=${ASSET_VERSION}">
@@ -627,14 +627,14 @@ ${mobileMenu()}
             <span class="nav-item-label">Account</span>
         </a>
         <a href="https://wa.me/447447348564" class="nav-item" target="_blank" rel="noopener" data-open-whatsapp aria-label="Chat">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"></path></svg>
+            <span class="chat-nav-icon" aria-hidden="true"><span class="chat-nav-bubble"><span class="chat-nav-dot"></span><span class="chat-nav-dot"></span><span class="chat-nav-dot"></span></span></span>
             <span class="nav-item-label">Chat</span>
         </a>
     </nav>
 
     <script>if (window.BrandedPcHeader) window.BrandedPcHeader.mount();</script>
     <script src="/brandedukv15-child/assets/js/vat-toggle.js?v=20251230"></script>
-    <script src="/brandedukv15-child/assets/js/pages/industries.js?v=${ASSET_VERSION}" defer></script>
+    <script src="/brandedukv15-child/assets/js/pages/industries.js?v=20261020-suggest" defer></script>
     <script src="/mobile/js/header-menu.js?v=20261018-drawer" defer></script>
     <script src="/mobile/js/popup-contact.js?v=20261003-consent" defer></script>
     <script src="/mobile/footer/footer.js?v=20261002-cta-equal" defer></script>
@@ -996,6 +996,7 @@ function buildSector(slug, sector, data, snapshot, sectorData, logoMap, report) 
 ${jsonLd}
     </script>
 ${headAssets()}
+<link rel="stylesheet" href="/mobile/css/chat-nav-icon.css?v=20261020b">
 </head>
 <body class="ind-page ind-page--sector" data-sector="${slug}" data-ind-data="${CLIENT_DATA_URL}/${slug}.json?v=${ASSET_VERSION}">
 ${mobileHeader()}
@@ -1133,6 +1134,7 @@ function buildHub(data, report) {
 ${jsonLd}
     </script>
 ${headAssets()}
+<link rel="stylesheet" href="/mobile/css/chat-nav-icon.css?v=20261020b">
 </head>
 <body class="ind-page ind-page--hub">
 ${mobileHeader()}

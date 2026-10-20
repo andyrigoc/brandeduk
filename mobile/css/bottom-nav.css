@@ -9,7 +9,8 @@
 /* --- Bar items --- */
 .bottom-nav--v2 {
     --bnav-accent: var(--orange, #ea580c);
-    --bnav-active: var(--purple, #273469);
+    /* Literal colour: footer.css redefines --purple globally. */
+    --bnav-active: #ff7100;
     --bnav-idle: var(--gray-500, #5c5b66);
 }
 

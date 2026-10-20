@@ -9,7 +9,29 @@ document.addEventListener('DOMContentLoaded', function() {
     updateCartCount();
     initAccountPanel();
     initBrandsMarqueeLogos();
+    initStickyBarFooterPush();
 });
+
+// The shop's sticky category bar lives directly in <body>, so CSS sticky never releases it and it
+// would sit on top of the footer. Push it up with the footer, like the end of a sticky container.
+function initStickyBarFooterPush() {
+    const bar = document.querySelector('.categories-filter-scroll');
+    if (!bar) return;
+    let ticking = false;
+    const update = () => {
+        ticking = false;
+        const footer = document.querySelector('.mfooter') || document.querySelector('[data-mobile-footer]');
+        if (!footer) return;
+        const stuckTop = parseFloat(getComputedStyle(bar).top) || 0;
+        const overlap = footer.getBoundingClientRect().top - (stuckTop + bar.offsetHeight);
+        bar.style.transform = overlap < 0 ? `translateY(${overlap}px)` : '';
+    };
+    const schedule = () => {
+        if (!ticking) { ticking = true; requestAnimationFrame(update); }
+    };
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule);
+}
 
 // Root-relative so links also work from nested folders such as /blog/articles/.
 function getMobileBaseUrl() {
@@ -285,6 +307,24 @@ function initMobileMenu() {
 // ============================================
 // SEARCH (with live suggestions like main page)
 // ============================================
+// The suggest API also returns category-related items (e.g. chef jackets for "apron");
+// keep only products whose title contains every searched word, or that match the code/brand.
+function filterSuggestByTitle(products, query) {
+    const norm = (s) => String(s || '').toLowerCase();
+    const words = norm(query).split(/[^a-z0-9]+/).filter((w) => w.length >= 2);
+    if (!words.length) return products || [];
+    const variants = words.map((w) => [w, w.replace(/s$/, ''), w.replace(/es$/, '')].filter((v) => v.length >= 2));
+    const hasAll = (text) => variants.every((vs) => vs.some((v) => text.includes(v)));
+    return (products || []).filter((p) => {
+        const title = norm(p.label || p.name);
+        if (hasAll(title)) return true;
+        const code = norm(p.value || p.code);
+        if (code && code.startsWith(norm(query).replace(/\s+/g, ''))) return true;
+        const brand = norm(p.brand || p.brand_name);
+        return !!brand && hasAll(brand + ' ' + title);
+    });
+}
+
 function initSearch() {
     const searchInput = document.getElementById('searchInput');
     const searchNavBtn = document.getElementById('searchNavBtn');
@@ -318,6 +358,7 @@ function initSearch() {
 
         const renderSuggestions = (data, query) => {
             let { products = [] } = data;
+            products = filterSuggestByTitle(products, query);
             // Strip hidden brand names
             products = products.map(p => {
                 let label = p.label || '';

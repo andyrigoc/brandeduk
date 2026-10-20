@@ -10,7 +10,29 @@
 
     var MOBILE_BREAKPOINT = 700;
     var VAT_RATE = 0.20;
-    var FILTER_VISIBLE_LIMIT = 8;
+
+    // The suggest API also returns category-related items (e.g. chef jackets for "apron");
+    // keep only products whose title contains every searched word, or that match the code/brand.
+    function filterSuggestByTitle(products, query) {
+        var norm = function (s) { return String(s || '').toLowerCase(); };
+        var words = norm(query).split(/[^a-z0-9]+/).filter(function (w) { return w.length >= 2; });
+        if (!words.length) return products || [];
+        var variants = words.map(function (w) {
+            return [w, w.replace(/s$/, ''), w.replace(/es$/, '')].filter(function (v) { return v.length >= 2; });
+        });
+        var hasAll = function (text) {
+            return variants.every(function (vs) { return vs.some(function (v) { return text.indexOf(v) !== -1; }); });
+        };
+        var compactQuery = norm(query).replace(/\s+/g, '');
+        return (products || []).filter(function (p) {
+            var title = norm(p.label || p.name);
+            if (hasAll(title)) return true;
+            var code = norm(p.value || p.code);
+            if (code && code.indexOf(compactQuery) === 0) return true;
+            var brand = norm(p.brand || p.brand_name);
+            return !!brand && hasAll(brand + ' ' + title);
+        });
+    }    var FILTER_VISIBLE_LIMIT = 8;
     var ICONS = {
         crown: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 17.5h17"/><path d="M4 17.5 6.2 9.2 10 13.2 12 6.2 14 13.2 17.8 9.2 20 17.5"/><circle cx="6.2" cy="7.4" r="1.15" fill="currentColor" stroke="none"/><circle cx="12" cy="4.6" r="1.15" fill="currentColor" stroke="none"/><circle cx="17.8" cy="7.4" r="1.15" fill="currentColor" stroke="none"/></svg>',
         needle: '<svg viewBox="0 0 40 28" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 8c2.2-3 4-2 5.2.6"/><path d="M2 7.5h12"/><path d="M3 7.5v13M13 7.5v13"/><path d="M2 20.5h12"/><path d="M3.4 11h9.2M3.4 14.2h9.2M3.4 17.2h9.2"/><path d="M13.5 9.5c3-1.4 4.6.4 5.2 2.4"/><path d="M22 5.2 35.2 24"/><circle cx="23.6" cy="7.6" r="1.15" fill="currentColor" stroke="none"/><circle cx="27.2" cy="13" r="0.85" fill="currentColor" stroke="none"/><circle cx="30.4" cy="17.6" r="0.85" fill="currentColor" stroke="none"/><circle cx="33.6" cy="22.2" r="0.85" fill="currentColor" stroke="none"/></svg>',
@@ -751,6 +773,7 @@
         }
 
         function render(products, query) {
+            products = filterSuggestByTitle(products, query);
             if (!products.length) {
                 box.classList.remove('active');
                 return;

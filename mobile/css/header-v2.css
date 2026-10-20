@@ -259,6 +259,12 @@ body:has(.mobile-header--v2) .mobile-header--v2 {
     z-index: 2;
 }
 
+/* The suggestion dropdown lives inside the header, so lift the header above
+   sticky page bars (shop filters, breadcrumbs) only while it is open. */
+body:has(.mobile-header--v2) .mobile-header--v2:has(.search-suggestions.active) {
+    z-index: 10050;
+}
+
 .header-with-promo:has(.mobile-header--v2) + .mobile-main {
     padding-top: 0;
 }

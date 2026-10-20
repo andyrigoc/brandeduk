@@ -18,6 +18,29 @@
     var requestController = null;
     var debounceTimer = null;
     var activeNormalized = '';
+
+    // The suggest API also returns category-related items (e.g. chef jackets for "apron");
+    // keep only products whose title contains every searched word, or that match the code/brand.
+    function filterSuggestByTitle(products, query) {
+        var norm = function (s) { return String(s || '').toLowerCase(); };
+        var words = norm(query).split(/[^a-z0-9]+/).filter(function (w) { return w.length >= 2; });
+        if (!words.length) return products || [];
+        var variants = words.map(function (w) {
+            return [w, w.replace(/s$/, ''), w.replace(/es$/, '')].filter(function (v) { return v.length >= 2; });
+        });
+        var hasAll = function (text) {
+            return variants.every(function (vs) { return vs.some(function (v) { return text.indexOf(v) !== -1; }); });
+        };
+        var compactQuery = norm(query).replace(/\s+/g, '');
+        return (products || []).filter(function (p) {
+            var title = norm(p.label || p.name);
+            if (hasAll(title)) return true;
+            var code = norm(p.value || p.code);
+            if (code && code.indexOf(compactQuery) === 0) return true;
+            var brand = norm(p.brand || p.brand_name);
+            return !!brand && hasAll(brand + ' ' + title);
+        });
+    }
     var suggestCache = Object.create(null);
     var inflightKeys = Object.create(null);
     window.BrandedPcProductCache = window.BrandedPcProductCache || {};
@@ -143,7 +166,7 @@
     function render(payload, query) {
         var brands = Array.isArray(payload.brands) ? payload.brands : [];
         var types = Array.isArray(payload.types) ? payload.types : [];
-        var products = Array.isArray(payload.products) ? payload.products.slice(0, SUGGEST_LIMIT) : [];
+        var products = Array.isArray(payload.products) ? filterSuggestByTitle(payload.products, query).slice(0, SUGGEST_LIMIT) : [];
         var html = '';
 
         if (!brands.length && !types.length && !products.length) {
