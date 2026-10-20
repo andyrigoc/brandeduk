@@ -1086,7 +1086,10 @@
         const positions = {};
 
         if (apiConfig && Array.isArray(apiConfig.positions) && apiConfig.positions.length > 0) {
-            apiConfig.positions.forEach(position => {
+            const orderedApiPositions = apiConfig.positions
+                .filter(position => position && position.isActive !== false)
+                .sort((first, second) => Number(first?.sortOrder ?? 0) - Number(second?.sortOrder ?? 0));
+            orderedApiPositions.forEach((position, index) => {
                 const code = customizationSlugify(position.slug || position.label);
                 const methods = Array.isArray(position.methods) ? position.methods : [];
                 const embroidery = methods.find(method => method.method === 'embroidery' && method.enabled !== false);
@@ -1101,7 +1104,8 @@
                     image: position.imageUrl || position.image_url || '',
                     embroidery: methodPrice(embroidery),
                     print: methodPrice(print),
-                    cssClass: positionCssClass(position.label || code)
+                    cssClass: positionCssClass(position.label || code),
+                    sortOrder: Number(position.sortOrder ?? index)
                 };
             });
             return {
@@ -1193,6 +1197,7 @@
         Object.entries(config.positions).forEach(([positionCode, positionConfig]) => {
             const card = apiPositionCardTemplate.cloneNode(true);
             card.dataset.position = positionCode;
+            card.dataset.sortOrder = positionConfig.sortOrder ?? '';
             card.dataset.embroidery = positionConfig.embroidery || '';
             card.dataset.print = positionConfig.print || '';
             card.classList.remove('selected', 'customized', 'has-logo', 'has-design');
@@ -1272,7 +1277,13 @@
 
         positionGrids.forEach(grid => {
             const cards = Array.from(grid.querySelectorAll('.position-card'));
+            const hasSavedOrder = cards.some(card => card.dataset.sortOrder !== undefined && card.dataset.sortOrder !== '');
             cards.sort((a, b) => {
+                if (hasSavedOrder) {
+                    const orderA = a.dataset.sortOrder === '' ? 999 : Number(a.dataset.sortOrder);
+                    const orderB = b.dataset.sortOrder === '' ? 999 : Number(b.dataset.sortOrder);
+                    return orderA - orderB;
+                }
                 const idxA = positionOrder.indexOf(a.dataset.position);
                 const idxB = positionOrder.indexOf(b.dataset.position);
                 return (idxA === -1 ? 999 : idxA) - (idxB === -1 ? 999 : idxB);
@@ -1332,6 +1343,9 @@
                 
                 const positionConfig = config.positions[position];
                 if (positionConfig) {
+                    if (positionConfig.sortOrder !== undefined && positionConfig.sortOrder !== null) {
+                        card.dataset.sortOrder = positionConfig.sortOrder;
+                    }
                     card.style.display = '';
                     
                     // Update the image
@@ -2730,7 +2744,13 @@
             }
             document.querySelectorAll('#positionOptions, .positions-grid').forEach(grid => {
                 const cards = Array.from(grid.querySelectorAll('.position-card'));
+                const hasSavedOrder = cards.some(card => card.dataset.sortOrder !== undefined && card.dataset.sortOrder !== '');
                 cards.sort((a, b) => {
+                    if (hasSavedOrder) {
+                        const orderA = a.dataset.sortOrder === '' ? 999 : Number(a.dataset.sortOrder);
+                        const orderB = b.dataset.sortOrder === '' ? 999 : Number(b.dataset.sortOrder);
+                        return orderA - orderB;
+                    }
                     const idxA = _positionOrder.indexOf(a.dataset.position);
                     const idxB = _positionOrder.indexOf(b.dataset.position);
                     return (idxA === -1 ? 999 : idxA) - (idxB === -1 ? 999 : idxB);
