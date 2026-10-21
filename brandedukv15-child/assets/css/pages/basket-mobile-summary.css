@@ -1,0 +1,271 @@
+.summary-mobile-only {
+    display: none;
+}
+
+.summary-vat-label {
+    font-size: 10px;
+    font-weight: 400;
+    white-space: nowrap;
+}
+
+.summary-product-card,
+.summary-customisation-card,
+.summary-delivery-card,
+.summary-totals-card {
+    display: contents;
+}
+
+@media (max-width: 699px) {
+    #orderSummaryBottom {
+        padding: 20px 16px;
+        border: 1px solid #dfe4ec;
+        border-radius: 24px;
+        background: #fff;
+        box-shadow: 0 4px 20px rgba(25, 45, 78, .06);
+    }
+
+    #orderSummaryBottom .summary-desktop-only {
+        display: none;
+    }
+
+    #orderSummaryBottom .summary-mobile-only {
+        display: block;
+    }
+
+    #orderSummaryBottom h3 {
+        color: #203b72;
+        font-size: 21px;
+        font-weight: 800;
+        letter-spacing: -.6px;
+    }
+
+    #orderSummaryBottom .order-summary-bottom__header {
+        margin-bottom: 20px;
+    }
+
+    #orderSummaryBottom .order-summary-clear-btn {
+        width: auto;
+        height: auto;
+        padding: 6px 0 6px 8px;
+        color: #ff4545;
+        font-size: 13px;
+        white-space: nowrap;
+    }
+
+    #orderSummaryBottom .order-summary-clear-btn i {
+        display: none;
+    }
+
+    #orderSummaryBottom .summary-section-label {
+        margin: 0 0 12px;
+        color: #8895a7;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+
+    #orderSummaryBottom .summary-product-card,
+    #orderSummaryBottom .summary-customisation-card,
+    #orderSummaryBottom .summary-delivery-card {
+        display: block;
+        margin-bottom: 10px;
+        padding: 14px;
+        border: 1px solid #e1e6ee;
+        border-radius: 12px;
+        background: #fff;
+    }
+
+    #orderSummaryBottom .summary-customisation-card {
+        border-color: #f3d296;
+        background: #fffbf3;
+    }
+
+    #orderSummaryBottom .summary-card-heading,
+    #orderSummaryBottom .summary-breakdown-heading {
+        padding: 0;
+        color: #102238;
+        font-size: 15px;
+        font-weight: 750;
+        gap: 10px;
+    }
+
+    #orderSummaryBottom .summary-card-heading > span:first-child,
+    #orderSummaryBottom .summary-breakdown-title {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    #orderSummaryBottom .summary-card-heading > span:first-child::before,
+    #orderSummaryBottom .summary-breakdown-title::before {
+        content: "";
+        width: 7px;
+        height: 7px;
+        flex: 0 0 7px;
+        border-radius: 2px;
+        background: #acb6c5;
+    }
+
+    #orderSummaryBottom .summary-breakdown-title::before {
+        background: #b57b0a;
+    }
+
+    #orderSummaryBottom .summary-card-heading .summary-val {
+        color: #102238;
+        font-weight: 750;
+    }
+
+    #orderSummaryBottom .summary-card-note {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 14px;
+        color: #8290a3;
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+    #orderSummaryBottom .summary-breakdown-section {
+        border: 0;
+    }
+
+    #orderSummaryBottom .summary-breakdown-title i,
+    #orderSummaryBottom .summary-delivery-note {
+        display: none;
+    }
+
+    #orderSummaryBottom .summary-breakdown-total {
+        color: #a76c05;
+    }
+
+    #orderSummaryBottom .summary-breakdown-list {
+        padding: 10px 0 0;
+    }
+
+    #orderSummaryBottom .summary-detail-row {
+        align-items: baseline;
+        padding: 3px 0;
+        font-size: 12px;
+        line-height: 1.5;
+        color: #8290a3;
+    }
+
+    #orderSummaryBottom .summary-detail-row > span:first-child {
+        min-width: 0;
+    }
+
+    #orderSummaryBottom .summary-detail-row > span:last-child {
+        flex-shrink: 1;
+        text-align: right;
+    }
+
+    #orderSummaryBottom .summary-detail-row span:last-child {
+        color: #65758b;
+        font-weight: 700;
+    }
+
+    #orderSummaryBottom #digitizingFeeRow {
+        padding: 0;
+        margin: 5px 0 0;
+        border-radius: 0;
+        background: transparent;
+    }
+
+    #orderSummaryBottom #digitizingFeeRow .summary-breakdown-heading {
+        display: none;
+    }
+
+    #orderSummaryBottom #digitizingFeeRow .summary-breakdown-list {
+        padding: 0;
+    }
+
+    #orderSummaryBottom #digitizingFeeRow .summary-detail-row span:first-child {
+        color: #8290a3 !important;
+    }
+
+    #orderSummaryBottom #digitizingFeeRow .summary-detail-row span:last-child {
+        color: #65758b !important;
+    }
+
+    #orderSummaryBottom .summary-totals-card {
+        display: block;
+        margin-top: 16px;
+        padding: 14px;
+        border-radius: 12px;
+        background: #f0f4fa;
+    }
+
+    #orderSummaryBottom .summary-totals-card .summary-row {
+        padding: 5px 0;
+        color: #8290a3;
+        font-size: 12px;
+    }
+
+    #orderSummaryBottom .summary-totals-card .summary-val {
+        color: #68788c;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    #orderSummaryBottom .summary-grand-total {
+        align-items: center;
+        gap: 8px;
+        margin-top: 12px;
+        padding: 0;
+        border: 0;
+    }
+
+    #orderSummaryBottom .summary-grand-total span:first-child {
+        color: #102238;
+        font-size: 13px;
+    }
+
+    #orderSummaryBottom .grand-total-val {
+        color: #128044;
+        font-size: clamp(26px, 7.5vw, 34px);
+        font-weight: 800;
+        letter-spacing: -1px;
+        white-space: nowrap;
+    }
+
+    #orderSummaryBottom .summary-assurance {
+        display: flex;
+        align-items: flex-start;
+        gap: 7px;
+        margin-top: 18px;
+        color: #8290a3;
+        font-size: 12px;
+    }
+
+    #orderSummaryBottom .summary-assurance svg {
+        flex: 0 0 16px;
+        width: 16px;
+        height: 16px;
+        color: #289b7d;
+    }
+
+    #orderSummaryBottom .summary-assurance strong {
+        font-weight: 400;
+    }
+
+    #orderSummaryBottom .summary-assurance small {
+        display: block;
+        margin-top: 3px;
+        font-size: 11px;
+    }
+
+    #orderSummaryBottom .btn-checkout-primary {
+        padding: 17px 10px;
+        border-radius: 11px;
+        background: #ff8000;
+        font-size: 14px;
+    }
+
+    #orderSummaryBottom .btn-request-quote {
+        border: 1px solid #dfe4ec;
+        border-radius: 11px;
+        background: #fff;
+        color: #203b72;
+    }
+}

@@ -54,7 +54,7 @@
     <meta name="robots" content="noindex, follow">
     <link rel="canonical" href="https://www.brandeduk.com/basket">
     <meta name="description" content="Review your quote basket and submit your custom workwear order. Add logos, adjust quantities, and get instant pricing for your branded clothing.">
-    <title>Your Quote Basket - BrandedUK</title>
+    <title>Your Basket - BrandedUK</title>
     <link rel="stylesheet" href="mobile/css/mobile.css?v=20261002-logocombo">
     <link rel="stylesheet" href="mobile/css/breadcrumbs.css?v=20260403d">
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20261002-logocombo">
@@ -2581,6 +2581,7 @@
     <link rel="stylesheet" href="mobile/footer/footer.css?v=20260210">
     <link rel="stylesheet" href="/mobile/css/header-v2.css?v=20261020-suggest" media="(max-width: 699px)">
     <link rel="stylesheet" href="/mobile/css/mobile-chrome.css?v=20261018">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/pages/basket-mobile-summary.css?v=20261021-vat">
 </head>
 <body class="basket-page mobile-chrome">
 <div class="mobile-chrome-header">
@@ -2854,7 +2855,7 @@
                 <path d="M15 18l-6-6 6-6"/>
             </svg>
         </button>
-        <h1>Your Quote Basket</h1>
+        <h1>Your Basket</h1>
         <button class="clear-btn" id="clearBasketBtn">Clear All</button>
     </header>
 
@@ -2999,19 +3000,26 @@
             <!-- Order Summary (bottom) -->
             <div class="order-summary-bottom" id="orderSummaryBottom">
                 <div class="order-summary-bottom__header">
-                    <h3>Order summary</h3>
+                    <h3><span class="summary-desktop-only">Order summary</span><span class="summary-mobile-only">Your Basket</span></h3>
                     <button type="button" class="order-summary-clear-btn" id="clearBasketBtnSummary" aria-label="Clear basket" title="Clear basket">
                         <i class="fas fa-trash-alt" aria-hidden="true"></i>
+                        <span class="summary-mobile-only">Clear all</span>
                     </button>
                 </div>
-                <div class="summary-row">
+                <p class="summary-mobile-only summary-section-label">Your order breakdown</p>
+                <div class="summary-product-card">
+                <div class="summary-row summary-card-heading">
                     <span>Products</span>
                     <span class="summary-val" id="summaryProductCosts">&#163;0.00</span>
                 </div>
+                <div class="summary-mobile-only summary-card-note"><span>Garments &amp; items</span><span data-summary-vat-label>Exc. VAT</span></div>
+                </div>
+                <div class="summary-customisation-card">
                 <div class="summary-breakdown-section" id="customisationSummarySection">
                     <div class="summary-breakdown-heading">
                         <span class="summary-breakdown-title"><i class="fas fa-chevron-down" aria-hidden="true"></i>Customisation</span>
-                        <span class="summary-breakdown-total" id="summaryLogoCosts">&#163;0.00</span>
+                        <span class="summary-breakdown-total summary-desktop-only" id="summaryLogoCosts">&#163;0.00</span>
+                        <span class="summary-breakdown-total summary-mobile-only"><small class="summary-vat-label" data-summary-vat-label>Exc. VAT</small> <span id="summaryCustomisationWithSetup">&#163;0.00</span></span>
                     </div>
                     <div class="summary-breakdown-list" id="summaryCustomisationBreakdown"></div>
                 </div>
@@ -3022,12 +3030,18 @@
                     </div>
                     <div class="summary-breakdown-list" id="summarySetupBreakdown"></div>
                 </div>
-                <div class="summary-row">
-                    <span>Delivery <small class="summary-delivery-note">(inc. VAT)</small></span>
-                    <span class="summary-val" id="summaryDelivery">&#163;0.00</span>
                 </div>
+                <div class="summary-delivery-card">
+                <div class="summary-row summary-card-heading">
+                    <span>Delivery <small class="summary-delivery-note" id="summaryDeliveryVatLabel">(exc. VAT)</small></span>
+                    <span class="summary-val summary-desktop-only" id="summaryDelivery">&#163;0.00</span>
+                    <span class="summary-val summary-mobile-only" id="summaryDeliveryExVat">&#163;0.00</span>
+                </div>
+                <div class="summary-mobile-only summary-card-note"><span id="summaryDeliveryIncVatNote"></span><span data-summary-vat-label>Exc. VAT</span></div>
+                </div>
+                <div class="summary-totals-card">
                 <div class="summary-row">
-                    <span>Total (exc. VAT)</span>
+                    <span><span class="summary-desktop-only">Total (exc. VAT)</span><span class="summary-mobile-only">Subtotal ex. VAT</span></span>
                     <span class="summary-val" id="summaryExcVat">&#163;0.00</span>
                 </div>
                 <div class="summary-row">
@@ -3037,6 +3051,7 @@
                 <div class="summary-grand-total">
                     <span>Total (inc. VAT)</span>
                     <span class="grand-total-val" id="summaryGrandTotal">&#163;0.00</span>
+                </div>
                 </div>
 
                 <div class="summary-assurance">
@@ -5394,6 +5409,7 @@
             customisationBreakdown,
             setupBreakdown,
             deliveryIncVat,
+            deliveryExVat,
             totalExVat,
             vatAmount,
             grandTotalIncVat: grandTotal
@@ -5401,12 +5417,17 @@
 
         // Update summary
         const el = (id) => document.getElementById(id);
-        if (el('summaryProductCosts')) el('summaryProductCosts').textContent = '\u00A3' + productCosts.toFixed(2);
-        if (el('summaryLogoCosts')) el('summaryLogoCosts').textContent = '\u00A3' + logoCosts.toFixed(2);
+        const summaryVatLabel = includeVAT ? 'Inc. VAT' : 'Exc. VAT';
+        document.querySelectorAll('[data-summary-vat-label]').forEach(label => {
+            label.textContent = summaryVatLabel;
+        });
+        if (el('summaryProductCosts')) el('summaryProductCosts').textContent = formatCurrency(productCosts);
+        if (el('summaryLogoCosts')) el('summaryLogoCosts').textContent = formatCurrency(logoCosts);
+        if (el('summaryCustomisationWithSetup')) el('summaryCustomisationWithSetup').textContent = formatCurrency(logoCosts + digitizingFee);
         if (el('summaryCustomisationBreakdown')) {
             el('summaryCustomisationBreakdown').innerHTML = customisationBreakdown.map(group => {
                 const unitEach = group.count > 0 ? group.total / group.count : 0;
-                return `<div class="summary-detail-row"><span>${group.label} (${group.count} &times; ${formatCurrency(unitEach)})</span><span>${formatCurrency(group.total)}</span></div>`;
+                return `<div class="summary-detail-row"><span>${group.label} (${group.count} &times; ${formatCurrency(unitEach)}) <small class="summary-vat-label">${summaryVatLabel}</small></span><span><small class="summary-vat-label">${summaryVatLabel}</small> ${formatCurrency(group.total)}</span></div>`;
             }).join('');
         }
         
@@ -5415,10 +5436,10 @@
         if (digitizingRow) {
             if (digitizingFee > 0) {
                 digitizingRow.style.display = 'block';
-                if (el('summaryDigitizingFee')) el('summaryDigitizingFee').textContent = '\u00A3' + digitizingFee.toFixed(2);
+                if (el('summaryDigitizingFee')) el('summaryDigitizingFee').textContent = formatCurrency(digitizingFee);
                 if (el('summarySetupBreakdown')) {
                     el('summarySetupBreakdown').innerHTML = setupBreakdown.map(entry =>
-                        `<div class="summary-detail-row"><span>${escapeAttr(entry.label)}</span><span>${formatCurrency(entry.amount)}</span></div>`
+                        `<div class="summary-detail-row"><span>${escapeAttr(entry.label)}</span><span><small class="summary-vat-label">${summaryVatLabel}</small> ${formatCurrency(entry.amount)}</span></div>`
                     ).join('');
                 }
             } else {
@@ -5426,7 +5447,11 @@
             }
         }
         
-        if (el('summaryDelivery')) el('summaryDelivery').textContent = '\u00A3' + deliveryIncVat.toFixed(2);
+        const deliveryDisplay = '\u00A3' + (includeVAT ? deliveryIncVat : deliveryExVat).toFixed(2);
+        if (el('summaryDelivery')) el('summaryDelivery').textContent = deliveryDisplay;
+        if (el('summaryDeliveryExVat')) el('summaryDeliveryExVat').textContent = deliveryDisplay;
+        if (el('summaryDeliveryVatLabel')) el('summaryDeliveryVatLabel').textContent = '(' + vatSuffix() + ')';
+        if (el('summaryDeliveryIncVatNote')) el('summaryDeliveryIncVatNote').textContent = '\u00A3' + deliveryIncVat.toFixed(2) + ' including VAT';
         if (el('summaryExcVat')) el('summaryExcVat').textContent = '\u00A3' + totalExVat.toFixed(2);
         if (el('summaryVat')) el('summaryVat').textContent = '\u00A3' + vatAmount.toFixed(2);
         if (el('summaryGrandTotal')) el('summaryGrandTotal').textContent = '\u00A3' + grandTotal.toFixed(2);
