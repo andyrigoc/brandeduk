@@ -318,7 +318,6 @@
         <div class="inline-logo-settings-heading">Edit your logo</div>
         <p class="inline-logo-settings-subtitle">Adjust how your logo appears on the polo.</p>
         <div class="inline-logo-controls">
-          <input id="removeBackgroundCheck" type="checkbox" checked hidden>
           <input id="resizeProportionallyCheck" type="checkbox" checked hidden>
           <span id="qualityPct" hidden></span><span id="qualityMask" hidden></span>
 
@@ -1248,7 +1247,7 @@
     apiScript.src = new URL("customization-api.js?v=20261002-api-positions", document.baseURI).href;
     apiScript.onload = function () {
       var appScript = document.createElement("script");
-      appScript.src = new URL("app.js?v=20261017-shared-rules", document.baseURI).href;
+      appScript.src = new URL("app.js?v=20261021-keep-logo-background", document.baseURI).href;
       appScript.async = false;
       document.body.appendChild(appScript);
     };

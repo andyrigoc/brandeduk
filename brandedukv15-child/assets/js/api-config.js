@@ -3,8 +3,8 @@
  *
  * Production / Vercel: https://api.brandeduk.com
  *
- * Local preview (127.0.0.1 / localhost, any port — 5510, 5511, 5500, Live Server):
- *   same-origin /__api  (scripts/dev-server.js proxies to api.brandeduk.com)
+ * Local preview (127.0.0.1 / localhost, any port):
+ *   localhost:3005 (scripts/api-cors-proxy.js; start with `npm run api-proxy`)
  *
  * Direct browser calls to api.brandeduk.com fail with HTTP 403 because CORS_ORIGIN
  * allow-lists only www.brandeduk.com / brandeduk.com (Guardian CORS scope).
@@ -42,9 +42,10 @@
         if (window.API_USE_LOCAL === true) {
             return LOCAL_API;
         }
-        // Any local preview port: same-origin /__api (not :3005)
+        // Local static servers (including VS Code Live Server) cannot proxy API
+        // requests, so always use the local CORS bridge regardless of port.
         if (isLocalHttpPreview() && window.API_USE_LOCAL_PROXY !== false) {
-            return window.location.origin + '/__api';
+            return LOCAL_CORS_PROXY;
         }
         return PRODUCTION_API;
     }

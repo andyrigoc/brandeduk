@@ -2309,7 +2309,8 @@ function p4SyncLogoState() {
     window.logoMethod = 'upload';
 }
 
-function p4SaveLogosToBasket() {
+function p4SaveLogosToBasket(options) {
+    var shouldNotify = Boolean(options && options.notify);
     p4SyncLogoState();
     var product = window.productData || {};
     var code = product.code || product.sku || '';
@@ -2358,19 +2359,71 @@ function p4SaveLogosToBasket() {
             item.logos = logos;
             item.logoMethod = 'upload';
             item.embroiderySetup = setup;
+            delete item.positions;
+            delete item.positionDesigns;
+            delete item.customizations;
+            delete item.designPreview;
+            delete item.pendingLogoPrompt;
+            delete item.logosRemoved;
+            return true;
         }
+        return false;
     }
     var basketIndex = parseInt(sessionStorage.getItem('customizingBasketIndex'), 10);
     var isBasketEdit = new URLSearchParams(window.location.search).get('from') === 'basket';
+    var updated = false;
     if (isBasketEdit) {
         if (Number.isInteger(basketIndex) && basket[basketIndex]) {
-            updateBasketItem(basket[basketIndex]);
+            updated = updateBasketItem(basket[basketIndex]);
+        }
+        if (!updated) {
+            var matchingIndex = basket.findIndex(function (item) {
+                return (item.code || item.productCode || '') === code
+                    && (item.color || item.colour || '') === colour;
+            });
+            if (matchingIndex >= 0) {
+                basketIndex = matchingIndex;
+                sessionStorage.setItem('customizingBasketIndex', String(matchingIndex));
+                updated = updateBasketItem(basket[matchingIndex]);
+            }
         }
     } else {
-        basket.forEach(updateBasketItem);
+        updated = basket.reduce(function (found, item) {
+            return updateBasketItem(item) || found;
+        }, false);
     }
-    localStorage.setItem('quoteBasket', JSON.stringify(basket));
+
+    if (!updated) {
+        console.error('Unable to save product customisation: matching basket item was not found.', {
+            code: code,
+            colour: colour,
+            basketIndex: basketIndex
+        });
+        if (shouldNotify) {
+            if (typeof window.showAlert === 'function') {
+                window.showAlert('Your logo could not be saved to this basket item. Please close this window and try again.', 'Basket update failed');
+            } else {
+                window.alert('Your logo could not be saved to this basket item. Please close this window and try again.');
+            }
+        }
+        return false;
+    }
+
+    try {
+        localStorage.setItem('quoteBasket', JSON.stringify(basket));
+    } catch (error) {
+        console.error('Unable to save product customisation to local storage.', error);
+        if (shouldNotify) {
+            if (typeof window.showAlert === 'function') {
+                window.showAlert('Your logo could not be saved because browser storage is full. Please remove an item from the basket and try again.', 'Basket update failed');
+            } else {
+                window.alert('Your logo could not be saved because browser storage is full. Please remove an item from the basket and try again.');
+            }
+        }
+        return false;
+    }
     window.dispatchEvent(new Event('basketUpdated'));
+    return true;
 }
 
 $(document).on('change', '#p4LogoFileInput', function () {
@@ -2401,7 +2454,7 @@ $(document).on('click', '#p4ChooseFileBtn', function () {
 });
 
 $(document).on('click', '#p4ConfirmBasket', function () {
-    p4SaveLogosToBasket();
+    if (!p4SaveLogosToBasket({ notify: true })) return;
     this.classList.add('is-confirmed');
 });
 
@@ -2701,7 +2754,7 @@ $(document).on('click', '#p4PositionOptions .price-badge', function(e) {
 
 // PAGE 4 header: Save state then open the basket.
 $(document).on('click', '#btnP4Next', function() {
-    p4SaveLogosToBasket();
+    if (!p4SaveLogosToBasket({ notify: true })) return;
     var params = new URLSearchParams(window.location.search);
     if (params.get('basketEmbed') === '1' && window.parent !== window) {
         window.parent.postMessage({ type: 'closeCustomizePopup' }, window.location.origin);

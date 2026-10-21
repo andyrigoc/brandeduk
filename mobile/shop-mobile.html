@@ -75,7 +75,7 @@
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css?v=20251230">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="footer/footer.css?v=FTR10APR2026">
-    <script src="../brandedukv15-child/assets/js/shared-config.js?v=20260927-bannerorder"></script>
+    <script src="../brandedukv15-child/assets/js/shared-config.js?v=20261021-hivis-unified"></script>
     <style>
         /* Search Autocomplete Dropdown */
         .search-autocomplete {
@@ -1279,8 +1279,8 @@
     </div>
 
     <!-- API Integration Scripts -->
-    <script src="../brandedukv15-child/assets/js/api-config.js?v=20261016-apiproxy"></script>
-    <script src="../brandedukv15-child/assets/js/api.js?v=20261018-capsonly"></script>
+    <script src="../brandedukv15-child/assets/js/api-config.js?v=20261021-local-catalog-proxy"></script>
+    <script src="../brandedukv15-child/assets/js/api.js?v=20261021-hivis-unified"></script>
     <script src="../brandedukv15-child/assets/data/organic-sustainable-codes.js?v=20261006-leaf3"></script>
     <script src="../brandedukv15-child/assets/js/organic-leaf.js?v=20261006-leaf4"></script>
     <script>
@@ -2656,7 +2656,10 @@
                 html += '<div class="ac-no-results">No products found</div>';
             }
             // View all results
-            html += '<a class="ac-view-all" href="shop-mobile.html?q=' + encodeURIComponent(query) + '">View all results for &ldquo;' + query + '&rdquo; &rarr;</a>';
+            var searchQuery = typeof window.normalizeBrandedProductSearchQuery === 'function'
+                ? window.normalizeBrandedProductSearchQuery(query)
+                : query;
+            html += '<a class="ac-view-all" href="shop-mobile.html?q=' + encodeURIComponent(searchQuery) + '">View all results for &ldquo;' + query + '&rdquo; &rarr;</a>';
             dropdown.innerHTML = html;
             dropdown.classList.add('open');
             // Bind category clicks
@@ -2675,7 +2678,10 @@
             dropdown.innerHTML = '<div class="ac-loading">Searching...</div>';
             dropdown.classList.add('open');
             try {
-                var res = await fetch(((typeof window.resolveBrandedApiBase === 'function' ? window.resolveBrandedApiBase() : (window.API_BASE_URL || 'https://api.brandeduk.com')).replace(/\/+$/, '')) + '/api/products?q=' + encodeURIComponent(query) + '&limit=20', { signal: controller.signal });
+                var searchQuery = typeof window.normalizeBrandedProductSearchQuery === 'function'
+                    ? window.normalizeBrandedProductSearchQuery(query)
+                    : query;
+                var res = await fetch(((typeof window.resolveBrandedApiBase === 'function' ? window.resolveBrandedApiBase() : (window.API_BASE_URL || 'https://api.brandeduk.com')).replace(/\/+$/, '')) + '/api/products?q=' + encodeURIComponent(searchQuery) + '&limit=20', { signal: controller.signal });
                 if (!res.ok) throw new Error('API error');
                 var data = await res.json();
                 var items = (data.items || []).map(function(p) {

@@ -7,6 +7,69 @@
  * Include this file BEFORE any page-specific JS that needs these values.
  * Everything is exposed on window.BrandedConfig.
  */
+(function (window) {
+    'use strict';
+
+    function editDistance(left, right) {
+        var previous = [];
+        var current = [];
+        var i;
+        var j;
+
+        for (j = 0; j <= right.length; j++) previous[j] = j;
+        for (i = 1; i <= left.length; i++) {
+            current[0] = i;
+            for (j = 1; j <= right.length; j++) {
+                current[j] = Math.min(
+                    current[j - 1] + 1,
+                    previous[j] + 1,
+                    previous[j - 1] + (left.charAt(i - 1) === right.charAt(j - 1) ? 0 : 1)
+                );
+            }
+            previous = current.slice();
+        }
+        return previous[right.length];
+    }
+
+    function matchesSearchTerm(token, candidates, allowPartial) {
+        if (token.length < 2) return false;
+        return candidates.some(function (candidate) {
+            if (token === candidate) return true;
+            if (allowPartial && token.length < candidate.length && candidate.indexOf(token) === 0) return true;
+            var maxDistance = token.length >= 7 ? 2 : 1;
+            return Math.abs(token.length - candidate.length) <= maxDistance &&
+                editDistance(token, candidate) <= maxDistance;
+        });
+    }
+
+    window.normalizeBrandedProductSearchQuery = function (query) {
+        var original = String(query || '').trim();
+        var normalized = original.toLowerCase();
+        if (typeof normalized.normalize === 'function') {
+            normalized = normalized.normalize('NFKD').replace(/[\u0300-\u036f]/g, '');
+        }
+
+        var words = normalized.split(/[^a-z0-9]+/).filter(Boolean);
+        var hiWords = ['hi', 'high'];
+        var visibilityWords = ['vis', 'viz', 'visibility', 'vizibility'];
+        var compounds = [
+            'hivis', 'hiviz', 'highvis', 'highviz',
+            'hivisibility', 'hivizibility', 'highvisibility', 'highvizibility'
+        ];
+        var hasHi = words.some(function (word) {
+            return matchesSearchTerm(word, hiWords, true);
+        });
+        var hasVisibility = words.some(function (word) {
+            return matchesSearchTerm(word, visibilityWords, true);
+        });
+        var hasCompound = words.some(function (word) {
+            return matchesSearchTerm(word, compounds, true);
+        });
+
+        return hasCompound || (hasHi && hasVisibility) ? 'high vis' : original;
+    };
+})(window);
+
 window.BrandedConfig = (function () {
     'use strict';
 

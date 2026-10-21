@@ -169,6 +169,15 @@
         }
     }
 
+    function returnToBasket() {
+        var params = new URLSearchParams(window.location.search);
+        if (params.get('basketEmbed') === '1' && window.parent !== window) {
+            window.parent.postMessage({ type: 'closeCustomizePopup' }, window.location.origin);
+            return;
+        }
+        window.location.assign(new URL('basket.html', window.location.href).href);
+    }
+
     window.openPcOrderCustomizer = function openPcOrderCustomizer() {
         var basket = readBasket();
         if (basket.length === 0) {
@@ -304,11 +313,21 @@
         if (!event.data) return;
         if (event.data.type === 'brandeduk:customizer-back') {
             closeCustomizer(false);
+            var params = new URLSearchParams(window.location.search);
+            if (params.get('basketEmbed') === '1' && window.parent !== window) {
+                window.parent.postMessage({ type: 'closeCustomizePopup' }, window.location.origin);
+            }
+            return;
+        }
+        if (event.data.type === 'brandeduk:customizer-view-basket') {
+            closeCustomizer(false);
+            returnToBasket();
             return;
         }
         if (event.data.type !== 'brandeduk:customization-saved') return;
+        if (event.data.saved === false) return;
         closeCustomizer(true);
-        window.location.assign(new URL('basket.html', window.location.href).href);
+        returnToBasket();
     });
 
     var originalCloseOrderPopup = window.closeOrderPopup;

@@ -508,7 +508,6 @@ function syncViewThumbTint() {
   });
 }
 
-const removeBackgroundCheck = document.getElementById("removeBackgroundCheck");
 const resizeProportionallyCheck = document.getElementById("resizeProportionallyCheck");
 const applyImagePropertiesBtn = document.getElementById("applyImagePropertiesBtn");
 const propertySizeLabel = document.getElementById("propertySizeLabel");
@@ -5016,12 +5015,9 @@ document.getElementById("logoFileInput").addEventListener("change", async event 
   window.dispatchEvent(new CustomEvent("customizer:change"));
   try {
     const optimizedLogo = await optimizeLogoFileForBasket(file);
-    const preparedLogo = removeBackgroundCheck?.checked
-      ? await optimizeLogoDataUrlForBasket(await removeImageBackground(optimizedLogo, 55))
-      : optimizedLogo;
     state.decorationType = state.pendingDecorationType || state.decorationType || "print";
     state.pendingDecorationType = null;
-    state.uploadedLogo = preparedLogo;
+    state.uploadedLogo = optimizedLogo;
     state.uploadedLogoName = file.name;
     state.originalUploadedLogo = optimizedLogo;
 
@@ -5853,42 +5849,10 @@ rotateInput.addEventListener("input", () => {
   updateVisibilityByPrintArea(designLayer);
 });
 
-applyImagePropertiesBtn.addEventListener("click", async () => {
+applyImagePropertiesBtn.addEventListener("click", () => {
   if (!state.uploadedLogo) {
     openScreen("mainEditor");
     return;
-  }
-
-  if (removeBackgroundCheck.checked) {
-    const logoFrame = getLogoFrameEl();
-    const oldLeft = designLayer.style.left;
-    const oldTop = designLayer.style.top;
-    const oldWidth = logoFrame.style.width;
-    const oldHeight = logoFrame.style.height;
-    const oldRotate = designLayer.style.rotate;
-
-    const originalLogo = state.originalUploadedLogo || state.uploadedLogo;
-    const cleanedLogo = await optimizeLogoDataUrlForBasket(
-      await removeImageBackground(originalLogo, 55)
-    );
-
-    state.uploadedLogo = cleanedLogo;
-    uploadedLogo.src = cleanedLogo;
-    uploadedLogo.style.display = "block";
-    await waitForLogoImage(uploadedLogo);
-
-    designLayer.style.display = "block";
-    designLayer.style.left = oldLeft;
-    designLayer.style.top = oldTop;
-    logoFrame.style.width = oldWidth;
-    logoFrame.style.height = oldHeight;
-    designLayer.style.rotate = oldRotate;
-    designLayer.style.transform = "none";
-  } else if (state.originalUploadedLogo && state.uploadedLogo !== state.originalUploadedLogo) {
-    state.uploadedLogo = state.originalUploadedLogo;
-    uploadedLogo.src = state.originalUploadedLogo;
-    uploadedLogo.style.display = "block";
-    await waitForLogoImage(uploadedLogo);
   }
 
   openScreen("mainEditor");

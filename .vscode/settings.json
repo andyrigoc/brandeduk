@@ -4,6 +4,7 @@
   "liveServer.settings.CustomBrowser": "chrome",
   "liveServer.settings.donotShowInfoMsg": true,
   "liveServer.settings.donotVerifyTags": true,
+  "task.allowAutomaticTasks": "on",
   "liveServer.settings.ignoreFiles": [
     ".vscode/**",
     "**/*.scss",

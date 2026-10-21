@@ -944,14 +944,6 @@
 
       <div class="img-props-card">
         <label class="img-props-toggle-row">
-          <span class="img-props-toggle-label">Remove background</span>
-          <div class="img-props-toggle">
-            <input id="removeBackgroundCheck" type="checkbox" checked>
-            <span class="img-props-toggle-track"></span>
-          </div>
-        </label>
-        <div class="img-props-divider"></div>
-        <label class="img-props-toggle-row">
           <span class="img-props-toggle-label">Resize proportionally</span>
           <div class="img-props-toggle">
             <input id="resizeProportionallyCheck" type="checkbox" checked>
@@ -1183,7 +1175,7 @@
   // extensionless document URL, whose native relative base is the site root.
   (function loadCustomizationToolApp() {
     var appScript = document.createElement("script");
-    appScript.src = new URL("app.js?v=20261019-allsizes", document.baseURI).href;
+    appScript.src = new URL("app.js?v=20261021-keep-logo-background", document.baseURI).href;
     appScript.async = false;
     appScript.onload = function () {
       var guidedScript = document.createElement("script");

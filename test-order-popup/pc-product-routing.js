@@ -74,6 +74,30 @@
         history.replaceState(state, '', url.toString());
     }
 
+    document.addEventListener('click', function(event) {
+        if (event.defaultPrevented || event.button > 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        var link = event.target.closest('a[href]');
+        if (!link) return;
+
+        var url;
+        try {
+            url = new URL(link.href, window.location.href);
+        } catch (error) {
+            return;
+        }
+
+        if (!/\/basket(?:\.html)?\/?$/i.test(url.pathname)) return;
+        var currentUrl = new URL(window.location.href);
+        if (currentUrl.searchParams.get('basketEmbed') !== '1' || window.parent === window) return;
+
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        if (window.current === 3 && typeof window.p4SaveLogosToBasket === 'function') {
+            if (!window.p4SaveLogosToBasket({ notify: true })) return;
+        }
+        window.parent.postMessage({ type: 'closeCustomizePopup' }, window.location.origin);
+    }, true);
+
     function openBasketCustomization(url, code) {
         if (url.searchParams.get('from') !== 'basket' || url.searchParams.get('customize') !== '1') return;
 

@@ -9,6 +9,10 @@
     // The suggest API also returns category-related items (e.g. chef jackets for "apron");
     // keep only products whose title contains every searched word, or that match the code/brand.
     function filterSuggestByTitle(products, query) {
+        if (typeof window.normalizeBrandedProductSearchQuery === 'function' &&
+            window.normalizeBrandedProductSearchQuery(query) === 'high vis') {
+            return products || [];
+        }
         var norm = function (s) { return String(s || '').toLowerCase(); };
         var words = norm(query).split(/[^a-z0-9]+/).filter(function (w) { return w.length >= 2; });
         if (!words.length) return products || [];
@@ -749,13 +753,16 @@
                 }
 
                 try {
+                    const searchQuery = typeof window.normalizeBrandedProductSearchQuery === 'function'
+                        ? window.normalizeBrandedProductSearchQuery(query)
+                        : query;
                     const apiBase = typeof window.resolveBrandedApiBase === 'function'
                         ? window.resolveBrandedApiBase()
                         : (window.API_BASE_URL || 'https://api.brandeduk.com');
-                    const response = await fetch(`${String(apiBase).replace(/\/+$/, '')}/api/products/suggest?q=${encodeURIComponent(query)}`);
+                    const response = await fetch(`${String(apiBase).replace(/\/+$/, '')}/api/products/suggest?q=${encodeURIComponent(searchQuery)}`);
                     if (!response.ok) throw new Error('API Error');
                     const data = await response.json();
-                    renderSuggestions(data, query);
+                    renderSuggestions(data, searchQuery);
                 } catch (error) {
                     console.error('Search Suggestion Error:', error);
                 }
@@ -778,12 +785,15 @@
                 if (e.key === 'Enter') {
                     const query = e.target.value.trim();
                     if (query) {
+                        const searchQuery = typeof window.normalizeBrandedProductSearchQuery === 'function'
+                            ? window.normalizeBrandedProductSearchQuery(query)
+                            : query;
                         const isMobile = window.innerWidth < 700;
                         const inMobileFolder = window.location.pathname.toLowerCase().includes('/mobile/');
                         const mobileBasePath = inMobileFolder ? '' : 'mobile/';
                         window.location.href = isMobile
-                            ? `${mobileBasePath}shop-mobile.html?q=${encodeURIComponent(query)}`
-                            : `shop-pc.html?q=${encodeURIComponent(query)}`;
+                            ? `${mobileBasePath}shop-mobile.html?q=${encodeURIComponent(searchQuery)}`
+                            : `shop-pc.html?q=${encodeURIComponent(searchQuery)}`;
                     }
                 }
             });

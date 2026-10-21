@@ -381,7 +381,7 @@ const BrandedAPI = (function () {
 
         // Search query (mutually exclusive with productType)
         if (options.q || options.search) {
-            params.q = (options.q || options.search || '').trim();
+            params.q = normalizeProductSearchQuery(options.q || options.search);
         } else if (options.productType) {
             // Only add productType if there's no search query
             params.productType = normalizeProductTypeForApi(options.productType);
@@ -519,6 +519,14 @@ const BrandedAPI = (function () {
             total: total,
             priceRange: response.priceRange || { min: 0, max: 200 }
         };
+    }
+
+    function normalizeProductSearchQuery(query) {
+        const value = String(query || '').trim();
+        if (typeof window !== 'undefined' && typeof window.normalizeBrandedProductSearchQuery === 'function') {
+            return window.normalizeBrandedProductSearchQuery(value);
+        }
+        return value;
     }
 
     /**
@@ -1441,6 +1449,7 @@ const BrandedAPI = (function () {
         healthCheck,
         clearCache,
         mapCategoryToProductType,
+        normalizeProductSearchQuery,
         transformProduct,
 
         // Quote submission
@@ -1467,4 +1476,3 @@ if (typeof window !== 'undefined') {
     window.BrandedAPI = BrandedAPI;
     if (window.BRANDED_DEBUG === true) { console.debug('[BrandedAPI] Module loaded successfully. submitQuote available:', typeof BrandedAPI.submitQuote === 'function'); }
 }
-

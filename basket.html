@@ -1511,7 +1511,7 @@
             border-radius: 0; overflow: hidden; background: transparent;
         }
         .customize-popup-overlay.is-pc-customizer .customize-popup-close {
-            display: flex; z-index: 5;
+            display: flex; z-index: 5; right: 64px;
         }
         .customize-popup-overlay.is-pc-customizer #customizePopupIframe {
             opacity: 0;
@@ -5984,7 +5984,7 @@
     }
 
     window.closeCustomizePopup = closeCustomizePopup;
-    function closeCustomizePopup() {
+    function closeCustomizePopup(options) {
         basketDebug('[closeCustomizePopup] Called - syncing logos and re-rendering basket');
         const overlay = document.getElementById('customizePopupOverlay');
         const iframe = document.getElementById('customizePopupIframe');
@@ -5992,7 +5992,10 @@
         pcCustomizerRevealTimer = null;
         pcCustomizerOpenedAt = 0;
         try {
-            if (iframe && iframe.contentWindow && typeof iframe.contentWindow._forceAutoSave === 'function') {
+            if (options?.saveCurrentCustomization && iframe && iframe.contentWindow && iframe.contentWindow.current === 3 &&
+                typeof iframe.contentWindow.p4SaveLogosToBasket === 'function') {
+                if (!iframe.contentWindow.p4SaveLogosToBasket({ notify: true })) return;
+            } else if (iframe && iframe.contentWindow && typeof iframe.contentWindow._forceAutoSave === 'function') {
                 iframe.contentWindow._forceAutoSave();
             }
         } catch (e) {
@@ -6019,9 +6022,9 @@
         normalizeBasket();
     }
 
-    document.getElementById('customizePopupClose')?.addEventListener('click', closeCustomizePopup);
+    document.getElementById('customizePopupClose')?.addEventListener('click', () => closeCustomizePopup({ saveCurrentCustomization: true }));
     document.getElementById('customizePopupOverlay')?.addEventListener('click', (e) => {
-        if (e.target.id === 'customizePopupOverlay') closeCustomizePopup();
+        if (e.target.id === 'customizePopupOverlay') closeCustomizePopup({ saveCurrentCustomization: true });
     });
 
     // Quick Logo Modal close handlers
@@ -6041,6 +6044,9 @@
             }
         }
         if (e.data && e.data.type === 'closeCustomizePopup') closeCustomizePopup();
+        if (e.data && e.data.type === 'brandeduk:customizer-back') closeCustomizePopup();
+        if (e.data && e.data.type === 'brandeduk:customizer-view-basket') closeCustomizePopup();
+        if (e.data && e.data.type === 'brandeduk:customization-saved' && e.data.saved !== false) closeCustomizePopup();
     });
 
     // ========================
@@ -7101,4 +7107,3 @@ document.addEventListener('DOMContentLoaded', function() {
     <script src="/mobile/js/header-menu.js?v=20261018-drawer"></script>
 </body>
 </html>
-

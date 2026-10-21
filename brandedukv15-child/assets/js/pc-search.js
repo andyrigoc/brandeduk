@@ -22,6 +22,10 @@
     // The suggest API also returns category-related items (e.g. chef jackets for "apron");
     // keep only products whose title contains every searched word, or that match the code/brand.
     function filterSuggestByTitle(products, query) {
+        if (typeof window.normalizeBrandedProductSearchQuery === 'function' &&
+            window.normalizeBrandedProductSearchQuery(query) === 'high vis') {
+            return products || [];
+        }
         var norm = function (s) { return String(s || '').toLowerCase(); };
         var words = norm(query).split(/[^a-z0-9]+/).filter(function (w) { return w.length >= 2; });
         if (!words.length) return products || [];
@@ -76,12 +80,19 @@
             .replace(/\s+/g, ' ');
     }
 
+    function canonicalSearchQuery(query) {
+        return typeof window.normalizeBrandedProductSearchQuery === 'function'
+            ? window.normalizeBrandedProductSearchQuery(query)
+            : String(query || '').trim();
+    }
+
     function productUrl(code) {
         return new URL('shop-pc.html?product=' + encodeURIComponent(code), projectRoot).href;
     }
 
     function shopUrl(query) {
-        return new URL('shop-pc.html?q=' + encodeURIComponent(query), projectRoot).href;
+        var searchQuery = canonicalSearchQuery(query);
+        return new URL('shop-pc.html?q=' + encodeURIComponent(searchQuery), projectRoot).href;
     }
 
     function brandUrl(slug) {
@@ -239,7 +250,7 @@
 
         if (suggestCache[normalized]) {
             activeNormalized = normalized;
-            render(suggestCache[normalized], query.trim());
+            render(suggestCache[normalized], canonicalSearchQuery(query));
             return;
         }
 
@@ -255,7 +266,8 @@
         activeNormalized = normalized;
         inflightKeys[normalized] = true;
 
-        var url = getApiBase() + '/api/products/suggest?q=' + encodeURIComponent(query.trim()) +
+        var searchQuery = canonicalSearchQuery(query);
+        var url = getApiBase() + '/api/products/suggest?q=' + encodeURIComponent(searchQuery) +
             '&limit=' + SUGGEST_LIMIT;
 
         fetch(url, { signal: controller.signal })
@@ -268,7 +280,7 @@
                 if (requestController === controller) requestController = null;
                 suggestCache[normalized] = data || {};
                 if (activeNormalized !== normalized) return;
-                render(suggestCache[normalized], query.trim());
+                render(suggestCache[normalized], searchQuery);
             })
             .catch(function (error) {
                 clearInflight(normalized);
@@ -298,7 +310,7 @@
         var normalized = normalizeQuery(query);
         if (suggestCache[normalized]) {
             activeNormalized = normalized;
-            render(suggestCache[normalized], query);
+            render(suggestCache[normalized], canonicalSearchQuery(query));
             return;
         }
 

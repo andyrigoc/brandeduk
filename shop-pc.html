@@ -65,7 +65,7 @@
     <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie_light.min.js">
     <link rel="preload" as="fetch" crossorigin="anonymous" href="brandedukv15-child/assets/images/ui/cart-icon-loader.json">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/promo-bar.css?v=20260425a">
-    <script src="brandedukv15-child/assets/js/shared-config.js?v=20261005-megafit"></script>
+    <script src="brandedukv15-child/assets/js/shared-config.js?v=20261021-hivis-unified"></script>
     <script src="brandedukv15-child/assets/js/pc-header-template.js?v=20261015-nodeals"></script>
     <script src="brandedukv15-child/assets/js/pc-header.js?v=20261012-navmore"></script>
     <link rel="stylesheet" href="footer-dev/pc-footer.css?v=20261009-phones">
@@ -3709,8 +3709,8 @@
     <script src="brandedukv15-child/assets/data/category-descriptions.js?v=20261006-industry"></script>
     <script src="brandedukv15-child/assets/data/brand-hq-logos.js?v=20260915"></script>
     <script src="brandedukv15-child/assets/js/vat-toggle.js?v=20251230"></script>
-    <script src="brandedukv15-child/assets/js/api-config.js?v=20261002-localproxy"></script>
-    <script src="brandedukv15-child/assets/js/api.js?v=20261018-capsonly"></script>
+    <script src="brandedukv15-child/assets/js/api-config.js?v=20261021-local-catalog-proxy"></script>
+    <script src="brandedukv15-child/assets/js/api.js?v=20261021-hivis-unified"></script>
     <script src="brandedukv15-child/assets/data/organic-sustainable-codes.js?v=20261006-leaf3"></script>
     <script src="brandedukv15-child/assets/js/organic-leaf.js?v=20261006-leaf4"></script>
     <script src="brandeduk.com/js/main.js?v=20260730a"></script>
@@ -4865,6 +4865,10 @@
         };
 
         function exactSearchProductType(query) {
+            if (typeof window.normalizeBrandedProductSearchQuery === 'function' &&
+                window.normalizeBrandedProductSearchQuery(query) === 'high vis') {
+                return null;
+            }
             const key = String(query || '')
                 .toLowerCase()
                 .replace(/&/g, ' and ')
@@ -9955,11 +9959,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
 
     <!-- Order Popup Scripts -->
-    <script src="test-order-popup/order.js?v=20261009-choose-file"></script>
+    <script src="test-order-popup/order.js?v=20261021-basket-save"></script>
     <script src="test-order-popup/order-integration.js?v=20261007-api-template-refresh"></script>
     <script src="brandedukv15-child/assets/js/tablet-rotate-hint.js?v=20261003-screen"></script>
-    <script src="test-order-popup/customizer-embed.js?v=20260929-touchdnd5"></script>
-    <script src="test-order-popup/pc-product-routing.js?v=20261007-tablet-upload"></script>
+    <script src="test-order-popup/customizer-embed.js?v=20261021-basket-return"></script>
+    <script src="test-order-popup/pc-product-routing.js?v=20261021-basket-return"></script>
     <script src="test-order-popup/pc-product-popup.js?v=20261007-tablet-file"></script>
     <script src="brandedukv15-child/assets/js/cart-lottie-icon.js?v=20260927-cartlottie2"></script>
     <script src="mobile/js/popup-contact.js?v=20261003-quotemsg1"></script>

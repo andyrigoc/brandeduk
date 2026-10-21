@@ -192,6 +192,7 @@ const cartBadges = document.querySelectorAll(".cart-badge, .sub-cart-badge");
 const toolBottomBasketBadge = document.getElementById("toolBottomBasketBadge");
 const toolBottomNav = document.querySelector(".tool-bottom-nav");
 const confirmQualityBtn = document.getElementById("confirmQualityBtn");
+let lastBasketConfirmSaved = false;
 const positionDesignPanel = document.getElementById("positionDesignPanel");
 const positionDesignTitle = document.getElementById("positionDesignTitle");
 const positionDesignCount = document.getElementById("positionDesignCount");
@@ -592,7 +593,6 @@ function syncViewThumbTint() {
   });
 }
 
-const removeBackgroundCheck = document.getElementById("removeBackgroundCheck");
 const resizeProportionallyCheck = document.getElementById("resizeProportionallyCheck");
 const applyImagePropertiesBtn = document.getElementById("applyImagePropertiesBtn");
 const propertySizeLabel = document.getElementById("propertySizeLabel");
@@ -1165,6 +1165,14 @@ function notifyEmbeddedOrderSaved(result) {
   return true;
 }
 
+function requestBasketNavigation() {
+  if (window.parent !== window) {
+    window.parent.postMessage({ type: "brandeduk:customizer-view-basket" }, window.location.origin);
+    return;
+  }
+  window.location.href = "../basket.html";
+}
+
 function setupCustomizerBreadcrumb() {
   const params = new URLSearchParams(window.location.search);
   const from = String(params.get("from") || "").toLowerCase();
@@ -1189,6 +1197,20 @@ function setupCustomizerBreadcrumb() {
   }
 
   const goBack = () => {
+    if (state.uploadedLogo && !state.copyrightConfirmed) {
+      window.alert("Please confirm that you have permission to use this artwork before leaving.");
+      return;
+    }
+    if (confirmQualityBtn && !confirmQualityBtn.disabled) {
+      lastBasketConfirmSaved = false;
+      confirmQualityBtn.click();
+      if (!lastBasketConfirmSaved) return;
+      if (window.parent !== window) return;
+    }
+    if (window.parent !== window) {
+      window.parent.postMessage({ type: "brandeduk:customizer-back" }, window.location.origin);
+      return;
+    }
     const sameOriginReferrer = !!(document.referrer && document.referrer.indexOf(window.location.origin) === 0);
     if (sameOriginReferrer && window.history.length > 1) {
       window.history.back();
@@ -2300,6 +2322,32 @@ function hydrateAreaDesignsFromBasketContext() {
   state.sizes = basketQuantities && typeof basketQuantities === "object" && Object.keys(basketQuantities).length > 0
     ? Object.entries(basketQuantities).map(([size, qty]) => ({ size, qty: parseInt(qty, 10) || 0 })).filter((entry) => entry.qty > 0)
     : [{ size: item.size || "One size", qty: basketQuantity }];
+  const sizeOptions = Array.from(sizesContainer.querySelector(".size-select")?.options || [])
+    .map((option) => option.value);
+  sizesContainer.replaceChildren();
+  state.sizes.forEach(({ size, qty }) => {
+    const row = document.createElement("div");
+    row.className = "size-row";
+
+    const select = document.createElement("select");
+    select.className = "size-select";
+    [...new Set([...sizeOptions, size])].forEach((optionSize) => {
+      const option = document.createElement("option");
+      option.value = optionSize;
+      option.textContent = optionSize;
+      option.selected = optionSize === size;
+      select.appendChild(option);
+    });
+
+    const quantity = document.createElement("input");
+    quantity.className = "size-qty";
+    quantity.type = "number";
+    quantity.min = "1";
+    quantity.value = String(qty);
+
+    row.append(select, quantity);
+    sizesContainer.appendChild(row);
+  });
   if (mainQtyInput) mainQtyInput.value = String(basketQuantity);
 
   state.customizationNotes = String(item.customizationNotes || "");
@@ -2874,6 +2922,7 @@ function getFrontThumbImageSrc() {
 
 const CUSTOMIZATION_PRODUCT_TYPE_SLUGS = new Set([
   "aprons",
+  "bag",
   "bags",
   "beanies",
   "caps",
@@ -6818,15 +6867,12 @@ async function processLogoFile(file) {
 
   try {
     const optimizedLogo = await optimizeLogoFileForBasket(file);
-    const preparedLogo = removeBackgroundCheck?.checked
-      ? await optimizeLogoDataUrlForBasket(await removeImageBackground(optimizedLogo, 55))
-      : optimizedLogo;
     state.decorationType = state.pendingDecorationType || state.decorationType || "print";
     state.pendingDecorationType = null;
-    state.uploadedLogo = preparedLogo;
+    state.uploadedLogo = optimizedLogo;
     state.originalUploadedLogo = optimizedLogo;
-    state.logoColourBase = preparedLogo;
-    rememberUploadedLogo(preparedLogo, state.decorationType);
+    state.logoColourBase = optimizedLogo;
+    rememberUploadedLogo(optimizedLogo, state.decorationType);
 
     const copyrightPreview = document.getElementById("copyrightImagePreview");
     if (copyrightPreview) {
@@ -7359,6 +7405,7 @@ document.getElementById("customizationNotes")?.addEventListener("input", (event)
 
 if (confirmQualityBtn) {
   confirmQualityBtn.addEventListener("click", () => {
+    lastBasketConfirmSaved = false;
     captureCurrentAreaDesign();
     captureCurrentTextDesign();
     const designs = Object.values(state.areaDesigns || {}).filter((design) => Boolean(design?.logo));
@@ -7392,6 +7439,7 @@ if (confirmQualityBtn) {
       return;
     }
 
+    lastBasketConfirmSaved = true;
     const previousText = confirmQualityBtn.textContent;
     confirmQualityBtn.classList.add("is-confirmed");
     confirmQualityBtn.textContent = "CONFIRMED";
@@ -7434,7 +7482,7 @@ if (postConfirmContinueShoppingBtn) {
 const postConfirmViewBasketBtn = document.getElementById("postConfirmViewBasket");
 if (postConfirmViewBasketBtn) {
   postConfirmViewBasketBtn.addEventListener("click", () => {
-    window.location.href = "../basket.html";
+    requestBasketNavigation();
   });
 }
 
@@ -7902,42 +7950,10 @@ rotateInput.addEventListener("input", () => {
   updateVisibilityByPrintArea(designLayer);
 });
 
-applyImagePropertiesBtn.addEventListener("click", async () => {
+applyImagePropertiesBtn.addEventListener("click", () => {
   if (!state.uploadedLogo) {
     openScreen("mainEditor");
     return;
-  }
-
-  if (removeBackgroundCheck.checked) {
-    const logoFrame = getLogoFrameEl();
-    const oldLeft = designLayer.style.left;
-    const oldTop = designLayer.style.top;
-    const oldWidth = logoFrame.style.width;
-    const oldHeight = logoFrame.style.height;
-    const oldRotate = designLayer.style.rotate;
-
-    const originalLogo = state.originalUploadedLogo || state.uploadedLogo;
-    const cleanedLogo = await optimizeLogoDataUrlForBasket(
-      await removeImageBackground(originalLogo, 55)
-    );
-
-    state.uploadedLogo = cleanedLogo;
-    uploadedLogo.src = cleanedLogo;
-    uploadedLogo.style.display = "block";
-    await waitForLogoImage(uploadedLogo);
-
-    designLayer.style.display = "block";
-    designLayer.style.left = oldLeft;
-    designLayer.style.top = oldTop;
-    logoFrame.style.width = oldWidth;
-    logoFrame.style.height = oldHeight;
-    designLayer.style.rotate = oldRotate;
-    designLayer.style.transform = "none";
-  } else if (state.originalUploadedLogo && state.uploadedLogo !== state.originalUploadedLogo) {
-    state.uploadedLogo = state.originalUploadedLogo;
-    uploadedLogo.src = state.originalUploadedLogo;
-    uploadedLogo.style.display = "block";
-    await waitForLogoImage(uploadedLogo);
   }
 
   openScreen("mainEditor");
@@ -8735,7 +8751,14 @@ document.getElementById("previewModal").addEventListener("click", (e) => {
   if (e.target === e.currentTarget) e.currentTarget.classList.remove("open");
 });
 document.getElementById("basketBtn").addEventListener("click", () => {
-  window.location.href = "../basket.html";
+  if (confirmQualityBtn && !confirmQualityBtn.disabled) {
+    lastBasketConfirmSaved = false;
+    confirmQualityBtn.click();
+    if (!lastBasketConfirmSaved) return;
+    if (window.parent === window) requestBasketNavigation();
+    return;
+  }
+  requestBasketNavigation();
 });
 
 document.getElementById("priceBtn").addEventListener("click", () => {
@@ -8765,9 +8788,23 @@ if (buyBtn) {
     basket.push(buildBasketItemFromState());
     writeQuoteBasket(basket);
     updateBasketUIFromStorage();
-    window.location.href = "../basket.html";
+    requestBasketNavigation();
   });
 }
+
+document.querySelectorAll('.tool-bottom-nav a[href$="basket.html"]').forEach((link) => {
+  link.addEventListener("click", (event) => {
+    event.preventDefault();
+    if (confirmQualityBtn && !confirmQualityBtn.disabled) {
+      lastBasketConfirmSaved = false;
+      confirmQualityBtn.click();
+      if (!lastBasketConfirmSaved) return;
+      if (window.parent === window) requestBasketNavigation();
+      return;
+    }
+    requestBasketNavigation();
+  });
+});
 
 function setupToolHeaderSearch() {
   const searchInput = document.getElementById("searchInput");
