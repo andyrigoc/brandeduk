@@ -39,18 +39,18 @@ body:has(.mobile-header--v2) {
 
 .mobile-header--v2 .mh-logo .mobile-logo-badge,
 .mobile-header--v2 .mobile-logo-center .mobile-logo-badge {
-    height: 50px !important;
-    max-height: 50px !important;
+    height: 36px !important;
+    max-height: 36px !important;
     width: auto !important;
-    max-width: 50px !important;
+    max-width: 36px !important;
 }
 
 .mobile-header--v2 .mh-logo .mobile-logo-word,
 .mobile-header--v2 .mobile-logo-center .mobile-logo-word {
-    height: 42px !important;
-    max-height: 42px !important;
+    height: 30px !important;
+    max-height: 30px !important;
     width: auto !important;
-    max-width: 190px !important;
+    max-width: 160px !important;
 }
 
 .mobile-header--v2 .mh-actions {

@@ -6,9 +6,15 @@
     --uc-header: var(--brandeduk-site-header-height, 220px);
     --uc-view: calc(100vh - var(--uc-header));
     --uc-unit: min(36vh, 330px);
+    --uc-side: clamp(3.5rem, 5vw, 6.5rem);
+    --uc-card-w: clamp(230px, 21vw, 290px);
+    --uc-gap: 24px;
+    /* A turning cube (with perspective) reaches ~1.75x its size; keep that clear of both cards. */
+    --uc-cube: min(38vw, calc(var(--uc-view) * .7), 420px, calc((100vw - 18px - 2 * (var(--uc-side) + var(--uc-card-w) + var(--uc-gap))) / 1.8));
     position: relative;
     height: calc(var(--uc-view) + 11 * var(--uc-unit));
-    background: #fff;
+    /* Fixed to the viewport so the band left by the hiding header is never blank. */
+    background: #fff url("../../brandedukv15-child/assets/images/uniform-cube/doodles.webp") center top / auto 100vh repeat-x fixed;
     color: var(--uc-ink);
     font-family: "DM Mono", monospace;
 }
@@ -43,7 +49,7 @@
 }
 
 .uniform-cube__box {
-    --s: min(38vw, 46vh, 420px);
+    --s: var(--uc-cube);
     position: relative;
     width: var(--s);
     height: var(--s);
@@ -91,6 +97,8 @@
     font-size: .62rem;
     letter-spacing: .15em;
     color: var(--uc-muted);
+    background: rgba(255, 255, 255, .92);
+    padding: .45rem .6rem;
 }
 
 .uniform-cube__hud.is-fixed {
@@ -185,7 +193,7 @@
     inset: 0;
     display: flex;
     align-items: center;
-    padding: 3.5rem clamp(1.75rem, 6vw, 6.5rem);
+    padding: 1.5rem var(--uc-side);
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
@@ -198,8 +206,8 @@
 }
 
 .uniform-cube__card {
-    width: min(300px, 32vw, 100%);
-    padding: 1.5rem 1.6rem;
+    width: var(--uc-card-w);
+    padding: 1.2rem 1.3rem;
     background: var(--uc-card);
     border-left: 1px solid #e5e7eb;
     box-shadow: 0 18px 50px rgba(16, 24, 40, .08);
@@ -226,21 +234,21 @@
     margin: 0;
     font-family: "Bebas Neue", sans-serif;
     font-weight: 400;
-    font-size: clamp(2.1rem, 3.4vw, 3.4rem);
+    font-size: clamp(1.8rem, 2.5vw, 2.9rem);
     line-height: .92;
     letter-spacing: .02em;
     color: var(--uc-ink);
 }
 
 .uniform-cube__slide:first-child .uniform-cube__title {
-    font-size: clamp(2.35rem, 3.8vw, 3.8rem);
+    font-size: clamp(2rem, 2.8vw, 3.2rem);
 }
 
 .uniform-cube__copy {
-    margin-top: 1.35rem;
+    margin-top: 1rem;
     color: rgba(16, 36, 59, .72);
-    font-size: .78rem;
-    line-height: 1.7;
+    font-size: .72rem;
+    line-height: 1.6;
 }
 
 .uniform-cube__line {

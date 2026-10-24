@@ -1,8 +1,6 @@
 (function () {
     "use strict";
 
-    var VIDEO_SRC = "brandedukv15-child/assets/videos/embroidery/embroidery-scroll.mp4?v=20260928-scrub2";
-
     var stages = [
         { from: 0, to: 0.12 },
         { from: 0.12, to: 0.30 },
@@ -16,6 +14,7 @@
 
     var pin = section.querySelector("[data-embroidery-pin]");
     var video = document.getElementById("embroideryVideo");
+    var videoSrc = video && video.getAttribute("data-src");
     var progressFill = document.getElementById("progressFill");
     var progressValue = document.getElementById("progressValue");
     var stageItems = Array.prototype.slice.call(section.querySelectorAll("[data-stage]"));
@@ -28,7 +27,8 @@
     var running = false;
     var objectUrl = "";
     var sourceReady = false;
-    var ignoreMediaError = false;
+    var loadStarted = false;
+    var loadObserver = null;
 
     function headerH() {
         var raw = getComputedStyle(document.documentElement).getPropertyValue("--brandeduk-site-header-height");
@@ -149,6 +149,7 @@
     }
 
     function requestFrame() {
+        if (video && !loadObserver && !loadStarted) loadWhenNear();
         if (running) return;
         running = true;
         requestAnimationFrame(render);
@@ -164,13 +165,12 @@
 
     function assignSrc(url) {
         sourceReady = false;
-        ignoreMediaError = false;
         video.src = url;
         video.load();
         forcePause();
     }
 
-    function attachSeekableSource(url, attempt) {
+    function attachSeekableSource(url) {
         fetch(url).then(function (res) {
             if (!res.ok) throw new Error("video fetch failed " + res.status);
             return res.blob();
@@ -180,12 +180,18 @@
             assignSrc(objectUrl);
         }).catch(function (err) {
             if (typeof console !== "undefined") console.warn("embroidery video", err);
-            if ((attempt || 0) < 1) {
-                attachSeekableSource(url, (attempt || 0) + 1);
-                return;
-            }
             assignSrc(url);
         });
+    }
+
+    function loadWhenNear() {
+        if (loadStarted || !videoSrc) return;
+        var rect = section.getBoundingClientRect();
+        if (rect.top > window.innerHeight + 400 || rect.bottom < -400) return;
+        loadStarted = true;
+        if (loadObserver) loadObserver.disconnect();
+        // A local blob keeps reverse scroll seeking smooth without extra range requests.
+        attachSeekableSource(videoSrc);
     }
 
     if (video) {
@@ -205,14 +211,19 @@
         video.addEventListener("loadedmetadata", bindVideo);
         video.addEventListener("loadeddata", bindVideo);
         video.addEventListener("error", function () {
-            if (ignoreMediaError) return;
             if (video.error && video.error.code === 1) return;
-            if ((video.currentSrc || "").indexOf("blob:") === 0) return;
-            assignSrc(VIDEO_SRC);
+            console.error("Embroidery video could not be played", video.error);
         });
         video.addEventListener("seeked", requestFrame);
         forcePause();
-        attachSeekableSource(VIDEO_SRC);
+        if ("IntersectionObserver" in window) {
+            loadObserver = new IntersectionObserver(function (entries) {
+                if (entries.some(function (entry) { return entry.isIntersecting; })) {
+                    loadWhenNear();
+                }
+            }, { rootMargin: "400px 0px" });
+            loadObserver.observe(section);
+        }
     }
 
     window.addEventListener("scroll", requestFrame, { passive: true });
