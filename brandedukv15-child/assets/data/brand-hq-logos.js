@@ -67,6 +67,7 @@ window.BrandedHQBrandLogos = {
   'themagictouch': 'brandedukv15-child/assets/images/brands-high-quality/themagictouch-logo-official_rgb_150x110.jpg',
   'tombo': 'brandedukv15-child/assets/images/brands-high-quality/tombo_mainlogo_2020_new.webp',
   'towelcity': 'brandedukv15-child/assets/images/brands-high-quality/towelcity_logo_2020.jpg',
+  'uneek': 'brandedukv15-child/assets/images/brands/uneek.svg',
   'underarmour': 'brandedukv15-child/assets/images/brands-high-quality/under-armour-logo.webp',
   'web-logo-tridri': 'brandedukv15-child/assets/images/brands-high-quality/web-logo-tridri-2025.webp',
   'westfordmill': 'brandedukv15-child/assets/images/brands-high-quality/westford-mill-logo-2020-v2.webp',
