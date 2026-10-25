@@ -31,8 +31,12 @@ const ALLOWED_ORIGINS = new Set([
     'https://brandeduk.com',
     'http://localhost:3000',
     'http://localhost:5173',
+    'http://localhost:5510',
+    'http://localhost:5511',
     'http://127.0.0.1:3000',
     'http://127.0.0.1:5173',
+    'http://127.0.0.1:5510',
+    'http://127.0.0.1:5511',
 ]);
 
 const s3 = new S3Client({

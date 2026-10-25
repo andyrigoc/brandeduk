@@ -3376,7 +3376,11 @@
             if (!response.ok || !result.success || !Array.isArray(result.basket)) {
                 throw new Error(result.message || 'Unable to open this shared basket.');
             }
-            localStorage.setItem('quoteBasket', JSON.stringify(result.basket));
+            if (window.BrandedQuoteStorage && typeof window.BrandedQuoteStorage.saveBasket === 'function') {
+                window.BrandedQuoteStorage.saveBasket(result.basket);
+            } else {
+                localStorage.setItem('quoteBasket', JSON.stringify(result.basket));
+            }
             removeShareParameter();
             sessionStorage.setItem('reorderNotice', 'Shared basket opened');
         } catch (error) {
@@ -3605,6 +3609,10 @@
 
     // Get basket from localStorage
     function getBasket() {
+        if (window.BrandedQuoteStorage && typeof window.BrandedQuoteStorage.loadBasket === 'function') {
+            const stored = window.BrandedQuoteStorage.loadBasket();
+            return Array.isArray(stored) ? stored : [];
+        }
         try { return JSON.parse(localStorage.getItem('quoteBasket') || '[]'); }
         catch (e) { return []; }
     }
@@ -3649,6 +3657,10 @@
             });
         });
 
+        if (window.BrandedQuoteStorage && typeof window.BrandedQuoteStorage.saveBasket === 'function') {
+            window.BrandedQuoteStorage.saveBasket(compactBasket);
+            return;
+        }
         localStorage.setItem('quoteBasket', JSON.stringify(compactBasket));
     }
 
@@ -6982,14 +6994,15 @@
             </div>
         </div>
     </div>
-<script src="brandedukv15-child/assets/js/cart.js?v=20260417"></script>
+<script src="brandedukv15-child/assets/js/storage/quote-storage.js?v=20261025-storage"></script>
+<script src="brandedukv15-child/assets/js/cart.js?v=20261025-storage"></script>
 <script src="brandedukv15-child/assets/js/header.js?v=20261020-suggest"></script>
 <script src="brandedukv15-child/assets/js/api-config.js?v=20260530"></script>
 <script src="brandedukv15-child/assets/js/color-eyedropper.js?v=20260610n"></script>
 <script src="brandedukv15-child/assets/js/color-hex.js?v=20260704a"></script>
 <script src="brandedukv15-child/assets/js/api.js?v=20260731a"></script>
 <script src="mobile/js/whatsapp.js?v=20261002-chatlogo"></script>
-<script src="brandedukv15-child/assets/js/upload/logo-upload.js"></script>
+<script src="brandedukv15-child/assets/js/upload/logo-upload.js?v=20261025-storage"></script>
 <script>
 // Basket page: search + shop links → correct shop per device
 (function() {

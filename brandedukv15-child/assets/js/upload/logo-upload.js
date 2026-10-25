@@ -55,10 +55,27 @@
   function add(entry) {
     if (!entry || !entry.url) return;
     const logos = _load();
+    const url = entry.url;
+    if (typeof url === 'string' && url.indexOf('data:image') === 0) {
+      const storage = window.BrandedQuoteStorage;
+      if (storage && typeof storage.persistLogo === 'function') {
+        storage.persistLogo(url, entry.filename).then(function (result) {
+          add({
+            url: (result && result.url && result.url.indexOf('data:') !== 0) ? result.url : (result && result.logoId ? storage.refFor(result.logoId) : ''),
+            logoId: result && result.logoId,
+            filename: entry.filename,
+            uploadedAt: entry.uploadedAt
+          });
+        });
+        return;
+      }
+      return;
+    }
     // Deduplicate by URL
-    if (logos.some(l => l.url === entry.url)) return;
+    if (logos.some(l => l.url === url || (entry.logoId && l.logoId === entry.logoId))) return;
     logos.unshift({
-      url: entry.url,
+      url: url,
+      logoId: entry.logoId || '',
       filename: entry.filename || 'logo',
       uploadedAt: entry.uploadedAt || new Date().toISOString(),
     });
@@ -96,19 +113,21 @@
 
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.error || `Upload failed (${res.status})`);
+        const error = new Error(errData.error || `Upload failed (${res.status})`);
+        error.status = res.status;
+        throw error;
       }
 
       const data = await res.json();
-      // DO NOT auto-add here - _processFiles handles gallery updates
       return data;                       // { url, filename, size }
     } catch (err) {
-      console.warn('[LogoLibrary] Server upload failed, keeping data-URL:', err.message);
-      // Fallback: return data-URL (caller already added to gallery)
+      console.warn('[LogoLibrary] Server upload failed:', err.message);
       return {
-        url: base64DataUrl,
+        url: '',
         filename: filename || `logo-${Date.now()}`,
-        size: base64DataUrl.length,
+        size: 0,
+        error: err.message,
+        status: err.status || 0
       };
     }
   }
@@ -224,7 +243,11 @@
         item.dataset.url = logo.url;
 
         const img = document.createElement('img');
-        img.src = logo.url;
+        const resolved = window.BrandedQuoteStorage && window.BrandedQuoteStorage.resolveSrc
+          ? window.BrandedQuoteStorage.resolveSrc(logo.url, logo.logoId)
+          : logo.url;
+        img.src = resolved && resolved.indexOf('data:image') === 0 ? '' : resolved;
+        if (!img.src && resolved) img.src = resolved;
         img.alt = logo.filename || 'Saved logo';
         img.loading = 'lazy';
         img.draggable = false;
@@ -277,34 +300,35 @@
           return;
         }
 
-        // Default: add to local gallery immediately
-        const entry = {
-          url: dataUrl,
-          filename: file.name,
-          uploadedAt: new Date().toISOString(),
+        const finish = (url, logoId) => {
+          if (!url) return;
+          add({
+            url: url,
+            logoId: logoId || '',
+            filename: file.name,
+            uploadedAt: new Date().toISOString(),
+          });
+          renderGallery(containerEl, opts);
         };
-        add(entry);
 
-        // Check max limit
-        const current = _load();
-        if (current.length > MAX_LOGOS) {
-          if (typeof window.showToast === 'function') window.showToast('Max ' + MAX_LOGOS + ' logos allowed');
+        if (window.BrandedQuoteStorage && typeof window.BrandedQuoteStorage.persistLogo === 'function') {
+          window.BrandedQuoteStorage.persistLogo(dataUrl, file.name).then((result) => {
+            const url = result && result.url && result.url.indexOf('data:') !== 0
+              ? result.url
+              : (result && result.logoId ? window.BrandedQuoteStorage.refFor(result.logoId) : '');
+            finish(url, result && result.logoId);
+            if (result && !result.ok && typeof window.showToast === 'function') {
+              window.showToast(result.customerMessage || 'The logo could not be uploaded. Try again.');
+            }
+          });
           return;
         }
 
-        // Re-render gallery to show the new logo (don't auto-select)
-        renderGallery(containerEl, opts);
-
-        // Attempt server upload in background
         uploadToServer(dataUrl, null, file.name).then(serverResult => {
-          if (serverResult && serverResult.url && serverResult.url !== dataUrl) {
-            // Replace local data-URL with CDN URL
-            const logos = _load();
-            const idx = logos.findIndex(l => l.url === dataUrl);
-            if (idx !== -1) {
-              logos[idx].url = serverResult.url;
-              _save(logos);
-            }
+          if (serverResult && serverResult.url && serverResult.url.indexOf('data:') !== 0) {
+            finish(serverResult.url);
+          } else if (typeof window.showToast === 'function') {
+            window.showToast('The logo could not be uploaded. Check your connection and try again.');
           }
         }).catch(() => {});
       };

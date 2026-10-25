@@ -3406,6 +3406,10 @@ function setupVatToggle() {
 }
 
 function readQuoteBasket() {
+  if (window.BrandedQuoteStorage && typeof window.BrandedQuoteStorage.loadBasket === "function") {
+    const stored = window.BrandedQuoteStorage.loadBasket();
+    return Array.isArray(stored) ? stored : [];
+  }
   try {
     const raw = localStorage.getItem("quoteBasket");
     const parsed = JSON.parse(raw || "[]");
@@ -3416,25 +3420,20 @@ function readQuoteBasket() {
 }
 
 function writeQuoteBasket(basket) {
-  // Always try the compact representation first. Older baskets can contain the
-  // same base64 logo in logos, positions, positionDesigns and designPreview;
-  // writing the raw form first allowed that duplication to grow until the
-  // browser's localStorage quota was exhausted.
   const deduped = pruneBasketLogoDuplicates(basket);
-  const attempts = [compactBasketForStorage(deduped), deduped, basket];
-  let lastError = null;
-
-  for (const attempt of attempts) {
-    try {
-      localStorage.setItem("quoteBasket", JSON.stringify(attempt));
-      return true;
-    } catch (error) {
-      lastError = error;
-    }
+  const compact = compactBasketForStorage(deduped);
+  if (window.BrandedQuoteStorage && typeof window.BrandedQuoteStorage.saveBasket === "function") {
+    const result = window.BrandedQuoteStorage.saveBasket(compact);
+    return !!(result && result.ok);
   }
 
-  console.error("Unable to save basket (storage full)", lastError);
-  return false;
+  try {
+    localStorage.setItem("quoteBasket", JSON.stringify(compact));
+    return true;
+  } catch (error) {
+    console.error("Unable to save basket", error);
+    return false;
+  }
 }
 
 function getLogoSource(logo) {

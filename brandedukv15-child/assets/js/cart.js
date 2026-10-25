@@ -27,6 +27,12 @@
 
   /** Safely read cart from localStorage, returning [] on any error. */
   function _read() {
+    if (window.BrandedQuoteStorage && typeof window.BrandedQuoteStorage.loadBasket === 'function') {
+      try {
+        var stored = window.BrandedQuoteStorage.loadBasket();
+        return Array.isArray(stored) ? stored : [];
+      } catch (e) { /* fall through */ }
+    }
     try {
       var raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return [];
@@ -34,18 +40,20 @@
       if (!Array.isArray(parsed)) return [];
       return parsed;
     } catch (e) {
-      // Corrupted data – wipe it and start fresh
-      try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
       return [];
     }
   }
 
   /** Persist basket to localStorage and notify listeners. */
   function _write(basket) {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(basket));
-    } catch (e) {
-      // Storage full or blocked – best-effort
+    if (window.BrandedQuoteStorage && typeof window.BrandedQuoteStorage.saveBasket === 'function') {
+      window.BrandedQuoteStorage.saveBasket(basket);
+    } else {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(basket));
+      } catch (e) {
+        // Storage full or blocked – best-effort
+      }
     }
     _notify();
   }

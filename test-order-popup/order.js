@@ -28,6 +28,33 @@ window.showAlert = function(message, btnLabel) {
     overlay.addEventListener('click', function(e) { if (e.target === overlay) close(); });
 };
 
+function persistQuoteBasket(basket) {
+    if (window.BrandedQuoteStorage && typeof window.BrandedQuoteStorage.saveBasket === 'function') {
+        var result = window.BrandedQuoteStorage.saveBasket(basket);
+        if (result && result.ok) return true;
+        return result || { ok: false };
+    }
+    try {
+        localStorage.setItem('quoteBasket', JSON.stringify(basket));
+        return true;
+    } catch (error) {
+        return { ok: false, error: error, category: error && error.name };
+    }
+}
+
+function loadQuoteBasket() {
+    if (window.BrandedQuoteStorage && typeof window.BrandedQuoteStorage.loadBasket === 'function') {
+        var stored = window.BrandedQuoteStorage.loadBasket();
+        return Array.isArray(stored) ? stored : [];
+    }
+    try {
+        var parsed = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+        return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+        return [];
+    }
+}
+
 // Global variables
 window.current = 0;
 window.selectedColour = null;
@@ -709,7 +736,7 @@ function savePage3SelectionToBasket() {
     var basePrice = parseFloat(product.basePrice || product.price) || 0;
 
     var basket = [];
-    try { basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]'); } catch(e) {}
+    try { basket = loadQuoteBasket(); } catch(e) {}
 
     // Bulk price tier is based on the combined quantity for this product +
     // colour across every size (existing rows plus this new selection).
@@ -758,7 +785,7 @@ function savePage3SelectionToBasket() {
         }
     });
 
-    localStorage.setItem('quoteBasket', JSON.stringify(basket));
+    persistQuoteBasket(basket);
     window.dispatchEvent(new Event('basketUpdated'));
 
     return {
@@ -2137,7 +2164,7 @@ function p4ExistingEmbroideryLogosInBasket() {
     var colour = window.selectedColour || '';
     var found = {};
     var basket = [];
-    try { basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]'); } catch (error) {}
+    try { basket = loadQuoteBasket(); } catch (error) {}
     basket.forEach(function (item) {
         var itemCode = item.code || item.productCode || '';
         var itemColour = item.color || item.colour || '';
@@ -2317,7 +2344,7 @@ function p4SaveLogosToBasket(options) {
     var colour = window.selectedColour || '';
     var notes = $('#p4ArtworkNotes').val() || '';
     var basket = [];
-    try { basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]'); } catch (error) {}
+    try { basket = loadQuoteBasket(); } catch (error) {}
     var logos = Object.keys(window.p4Assignments || {}).map(function (pos) {
         var assignment = window.p4Assignments[pos];
         var card = p4FindPositionCard(pos);
@@ -2409,15 +2436,17 @@ function p4SaveLogosToBasket(options) {
         return false;
     }
 
-    try {
-        localStorage.setItem('quoteBasket', JSON.stringify(basket));
-    } catch (error) {
-        console.error('Unable to save product customisation to local storage.', error);
+    var saved = persistQuoteBasket(basket);
+    if (saved !== true && !(saved && saved.ok)) {
+        var info = (window.BrandedQuoteStorage && window.BrandedQuoteStorage.classifyError)
+            ? window.BrandedQuoteStorage.classifyError((saved && saved.error) || {}, 'save_basket')
+            : { customerMessage: 'Your design is still on screen. Please try again. Nothing was deleted.' };
+        console.error('Unable to save product customisation to local storage.', saved);
         if (shouldNotify) {
             if (typeof window.showAlert === 'function') {
-                window.showAlert('Your logo could not be saved because browser storage is full. Please remove an item from the basket and try again.', 'Basket update failed');
+                window.showAlert(info.customerMessage, 'Basket update failed');
             } else {
-                window.alert('Your logo could not be saved because browser storage is full. Please remove an item from the basket and try again.');
+                window.alert(info.customerMessage);
             }
         }
         return false;
@@ -2533,7 +2562,7 @@ $(document).on('drop', '#p4ChooseFile, #p4PreviousLogos', function (e) {
 // Final save — called after page 5
 function finalSaveToBasket(redirectUrl) {
     var basket = [];
-    try { basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]'); } catch(e) {}
+    try { basket = loadQuoteBasket(); } catch(e) {}
 
     if (window.logoUpdateItemId) {
         // Update the existing item with logo data (user came via "+ Add Your Logo")
@@ -2603,7 +2632,7 @@ function finalSaveToBasket(redirectUrl) {
     window.logoMethod = null;
     window.logoData = null;
 
-    localStorage.setItem('quoteBasket', JSON.stringify(basket));
+    persistQuoteBasket(basket);
     window.dispatchEvent(new Event('basketUpdated'));
 
     if (redirectUrl) {
@@ -2664,14 +2693,14 @@ $(document).on("click", "#btnAddLogo", function() {
 $(document).on("click", "#btnAddLogoInitial", function() {
     var beforeCount = 0;
     try {
-        beforeCount = JSON.parse(localStorage.getItem('quoteBasket') || '[]').length;
+        beforeCount = loadQuoteBasket().length;
     } catch (error) {}
 
     $('#btnAddToQuote').trigger('click');
     window.setTimeout(function() {
         var afterCount = 0;
         try {
-            afterCount = JSON.parse(localStorage.getItem('quoteBasket') || '[]').length;
+            afterCount = loadQuoteBasket().length;
         } catch (error) {}
         if (afterCount > beforeCount) $('#btnAddLogo').trigger('click');
     }, 40);
@@ -2808,13 +2837,13 @@ function p4BasketShareUrl(token) {
 
 function p4EnsureQuoteBasketForShare() {
     var basket = [];
-    try { basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]'); } catch (e) {}
+    try { basket = loadQuoteBasket(); } catch (e) {}
     if (basket.length) return basket;
     // Page 4 can be reached with sizes selected but an empty quoteBasket
     // (e.g. logos saved without a prior Add to Quote). Re-save sizes first.
     if (typeof savePage3SelectionToBasket === 'function') {
         try { savePage3SelectionToBasket(); } catch (e) {}
-        try { basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]'); } catch (e2) {}
+        try { basket = loadQuoteBasket(); } catch (e2) {}
     }
     return basket;
 }

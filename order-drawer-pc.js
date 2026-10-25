@@ -1527,12 +1527,20 @@
         }
 
         function readBasket() {
+            if (window.BrandedQuoteStorage && typeof window.BrandedQuoteStorage.loadBasket === 'function') {
+                var stored = window.BrandedQuoteStorage.loadBasket();
+                return Array.isArray(stored) ? stored : [];
+            }
             try { return JSON.parse(localStorage.getItem('quoteBasket') || '[]'); }
             catch (error) { return []; }
         }
 
         function writeBasket(basket) {
-            localStorage.setItem('quoteBasket', JSON.stringify(basket));
+            if (window.BrandedQuoteStorage && typeof window.BrandedQuoteStorage.saveBasket === 'function') {
+                window.BrandedQuoteStorage.saveBasket(basket);
+            } else {
+                localStorage.setItem('quoteBasket', JSON.stringify(basket));
+            }
             window.dispatchEvent(new Event('basketUpdated'));
             loadBasketData();
         }

@@ -14,6 +14,38 @@
     const VAT_STORAGE_KEY = 'brandeduk-vat-mode';
     const VAT_RATE = 0.20;
 
+    function persistQuoteBasket(basket) {
+        if (window.BrandedQuoteStorage && typeof window.BrandedQuoteStorage.saveBasket === 'function') {
+            return window.BrandedQuoteStorage.saveBasket(basket);
+        }
+        try {
+            localStorage.setItem('quoteBasket', JSON.stringify(Array.isArray(basket) ? basket : []));
+            return { ok: true, category: 'saved' };
+        } catch (error) {
+            const info = window.BrandedQuoteStorage && window.BrandedQuoteStorage.classifyError
+                ? window.BrandedQuoteStorage.classifyError(error, 'save_basket')
+                : { category: 'quota_exceeded', customerMessage: 'The browser could not save this quote locally. Your design is still on screen — submit the quote or try again. Nothing was deleted.' };
+            return { ok: false, category: info.category, customerMessage: info.customerMessage, error: error };
+        }
+    }
+
+    function loadQuoteBasket() {
+        if (window.BrandedQuoteStorage && typeof window.BrandedQuoteStorage.loadBasket === 'function') {
+            const stored = window.BrandedQuoteStorage.loadBasket();
+            return Array.isArray(stored) ? stored : [];
+        }
+        try {
+            const parsed = loadQuoteBasket();
+            return Array.isArray(parsed) ? parsed : [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function quoteStorageMessage(result) {
+        return (result && result.customerMessage) || 'The browser could not save this quote locally. Your design is still on screen — submit the quote or try again. Nothing was deleted.';
+    }
+
     // === Canonical Position Display Names (SINGLE SOURCE OF TRUTH) ===
     const POSITION_DISPLAY_NAMES = {
         'left-chest': 'Left Chest',
@@ -2431,7 +2463,7 @@
     // Get quantity of same product already in basket (for cumulative discount)
     function getBasketQuantityForProduct(productCode) {
         try {
-            const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+            const basket = loadQuoteBasket();
             let basketQty = 0;
             
             basket.forEach(item => {
@@ -2662,11 +2694,11 @@
         if (sizeMB > 1) {
             debugLog('?? LocalStorage over 1MB, compressing basket images...');
             try {
-                let basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+                let basket = loadQuoteBasket();
                 for (let i = 0; i < basket.length; i++) {
                     basket[i] = await compressItemImages(basket[i]);
                 }
-                localStorage.setItem('quoteBasket', JSON.stringify(basket));
+                persistQuoteBasket(basket);
                 debugLog('? Basket images compressed');
             } catch (e) {
                 console.error('Failed to compress basket:', e);
@@ -3008,7 +3040,7 @@
         const basketIdx = sessionStorage.getItem('customizingBasketIndex');
         if (basketIdx !== null) {
             try {
-                const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+                const basket = loadQuoteBasket();
                 const basketItem = basket[parseInt(basketIdx, 10)];
                 if (basketItem) {
                     debugLog('🛒 Loading basket item for customization:', basketItem.productName, basketItem.color);
@@ -3246,7 +3278,7 @@
     
     // Add current size selection to basket
     function addCurrentSelectionToBasket() {
-        const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+        const basket = loadQuoteBasket();
         
         // Build positions object for any selected branding
         const positions = {};
@@ -3377,34 +3409,22 @@
         
         // Save to localStorage SYNCHRONOUSLY first, then compress in background
         try {
-            localStorage.setItem('quoteBasket', JSON.stringify(basket));
-            debugLog('✅ Basket saved! Total items:', basket.length);
-        } catch (e) {
-            debugWarn('⚠️ localStorage full, trying to compress...', e);
-            // Synchronous fallback: strip base64 logos to thumbnail size inline
-            basket.forEach(item => {
-                if (item.positionDesigns) {
-                    Object.values(item.positionDesigns).forEach(d => {
-                        if (d.logo && d.logo.length > 50000) {
-                            // Keep a truncated version rather than nothing
-                            d.logo = d.logo.substring(0, 50000);
-                        }
-                    });
-                }
-            });
-            try {
-                localStorage.setItem('quoteBasket', JSON.stringify(basket));
-                debugLog('✅ Basket saved after trimming!');
-            } catch (e2) {
-                console.error('❌ Cannot save basket:', e2);
-                showToast('Storage full — please submit your quote', true);
+            const saved = persistQuoteBasket(basket);
+            if (saved && saved.ok) {
+                debugLog('✅ Basket saved! Total items:', basket.length);
+            } else {
+                debugWarn('⚠️ Basket save failed', saved);
+                showToast(quoteStorageMessage(saved), true);
             }
+        } catch (e) {
+            debugWarn('⚠️ Basket save failed', e);
+            showToast(quoteStorageMessage(persistQuoteBasket(basket)), true);
         }
         
         // Background: compress images for future saves (non-blocking)
         setTimeout(async () => {
             try {
-                const bsk = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+                const bsk = loadQuoteBasket();
                 let changed = false;
                 for (let i = 0; i < bsk.length; i++) {
                     const before = JSON.stringify(bsk[i]).length;
@@ -3412,7 +3432,7 @@
                     if (JSON.stringify(bsk[i]).length < before) changed = true;
                 }
                 if (changed) {
-                    localStorage.setItem('quoteBasket', JSON.stringify(bsk));
+                    persistQuoteBasket(bsk);
                     debugLog('✅ Basket images compressed in background');
                 }
             } catch (err) {
@@ -3554,7 +3574,7 @@
                     // Get basket from localStorage
                     let basket = [];
                     try {
-                        basket = JSON.parse(localStorage.getItem('quoteBasket')) || [];
+                        basket = loadQuoteBasket();
                     } catch {
                         basket = [];
                     }
@@ -4050,8 +4070,7 @@
                         // Clear storage and redirect after delay
                         setTimeout(() => {
                             // Clear the basket
-                            localStorage.removeItem('quoteBasket');
-                            localStorage.setItem('quoteBasket', '[]');
+                            persistQuoteBasket([]);
                             
                             // Clear ALL customization state
                             sessionStorage.removeItem('brandeduk-customize-state');
@@ -4196,7 +4215,7 @@
     
     function updateOrderCard() {
         // Calculate totals from BOTH basket AND current selection
-        const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+        const basket = loadQuoteBasket();
         
         // First, calculate TOTAL quantity to determine correct tier
         let basketQty = 0;
@@ -4306,7 +4325,7 @@
         let itemsHtml = '';
         
         // PART 1: Show items already in the basket (from localStorage)
-        const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+        const basket = loadQuoteBasket();
         
         // Calculate correct unit price based on cumulative quantity
         const cumulativeUnitPrice = getUnitPrice(state.quantity); // Already considers basket
@@ -4471,9 +4490,9 @@
         listContainer.querySelectorAll('.basket-delete').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const basketIndex = parseInt(btn.dataset.basketIndex);
-                let basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+                let basket = loadQuoteBasket();
                 basket.splice(basketIndex, 1);
-                localStorage.setItem('quoteBasket', JSON.stringify(basket));
+                persistQuoteBasket(basket);
                 
                 // Update UI
                 updateOrderCardItemsList();
@@ -4494,7 +4513,7 @@
                 const size = btn.dataset.size;
                 const action = btn.dataset.action;
                 
-                let basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+                let basket = loadQuoteBasket();
                 if (!basket[basketIndex]) return;
                 
                 const item = basket[basketIndex];
@@ -4521,7 +4540,7 @@
                 }
                 
                 // Save back to localStorage
-                localStorage.setItem('quoteBasket', JSON.stringify(basket));
+                persistQuoteBasket(basket);
                 
                 debugLog('?? Basket updated, recalculating totals...');
                 
@@ -6903,7 +6922,7 @@
 
     function _getExistingLogosFromBasket() {
         try {
-            const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+            const basket = loadQuoteBasket();
             const seen = new Set();
             const logos = [];
 
@@ -7872,7 +7891,7 @@
             persistEditedBasketItemLogos();
         } else if (designData.logo) {
             // Full customize flow: update all same product+colour rows
-            const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+            const basket = loadQuoteBasket();
             const code = state.product?.code;
             const color = state.selectedColorName || state.selectedColor;
             let updated = false;
@@ -7903,7 +7922,7 @@
             });
             if (updated) {
                 try {
-                    localStorage.setItem('quoteBasket', JSON.stringify(basket));
+                    persistQuoteBasket(basket);
                 } catch (e) {
                     console.error('applyDesignToPosition basket save failed:', e);
                 }
@@ -8003,7 +8022,7 @@
         let hasLogos = false;
         
         // PART 1: Get logos from basket items
-        const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+        const basket = loadQuoteBasket();
         
         basket.forEach((item, itemIndex) => {
             // Check positionDesigns or customizations
@@ -8080,7 +8099,7 @@
     // Uses SAME logic as updateOrderCard() for consistency
     function updatePricingSummary() {
         // Read basket EXACTLY like updateOrderCard does
-        const fullBasket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+        const fullBasket = loadQuoteBasket();
         
         // Exclude the item currently being edited to avoid double-counting
         // (its quantities are live in state.quantity / currentQty)
@@ -8855,7 +8874,7 @@
                     updatePricingSummary();
                 } else {
                     // Modify basket item
-                    let bsk = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+                    let bsk = loadQuoteBasket();
                     const i = parseInt(idx);
                     if (!bsk[i]) return;
                     const sizes = bsk[i].sizes || bsk[i].quantities || {};
@@ -8875,7 +8894,7 @@
                         if (bsk[i].sizes) bsk[i].sizes = sizes;
                         if (bsk[i].quantities) bsk[i].quantities = sizes;
                     }
-                    localStorage.setItem('quoteBasket', JSON.stringify(bsk));
+                    persistQuoteBasket(bsk);
                     updateBasketCount();
                     updatePricingSummary();
                 }
@@ -8888,13 +8907,13 @@
                 e.preventDefault();
                 e.stopPropagation();
                 const idx = parseInt(btn.dataset.index);
-                let bsk = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+                let bsk = loadQuoteBasket();
                 if (!bsk[idx]) return;
                 const copy = JSON.parse(JSON.stringify(bsk[idx]));
                 copy.id = Date.now().toString();
                 copy.addedAt = new Date().toISOString();
                 bsk.splice(idx + 1, 0, copy);
-                localStorage.setItem('quoteBasket', JSON.stringify(bsk));
+                persistQuoteBasket(bsk);
                 updateBasketCount();
                 updatePricingSummary();
             });
@@ -9304,7 +9323,7 @@
         const allLogos = new Set();
         const stateLogo = getLogoFromState();
         if (stateLogo) allLogos.add(stateLogo);
-        const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+        const basket = loadQuoteBasket();
         basket.forEach(bi => {
             const l = getItemLogoSrc(bi);
             if (l) allLogos.add(l);
@@ -9405,7 +9424,7 @@
     
     // Remove logo from a saved basket item in localStorage
     function removeBasketItemLogo(itemIndex) {
-        let basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+        let basket = loadQuoteBasket();
         const item = basket[itemIndex];
         if (!item) return;
         if (item.positionDesigns) {
@@ -9413,7 +9432,7 @@
                 if (item.positionDesigns[key]) item.positionDesigns[key].logo = null;
             });
         }
-        localStorage.setItem('quoteBasket', JSON.stringify(basket));
+        persistQuoteBasket(basket);
         updatePricingSummary();
         if (typeof showToast === 'function') showToast('Logo removed');
     }
@@ -9425,7 +9444,7 @@
         const modal = document.getElementById('logoActionModal');
         if (!modal) return;
         
-        const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+        const basket = loadQuoteBasket();
         const item = basket[itemIndex];
         const itemName = item ? (item.productName || item.name || 'Item') : 'Item';
         const existingLogo = item ? getItemLogoSrc(item) : null;
@@ -9560,7 +9579,7 @@
             return;
         }
         
-        let basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+        let basket = loadQuoteBasket();
         const item = basket[_logoActionTargetIdx];
         if (!item) { closeLogoActionModal(); return; }
         
@@ -9582,7 +9601,7 @@
             }
         }
         
-        localStorage.setItem('quoteBasket', JSON.stringify(basket));
+        persistQuoteBasket(basket);
         closeLogoActionModal();
         updatePricingSummary();
         if (typeof showToast === 'function') showToast(hasLogo ? 'Logo applied!' : 'Note saved!');
@@ -9625,7 +9644,7 @@
     
     // Handle +/- quantity changes in basket
     function handleBasketQtyChange(itemIndex, size, isIncrement) {
-        let basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+        let basket = loadQuoteBasket();
         
         if (itemIndex < 0 || itemIndex >= basket.length) return;
         
@@ -9646,19 +9665,19 @@
             basket.splice(itemIndex, 1);
         }
         
-        localStorage.setItem('quoteBasket', JSON.stringify(basket));
+        persistQuoteBasket(basket);
         updateBasketCount();
         updatePricingSummary();
     }
     
     // Remove item from basket
     function removeBasketItem(itemIndex) {
-        let basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+        let basket = loadQuoteBasket();
         
         if (itemIndex < 0 || itemIndex >= basket.length) return;
         
         basket.splice(itemIndex, 1);
-        localStorage.setItem('quoteBasket', JSON.stringify(basket));
+        persistQuoteBasket(basket);
         updateBasketCount();
         updatePricingSummary();
     }
@@ -9692,11 +9711,11 @@
 
         // Remove basket items (in reverse order to preserve indices)
         if (basketIndices.length > 0) {
-            let basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+            let basket = loadQuoteBasket();
             basketIndices.sort((a, b) => b - a).forEach(idx => {
                 if (idx >= 0 && idx < basket.length) basket.splice(idx, 1);
             });
-            localStorage.setItem('quoteBasket', JSON.stringify(basket));
+            persistQuoteBasket(basket);
             updateBasketCount();
         }
 
@@ -10284,7 +10303,7 @@
     function persistEditedBasketItemLogos() {
         if (!isActiveBasketItemEdit()) return false;
 
-        const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+        const basket = loadQuoteBasket();
         const basePositionDesigns = getPositionDesignsForBasket();
         const positions = mergePositionsWithDesigns(
             buildPositionsFromDOM(),
@@ -10332,7 +10351,7 @@
         });
 
         try {
-            localStorage.setItem('quoteBasket', JSON.stringify(basket));
+            persistQuoteBasket(basket);
             _logoConfiguredForCurrentItem = true;
             debugLog('💾 persistEditedBasketItemLogos: saved', existing.productName || existing.name, existing.color);
             return true;
@@ -10437,7 +10456,7 @@
         }
         if (!state.quantity || state.quantity === 0) return;
 
-        const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+        const basket = loadQuoteBasket();
 
         const basePositionDesigns = getPositionDesignsForBasket();
         const positions = mergePositionsWithDesigns(buildPositionsFromDOM(), basePositionDesigns, state.positionMethods);
@@ -10459,7 +10478,7 @@
                 }));
                 syncBasketItemLogos(existing);
                 try {
-                    localStorage.setItem('quoteBasket', JSON.stringify(basket));
+                    persistQuoteBasket(basket);
                 } catch (e) {
                     console.error('Auto-save failed:', e);
                     return;
@@ -10539,7 +10558,7 @@
 
         try {
             syncAllBasketLogos(basket);
-            localStorage.setItem('quoteBasket', JSON.stringify(basket));
+            persistQuoteBasket(basket);
         } catch (e) {
             console.error('Auto-save failed:', e);
             return;
@@ -10702,7 +10721,7 @@
         if (isActiveBasketItemEdit()) {
             try {
                 const idx = parseInt(sessionStorage.getItem('customizingBasketIndex'), 10);
-                const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+                const basket = loadQuoteBasket();
                 const item = basket[idx];
                 if (item && basketItemHasLogo(item)) return false;
             } catch (e) { /* ignore */ }
@@ -10792,7 +10811,7 @@
             return;
         }
         try {
-            const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+            const basket = loadQuoteBasket();
             const idx = basket.findIndex(function (i) { return i.id === item.id; });
             if (idx !== -1) {
                 sessionStorage.setItem('customizingBasketIndex', String(idx));
@@ -10833,12 +10852,12 @@
         if (!lastNewItem || !lastNewItem.id) return;
         if (basketItemHasLogo(lastNewItem)) return;
         try {
-            const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+            const basket = loadQuoteBasket();
             const idx = basket.findIndex(function (i) { return i.id === lastNewItem.id; });
             if (idx === -1) return;
             basket[idx].pendingLogoPrompt = true;
             stripLogosFromBasketItem(basket[idx]);
-            localStorage.setItem('quoteBasket', JSON.stringify(basket));
+            persistQuoteBasket(basket);
         } catch (e) {
             debugWarn('markItemForLogoPrompt failed:', e);
         }
@@ -11199,7 +11218,7 @@
         }
 
         // Get current basket from localStorage
-        const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+        const basket = loadQuoteBasket();
         
         const basePositionDesigns = getPositionDesignsForBasket();
         const positions = mergePositionsWithDesigns(buildPositionsFromDOM(), basePositionDesigns, state.positionMethods);
@@ -11399,8 +11418,12 @@
         // Save to localStorage with error handling
         try {
             syncAllBasketLogos(basket);
-            localStorage.setItem('quoteBasket', JSON.stringify(basket));
-            debugLog('💾 [addToQuote] Saved basket to localStorage, total items:', basket.length);
+            const saved = persistQuoteBasket(basket);
+            if (!saved || !saved.ok) {
+                showToast(quoteStorageMessage(saved), true);
+            } else {
+                debugLog('💾 [addToQuote] Saved basket to localStorage, total items:', basket.length);
+            }
             if (isFromBasket) {
                 const basketIdx = parseInt(sessionStorage.getItem('customizingBasketIndex'), 10);
                 if (!isNaN(basketIdx) && basketIdx >= 0 && basketIdx < basket.length) {
@@ -11415,24 +11438,8 @@
                 }
             }
         } catch (e) {
-            if (e.name === 'QuotaExceededError') {
-                console.error('?? LocalStorage quota exceeded!');
-                
-                // Try to compress and save again
-                compressItemImages(lastNewItem).then(compressedItem => {
-                    basket[basket.length - 1] = compressedItem;
-                    try {
-                        localStorage.setItem('quoteBasket', JSON.stringify(basket));
-                        showToast('Item added (images compressed due to storage limit)');
-                    } catch (e2) {
-                        showToast('Storage full! Please complete your quote or remove items.', true);
-                        basket.pop(); // Remove the item we just added
-                    }
-                });
-                return; // Exit early, will continue after compression
-            } else {
-                throw e; // Re-throw other errors
-            }
+            const failed = persistQuoteBasket(basket);
+            showToast(quoteStorageMessage(failed), true);
         }
         
         // Close the editor modal
@@ -11499,7 +11506,7 @@
     async function _upgradeBasketLogosToServer() {
         if (typeof window.BrandedLogoLibrary === 'undefined') return;
         try {
-            const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+            const basket = loadQuoteBasket();
             let changed = false;
 
             for (const item of basket) {
@@ -11531,7 +11538,7 @@
             }
 
             if (changed) {
-                localStorage.setItem('quoteBasket', JSON.stringify(basket));
+                persistQuoteBasket(basket);
                 debugLog('✅ Basket logos upgraded to server URLs');
             }
         } catch (err) {
@@ -11656,7 +11663,7 @@
             clearModalButtonFocus();
             modal.remove();
             clearPositionState();
-            const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+            const basket = loadQuoteBasket();
             const idx = basket.findIndex(function (i) { return i.id === item.id; });
             if (idx !== -1) {
                 sessionStorage.setItem('customizingBasketIndex', String(idx));

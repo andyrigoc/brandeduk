@@ -18,6 +18,10 @@
     if (!panel || !frame || !orderCard) return;
 
     function readBasket() {
+        if (window.BrandedQuoteStorage && typeof window.BrandedQuoteStorage.loadBasket === 'function') {
+            var stored = window.BrandedQuoteStorage.loadBasket();
+            return Array.isArray(stored) ? stored : [];
+        }
         try {
             var parsed = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
             return Array.isArray(parsed) ? parsed : [];
@@ -27,6 +31,10 @@
     }
 
     function writeBasket(basket) {
+        if (window.BrandedQuoteStorage && typeof window.BrandedQuoteStorage.saveBasket === 'function') {
+            window.BrandedQuoteStorage.saveBasket(basket);
+            return;
+        }
         localStorage.setItem('quoteBasket', JSON.stringify(basket));
     }
 

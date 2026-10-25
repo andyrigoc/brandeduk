@@ -4119,7 +4119,8 @@
 <!-- Support Chat Popup (markup rebuilt by whatsapp.js) -->
 <div class="wa-popup" id="waPopup" aria-hidden="true"></div>
 
-<script src="brandedukv15-child/assets/js/cart.js?v=20260929-qtybadge"></script>
+<script src="brandedukv15-child/assets/js/storage/quote-storage.js?v=20261025-storage"></script>
+<script src="brandedukv15-child/assets/js/cart.js?v=20261025-storage"></script>
 <script src="brandedukv15-child/assets/js/shared-config.js?v=20261021-hivis-unified"></script>
 <script src="brandedukv15-child/assets/js/header.js?v=20261021-hivis-unified"></script>
 <script src="brandedukv15-child/assets/js/api-config.js?v=20261021-local-catalog-proxy"></script>
@@ -4148,6 +4149,10 @@
     const clearAllBtn = document.getElementById('headerBasketClear');
     
     function getBasket() {
+        if (window.BrandedQuoteStorage && typeof window.BrandedQuoteStorage.loadBasket === 'function') {
+            const stored = window.BrandedQuoteStorage.loadBasket();
+            return Array.isArray(stored) ? stored : [];
+        }
         try {
             return JSON.parse(localStorage.getItem('quoteBasket')) || [];
         } catch (e) {
@@ -4156,6 +4161,10 @@
     }
     
     function saveBasket(basket) {
+        if (window.BrandedQuoteStorage && typeof window.BrandedQuoteStorage.saveBasket === 'function') {
+            window.BrandedQuoteStorage.saveBasket(basket);
+            return;
+        }
         localStorage.setItem('quoteBasket', JSON.stringify(basket));
         renderBasket();
     }
@@ -4864,7 +4873,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <!-- ORDER DRAWER PC - Slide-in order process (PC only, doesn't affect mobile/tablet) -->
-<script src="order-drawer-pc.js?v=20261007-tablet-side"></script>
+<script src="order-drawer-pc.js?v=20261025-storage"></script>
 
 <script>
 (function () {
