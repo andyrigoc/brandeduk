@@ -439,24 +439,27 @@
             top: 0;
             height: 100%;
             width: auto;
-            max-width: none;
+            max-width: 40%;
             flex: none;
             transform: none;
             object-fit: contain;
-            object-position: right center;
+            object-position: right top;
             pointer-events: none;
         }
-        .shop-hero-card--art .shop-hero-card__photo[src*="caps-photo"] {
-            max-width: 42%;
-            object-position: right center;
+        .shop-hero-card--art .shop-hero-card__photo[src*="headwear-photo"] {
+            max-width: 40%;
+            object-position: right top;
         }
         .shop-hero-card--art .shop-hero-card__photo[src*="trousers-photo"] {
             top: auto;
-            bottom: 8px;
+            bottom: 12px;
             height: auto;
-            max-height: 78%;
-            max-width: 42%;
+            max-height: calc(100% - 24px);
+            max-width: 40%;
             object-position: right bottom;
+        }
+        .shop-hero-card--search .shop-hero-card__photo {
+            display: none !important;
         }
     </style>
     <div class="shop-hero-band" id="shopHeroBand">
@@ -1716,7 +1719,7 @@
             return map[slug] || null;
         }
 
-        function applyCategoryCard(total, product, fallbackTitle) {
+        function applyCategoryCard(total, product, fallbackTitle, mode) {
             document.body.classList.add('shop-category-card');
             const params = new URLSearchParams(window.location.search);
             const types = collectMobileSearchValues(params, 'productType');
@@ -1724,7 +1727,9 @@
             const raw = types.length === 1 ? String(types[0]) : ((currentCategory && currentCategory !== 'all') ? currentCategory : '');
             const catalog = raw ? catalogNameFor(raw) : '';
             const plain = typeSlug(raw).replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
-            const shown = (data && data.title) || catalog || plain || (fallbackTitle && fallbackTitle !== 'All Products' ? fallbackTitle : 'All Products');
+            const shown = mode === 'search'
+                ? (fallbackTitle || 'Search')
+                : ((data && data.title) || catalog || plain || (fallbackTitle && fallbackTitle !== 'All Products' ? fallbackTitle : 'All Products'));
             const crumb = document.getElementById('shopHeroCrumb');
             const titleEl = document.getElementById('shopHeroTitle');
             const descEl = document.getElementById('shopHeroDesc');
@@ -1864,7 +1869,13 @@
                 "hi-vis": ["img/safety-vests-photo.png", "Hi Vis", "High visibility clothing for improved safety."],
                 "hivis": ["img/safety-vests-photo.png", "Hi Vis", "High visibility clothing for improved safety."],
             };
-            const art = artCards[slug];
+            const searchSlug = String(currentSearchQuery || params.get('search') || params.get('q') || '')
+                .toLowerCase()
+                .trim()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-|-$/g, '');
+            const art = mode === 'search' ? null : artCards[slug];
+            const bannerArt = mode === 'search' ? artCards[searchSlug] : art;
             if (crumb) crumb.textContent = art ? art[1] : shown;
             if (titleEl) titleEl.textContent = art ? art[1] : shown;
             var crumbName = art ? art[1] : shown;
@@ -1874,7 +1885,7 @@
                 filterLabel.querySelector('span:last-child').textContent = crumbName;
             }
             if (descEl) {
-                descEl.textContent = art ? art[2] : ((data && data.desc) || '');
+                descEl.textContent = art ? art[2] : (mode === 'search' ? '' : ((data && data.desc) || ''));
                 descEl.hidden = !descEl.textContent;
             }
             if (countEl && total != null) {
@@ -1884,12 +1895,22 @@
             const img = document.getElementById('shopHeroPhoto');
             const card = document.querySelector('.shop-hero-card');
             if (card) {
-                card.classList.toggle('shop-hero-card--art', !!art);
+                card.classList.toggle('shop-hero-card--art', !!bannerArt);
+                card.classList.toggle('shop-hero-card--search', mode === 'search' && !bannerArt);
                 card.style.backgroundImage = '';
             }
-            if (art && img) {
+            if (bannerArt && img) {
                 img.hidden = false;
-                img.src = art[0];
+                img.src = bannerArt[0];
+                img.alt = bannerArt[1];
+                return;
+            }
+            if (mode === 'search') {
+                if (img) {
+                    img.hidden = true;
+                    img.removeAttribute('src');
+                    img.alt = '';
+                }
                 return;
             }
             const colours = (product && product.colors) || [];
@@ -1926,7 +1947,7 @@
             if (countEl) {
                 countEl.textContent = `(${Number(total || 0).toLocaleString()})`;
             }
-            applyCategoryCard(total, product, mode === 'search' ? `Search: "${query}"` : safeTitle);
+            applyCategoryCard(total, product, mode === 'search' ? `Search: "${query}"` : safeTitle, mode);
             updateMobilePagination();
         }
 
