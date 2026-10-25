@@ -63,12 +63,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#273469">
     <title>Shop - BrandedUK</title>
-    <link rel="stylesheet" href="css/mobile.css?v=20261025-logolg">
-    <link rel="stylesheet" href="css/header-v2.css?v=20261025-logolg">
+    <link rel="stylesheet" href="css/mobile.css?v=20261025-worddn">
+    <link rel="stylesheet" href="css/header-v2.css?v=20261025-worddn">
     <link rel="stylesheet" href="css/search-suggestions.css?v=20261020a">
     <link rel="stylesheet" href="css/bottom-nav.css?v=20261020-orange">
     <link rel="stylesheet" href="css/breadcrumbs.css?v=20260403d">
-    <link rel="stylesheet" href="css/social-buttons.css?v=20261025-logolg">
+    <link rel="stylesheet" href="css/social-buttons.css?v=20261025-worddn">
     <link rel="stylesheet" href="../brandedukv15-child/assets/css/components/loader.css?v=20261002-orbitloader">
     <link rel="stylesheet" href="../brandedukv15-child/assets/css/responsive.css?v=20261002-logocombo">
     <link rel="stylesheet"
@@ -147,7 +147,7 @@
                 margin-top: 0;
             }
 
-            /* Logo combo (GIF + wordmark) */
+            /* Orange circle stays 52px; only the black wordmark grows */
             .mobile-logo-center {
                 max-height: 64px !important;
                 overflow: hidden !important;
@@ -159,11 +159,12 @@
                 max-width: 52px !important;
             }
             .mobile-logo-center .mobile-logo-word {
-                height: 43px !important;
-                max-height: 43px !important;
+                height: 52px !important;
+                max-height: 52px !important;
                 width: auto !important;
-                max-width: 230px !important;
+                max-width: 260px !important;
                 object-fit: contain !important;
+                transform: translateY(4px);
             }
             .mobile-logo-center .logo-badge-img {
                 height: 52px !important;

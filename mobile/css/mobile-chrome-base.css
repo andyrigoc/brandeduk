@@ -75,7 +75,7 @@
     gap: 5px;
     flex: 0 1 auto;
     min-width: 0;
-    max-width: min(62vw, 316px);
+    max-width: min(68vw, 320px);
     max-height: 64px;
     overflow: hidden;
 }
@@ -90,10 +90,11 @@
 }
 
 .mobile-logo-center .mobile-logo-word {
-    height: 43px !important;
-    max-height: 43px !important;
+    height: 52px !important;
+    max-height: 52px !important;
     width: auto !important;
-    max-width: 230px !important;
+    max-width: 260px !important;
+    transform: translateY(4px);
     object-fit: contain;
     flex: 0 1 auto;
     min-width: 0;

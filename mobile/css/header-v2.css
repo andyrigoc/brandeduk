@@ -47,10 +47,11 @@ body:has(.mobile-header--v2) {
 
 .mobile-header--v2 .mh-logo .mobile-logo-word,
 .mobile-header--v2 .mobile-logo-center .mobile-logo-word {
-    height: 43px !important;
-    max-height: 43px !important;
+    height: 52px !important;
+    max-height: 52px !important;
     width: auto !important;
-    max-width: 230px !important;
+    max-width: 260px !important;
+    transform: translateY(4px);
 }
 
 .mobile-header--v2 .mh-actions {
