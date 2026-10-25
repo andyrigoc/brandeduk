@@ -376,7 +376,6 @@
             color: inherit;
             text-decoration: none;
         }
-        body.shop-category-card .category-hamburger-btn .cat-product-count { display: none; }
         .categories-filter-row {
             display: flex;
             align-items: center;
@@ -384,16 +383,35 @@
         }
         .categories-filter-row .category-hamburger-btn {
             width: auto;
-            flex: 1;
+            flex: 0 1 auto;
             min-width: 0;
+            max-width: 52%;
         }
         .categories-filter-row .active-cat-label {
-            flex: 1;
+            flex: 0 1 auto;
             min-width: 0;
             text-align: left;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+        }
+        .categories-filter-row .cat-product-count {
+            flex: 0 0 auto;
+            min-width: 0;
+            height: auto;
+            margin-left: 0;
+            display: inline;
+            padding: 0;
+            background: none;
+            border: 0;
+            border-radius: 0;
+            font-size: 12px;
+            font-weight: 400;
+            color: #9ca3af;
+            white-space: nowrap;
+        }
+        .categories-filter-row .cat-product-count:empty {
+            display: none;
         }
         .shop-page-nav {
             display: flex;
@@ -497,8 +515,8 @@
         <button class="category-hamburger-btn" id="categoryHamburgerBtn" aria-expanded="false" aria-controls="categoriesDropdown">
             <span class="hamburger-lines"><span></span><span></span><span></span></span>
             <span class="active-cat-label" id="activeCatLabel">All</span>
-            <span class="cat-product-count" id="catProductCount"></span>
         </button>
+        <span class="cat-product-count" id="catProductCount" aria-live="polite"></span>
         <div class="shop-page-nav" id="shopPageNav" hidden>
             <button type="button" id="shopPagePrev" aria-label="Previous page">&lsaquo;</button>
             <span class="shop-page-count"><span id="shopPageCurrent">1</span>/<span id="shopPageTotal">1</span></span>
@@ -936,8 +954,8 @@
                         <span class="filter-expandable__arrow">&rsaquo;</span>
                     </div>
                     <div class="filter-expandable__content">
-                        <label class="filter-checkbox"><input type="checkbox" value="mens"> Men's</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="womens"> Women's</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="male"> Men's</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="female"> Women's</label>
                         <label class="filter-checkbox"><input type="checkbox" value="unisex"> Unisex</label>
                     </div>
                 </div>
@@ -949,12 +967,9 @@
                         <span class="filter-expandable__arrow">&rsaquo;</span>
                     </div>
                     <div class="filter-expandable__content">
-                        <label class="filter-checkbox"><input type="checkbox" value="adults"> Adults</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="adult"> Adults</label>
                         <label class="filter-checkbox"><input type="checkbox" value="kids"> Kids</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="toddler"> Toddler</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="baby"> Baby</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="junior"> Junior</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="youth"> Youth</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="infant"> Infant</label>
                     </div>
                 </div>
 
@@ -965,12 +980,10 @@
                         <span class="filter-expandable__arrow">&rsaquo;</span>
                     </div>
                     <div class="filter-expandable__content">
-                        <label class="filter-checkbox"><input type="checkbox" value="short"> Short Sleeve</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="long"> Long Sleeve</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="34"> 3/4 Sleeve</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="short-sleeve"> Short Sleeve</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="long-sleeve"> Long Sleeve</label>
                         <label class="filter-checkbox"><input type="checkbox" value="sleeveless"> Sleeveless</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="cap"> Cap Sleeve</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="raglan"> Raglan</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="roll-sleeve"> 3/4 Sleeve</label>
                     </div>
                 </div>
 
@@ -981,15 +994,11 @@
                         <span class="filter-expandable__arrow">&rsaquo;</span>
                     </div>
                     <div class="filter-expandable__content">
-                        <label class="filter-checkbox"><input type="checkbox" value="crew"> Crew Neck</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="vneck"> V-Neck</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="polo"> Polo Collar</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="crew-neck"> Crew Neck</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="v-neck"> V-Neck</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="collared"> Polo Collar</label>
                         <label class="filter-checkbox"><input type="checkbox" value="hooded"> Hooded</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="mandarin"> Mandarin</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="scoop"> Scoop Neck</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="round"> Round Neck</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="zip"> Zip Neck</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="button"> Button Down</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="zip-neck"> Zip Neck</label>
                     </div>
                 </div>
 
@@ -1000,14 +1009,14 @@
                         <span class="filter-expandable__arrow">&rsaquo;</span>
                     </div>
                     <div class="filter-expandable__content">
-                        <label class="filter-checkbox"><input type="checkbox" value="en20471"> EN ISO 20471</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="ris3279"> RIS-3279-TOM Rail</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="oekotex"> OEKO-TEX</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="gots"> GOTS Certified</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="fairtrade"> Fair Trade</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="oeko-tex"> OEKO-TEX</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="oeko-tex-standard-100"> OEKO-TEX Standard 100</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="gots-licence"> GOTS Certified</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="fairtrade-"> Fair Trade</label>
                         <label class="filter-checkbox"><input type="checkbox" value="wrap"> WRAP Certified</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="en343"> EN343 Waterproof</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="en11612"> EN11612 Flame</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="certified-organic"> Certified Organic</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="recycled"> Recycled</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="peta-approved-vegan"> PETA Approved Vegan</label>
                     </div>
                 </div>
 
@@ -1082,41 +1091,38 @@
                         <span class="filter-expandable__arrow">&rsaquo;</span>
                     </div>
                     <div class="filter-expandable__content">
-                        <label class="filter-checkbox"><input type="checkbox" value="classic"> Classic</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="modern"> Modern</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="slim"> Slim Fit</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="regular"> Regular Fit</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="relaxed"> Relaxed</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="oversized"> Oversized</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="athletic"> Athletic</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="workwear"> Workwear</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="casual"> Casual</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="formal"> Formal</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="vintage"> Vintage</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="streetwear"> Streetwear</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="classic-fit"> Classic</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="hooded"> Hooded</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="slim-fit"> Slim Fit</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="regular-fit"> Regular Fit</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="relaxed-fit"> Relaxed</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="oversized-fit"> Oversized</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="pocket"> Pocket</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="collared"> Collared</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="high-visibility"> High Visibility</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="recycled"> Recycled</label>
                     </div>
                 </div>
 
                 <!-- Features -->
-                <div class="filter-expandable" data-filter="features">
+                <div class="filter-expandable" data-filter="feature">
                     <div class="filter-expandable__header">
                         <span>Features</span>
                         <span class="filter-expandable__arrow">&rsaquo;</span>
                     </div>
                     <div class="filter-expandable__content">
-                        <label class="filter-checkbox"><input type="checkbox" value="pockets"> Pockets</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="hood"> Hood</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="zip"> Zip</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="buttons"> Buttons</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="drawstring"> Drawstring</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="elastic"> Elastic Cuffs</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="pocket"> Pockets</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="hooded"> Hood</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="windproof"> Windproof</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="drawcord"> Drawstring</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="elasticated"> Elastic Cuffs</label>
                         <label class="filter-checkbox"><input type="checkbox" value="reflective"> Reflective</label>
                         <label class="filter-checkbox"><input type="checkbox" value="waterproof"> Waterproof</label>
                         <label class="filter-checkbox"><input type="checkbox" value="breathable"> Breathable</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="stretch"> Stretch</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="antibacterial"> Anti-bacterial</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="uv"> UV Protection</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="tearaway"> Tear-away Label</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="water-resistant"> Water-resistant</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="high-visibility"> High Visibility</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="padded"> Padded</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="quilted"> Quilted</label>
                     </div>
                 </div>
 
@@ -1138,7 +1144,7 @@
                         <label class="filter-size"><input type="checkbox" value="4xl"><span>4XL</span></label>
                         <label class="filter-size"><input type="checkbox" value="5xl"><span>5XL</span></label>
                         <label class="filter-size"><input type="checkbox" value="6xl"><span>6XL</span></label>
-                        <label class="filter-size"><input type="checkbox" value="onesize"><span>One Size</span></label>
+                        <label class="filter-size"><input type="checkbox" value="one-size"><span>One Size</span></label>
                     </div>
                 </div>
 
@@ -1149,18 +1155,14 @@
                         <span class="filter-expandable__arrow">&rsaquo;</span>
                     </div>
                     <div class="filter-expandable__content">
-                        <label class="filter-checkbox"><input type="checkbox" value="cotton100"> 100% Cotton</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="polycotton"> Poly/Cotton</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="polyester100"> 100% Polyester</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="organic"> Organic Cotton</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="recycled"> Recycled Polyester</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="fleece"> Fleece</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="jersey"> Jersey</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="pique"> Pique</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="frenchTerry"> French Terry</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="ripstop"> Ripstop</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="softshell"> Softshell</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="nylon"> Nylon</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="cotton-100"> 100% Cotton</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="cotton-blend"> Poly/Cotton</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="polyester-100"> 100% Polyester</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="organic-cotton"> Organic Cotton</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="recycled-polyester-100"> Recycled Polyester</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="ringspun-100"> Ringspun</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="ripstop-100"> Ripstop</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="nylon-100"> Nylon</label>
                     </div>
                 </div>
 
@@ -1186,12 +1188,13 @@
                         <span class="filter-expandable__arrow">&rsaquo;</span>
                     </div>
                     <div class="filter-expandable__content">
-                        <label class="filter-checkbox"><input type="checkbox" value="slim"> Slim Fit</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="regular"> Regular Fit</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="relaxed"> Relaxed Fit</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="loose"> Loose Fit</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="tailored"> Tailored</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="athletic"> Athletic Fit</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="slim-fit"> Slim Fit</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="regular-fit"> Regular Fit</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="relaxed-fit"> Relaxed Fit</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="classic-fit"> Classic Fit</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="fitted"> Fitted</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="oversized-fit"> Oversized</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="tailored-fit"> Tailored</label>
                     </div>
                 </div>
 
@@ -1202,18 +1205,16 @@
                         <span class="filter-expandable__arrow">&rsaquo;</span>
                     </div>
                     <div class="filter-expandable__content">
-                        <label class="filter-checkbox"><input type="checkbox" value="construction"> Construction</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="healthcare"> Healthcare</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="hospitality"> Hospitality</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="retail"> Retail</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="security"> Security</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="transport"> Transport</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="warehouse"> Warehouse</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="education"> Education</label>
                         <label class="filter-checkbox"><input type="checkbox" value="corporate"> Corporate</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="manufacturing"> Manufacturing</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="agriculture"> Agriculture</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="automotive"> Automotive</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="hospitality"> Hospitality</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="sport"> Sport</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="safety"> Safety</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="school"> Education</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="fashion"> Fashion</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="travel"> Travel</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="athleisure"> Athleisure</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="home"> Home</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="outdoor"> Outdoor</label>
                     </div>
                 </div>
 
@@ -1224,18 +1225,10 @@
                         <span class="filter-expandable__arrow">&rsaquo;</span>
                     </div>
                     <div class="filter-expandable__content">
-                        <label class="filter-checkbox"><input type="checkbox" value="football"> Football</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="rugby"> Rugby</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="running"> Running</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="gym"> Gym/Fitness</label>
                         <label class="filter-checkbox"><input type="checkbox" value="golf"> Golf</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="tennis"> Tennis</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="cricket"> Cricket</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="basketball"> Basketball</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="cycling"> Cycling</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="gym"> Gym/Fitness</label>
                         <label class="filter-checkbox"><input type="checkbox" value="swimming"> Swimming</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="outdoor"> Outdoor</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="hiking"> Hiking</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="rugby"> Rugby</label>
                     </div>
                 </div>
 
@@ -1246,13 +1239,12 @@
                         <span class="filter-expandable__arrow">&rsaquo;</span>
                     </div>
                     <div class="filter-expandable__content">
-                        <label class="filter-checkbox"><input type="checkbox" value="bestseller"> Best Seller</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="newarrival"> New Arrival</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="staffpick"> Staff Pick</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="eco"> Eco Friendly</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="value"> Value Pick</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="premium"> Premium</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="limited"> Limited Edition</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="tagless"> Tagless</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="sewn-tag"> Sewn Tag</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="tear-away"> Tear-away</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="tear-out"> Tear-out</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="cut-away-inner-label"> Cut-away Inner Label</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="adhesives"> Adhesives</label>
                     </div>
                 </div>
 
@@ -1263,14 +1255,13 @@
                         <span class="filter-expandable__arrow">&rsaquo;</span>
                     </div>
                     <div class="filter-expandable__content">
-                        <label class="filter-checkbox"><input type="checkbox" value="plain"> Plain</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="printed"> Printed</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="embroidered"> Embroidered</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="heather"> Heather</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="melange"> Melange</label>
                         <label class="filter-checkbox"><input type="checkbox" value="washed"> Washed</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="distressed"> Distressed</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="tiedye"> Tie-Dye</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="camo"> Camo</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="striped"> Striped</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="acid-wash"> Acid-wash</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="tie-dye"> Tie-Dye</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="triblend"> Triblend</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="marble"> Marble</label>
                     </div>
                 </div>
             </div>
@@ -1284,7 +1275,7 @@
 
     <!-- API Integration Scripts -->
     <script src="../brandedukv15-child/assets/js/api-config.js?v=20261021-local-catalog-proxy"></script>
-    <script src="../brandedukv15-child/assets/js/api.js?v=20261021-hivis-unified"></script>
+    <script src="../brandedukv15-child/assets/js/api.js?v=20261025-filterfix"></script>
     <script src="../brandedukv15-child/assets/data/organic-sustainable-codes.js?v=20261006-leaf3"></script>
     <script src="../brandedukv15-child/assets/js/organic-leaf.js?v=20261006-leaf4"></script>
     <script>
@@ -1532,8 +1523,14 @@
             Object.entries(checkboxes).forEach(([groupName, values]) => {
                 if (!Array.isArray(values) || !values.length) return;
                 if (groupName === 'primaryColour') return;
-                nextArrayFilters[groupName] = values.map(v => String(v).trim()).filter(Boolean);
+                const apiGroup = groupName === 'features' ? 'feature' : groupName;
+                nextArrayFilters[apiGroup] = values.map(v => String(v).trim()).filter(Boolean);
             });
+            if (toggles.plusSizes) {
+                nextArrayFilters.size = Array.from(new Set(
+                    (nextArrayFilters.size || []).concat(['3xl', '4xl', '5xl', '6xl'])
+                ));
+            }
             if (landingSectors.length) delete nextArrayFilters.sector;
             if (landingProductTypes.length) delete nextArrayFilters.productType;
             currentArrayFilters = nextArrayFilters;
@@ -1581,8 +1578,9 @@
 
             Object.entries(currentArrayFilters || {}).forEach(([groupName, values]) => {
                 if (!Array.isArray(values) || !values.length) return;
-                const key = `${groupName}[]`;
-                options[key] = values;
+                const apiGroup = groupName === 'features' ? 'feature' : groupName;
+                const key = `${apiGroup}[]`;
+                options[key] = Array.from(new Set((options[key] || []).concat(values)));
             });
 
             return options;
@@ -2742,7 +2740,7 @@
         });
     })();
     </script>
-    <script src="js/mobile.js?v=20261020-footerpush"></script>
+    <script src="js/mobile.js?v=20261025-filterfix"></script>
     <script src="js/header-menu.js?v=20261018-drawer"></script>
     <script src="js/breadcrumbs.js?v=20261016-crumbs"></script>
     <script src="footer/footer.js?v=20261020-noclose"></script>

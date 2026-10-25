@@ -1428,12 +1428,26 @@ function initFiltersDropup() {
         document.querySelectorAll('.filters-dropup input[type="checkbox"]:checked').forEach(cb => {
             const filterGroup = cb.closest('.filter-expandable');
             if (filterGroup) {
-                const groupName = filterGroup.dataset.filter;
+                let groupName = filterGroup.dataset.filter;
+                if (groupName === 'features') groupName = 'feature';
                 if (!activeFilters.checkboxes[groupName]) {
                     activeFilters.checkboxes[groupName] = [];
                 }
                 activeFilters.checkboxes[groupName].push(cb.value);
             }
+        });
+
+        // CMYK / Pantone text fields
+        document.querySelectorAll('.filters-dropup .filter-expandable .filter-text-input').forEach(input => {
+            const filterGroup = input.closest('.filter-expandable');
+            const value = String(input.value || '').trim();
+            if (!filterGroup || !value) return;
+            const groupName = filterGroup.dataset.filter;
+            if (!groupName) return;
+            if (!activeFilters.checkboxes[groupName]) {
+                activeFilters.checkboxes[groupName] = [];
+            }
+            activeFilters.checkboxes[groupName].push(value);
         });
         
         // Store in sessionStorage for use on shop page
@@ -1455,16 +1469,17 @@ function initFiltersDropup() {
         console.log('Filters applied:', activeFilters);
         console.log('Total active filters:', filterCount);
         
-        // Home applies filters by navigating to the shop. The standalone mobile
-        // shop reloads itself with the persisted filter payload so its inline
-        // product loader reads and applies the new selection.
-        if (window.location.pathname.includes('home-mobile')) {
-            window.location.href = getCanonicalShopUrl('filtered=true');
-        } else if (window.location.pathname.includes('shop-mobile')) {
+        // Home (and any other mobile page with this panel) applies filters by
+        // navigating to the shop. The standalone mobile shop reloads itself
+        // with the persisted filter payload so its inline product loader
+        // reads and applies the new selection.
+        if (window.location.pathname.includes('shop-mobile')) {
             const filteredShopUrl = new URL(window.location.href);
             filteredShopUrl.searchParams.set('filtered', 'true');
             filteredShopUrl.searchParams.set('page', '1');
             window.location.href = filteredShopUrl.toString();
+        } else {
+            window.location.href = getCanonicalShopUrl('filtered=true');
         }
     }
 }

@@ -278,6 +278,48 @@ const BrandedAPI = (function () {
     // ==========================================================================
 
     const FILTER_VALUE_ALIASES = {
+        'gender[]': {
+            womens: ['female'],
+            women: ['female'],
+            ladies: ['female'],
+            mens: ['male'],
+            men: ['male']
+        },
+        'ageGroup[]': {
+            adults: ['adult'],
+            toddler: ['infant'],
+            baby: ['infant'],
+            junior: ['kids'],
+            youth: ['kids']
+        },
+        'sleeve[]': {
+            short: ['short-sleeve'],
+            long: ['long-sleeve'],
+            '34': ['roll-sleeve'],
+            '3/4': ['roll-sleeve'],
+            cap: ['short-sleeve'],
+            raglan: ['short-sleeve']
+        },
+        'neckline[]': {
+            crew: ['crew-neck', 'crew-neck-2'],
+            vneck: ['v-neck'],
+            'v-neck-2': ['v-neck'],
+            polo: ['collared'],
+            'polo-neck-2': ['collared'],
+            scoop: ['crew-neck'],
+            'scoop-neck-2': ['crew-neck'],
+            round: ['crew-neck', 'crew-neck-2'],
+            zip: ['zip-neck'],
+            'zip-neck-2': ['zip-neck'],
+            button: ['collared'],
+            'button-down-collar': ['collared'],
+            mandarin: ['collared']
+        },
+        'accreditations[]': {
+            oekotex: ['oeko-tex', 'oeko-tex-standard-100'],
+            gots: ['gots-licence'],
+            fairtrade: ['fairtrade-', 'fair-wear-foundation']
+        },
         'primaryColour[]': {
             grey: ['grey', 'gray', 'charcoal', 'heather grey', 'silver', 'ash'],
             blue: ['blue', 'navy', 'royal', 'french navy', 'sapphire', 'sky', 'light blue', 'dark blue', 'navy/royal'],
@@ -291,6 +333,55 @@ const BrandedAPI = (function () {
             neutral: ['neutral', 'beige', 'natural', 'stone', 'sand', 'cream', 'oatmeal'],
             pattern: ['pattern', 'multi', 'multicolour']
         },
+        'colourShade[]': {
+            light: [
+                'blue - light blue', 'grey - light grey', 'pink - light pink',
+                'green - light green', 'yellow - light yellow', 'brown - light brown',
+                'purple - light purple', 'red - light red', 'orange - light orange'
+            ],
+            dark: [
+                'grey - dark grey', 'green - dark green', 'blue - dark blue',
+                'purple - dark purple', 'red - dark red', 'brown - dark brown',
+                'orange - dark orange'
+            ],
+            bright: [
+                'red - bright red', 'blue - bright royal', 'green - bright green',
+                'orange - bright orange', 'pink - bright pink'
+            ],
+            pastel: [
+                'pink - pastel pink', 'blue - pastel blue', 'green - pastel mint',
+                'orange - pastel apricot'
+            ],
+            neon: [
+                'yellow - neons/fluro yellow', 'orange - neons/fluro orange',
+                'green - neons/fluro green', 'pink - neons/fluro pink',
+                'yellow - neon yellow', 'pink - neon pink', 'orange - neon orange'
+            ],
+            heather: [
+                'grey - heather', 'black - heather', 'blue - heather',
+                'green - heather', 'pink - heather', 'purple - heather',
+                'red - heather', 'yellow - heather', 'grey - heather grey'
+            ],
+            marl: ['grey - grey marl', 'grey - charcoal marl', 'grey - light grey marl']
+        },
+        'style[]': {
+            classic: ['classic-fit'],
+            slim: ['slim-fit'],
+            regular: ['regular-fit'],
+            relaxed: ['relaxed-fit'],
+            oversized: ['oversized-fit']
+        },
+        'feature[]': {
+            pockets: ['pocket', 'pockets-1'],
+            hood: ['hooded'],
+            zip: ['zipped-1'],
+            drawstring: ['drawcord'],
+            elastic: ['elasticated']
+        },
+        'size[]': {
+            onesize: ['one-size'],
+            'one size': ['one-size']
+        },
         'fabric[]': {
             cotton100: [
                 'cotton-100', 'cotton-100-1',
@@ -298,9 +389,12 @@ const BrandedAPI = (function () {
                 'ringspun-100', 'combed-100', 'pre-100'
             ],
             polyester100: ['polyester-100', 'polyester-100-1', 'poly-100'],
-            organic: ['organic-100', 'organic-100-1'],
-            recycled: ['recycled-100', 'recycled-100-1'],
-            nylon: ['nylon-100']
+            polycotton: ['cotton-blend', 'polyester-blend'],
+            'polycotton-100': ['cotton-blend', 'polyester-blend'],
+            organic: ['organic-cotton', 'organic-100', 'organic-100-1', 'organic-cotton-100'],
+            recycled: ['recycled-100', 'recycled-100-1', 'recycled-polyester-100'],
+            nylon: ['nylon-100'],
+            ripstop: ['ripstop-100']
         },
         'weight[]': {
             light: ['0-50gsm', '051-100gsm', '101-150gsm'],
@@ -308,17 +402,38 @@ const BrandedAPI = (function () {
             standard: ['201-250gsm'],
             heavy: ['251-300gsm'],
             superheavy: ['over-300gsm']
+        },
+        'fit[]': {
+            slim: ['slim-fit'],
+            regular: ['regular-fit'],
+            relaxed: ['relaxed-fit'],
+            loose: ['relaxed-fit', 'wide-leg'],
+            tailored: ['tailored-fit'],
+            athletic: ['fitted', 'fashion-fit']
+        },
+        'sector[]': {
+            construction: ['safety'],
+            education: ['school']
+        },
+        'effect[]': {
+            tiedye: ['tie-dye']
         }
     };
 
     function expandFilterValues(paramName, values) {
         const aliases = FILTER_VALUE_ALIASES[paramName] || {};
         return Array.from(new Set(values.flatMap(value => {
-            const normalized = String(value || '').trim();
-            if ((paramName === 'style[]' || paramName === 'feature[]') && normalized && !/-\d+$/.test(normalized)) {
-                return [normalized, `${normalized}-1`, `${normalized}-2`];
+            const normalized = String(value || '').trim().toLowerCase();
+            const mapped = aliases[normalized] || [String(value || '').trim() || normalized];
+            if (paramName === 'style[]' || paramName === 'feature[]') {
+                return mapped.flatMap((slug) => {
+                    const next = String(slug || '').trim();
+                    if (!next) return [];
+                    if (/-\d+$/.test(next)) return [next];
+                    return [next, `${next}-1`, `${next}-2`];
+                });
             }
-            return aliases[normalized] || [normalized];
+            return mapped;
         }).filter(Boolean)));
     }
 
@@ -416,6 +531,15 @@ const BrandedAPI = (function () {
             'fabric[]', 'weight[]', 'fit[]', 'sector[]', 'sport[]', 'tag[]',
             'effect[]', 'cmyk[]', 'pantone[]', 'flag[]', 'brand[]', 'productType[]'
         ];
+
+        // Mobile UI historically stored this group as "features"; the API only
+        // honours the singular feature[] parameter.
+        if (Array.isArray(options['features[]']) && options['features[]'].length) {
+            options['feature[]'] = [
+                ...(Array.isArray(options['feature[]']) ? options['feature[]'] : []),
+                ...options['features[]']
+            ];
+        }
 
         // The mobile filter uses readable UI values, while catalogue imports
         // contain several valid slugs for the same customer-facing material.
