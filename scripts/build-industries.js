@@ -420,7 +420,7 @@ function headAssets() {
     <link rel="stylesheet" href="/brandedukv15-child/assets/css/components/pc-header.css?v=20261012-homechrome">
     <link rel="stylesheet" href="/brandedukv15-child/assets/css/components/promo-bar.css?v=20260425a">
     <link rel="stylesheet" href="/mobile/css/mobile.css?v=20260923-home-nav">
-    <link rel="stylesheet" href="/mobile/css/header-v2.css?v=20261020-suggest">
+    <link rel="stylesheet" href="/mobile/css/header-v2.css?v=20261025-logolg">
     <link rel="stylesheet" href="/mobile/footer/footer.css?v=20260409B">
     <link rel="stylesheet" href="/footer-dev/pc-footer.css?v=20261009-phones">
     <link rel="stylesheet" href="/brandedukv15-child/assets/css/pages/industries.css?v=${ASSET_VERSION}">

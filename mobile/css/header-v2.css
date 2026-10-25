@@ -1,7 +1,7 @@
 /* Homepage mobile header: hamburger, centered logo, phone, cart, search. */
 body.home-page,
 body:has(.mobile-header--v2) {
-    --header-height: 128px;
+    --header-height: 136px;
 }
 
 .mobile-header--v2 {
@@ -25,32 +25,32 @@ body:has(.mobile-header--v2) {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    min-height: 58px;
+    min-height: 64px;
     overflow: visible;
 }
 
 .mobile-header--v2 .mh-logo,
 .mobile-header--v2 .mobile-logo-center {
     justify-self: center;
-    max-width: 230px !important;
+    max-width: 331px !important;
     max-height: none !important;
     overflow: visible !important;
 }
 
 .mobile-header--v2 .mh-logo .mobile-logo-badge,
 .mobile-header--v2 .mobile-logo-center .mobile-logo-badge {
-    height: 36px !important;
-    max-height: 36px !important;
+    height: 52px !important;
+    max-height: 52px !important;
     width: auto !important;
-    max-width: 36px !important;
+    max-width: 52px !important;
 }
 
 .mobile-header--v2 .mh-logo .mobile-logo-word,
 .mobile-header--v2 .mobile-logo-center .mobile-logo-word {
-    height: 30px !important;
-    max-height: 30px !important;
+    height: 43px !important;
+    max-height: 43px !important;
     width: auto !important;
-    max-width: 160px !important;
+    max-width: 230px !important;
 }
 
 .mobile-header--v2 .mh-actions {

@@ -75,25 +75,25 @@
     gap: 5px;
     flex: 0 1 auto;
     min-width: 0;
-    max-width: min(58vw, 220px);
-    max-height: 44px;
+    max-width: min(62vw, 316px);
+    max-height: 64px;
     overflow: hidden;
 }
 
 .mobile-logo-center .mobile-logo-badge {
-    height: 36px !important;
-    max-height: 36px !important;
+    height: 52px !important;
+    max-height: 52px !important;
     width: auto !important;
-    max-width: 36px !important;
+    max-width: 52px !important;
     object-fit: contain;
     flex: 0 0 auto;
 }
 
 .mobile-logo-center .mobile-logo-word {
-    height: 30px !important;
-    max-height: 30px !important;
+    height: 43px !important;
+    max-height: 43px !important;
     width: auto !important;
-    max-width: 160px !important;
+    max-width: 230px !important;
     object-fit: contain;
     flex: 0 1 auto;
     min-width: 0;
