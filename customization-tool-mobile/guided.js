@@ -23,10 +23,43 @@
   let preservePendingMethod = false;
   const hiddenLibraryLogos = new Set();
   const libraryEntries = new WeakMap();
+  let logoPreviewDialog;
 
   function message(text) {
     byId("guidedMessage").textContent = text;
     byId("guidedMessage").hidden = !text;
+  }
+
+  function showLogoPreview(image) {
+    if (!image?.src) return;
+    if (!logoPreviewDialog) {
+      const dialog = document.createElement("dialog");
+      dialog.className = "guided-image-zoom-dialog";
+      dialog.setAttribute("aria-label", "Logo preview");
+      const close = document.createElement("button");
+      close.type = "button";
+      close.className = "guided-image-zoom-close";
+      close.setAttribute("aria-label", "Close image preview");
+      close.textContent = "×";
+      const preview = document.createElement("img");
+      preview.alt = "Logo preview";
+      dialog.append(close, preview);
+      document.body.append(dialog);
+      close.addEventListener("click", () => dialog.close());
+      dialog.addEventListener("click", (event) => {
+        if (event.target === dialog) dialog.close();
+      });
+      logoPreviewDialog = { dialog, preview };
+    }
+    logoPreviewDialog.preview.src = image.currentSrc || image.src;
+    logoPreviewDialog.preview.alt = image.alt || "Logo preview";
+    if (!logoPreviewDialog.dialog.open) logoPreviewDialog.dialog.showModal();
+  }
+
+  function zoomLogoOnClick(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    showLogoPreview(event.currentTarget);
   }
 
   function currentItem() {
@@ -49,19 +82,39 @@
     };
   }
 
+  function libraryIdentity(entry) {
+    const source = String(entry?.logo || "").trim();
+    const logoId = String(entry?.logoId || "").trim()
+      || (source.startsWith("bklogo:") ? source.slice(7) : "")
+      || (source.startsWith("data:image") && typeof window.BrandedQuoteStorage?.fingerprint === "function"
+        ? window.BrandedQuoteStorage.fingerprint(source)
+        : "");
+    return logoId ? `id:${logoId}` : `src:${source}`;
+  }
+
   // Logos already used on any basket line stay reusable on every product, so
   // the customer never has to upload the same artwork twice.
   function library() {
-    const session = getSessionLogoLibrary();
-    const seen = new Set(session.map((entry) => entry.logo));
+    const session = getSessionLogoLibrary().filter((entry) => !String(entry?.logo || "").startsWith("blob:"));
+    const uniqueSession = new Map();
+    session.forEach((entry) => {
+      const identity = libraryIdentity(entry);
+      const existing = uniqueSession.get(identity);
+      if (!existing || (existing.name === "Your logo" && entry.name && entry.name !== "Your logo")) {
+        uniqueSession.set(identity, entry);
+      }
+    });
+    const sessionEntries = [...uniqueSession.values()];
+    const seen = new Set(sessionEntries.map(libraryIdentity));
     const fromBasket = [];
     readQuoteBasket().forEach((item) => (item.logos || []).forEach((logo) => {
       const source = String(logo?.logo || "").trim();
-      if (!source || seen.has(source)) return;
-      seen.add(source);
+      const identity = libraryIdentity(logo);
+      if (!source || seen.has(identity)) return;
+      seen.add(identity);
       fromBasket.push({ logo: source, method: logo.method || "print", name: logo.name || "Your logo" });
     }));
-    return [...fromBasket, ...session].filter((entry) => (
+    return [...fromBasket, ...sessionEntries].filter((entry) => (
       !hiddenLibraryLogos.has(entry.logo)
       && (state.copyrightConfirmed || entry.logo !== state.uploadedLogo)
     )).slice(-6);
@@ -74,7 +127,7 @@
     const draft = snapshot();
     try {
       sessionStorage.setItem("toolReusableLogos", JSON.stringify(getSessionLogoLibrary().filter((entry) => (
-        !hiddenLibraryLogos.has(entry.logo)
+        !hiddenLibraryLogos.has(entry.logo) && !String(entry.logo || "").startsWith("blob:")
       )).slice(-6)));
       sessionStorage.setItem(draftKey, JSON.stringify({
         baseline, ...draft,
@@ -354,6 +407,7 @@
       const image = document.createElement("img");
       image.src = libraryEntry.logo;
       image.alt = libraryEntry.name || "Uploaded logo";
+      image.addEventListener("click", zoomLogoOnClick);
       const name = document.createElement("small");
       name.textContent = libraryEntry.name || "Your logo";
       button.append(image, name);
@@ -421,6 +475,7 @@
       const logo = document.createElement("img");
       logo.src = design.logo;
       logo.alt = "Assigned logo";
+      logo.addEventListener("click", zoomLogoOnClick);
       const method = document.createElement("small");
       method.textContent = design.method === "embroidery" ? "Embroidery" : "Print";
       logoButton.append(logo, method);
@@ -531,6 +586,7 @@
       image.src = entry.logo;
       image.alt = entry.name || "Uploaded logo";
       image.draggable = false;
+      image.addEventListener("click", zoomLogoOnClick);
       const name = document.createElement("small");
       name.textContent = entry.name || "Your logo";
       use.append(image, name);

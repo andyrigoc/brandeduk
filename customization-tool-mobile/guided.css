@@ -236,11 +236,11 @@ body.guided-customizer {
 .guided-position-select { display: block; width: 100%; padding: 0; border: 0; background: none; color: inherit; }
 .guided-position-select img { display: block; width: 100%; height: 61px; object-fit: contain; -webkit-user-drag: none; }
 .guided-position-label { display: flex; align-items: center; justify-content: center; min-height: 23px; margin: 0; font-size: 9px; line-height: 1.15; font-weight: 700; }
-.guided-position-logo { display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 4px; width: 100%; height: 58px; padding: 4px; border: 1px dashed #cbd5e1; border-radius: 6px; background: #fff; color: #64748b; font-size: 9px; }
+.guided-position-logo { display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 4px; width: 100%; height: 58px; padding: 4px; border: 1px dashed #cbd5e1; border-radius: 6px; background: #d9d4ce; color: #fff; font-size: 9px; }
 .guided-position-logo > span:first-child { font-size: 26px; font-weight: 300; line-height: 22px; }
-.guided-position-logo img { max-width: 100%; height: 28px; object-fit: contain; }
+.guided-position-logo img { max-width: 100%; height: 28px; object-fit: contain; cursor: zoom-in; }
 .guided-position-logo small { display: block; width: 100%; overflow: hidden; font-size: 8px; white-space: nowrap; text-overflow: ellipsis; }
-.guided-position-logo.is-empty { gap: 4px; border-color: var(--guided-orange); color: var(--guided-orange); }
+.guided-position-logo.is-empty { gap: 4px; border-color: var(--guided-orange); background: #fff; color: var(--guided-orange); }
 .guided-position-logo.is-empty small { font-size: 10px; font-weight: 700; }
 .guided-position-logo.is-empty > span:first-child,
 .guided-upload > span {
@@ -292,11 +292,13 @@ body.guided-customizer {
 .guided-logo-item { position: relative; flex: 0 0 calc((100% - 16px) / 3); min-width: 91px; }
 .guided-library-use,
 .guided-upload { display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 6px; width: 100%; min-height: 80px; padding: 6px; border: 1px solid #e2e7ef; border-radius: 8px; background: #fff; color: #64748b; font-size: 10px; }
+.guided-library-use { background: #d9d4ce; color: #fff; }
 .guided-library-use img { width: 100%; height: 45px; object-fit: contain; }
+.guided-library-use img { pointer-events: auto; cursor: zoom-in; }
 .guided-library-use small { width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 9px; }
-.guided-library-use.is-selected { border-color: var(--guided-orange); background: #fffaf3; }
+.guided-library-use.is-selected { border-color: var(--guided-orange); background: #d9d4ce; }
 .guided-library-use { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
-.guided-library-use img { -webkit-user-drag: none; pointer-events: none; }
+.guided-library-use img { -webkit-user-drag: none; }
 @media (hover: hover) and (pointer: fine) {
   .guided-library-use { cursor: grab; }
 }
@@ -313,7 +315,7 @@ body.guided-customizer {
   padding: 6px;
   border: 2px solid var(--guided-orange);
   border-radius: 10px;
-  background: #fff;
+  background: #d9d4ce;
   box-shadow: 0 10px 24px #17203340;
   pointer-events: none;
 }
@@ -384,6 +386,11 @@ body.guided-customizer {
   box-shadow: 0 20px 60px #0f172a38;
 }
 .guided-method-dialog::backdrop { background: #0f172a73; }
+.guided-image-zoom-dialog { position: fixed; width: min(92vw, 760px); max-width: calc(100% - 24px); max-height: calc(100% - 24px); margin: auto; padding: 42px 12px 12px; overflow: auto; border: 1px solid #fff; border-radius: 12px; background: #d9d4ce; }
+.guided-image-zoom-dialog::backdrop { background: #0f172ab8; }
+.guided-image-zoom-dialog img { display: block; width: 100%; max-height: min(78vh, 720px); margin: auto; object-fit: contain; }
+.guided-image-zoom-close { position: absolute; top: 7px; right: 7px; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 50%; background: #fff; color: #172033; font-size: 22px; line-height: 1; cursor: pointer; }
+.guided-image-zoom-close:focus-visible { outline: 2px solid var(--guided-orange); outline-offset: 2px; }
 #guidedMethodTitle { margin: 0; color: #111827; font-family: "Inter", Arial, sans-serif; font-size: 19px; font-weight: 700; letter-spacing: -.02em; line-height: 1.25; }
 #guidedMethodPosition { margin: 7px 0 16px; color: #4b5563; font-size: 13px; line-height: 1.4; }
 #guidedMethodPosition b { color: #111827; }
@@ -404,7 +411,7 @@ body.guided-customizer {
 .guided-dialog-upload { width: 100%; min-height: 44px; padding: 10px; border: 1px dashed #aebbcf; border-radius: 8px; background: #f8fafc; color: #172033; font-size: 13px; font-weight: 700; }
 .guided-dialog-reuse-label { margin: 14px 0 8px; color: #657085; font-size: 11px; }
 .guided-dialog-library { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
-.guided-dialog-library button { min-width: 0; padding: 6px; border: 1px solid #e2e7ef; border-radius: 7px; background: #fff; color: #657085; }
+.guided-dialog-library button { min-width: 0; padding: 6px; border: 1px solid #e2e7ef; border-radius: 7px; background: #d9d4ce; color: #fff; }
 .guided-dialog-library img { display: block; width: 100%; height: 42px; object-fit: contain; }
 .guided-dialog-library small { display: block; margin-top: 5px; overflow: hidden; font-size: 9px; white-space: nowrap; text-overflow: ellipsis; }
 .guided-dialog-back { min-height: 36px; margin-top: 8px; padding: 5px 0; border: 0; background: none; color: #0064f4; font-size: 11px; }

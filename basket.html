@@ -3278,6 +3278,9 @@
     // --- Init ---
     document.addEventListener('DOMContentLoaded', async () => {
         await restoreSharedBasketFromUrl();
+        if (window.BrandedQuoteStorage && typeof window.BrandedQuoteStorage.migrateLegacy === 'function') {
+            await window.BrandedQuoteStorage.migrateLegacy();
+        }
         normalizeBasket();          // Single-pass: sync logos + convert to per-size rows
         await hydrateMissingBasketPricing();
         recalcAllTierPricing();     // Ensure consistent prices across same-code items
@@ -3615,6 +3618,18 @@
         }
         try { return JSON.parse(localStorage.getItem('quoteBasket') || '[]'); }
         catch (e) { return []; }
+    }
+
+    function resolveLogoImageSource(logo) {
+        const logoId = String(logo && logo.logoId || '');
+        const storage = window.BrandedQuoteStorage;
+        const source = String(logo && logo.logo || '') || (logoId && storage && typeof storage.refFor === 'function' ? storage.refFor(logoId) : '');
+        if (!source) return '';
+        if (storage && typeof storage.resolveSrc === 'function') {
+            const resolved = storage.resolveSrc(source, logoId);
+            if (resolved) return resolved;
+        }
+        return source.indexOf('bklogo:') === 0 ? '' : source;
     }
 
     /** Total garment units for one line (sizes map first, then qty fields). */
@@ -4102,6 +4117,7 @@
                 position: pos,
                 positionLabel: entry.positionLabel || toReadablePosition(pos),
                 method: method,
+                logoId: entry.logoId || '',
                 sourceMethod: String(entry.sourceMethod || entry.originalMethod || '').toLowerCase(),
                 logo: entry.logo || '',
                 unitPrice: safeUnitPrice,
@@ -4125,6 +4141,7 @@
                     positionLabel: toReadablePosition(p.name || p.position || ''),
                     method: (p.method || methodByPos[p.position] || 'embroidery').toLowerCase(),
                     sourceMethod: p.sourceMethod || p.originalMethod || '',
+                    logoId: p.logoId || '',
                     logo: p.logo || '',
                     unitPrice: p.unitPrice,
                     qualityPct: p.qualityPct,
@@ -4145,6 +4162,7 @@
                     positionLabel: toReadablePosition(d.position || posKey),
                     method: method,
                     sourceMethod: d.sourceMethod || d.originalMethod || '',
+                    logoId: d.logoId || '',
                     logo: d.logo || '',
                     unitPrice: d.unitPrice,
                     qualityPct: d.qualityPct,
@@ -4164,6 +4182,7 @@
                     positionLabel: l.positionLabel || toReadablePosition(l.position),
                     method: (l.method || methodByPos[l.position] || 'embroidery').toLowerCase(),
                     sourceMethod: l.sourceMethod || l.originalMethod || '',
+                    logoId: l.logoId || '',
                     logo: l.logo || '',
                     unitPrice: l.unitPrice,
                     qualityPct: l.qualityPct,
@@ -4930,9 +4949,10 @@
     function openLogoImagePreview(index, logoIdx) {
         const item = getBasket()[index];
         const logo = item && item.logos && item.logos[logoIdx];
-        if (!logo || !logo.logo) return;
+        const src = resolveLogoImageSource(logo);
+        if (!src) return;
         const position = logo.positionLabel || toReadablePosition(logo.position);
-        openImagePreview(logo.logo, position ? `Your logo - ${position}` : 'Your logo', 'Uploaded logo', true);
+        openImagePreview(src, position ? `Your logo - ${position}` : 'Your logo', 'Uploaded logo', true);
     }
 
     function closePlacementPreview() {
@@ -5009,7 +5029,7 @@
                     const logoUnit = resolveLogoUnitPrice(logo, logoQtyBasis);
                     logo.unitPrice = logoUnit;
                     const logoTotal = logoUnit * qty;
-                    const thumbSrc = logo.logo || '';
+                    const thumbSrc = resolveLogoImageSource(logo);
                     const posLabel = logo.positionLabel || toReadablePosition(logo.position);
                     const thumbWrapClass = 'logo-thumb-wrap' + (garmentHexLight ? ' logo-thumb-wrap--light' : '');
                     const colorTitle = getItemColorLabel(item).replace(/"/g, '&quot;');
