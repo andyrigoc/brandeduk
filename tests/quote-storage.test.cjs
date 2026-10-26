@@ -64,7 +64,7 @@ function tinyPng(label) {
   return `data:image/png;base64,${Buffer.from('LOGO-' + label).toString('base64')}${'A'.repeat(800)}`;
 }
 
-function run() {
+async function run() {
   const { api } = loadModule();
 
   assert.strictEqual(api.isDataUrl(tinyPng('a')), true);
@@ -80,6 +80,11 @@ function run() {
   assert.strictEqual(ids.size, 1, 'same artwork must share one logo id');
   JSON.stringify(slim.basket).includes('data:image') && assert.fail('slim basket still contains data URLs');
   assert.ok(api.isLogoRef(slim.basket[0].logos[0].logo));
+  assert.strictEqual(
+    await api.getQuoteFile(slim.basket[0].logos[0].logo, slim.basket[0].logos[0].logoId),
+    sameA,
+    'quote submission must recover artwork bytes from a bklogo reference'
+  );
 
   const saved = api.saveBasket([
     { id: '1', code: 'GD005', logos: [{ position: 'left-chest', logo: tinyPng('save') }] }
@@ -136,4 +141,7 @@ function run() {
   console.log('quote-storage unit tests passed');
 }
 
-run();
+run().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});

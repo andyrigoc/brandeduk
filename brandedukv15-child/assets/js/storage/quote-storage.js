@@ -301,6 +301,62 @@
     });
   }
 
+  function idbGet(id) {
+    return openDb().then(function (db) {
+      if (!db || !id) return null;
+      return new Promise(function (resolve) {
+        try {
+          var tx = db.transaction(IDB_STORE, 'readonly');
+          var req = tx.objectStore(IDB_STORE).get(id);
+          req.onsuccess = function () { resolve(req.result || null); };
+          req.onerror = function () { resolve(null); };
+        } catch (e) {
+          resolve(null);
+        }
+      });
+    });
+  }
+
+  /**
+   * Return the actual artwork bytes for quote submission. Basket entries may
+   * contain only a bklogo reference after Base64 data has moved to IndexedDB,
+   * or a permanent Spaces URL after the background upload finishes.
+   */
+  function getQuoteFile(value, logoId) {
+    var source = typeof value === 'string' ? value : '';
+    var id = logoId || idFromRef(source);
+
+    if (isDataUrl(source)) return Promise.resolve(source);
+    if (id && pendingById[id] && isDataUrl(pendingById[id].dataUrl)) {
+      return Promise.resolve(pendingById[id].dataUrl);
+    }
+
+    return idbGet(id).then(function (row) {
+      if (row && isDataUrl(row.dataUrl)) {
+        rememberLogo(id, row.dataUrl, row.filename);
+        return row.dataUrl;
+      }
+
+      var remoteUrl = (id && serverUrlById[id])
+        || (row && isHttpUrl(row.serverUrl) ? row.serverUrl : '')
+        || (isHttpUrl(source) || isBlobUrl(source) ? source : '');
+      if (!remoteUrl || typeof fetch !== 'function') return null;
+
+      return fetch(remoteUrl, { credentials: 'omit' }).then(function (response) {
+        if (!response.ok) return null;
+        var contentType = String(response.headers && response.headers.get
+          ? response.headers.get('content-type') || ''
+          : '');
+        if (contentType && contentType.indexOf('image/') !== 0) return null;
+        return response.blob();
+      }).then(function (blob) {
+        return blob && (!blob.size || blob.size > 0) ? blob : null;
+      }).catch(function () {
+        return null;
+      });
+    });
+  }
+
   function persistExtracted(extracted) {
     extracted.forEach(function (entry) {
       rememberLogo(entry.id, entry.dataUrl, entry.filename);
@@ -527,6 +583,7 @@
     slimBasket: slimBasket,
     hydrateBasket: hydrateBasket,
     resolveSrc: resolveSrc,
+    getQuoteFile: getQuoteFile,
     classifyError: classifyError,
     isDataUrl: isDataUrl,
     isLogoRef: isLogoRef,

@@ -6432,7 +6432,7 @@
                     if (orderNotes) notesList.push(orderNotes);
                     if (customerNote) notesList.push('Customer note: ' + customerNote);
 
-                    const quoteLogoFiles = collectQuoteLogoFiles(basket);
+                    const quoteLogoFiles = await collectQuoteLogoFiles(basket);
                     const quotePreviewFiles = collectQuotePreviewFiles(basket, renderedPreviewEntries);
 
                     const quoteData = {
@@ -6475,6 +6475,12 @@
                             result = await response.json();
                         }
                     } catch (apiErr) {
+                        // The legacy PHP endpoint accepts JSON only. Falling back
+                        // with artwork present would report success while silently
+                        // dropping every uploaded logo and rendered preview.
+                        if (Object.keys(quoteLogoFiles).length || Object.keys(quotePreviewFiles).length) {
+                            throw apiErr;
+                        }
                         try {
                             const phpRes = await fetch('brandedukv15-child/includes/send-quote.php', {
                                 method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -6499,7 +6505,7 @@
                     } else { throw new Error(result.message || 'Unknown error'); }
                 } catch (err) {
                     console.error('Quote submission error:', err);
-                    alert('Failed to send quote. Please try again.');
+                    alert(err?.message || 'Failed to send quote. Please try again.');
                     if (submitBtn) {
                         submitBtn.textContent = 'Submit Quote Request';
                         submitBtn.disabled = false;
@@ -6577,6 +6583,7 @@
     function safeQuoteMediaRef(value) {
         if (!value || typeof value !== 'string') return null;
         if (/^data:(image|application)\//i.test(value) || /^data:.*;base64,/i.test(value)) return null;
+        if (/^(?:bklogo|blob):/i.test(value)) return null;
         return value.length > 2000 ? null : value;
     }
 
@@ -6913,38 +6920,53 @@
         return previewFiles;
     }
 
-    function collectQuoteLogoFiles(basket) {
+    async function collectQuoteLogoFiles(basket) {
         const logoFiles = {};
+        const unresolved = [];
+        const storage = window.BrandedQuoteStorage;
+        const addLogo = async (position, entry, value) => {
+            if (!value && !entry?.logoId) return;
+            let file = value;
+            if (storage && typeof storage.getQuoteFile === 'function') {
+                file = await storage.getQuoteFile(value, entry?.logoId || '');
+            }
+            if (file instanceof File || file instanceof Blob || /^data:(image|application)\//i.test(String(file || '')) || /^data:.*;base64,/i.test(String(file || ''))) {
+                logoFiles[position || 'logo'] = file;
+                return;
+            }
+            if (/^(?:bklogo|blob):/i.test(String(value || '')) || entry?.logoId) {
+                unresolved.push(position || 'logo');
+            }
+        };
+        const pending = [];
         (basket || []).forEach(item => {
             if (item.positions && typeof item.positions === 'object' && !Array.isArray(item.positions)) {
                 Object.entries(item.positions).forEach(([position, data]) => {
                     const value = data && (data.logoData || data.logo || data.fileData || data.previewData);
-                    if (/^data:(image|application)\//i.test(String(value || '')) || /^data:.*;base64,/i.test(String(value || ''))) {
-                        logoFiles[position] = value;
-                    }
+                    pending.push(addLogo(position, data, value));
                 });
             }
             if (Array.isArray(item.positions)) {
                 item.positions.forEach(positionData => {
                     const value = positionData.logoData || positionData.logo || positionData.fileData || positionData.previewData;
-                    if (/^data:(image|application)\//i.test(String(value || '')) || /^data:.*;base64,/i.test(String(value || ''))) {
-                        logoFiles[positionData.position || positionData.positionLabel || 'logo'] = value;
-                    }
+                    pending.push(addLogo(positionData.position || positionData.positionLabel || 'logo', positionData, value));
                 });
             }
             (item.customizations || []).forEach(customization => {
                 const value = customization.logoData || customization.logo || customization.fileData || customization.previewData;
-                if (/^data:(image|application)\//i.test(String(value || '')) || /^data:.*;base64,/i.test(String(value || ''))) {
-                    logoFiles[customization.position || customization.positionLabel || 'logo'] = value;
-                }
+                pending.push(addLogo(customization.position || customization.positionLabel || 'logo', customization, value));
             });
             (item.logos || []).forEach(logo => {
                 const value = logo.logoData || logo.logo || logo.fileData || logo.previewData;
-                if (!/^data:(image|application)\//i.test(String(value || '')) && !/^data:.*;base64,/i.test(String(value || ''))) return;
                 const position = logo.position || logo.positionLabel || 'logo';
-                logoFiles[position] = value;
+                pending.push(addLogo(position, logo, value));
             });
         });
+        await Promise.all(pending);
+        const missingPositions = [...new Set(unresolved)].filter(position => !logoFiles[position]);
+        if (missingPositions.length) {
+            throw new Error(`Artwork is still being prepared for ${missingPositions.join(', ')}. Please wait a moment and submit again.`);
+        }
         return logoFiles;
     }
     </script>
@@ -7014,7 +7036,7 @@
             </div>
         </div>
     </div>
-<script src="brandedukv15-child/assets/js/storage/quote-storage.js?v=20261025-storage"></script>
+<script src="brandedukv15-child/assets/js/storage/quote-storage.js?v=20261026-quote-files"></script>
 <script src="brandedukv15-child/assets/js/cart.js?v=20261025-storage"></script>
 <script src="brandedukv15-child/assets/js/header.js?v=20261020-suggest"></script>
 <script src="brandedukv15-child/assets/js/api-config.js?v=20260530"></script>
