@@ -6352,7 +6352,7 @@
                     const customizationsList = [];
                     const renderedPreviewEntries = await renderAllQuotePreviewImages(basket);
 
-                    basket.forEach(item => {
+                    basket.forEach((item, itemIndex) => {
                         const qty = item.qty || 0;
                         const up = parseFloat(item.unitPrice) || 0;
                         const itemTexts = Array.isArray(item.texts) ? item.texts : [];
@@ -6389,6 +6389,8 @@
                                 const lineTotal = logoUp * qty;
                                 customizationTotal += lineTotal;
                                 customizationsList.push({
+                                    productCode: itemCode,
+                                    itemIndex,
                                     position: logo.positionLabel || logo.position,
                                     method: logo.method === 'embroidery' ? 'Embroidery' : 'Print',
                                     hasLogo: !!logo.logo,
@@ -6404,6 +6406,8 @@
                             const textMethod = String(textDesign.method || '').toLowerCase();
                             customizationTotal += lineTotal;
                             customizationsList.push({
+                                productCode: item.code || item.productCode || '',
+                                itemIndex,
                                 position: textDesign.positionLabel || toReadablePosition(textDesign.position || textDesign.area),
                                 method: textMethod === 'embroidery' ? 'Embroidery' : 'Text',
                                 type: 'text',
