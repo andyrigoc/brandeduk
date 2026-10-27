@@ -1386,6 +1386,199 @@ a {
     font-weight: 700;
 }
 
+/* One Size row container collapses when the size picker popup is used */
+.selected-sizes:empty {
+    display: none;
+}
+
+.add-size-btn.has-sizes svg {
+    display: none;
+}
+
+/* Text summary of the sizes chosen in the size picker popup */
+.size-summary {
+    padding: 12px 14px;
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--gray-800);
+    overflow-wrap: anywhere;
+}
+
+/* === Size Picker Popup (mobile/js/customize.js) === */
+.size-picker {
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    width: min(400px, calc(100vw - 32px));
+    max-width: none;
+    max-height: calc(100vh - 48px);
+    max-height: min(640px, calc(100dvh - 48px));
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-xl);
+    background: var(--white);
+    color: var(--gray-800);
+    box-shadow: 0 24px 64px rgba(15, 23, 42, 0.3);
+    overflow: hidden;
+}
+
+.size-picker[open] {
+    display: flex;
+    flex-direction: column;
+}
+
+.size-picker::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.size-picker__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 12px 12px 16px;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.size-picker__title {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.size-picker__colour {
+    margin-top: 2px;
+    font-size: 13px;
+    color: var(--gray-500);
+}
+
+.size-picker__close {
+    flex: 0 0 auto;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-full);
+    color: var(--gray-600);
+}
+
+.size-picker__close:active {
+    background: var(--gray-100);
+}
+
+.size-picker__list {
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 4px 16px;
+    list-style: none;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.size-picker__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--gray-100);
+}
+
+.size-picker__row:last-child {
+    border-bottom: none;
+}
+
+.size-picker__size {
+    font-size: 16px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.size-picker__row.has-qty .size-picker__size {
+    color: var(--orange);
+}
+
+.size-picker__stepper {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    background: var(--gray-100);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.size-picker__step {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--gray-700);
+}
+
+.size-picker__step:active {
+    background: var(--gray-200);
+}
+
+.size-picker__row:not(.has-qty) .size-picker__step[data-step="-1"] {
+    color: var(--gray-300);
+}
+
+.size-picker__qty {
+    width: 52px;
+    height: 44px;
+    border: none;
+    background: transparent;
+    text-align: center;
+    font-weight: 600;
+    color: var(--gray-800);
+}
+
+.size-picker__step:focus-visible,
+.size-picker__qty:focus {
+    outline: 2px solid var(--purple);
+    outline-offset: -2px;
+}
+
+.size-picker__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    border-top: 1px solid var(--gray-200);
+}
+
+.size-picker__total {
+    font-size: 14px;
+    color: var(--gray-600);
+}
+
+.size-picker__total strong {
+    font-size: 16px;
+    color: var(--gray-800);
+}
+
+.size-picker__done {
+    min-width: 120px;
+    height: 44px;
+    padding: 0 24px;
+    border-radius: var(--radius-md);
+    background: var(--orange);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.size-picker__done:active {
+    background: #c2410c;
+}
+
 /* === Pricing Tiers Grid (with discounts) === */
 
 /* Basket quantity notice - shows when same product already in basket */

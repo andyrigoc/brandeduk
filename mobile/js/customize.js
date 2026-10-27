@@ -4880,7 +4880,7 @@
         rebuildSizeRows();
     }
 
-    // Lightweight: re-create size rows without re-attaching container event listeners
+    // Lightweight: reset the size UI without re-attaching container event listeners
     function rebuildSizeRows() {
         const container = document.querySelector('.size-qty-compact');
         if (!container) return;
@@ -4888,29 +4888,14 @@
         const selectedSizes = container.querySelector('.selected-sizes');
         if (selectedSizes) selectedSizes.innerHTML = '';
 
-        const productSizes = getProductSizes();
-        const isOneSize = productSizes.length === 1 &&
-            (productSizes[0].toLowerCase() === 'one size' ||
-             productSizes[0].toLowerCase() === 'onesize' ||
-             productSizes[0].toLowerCase() === 'os');
-
         const addBtn = container.querySelector('.add-size-btn');
 
-        if (isOneSize) {
+        if (isOneSizeProduct()) {
             if (addBtn) addBtn.style.display = 'none';
             setTimeout(() => addOneSizeRow(container), 100);
         } else {
-            if (addBtn) {
-                addBtn.style.display = 'flex';
-                // Re-clone to reset listener
-                const newBtn = addBtn.cloneNode(true);
-                addBtn.parentNode.replaceChild(newBtn, addBtn);
-                newBtn.addEventListener('click', () => {
-                    addSizeRow(container);
-                    if (navigator.vibrate) navigator.vibrate(10);
-                });
-            }
-            setTimeout(() => addSizeRow(container), 100);
+            state.sizeQuantities = {};
+            if (addBtn) addBtn.style.display = 'flex';
         }
 
         updateSizeQuantities();
@@ -5049,18 +5034,6 @@
         });
         setTimeout(scrollToQtyAnchor, 120);
         setTimeout(scrollToQtyAnchor, 380);
-        setTimeout(openFirstEmptySizePicker, 750);
-    }
-
-    /** After the colour scroll settles, open the first empty size dropdown so the user can pick a size straight away. */
-    function openFirstEmptySizePicker() {
-        const select = Array.from(document.querySelectorAll('#selectedSizes .size-select'))
-            .find(function (s) { return !s.value && s.offsetParent !== null; });
-        if (!select) return;
-        try { select.focus({ preventScroll: true }); } catch (e) { select.focus(); }
-        if (typeof select.showPicker === 'function') {
-            try { select.showPicker(); } catch (e) { /* needs user activation; focus is enough */ }
-        }
     }
 
     // Render color buttons with product thumbnails
@@ -5330,21 +5303,11 @@
             debugLog('📐 setupSizeSelection: cleared existing rows');
         }
 
-        // Get product sizes from API - fallback to default if not available
-        const productSizes = getProductSizes();
-        debugLog('📐 setupSizeSelection: productSizes =', productSizes);
-        const isOneSize = productSizes.length === 1 && 
-            (productSizes[0].toLowerCase() === 'one size' || 
-             productSizes[0].toLowerCase() === 'onesize' ||
-             productSizes[0].toLowerCase() === 'os');
-
-        // Add size button
         const addBtn = container.querySelector('.add-size-btn');
-        
-        debugLog('📐 setupSizeSelection - productSizes:', productSizes, 'isOneSize:', isOneSize, 'addBtn found:', !!addBtn);
-        
-        if (isOneSize) {
-            // For "One size" products: hide "Add Size" button and auto-create a row
+        ensureSizePickerControls(container);
+
+        if (isOneSizeProduct()) {
+            // For "One size" products: hide the size picker button and auto-create a row
             if (addBtn) {
                 addBtn.style.display = 'none';
             }
@@ -5353,40 +5316,21 @@
                 addOneSizeRow(container);
                 debugLog('📐 Product is "One size" - auto-added row with quantity selector (delayed)');
             }, 500);
-        } else {
-            // For multi-size products: show "Add Size" button AND add first row automatically
-            debugLog('📐 Multi-size product - showing Add Size button and adding first row');
-            if (addBtn) {
-                addBtn.style.display = 'flex';
-                // Remove any existing listener to prevent duplicates
-                const newBtn = addBtn.cloneNode(true);
-                addBtn.parentNode.replaceChild(newBtn, addBtn);
-                
-                newBtn.addEventListener('click', () => {
-                    addSizeRow(container);
-                    if (navigator.vibrate) navigator.vibrate(10);
-                });
-            }
-            // Auto-add first size row so user can immediately select size & qty - delayed to ensure it stays
-            setTimeout(() => {
-                addSizeRow(container);
-                debugLog('📐 First size row auto-added for multi-size product (delayed)');
-            }, 500);
+        } else if (addBtn) {
+            // Multi-size products set every size at once in the size picker popup
+            addBtn.style.display = 'flex';
         }
 
-        // Event delegation for size/qty items
+        // Event delegation for the size picker button and the One Size quantity row
         container.addEventListener('click', (e) => {
+            if (e.target.closest('.add-size-btn')) {
+                openSizePicker();
+                return;
+            }
+
             const btn = e.target.closest('.item-qty-btn');
             if (btn) {
                 const row = btn.closest('.size-qty-item');
-                const sizeSelect = row.querySelector('.size-select');
-                // Block qty change if no size selected
-                if (sizeSelect && (!sizeSelect.value || sizeSelect.value === '')) {
-                    showToast('Please select a size first', true, row);
-                    sizeSelect.focus();
-                    if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
-                    return;
-                }
                 const input = row.querySelector('.item-qty-input');
                 const isPlus = btn.classList.contains('plus');
                 let value = parseInt(input.value) || 0;
@@ -5401,34 +5345,10 @@
                 updateSizeQuantities();
                 if (navigator.vibrate) navigator.vibrate(10);
             }
-
-            const removeBtn = e.target.closest('.remove-size-btn');
-            if (removeBtn) {
-                const row = removeBtn.closest('.size-qty-item');
-                row.remove();
-                updateAvailableSizes(container);
-                updateSizeQuantities();
-                if (navigator.vibrate) navigator.vibrate(10);
-            }
-
-
         });
 
     // Extra listeners to ensure any direct input/change triggers a quantities recalculation
-    container.addEventListener('input', (e) => {
-        if (e.target.classList.contains('item-qty-input')) {
-            const row = e.target.closest('.size-qty-item');
-            const sizeSelect = row && row.querySelector('.size-select');
-            if (sizeSelect && (!sizeSelect.value || sizeSelect.value === '')) {
-                e.target.value = 0;
-                showToast('Please select a size first', true, row);
-                sizeSelect.focus();
-                if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
-                return;
-            }
-        }
-        updateSizeQuantities();
-    });
+    container.addEventListener('input', () => updateSizeQuantities());
     container.addEventListener('change', () => updateSizeQuantities());
 
         // Event delegation for select and input changes
@@ -5444,80 +5364,240 @@
         updateSizeQuantities();
     }
 
-    function addSizeRow(container) {
-        const selectedSizes = container.querySelector('.selected-sizes');
-        
-        // Get already selected sizes for this color
-        const alreadySelected = new Set();
-        selectedSizes.querySelectorAll('.size-select').forEach(select => {
-            if (select.value) {
-                alreadySelected.add(select.value);
-            }
+    // === Size picker popup: every size of a multi-size product in one step ===
+    const SIZE_PICKER_MAX_QTY = 999;
+    let sizePickerDraft = {};
+    let sizePickerBodyOverflow = '';
+
+    function isOneSizeProduct() {
+        const sizes = getProductSizes();
+        return sizes.length === 1 && ['one size', 'onesize', 'os'].includes(String(sizes[0]).toLowerCase());
+    }
+
+    function getPositiveSizeQuantities(quantities) {
+        const positive = {};
+        Object.entries(quantities || {}).forEach(([size, qty]) => {
+            const value = parseInt(qty, 10);
+            if (value > 0) positive[size] = value;
         });
-        
-        const newRow = document.createElement('div');
-        newRow.className = 'size-qty-item';
-        
-        // Build options excluding already selected sizes - use product sizes from API
-        let optionsHTML = '<option value="">Size</option>';
-        const allSizes = getProductSizes();
-        allSizes.forEach(size => {
-            if (!alreadySelected.has(size)) {
-                optionsHTML += `<option value="${size}">${size}</option>`;
-            }
-        });
-        
-        newRow.innerHTML = `
-            <select class="size-select">
-                ${optionsHTML}
-            </select>
-            <div class="item-qty-control">
-                <button type="button" class="item-qty-btn minus">-</button>
-                <input type="number" class="item-qty-input" value="0" min="0" max="999">
-                <button type="button" class="item-qty-btn plus">+</button>
+        return positive;
+    }
+
+    // Product sizes first, plus any selected size missing from that list so it is never dropped silently.
+    function getSizePickerSizes() {
+        return Array.from(new Set(getProductSizes().map(String).concat(Object.keys(state.sizeQuantities || {}))));
+    }
+
+    // customize.html shares this script but still ships the older "Add Size" button markup.
+    function ensureSizePickerControls(container) {
+        const button = container.querySelector('.add-size-btn');
+        if (!button) return;
+        button.type = 'button';
+        button.setAttribute('aria-haspopup', 'dialog');
+        if (!button.querySelector('.add-size-btn__label')) {
+            Array.from(button.childNodes)
+                .filter(node => node.nodeType === Node.TEXT_NODE)
+                .forEach(node => node.remove());
+            const label = document.createElement('span');
+            label.className = 'add-size-btn__label';
+            button.appendChild(label);
+        }
+        if (!container.querySelector('.size-summary')) {
+            const summary = document.createElement('p');
+            summary.className = 'size-summary';
+            summary.hidden = true;
+            container.insertBefore(summary, button);
+        }
+    }
+
+    function renderSizeSummary(container) {
+        const parts = getSizePickerSizes()
+            .filter(size => state.sizeQuantities[size] > 0)
+            .map(size => size + ' × ' + state.sizeQuantities[size]);
+        const summary = container.querySelector('.size-summary');
+        if (summary) {
+            summary.textContent = parts.join(' · ');
+            summary.hidden = parts.length === 0;
+        }
+        const button = container.querySelector('.add-size-btn');
+        const label = button && button.querySelector('.add-size-btn__label');
+        if (label) label.textContent = parts.length ? 'Edit sizes' : 'Select sizes';
+        if (button) button.classList.toggle('has-sizes', parts.length > 0);
+    }
+
+    // customize.html's order summary edits state.sizeQuantities directly; mirror it in the size section.
+    function refreshSizeSummary() {
+        const container = document.querySelector('.size-qty-compact');
+        if (!container || isOneSizeProduct()) return;
+        renderSizeSummary(container);
+        const totalSpan = document.getElementById('totalQty');
+        if (totalSpan) totalSpan.textContent = state.quantity || 0;
+    }
+
+    function getSizePickerDialog() {
+        let dialog = document.getElementById('sizePickerDialog');
+        if (dialog) return dialog;
+
+        dialog = document.createElement('dialog');
+        dialog.id = 'sizePickerDialog';
+        dialog.className = 'size-picker';
+        dialog.setAttribute('aria-labelledby', 'sizePickerTitle');
+        dialog.innerHTML = `
+            <div class="size-picker__header">
+                <div>
+                    <h3 class="size-picker__title" id="sizePickerTitle">Select sizes</h3>
+                    <p class="size-picker__colour" hidden></p>
+                </div>
+                <button type="button" class="size-picker__close" aria-label="Close" autofocus>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
             </div>
-            <button type="button" class="remove-size-btn">×</button>
-        `;
-        
-        // Add event listener to update available sizes when a size is selected
-        const select = newRow.querySelector('.size-select');
-        select.addEventListener('change', function() {
-            updateAvailableSizes(container);
+            <ul class="size-picker__list"></ul>
+            <div class="size-picker__footer">
+                <span class="size-picker__total" aria-live="polite">Total: <strong>0</strong> pcs</span>
+                <button type="button" class="size-picker__done">Done</button>
+            </div>`;
+        document.body.appendChild(dialog);
+
+        // Every way of closing keeps the quantities, so a stray tap never loses them.
+        const closeSizePicker = () => {
+            commitSizePicker();
+            dialog.close();
+        };
+        dialog.querySelector('.size-picker__close').addEventListener('click', closeSizePicker);
+        dialog.querySelector('.size-picker__done').addEventListener('click', closeSizePicker);
+        dialog.addEventListener('click', (e) => {
+            if (e.target === dialog) closeSizePicker();
         });
-        
-        selectedSizes.appendChild(newRow);
+        dialog.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                closeSizePicker();
+            }
+        });
+        // Native close requests (e.g. the Android back gesture) bypass the handlers above.
+        dialog.addEventListener('close', () => {
+            if (!dialog.open) commitSizePicker();
+        });
+
+        const list = dialog.querySelector('.size-picker__list');
+        list.addEventListener('click', (e) => {
+            const step = e.target.closest('.size-picker__step');
+            if (!step) return;
+            const row = step.closest('.size-picker__row');
+            const qty = (sizePickerDraft[row.dataset.size] || 0) + Number(step.dataset.step);
+            if (qty < 0 || qty > SIZE_PICKER_MAX_QTY) return;
+            row.querySelector('.size-picker__qty').value = String(qty);
+            setSizePickerQty(row, qty);
+            if (navigator.vibrate) navigator.vibrate(10);
+        });
+        list.addEventListener('input', (e) => {
+            if (!e.target.matches('.size-picker__qty')) return;
+            const digits = e.target.value.replace(/\D/g, '').replace(/^0+(?=\d)/, '').slice(0, 3);
+            if (digits !== e.target.value) e.target.value = digits;
+            setSizePickerQty(e.target.closest('.size-picker__row'), parseInt(digits, 10) || 0);
+        });
+        list.addEventListener('focusin', (e) => {
+            if (e.target.matches('.size-picker__qty')) e.target.select();
+        });
+        list.addEventListener('focusout', (e) => {
+            if (!e.target.matches('.size-picker__qty')) return;
+            e.target.value = String(sizePickerDraft[e.target.closest('.size-picker__row').dataset.size] || 0);
+        });
+        list.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && e.target.matches('.size-picker__qty')) e.target.blur();
+        });
+
+        return dialog;
+    }
+
+    function createSizePickerStep(step, text, label) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'size-picker__step';
+        button.dataset.step = String(step);
+        button.textContent = text;
+        button.setAttribute('aria-label', label);
+        return button;
+    }
+
+    function createSizePickerRow(size) {
+        const qty = sizePickerDraft[size] || 0;
+        const row = document.createElement('li');
+        row.className = 'size-picker__row' + (qty > 0 ? ' has-qty' : '');
+        row.dataset.size = size;
+
+        const label = document.createElement('span');
+        label.className = 'size-picker__size';
+        label.textContent = size;
+
+        const input = document.createElement('input');
+        input.className = 'size-picker__qty';
+        input.type = 'text';
+        input.inputMode = 'numeric';
+        input.pattern = '[0-9]*';
+        input.maxLength = 3;
+        input.autocomplete = 'off';
+        input.value = String(qty);
+        input.setAttribute('aria-label', size + ' quantity');
+
+        const stepper = document.createElement('div');
+        stepper.className = 'size-picker__stepper';
+        stepper.append(
+            createSizePickerStep(-1, '−', 'Decrease ' + size),
+            input,
+            createSizePickerStep(1, '+', 'Increase ' + size)
+        );
+        row.append(label, stepper);
+        return row;
+    }
+
+    function setSizePickerQty(row, qty) {
+        if (qty > 0) {
+            sizePickerDraft[row.dataset.size] = qty;
+        } else {
+            delete sizePickerDraft[row.dataset.size];
+        }
+        row.classList.toggle('has-qty', qty > 0);
+        updateSizePickerTotal();
+    }
+
+    function updateSizePickerTotal() {
+        const total = Object.values(sizePickerDraft).reduce((sum, qty) => sum + qty, 0);
+        getSizePickerDialog().querySelector('.size-picker__total strong').textContent = String(total);
+    }
+
+    function commitSizePicker() {
+        document.body.style.overflow = sizePickerBodyOverflow;
+        const current = state.sizeQuantities || {};
+        const draftSizes = Object.keys(sizePickerDraft);
+        const unchanged = draftSizes.length === Object.keys(current).length &&
+            draftSizes.every(size => sizePickerDraft[size] === current[size]);
+        if (unchanged) return;
+        state.sizeQuantities = { ...sizePickerDraft };
         updateSizeQuantities();
     }
 
-    // New function to update available sizes across all dropdowns
-    function updateAvailableSizes(container) {
-        const selectedSizes = container.querySelector('.selected-sizes');
-        const allSelects = selectedSizes.querySelectorAll('.size-select');
-        const allSizes = getProductSizes(); // Use product sizes from API
-        
-        // Collect all selected sizes
-        const selected = new Set();
-        allSelects.forEach(select => {
-            if (select.value) {
-                selected.add(select.value);
-            }
-        });
-        
-        // Update each select to show only available options
-        allSelects.forEach(currentSelect => {
-            const currentValue = currentSelect.value;
-            
-            // Build new options
-            let optionsHTML = '<option value="">Size</option>';
-            allSizes.forEach(size => {
-                if (size === currentValue || !selected.has(size)) {
-                    const selectedAttr = size === currentValue ? ' selected' : '';
-                    optionsHTML += `<option value="${size}"${selectedAttr}>${size}</option>`;
-                }
-            });
-            
-            currentSelect.innerHTML = optionsHTML;
-        });
+    function openSizePicker() {
+        const dialog = getSizePickerDialog();
+        if (dialog.open) return;
+
+        sizePickerDraft = getPositiveSizeQuantities(state.sizeQuantities);
+        const list = dialog.querySelector('.size-picker__list');
+        list.replaceChildren(...getSizePickerSizes().map(createSizePickerRow));
+
+        const colour = dialog.querySelector('.size-picker__colour');
+        colour.textContent = state.selectedColorName ? 'Colour: ' + state.selectedColorName : '';
+        colour.hidden = !state.selectedColorName;
+        updateSizePickerTotal();
+
+        sizePickerBodyOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+        dialog.showModal();
+        list.scrollTop = 0;
     }
 
     function updateSizeQuantities() {
@@ -5528,9 +5608,18 @@
         try { debugLog('DEBUG: container exists?', !!container, 'selected sizes count=', container.querySelectorAll('.size-qty-item').length); } catch(e){}
 
         let total = 0;
-        state.sizeQuantities = {};
+        const oneSize = isOneSizeProduct();
+        if (oneSize) {
+            state.sizeQuantities = {};
+        } else {
+            // Multi-size products: the size picker popup writes state.sizeQuantities directly.
+            state.sizeQuantities = getPositiveSizeQuantities(state.sizeQuantities);
+            total = Object.values(state.sizeQuantities).reduce((sum, qty) => sum + qty, 0);
+            renderSizeSummary(container);
+        }
 
-        container.querySelectorAll('.size-qty-item').forEach(row => {
+        // Only "One size" products keep an inline quantity row.
+        (oneSize ? container.querySelectorAll('.size-qty-item') : []).forEach(row => {
             const select = row.querySelector('.size-select');
             const input = row.querySelector('.item-qty-input');
             
@@ -8844,6 +8933,7 @@
                     const totalSpan = document.getElementById('totalQty');
                     if (totalSpan) totalSpan.textContent = '0';
                     updatePricingSummary();
+                    refreshSizeSummary();
                     if (typeof showToast === 'function') showToast('Current selection cleared');
                     return;
                 }
@@ -8872,6 +8962,7 @@
                     }
                     state.quantity = Object.values(state.sizeQuantities).reduce((s, q) => s + q, 0);
                     updatePricingSummary();
+                    refreshSizeSummary();
                 } else {
                     // Modify basket item
                     let bsk = loadQuoteBasket();
@@ -9707,6 +9798,7 @@
             sizeRows.forEach(el => { el.textContent = '0'; });
             const totalSpan = document.getElementById('totalQty');
             if (totalSpan) totalSpan.textContent = '0';
+            refreshSizeSummary();
         }
 
         // Remove basket items (in reverse order to preserve indices)
