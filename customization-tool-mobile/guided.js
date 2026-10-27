@@ -21,6 +21,9 @@
   let popupContext = null;
   let uploadContext = null;
   let preservePendingMethod = false;
+  // The first position is active by default, but library logos and uploads only
+  // go to a position the customer picked (tapped, used its + button or dropped on).
+  let positionChosen = false;
   const hiddenLibraryLogos = new Set();
   const libraryEntries = new WeakMap();
   let logoPreviewDialog;
@@ -28,6 +31,11 @@
   function message(text) {
     byId("guidedMessage").textContent = text;
     byId("guidedMessage").hidden = !text;
+  }
+
+  function askForPosition(text) {
+    message(text);
+    byId("guidedMessage").scrollIntoView({ block: "nearest", behavior: "smooth" });
   }
 
   function showLogoPreview(image) {
@@ -231,6 +239,7 @@
     positionsEl.setAttribute("aria-busy", "true");
     try {
       await switchToDesignArea(position, { position });
+      positionChosen = true;
       if (!state.uploadedLogo) state.decorationType = defaultMethod(position);
       render();
       positionsEl.querySelector(`[data-position="${CSS.escape(position)}"]`)?.scrollIntoView({
@@ -581,7 +590,9 @@
       const use = document.createElement("button");
       use.type = "button";
       use.className = `guided-library-use${state.uploadedLogo === entry.logo ? " is-selected" : ""}`;
-      use.setAttribute("aria-label", `Use ${entry.name || "this logo"} on ${getDesignAreaLabel()}`);
+      use.setAttribute("aria-label", positionChosen
+        ? `Use ${entry.name || "this logo"} on ${getDesignAreaLabel()}`
+        : `${entry.name || "Your logo"}: choose a position first, or drag it onto one`);
       const image = document.createElement("img");
       image.src = entry.logo;
       image.alt = entry.name || "Uploaded logo";
@@ -591,7 +602,13 @@
       name.textContent = entry.name || "Your logo";
       use.append(image, name);
       libraryEntries.set(use, entry);
-      use.addEventListener("click", () => openMethodPopup(getDesignAreaKey(), "reuse", entry));
+      use.addEventListener("click", () => {
+        if (!positionChosen) {
+          askForPosition("Drag this logo onto a position, or tap the position you want first.");
+          return;
+        }
+        openMethodPopup(getDesignAreaKey(), "reuse", entry);
+      });
       cell.append(use);
       if (managing) {
         const remove = document.createElement("button");
@@ -613,7 +630,13 @@
     upload.className = "guided-upload";
     upload.innerHTML = "<span aria-hidden='true'>+</span><small>Upload another logo</small>";
     upload.disabled = state.logoUploadBusy || !getConfiguredViewPositions().length;
-    upload.addEventListener("click", () => openMethodPopup(getDesignAreaKey(), "upload"));
+    upload.addEventListener("click", () => {
+      if (!positionChosen) {
+        askForPosition("Tap + on the position where you want your new logo.");
+        return;
+      }
+      openMethodPopup(getDesignAreaKey(), "upload");
+    });
     libraryEl.replaceChildren(...cells, upload);
   }
 
