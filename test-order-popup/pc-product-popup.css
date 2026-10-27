@@ -1,4 +1,73 @@
 /* Desktop-only product builder polish. Loaded by shop-pc.html only. */
+#orderPopup #productMainImage {
+    cursor: zoom-in;
+}
+
+#orderPopup #productMainImage:focus-visible {
+    outline: 3px solid #273469;
+    outline-offset: 3px;
+}
+
+.pc-product-image-zoom {
+    box-sizing: border-box;
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    padding: 56px 16px 16px;
+    width: fit-content;
+    max-width: min(var(--pc-zoom-card-width, 100vw), calc(100vw - 48px));
+    max-height: min(var(--pc-zoom-card-height, 820px), calc(100dvh - 48px));
+    border: 0;
+    border-radius: 16px;
+    background: #fff;
+    color: #273469;
+    box-shadow: 0 28px 80px rgba(15, 23, 42, .4);
+}
+
+.pc-product-image-zoom::backdrop {
+    background: transparent;
+}
+
+.pc-product-image-zoom-image {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: min(calc(var(--pc-zoom-card-width, 100vw) - 32px), calc(100vw - 80px));
+    max-height: min(calc(var(--pc-zoom-card-height, 820px) - 72px), calc(100dvh - 120px));
+    object-fit: contain;
+}
+
+.pc-product-image-zoom-image[hidden],
+.pc-product-image-zoom-status[hidden] {
+    display: none;
+}
+
+.pc-product-image-zoom-close {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    border: 1px solid #e85d04;
+    border-radius: 10px;
+    background: #fff;
+    color: #e85d04;
+    font-size: 26px;
+    cursor: pointer;
+}
+
+.pc-product-image-zoom-close:hover,
+.pc-product-image-zoom-close:focus-visible {
+    background: #e85d04;
+    color: #fff;
+}
+
+.pc-product-image-zoom-status {
+    max-width: 360px;
+    margin: 16px;
+    font-family: Inter, Arial, sans-serif;
+}
+
 #orderPopup {
     --pc-flow-ink: #111827;
     --pc-flow-muted: #667085;
@@ -5044,4 +5113,3 @@ body.bu-logo-touch-dragging #p4PositionOptions .position-card.is-drop-ready {
 /* Tablet rotate hint styles live in:
    brandedukv15-child/assets/css/components/tablet-rotate-hint.css
 */
-

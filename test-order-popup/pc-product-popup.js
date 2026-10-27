@@ -6,6 +6,78 @@
 
     var progressItems = Array.prototype.slice.call(popup.querySelectorAll('[data-flow-step]'));
 
+    var imageZoom = document.getElementById('pcProductImageZoom');
+    var mainImage = popup.querySelector('#productMainImage');
+    var zoomButton = popup.querySelector('#productZoomBtn');
+
+    if (imageZoom && mainImage && zoomButton) {
+        var zoomImage = imageZoom.querySelector('.pc-product-image-zoom-image');
+        var zoomStatus = imageZoom.querySelector('.pc-product-image-zoom-status');
+        var zoomTrigger;
+        var productCard = popup.querySelector('.order_card');
+
+        function updateImageZoomBounds() {
+            if (!productCard) return;
+            var bounds = productCard.getBoundingClientRect();
+            imageZoom.style.setProperty('--pc-zoom-card-width', bounds.width + 'px');
+            imageZoom.style.setProperty('--pc-zoom-card-height', bounds.height + 'px');
+        }
+
+        if (productCard) {
+            new ResizeObserver(updateImageZoomBounds).observe(productCard);
+        }
+
+        function openImageZoom(event) {
+            if (imageZoom.open) return;
+            updateImageZoomBounds();
+            zoomTrigger = event.currentTarget;
+            zoomImage.hidden = true;
+            zoomStatus.hidden = false;
+            zoomStatus.textContent = 'Loading image...';
+            zoomImage.alt = mainImage.alt || 'Product image';
+            imageZoom.showModal();
+            // Gallery sources are original catalogue assets, not thumbnail derivatives.
+            zoomImage.src = mainImage.currentSrc || mainImage.src;
+        }
+
+        zoomImage.addEventListener('load', function () {
+            zoomStatus.hidden = true;
+            zoomImage.hidden = false;
+        });
+        zoomImage.addEventListener('error', function () {
+            zoomImage.hidden = true;
+            zoomStatus.hidden = false;
+            zoomStatus.textContent = 'Unable to load the image. Please close and try again.';
+        });
+        zoomButton.setAttribute('aria-haspopup', 'dialog');
+        zoomButton.addEventListener('click', openImageZoom);
+        mainImage.addEventListener('click', openImageZoom);
+        mainImage.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                openImageZoom(event);
+            }
+        });
+        imageZoom.querySelector('.pc-product-image-zoom-close').addEventListener('click', function () {
+            imageZoom.close();
+        });
+        imageZoom.addEventListener('click', function (event) {
+            if (event.target === imageZoom) imageZoom.close();
+        });
+        // Keep Escape from reaching the order popup's document-level close handler.
+        imageZoom.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                imageZoom.close();
+            }
+        });
+        imageZoom.addEventListener('close', function () {
+            zoomImage.removeAttribute('src');
+            if (zoomTrigger) zoomTrigger.focus();
+        });
+    }
+
     function text(value) {
         return String(value == null ? '' : value).trim();
     }

@@ -2130,7 +2130,7 @@
     <link rel="stylesheet" href="test-order-popup/order-shop.css?v=20261003-whiteimg">
     <link rel="stylesheet" href="test-order-popup/order-overlay.css">
     <link rel="stylesheet" href="test-order-popup/customizer-embed.css?v=20260922-poa-contact">
-    <link rel="stylesheet" href="test-order-popup/pc-product-popup.css?v=20261009-continue-quiet">
+    <link rel="stylesheet" href="test-order-popup/pc-product-popup.css?v=20261027-image-zoom-bounds">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/tablet-rotate-hint.css?v=20261003-screen">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/cart-lottie-icon.css?v=20260927-cartlottie2">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/pc-shop.css?v=20261007-pageoutline">
@@ -8911,7 +8911,8 @@
                                         </button>
                                         <img id="productMainImage"
                                             src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3C/svg%3E"
-                                            alt="Product Image">
+                                            alt="Product Image" role="button" tabindex="0"
+                                            aria-label="Enlarge product image" aria-haspopup="dialog">
                                     </div>
                                     <div class="product-thumbs-carousel" id="productThumbsCarousel" role="listbox" aria-label="Product images"></div>
                                     <div class="product-accreditations" id="productAccreditations" hidden>
@@ -9945,6 +9946,12 @@
         </div>
     </div>
 
+    <dialog id="pcProductImageZoom" class="pc-product-image-zoom" aria-label="Enlarged product image">
+        <button type="button" class="pc-product-image-zoom-close" aria-label="Close enlarged image" autofocus>&times;</button>
+        <p class="pc-product-image-zoom-status" role="status">Loading image...</p>
+        <img class="pc-product-image-zoom-image" alt="" hidden>
+    </dialog>
+
     <!-- Color Zoom Modal -->
     <div id="colorZoomModal">
         <div class="color-zoom-content">
@@ -9966,7 +9973,7 @@
     <script src="brandedukv15-child/assets/js/tablet-rotate-hint.js?v=20261003-screen"></script>
     <script src="test-order-popup/customizer-embed.js?v=20261025-storage"></script>
     <script src="test-order-popup/pc-product-routing.js?v=20261021-basket-return"></script>
-    <script src="test-order-popup/pc-product-popup.js?v=20261007-tablet-file"></script>
+    <script src="test-order-popup/pc-product-popup.js?v=20261027-image-zoom-bounds"></script>
     <script src="brandedukv15-child/assets/js/cart-lottie-icon.js?v=20260927-cartlottie2"></script>
     <script src="mobile/js/popup-contact.js?v=20261003-quotemsg1"></script>
 
