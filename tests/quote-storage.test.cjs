@@ -138,6 +138,30 @@ async function run() {
   assert.strictEqual(pcParsed.length, 3);
   assert.strictEqual(pcParsed[0].logos[0].logo, pcParsed[2].logos[0].logo);
 
+  // Reusing the same artwork on a second item must not erase the first item's
+  // logo or preview when callers rebuild hydrated logo objects without logoId.
+  const reuseStore = makeStorage();
+  const reuse = loadModule({ localStorage: reuseStore });
+  const reusedLogo = tinyPng('reused');
+  reuse.api.saveBasket([{ id: 'tee', logos: [{ position: 'left-chest', logo: reusedLogo }], designPreview: { logoImage: reusedLogo } }]);
+  const reloaded = reuse.api.loadBasket();
+  assert.ok(reloaded[0].logos[0].logo.startsWith('blob:'), 'hydrated logos resolve to blob URLs');
+  reloaded[0].logos = reloaded[0].logos.map((logo) => ({ position: logo.position, logo: logo.logo }));
+  reloaded[0].designPreview = { logoImage: reloaded[0].designPreview.logoImage };
+  reloaded.push({ id: 'bag', logos: [{ position: 'centre-front', logo: reusedLogo }] });
+  assert.strictEqual(reuse.api.saveBasket(reloaded).ok, true);
+  const reusedRef = reuse.api.refFor(reuse.api.fingerprint(reusedLogo));
+  const reusedSaved = JSON.parse(reuseStore.getItem('quoteBasket'));
+  assert.strictEqual(reusedSaved[0].logos[0].logo, reusedRef, 'first item must keep its logo');
+  assert.strictEqual(reusedSaved[0].designPreview.logoImage, reusedRef, 'first item must keep its preview');
+  assert.strictEqual(reusedSaved[1].logos[0].logo, reusedRef);
+
+  const staleStore = makeStorage();
+  loadModule({ localStorage: staleStore }).api.saveBasket([
+    { id: 'stale', logos: [{ position: 'left-chest', logo: 'blob:http://127.0.0.1/unknown' }] }
+  ]);
+  assert.strictEqual(JSON.parse(staleStore.getItem('quoteBasket'))[0].logos[0].logo, '', 'unknown blob URLs are never stored');
+
   console.log('quote-storage unit tests passed');
 }
 

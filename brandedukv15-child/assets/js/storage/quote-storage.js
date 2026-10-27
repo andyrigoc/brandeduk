@@ -55,6 +55,14 @@
     return REF_PREFIX + id;
   }
 
+  function idForBlobUrl(url) {
+    var ids = Object.keys(blobUrlById);
+    for (var i = 0; i < ids.length; i++) {
+      if (blobUrlById[ids[i]] === url) return ids[i];
+    }
+    return '';
+  }
+
   function idFromRef(value) {
     return isLogoRef(value) ? value.slice(REF_PREFIX.length) : '';
   }
@@ -197,8 +205,15 @@
       }
       if (isHttpUrl(value)) return;
       if (isBlobUrl(value)) {
-        if (obj.logoId) obj[key] = refFor(obj.logoId);
-        else obj[key] = '';
+        // Hydrated refs become blob: URLs; callers that rebuild logo objects can
+        // drop logoId, so map the URL back to its id instead of erasing the logo.
+        var blobId = idForBlobUrl(value) || obj.logoId;
+        if (blobId) {
+          obj[key] = refFor(blobId);
+          if (!obj.logoId) obj.logoId = blobId;
+        } else {
+          obj[key] = '';
+        }
         return;
       }
       if (!isDataUrl(value)) return;
