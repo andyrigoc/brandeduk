@@ -95,7 +95,7 @@
       customerMessage = 'This browser is blocking saved quotes (often private mode). You can still finish this quote on this page.';
     } else if (status === 413 || /too large|max 5mb/i.test(message)) {
       category = 'file_too_large';
-      customerMessage = 'That file is too large. Please upload an image under 5 MB.';
+      customerMessage = 'That file is too large to upload. Please try a PNG or JPG version of your logo.';
     } else if (status === 415 || /unsupported media/i.test(message)) {
       category = 'invalid_file';
       customerMessage = 'That file type is not supported. Use PNG, JPG, WebP, GIF or SVG.';

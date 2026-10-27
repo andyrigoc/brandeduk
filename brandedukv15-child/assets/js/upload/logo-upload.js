@@ -17,6 +17,8 @@
  *   clear()               → empties the gallery
  *   uploadToServer(base64DataUrl, position?, filename?)
  *                         → Promise<{ url, filename, size }>
+ *   fitForUpload(dataUrl, maxLength?)
+ *                         → Promise<dataUrl> resized to fit the upload limit
  *   renderGallery(containerEl, { onSelect, onUploadNew })
  *                         → builds the thumbnail grid + "[+] Upload new" box
  */
@@ -27,6 +29,12 @@
   const STORAGE_KEY = 'brandeduk-logos';
   const UPLOAD_ENDPOINT = '/api/upload-logo';   // Vercel serverless
   const MAX_LOGOS = 4;                           // max 4 logos in gallery
+  const MAX_FILE_BYTES = 25 * 1024 * 1024;
+  // Vercel rejects request bodies above ~4.5 MB, so bigger artwork is resized
+  // in the browser (transparency kept) before upload instead of failing.
+  const MAX_UPLOAD_DATA_URL_LENGTH = 3600000;
+  const RETRY_UPLOAD_DATA_URL_LENGTH = 1800000;
+  const UPLOAD_MAX_DIMENSIONS = [3000, 2400, 2000, 1600, 1200, 1000, 800];
 
   /* ── localStorage helpers ──────────────────────────── */
 
@@ -93,9 +101,131 @@
     _save([]);
   }
 
+  /* ── upload size fitting ───────────────────────────── */
+
+  function _loadImage(src) {
+    return new Promise((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => resolve(image);
+      image.onerror = () => reject(new Error('Unable to decode image'));
+      image.src = src;
+    });
+  }
+
+  let _webpEncodeSupport = null;
+  function _canEncodeWebp() {
+    if (_webpEncodeSupport === null) {
+      try {
+        const probe = document.createElement('canvas');
+        probe.width = 1;
+        probe.height = 1;
+        // Safari silently returns PNG for unsupported encoder types.
+        _webpEncodeSupport = probe.toDataURL('image/webp').indexOf('data:image/webp') === 0;
+      } catch (e) {
+        _webpEncodeSupport = false;
+      }
+    }
+    return _webpEncodeSupport;
+  }
+
+  function _hasTransparency(image) {
+    try {
+      const size = 96;
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const context = canvas.getContext('2d');
+      context.drawImage(image, 0, 0, size, size);
+      const pixels = context.getImageData(0, 0, size, size).data;
+      for (let i = 3; i < pixels.length; i += 4) {
+        if (pixels[i] < 255) return true;
+      }
+      return false;
+    } catch (e) {
+      return true;
+    }
+  }
+
   /**
-   * Upload a base64 data-URL logo to Vercel Blob.
-   * Falls back to keeping the data-URL if the server is unreachable.
+   * Resize/re-encode an image data URL until it fits `maxLength` characters.
+   * Small files are returned untouched; transparent artwork stays transparent.
+   */
+  async function fitForUpload(dataUrl, maxLength = MAX_UPLOAD_DATA_URL_LENGTH) {
+    if (typeof dataUrl !== 'string' || dataUrl.indexOf('data:image/') !== 0 || dataUrl.length <= maxLength) {
+      return dataUrl;
+    }
+
+    let image;
+    try {
+      image = await _loadImage(dataUrl);
+    } catch (e) {
+      return dataUrl;
+    }
+
+    const isSvg = dataUrl.indexOf('data:image/svg') === 0;
+    const isJpeg = /^data:image\/jpe?g/i.test(dataUrl);
+    const sourceWidth = image.naturalWidth || image.width || 2000;
+    const sourceHeight = image.naturalHeight || image.height || 2000;
+    const keepAlpha = !isJpeg && _hasTransparency(image);
+    let types;
+    if (keepAlpha) types = [_canEncodeWebp() ? 'image/webp' : 'image/png'];
+    else types = isJpeg ? ['image/jpeg'] : ['image/png', 'image/jpeg'];
+    let best = dataUrl;
+    let lastWidth = 0;
+
+    for (let i = 0; i < UPLOAD_MAX_DIMENSIONS.length; i += 1) {
+      const ratio = UPLOAD_MAX_DIMENSIONS[i] / Math.max(sourceWidth, sourceHeight);
+      // Vector art has no native resolution, so it may be rendered larger.
+      const scale = isSvg ? ratio : Math.min(1, ratio);
+      const width = Math.max(1, Math.round(sourceWidth * scale));
+      const height = Math.max(1, Math.round(sourceHeight * scale));
+      if (width === lastWidth) continue;
+      lastWidth = width;
+
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      try {
+        const context = canvas.getContext('2d');
+        if (!context) break;
+        context.imageSmoothingEnabled = true;
+        context.imageSmoothingQuality = 'high';
+        if (!keepAlpha) {
+          context.fillStyle = '#ffffff';
+          context.fillRect(0, 0, width, height);
+        }
+        context.drawImage(image, 0, 0, width, height);
+
+        for (let t = 0; t < types.length; t += 1) {
+          const candidate = canvas.toDataURL(types[t], 0.92);
+          if (candidate.indexOf('data:image/') !== 0) continue;
+          if (candidate.length < best.length) best = candidate;
+          if (candidate.length <= maxLength) return candidate;
+        }
+      } catch (e) {
+        break;
+      } finally {
+        // Release the bitmap immediately: iOS caps total canvas memory.
+        canvas.width = 0;
+        canvas.height = 0;
+      }
+    }
+
+    return best;
+  }
+
+  function _postLogo(dataUrl, position, filename) {
+    return fetch(UPLOAD_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ logo: dataUrl, position, filename }),
+    });
+  }
+
+  /**
+   * Upload a base64 data-URL logo to DigitalOcean Spaces via the API.
+   * Oversized images are resized first so they pass the upload limit.
+   * Returns url '' (with error/status) if the server is unreachable.
    * NOTE: Does NOT auto-add to gallery - caller handles that.
    */
   async function uploadToServer(base64DataUrl, position, filename) {
@@ -105,11 +235,12 @@
     }
 
     try {
-      const res = await fetch(UPLOAD_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ logo: base64DataUrl, position, filename }),
-      });
+      let payload = await fitForUpload(base64DataUrl, MAX_UPLOAD_DATA_URL_LENGTH);
+      let res = await _postLogo(payload, position, filename);
+      if (res.status === 413) {
+        payload = await fitForUpload(payload, RETRY_UPLOAD_DATA_URL_LENGTH);
+        res = await _postLogo(payload, position, filename);
+      }
 
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
@@ -284,9 +415,9 @@
       return;
     }
     files.forEach(file => {
-      if (file.size > 10 * 1024 * 1024) {
+      if (file.size > MAX_FILE_BYTES) {
         if (typeof window.showToast === 'function') {
-          window.showToast(file.name + ' is too large (max 10MB)');
+          window.showToast(file.name + ' is too large (max 25MB)');
         }
         return;
       }
@@ -344,6 +475,7 @@
     remove,
     clear,
     uploadToServer,
+    fitForUpload,
     renderGallery,
   };
 })();

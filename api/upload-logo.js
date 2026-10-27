@@ -16,7 +16,7 @@
  */
 
 import { S3Client, PutObjectCommand, ListObjectsV2Command, DeleteObjectCommand } from '@aws-sdk/client-s3';
-import { timingSafeEqual } from 'crypto';
+import { timingSafeEqual, randomBytes } from 'crypto';
 
 /* ── config ──────────────────────────────────────────── */
 
@@ -240,9 +240,13 @@ export default async function handler(req, res) {
         }
 
         const timestamp = Date.now();
-        const safeName = (filename || `logo-${position || 'general'}-${timestamp}`)
+        const baseName = String(filename || `logo-${position || 'general'}`)
+            .replace(/\.[a-z0-9]{2,5}$/i, '')
             .replace(/[^a-zA-Z0-9_.-]/g, '_')
-            .slice(0, 120);
+            .slice(0, 100) || 'logo';
+        // Unique key: many customers upload files with the same name (logo.png),
+        // which previously overwrote each other's artwork.
+        const safeName = `${timestamp}-${randomBytes(4).toString('hex')}-${baseName}`;
         const key = `logos/${safeName}.${parsed.ext}`;
 
         const command = new PutObjectCommand({

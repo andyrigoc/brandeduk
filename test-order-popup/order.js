@@ -3255,7 +3255,7 @@ function luaSaveCurrent() {
 $(document).on('change', '#luaFileInput', function() {
     var file = this.files[0];
     if (!file) return;
-    if (file.size > 8 * 1024 * 1024) { window.showAlert('Max file size is 8MB', 'OK'); return; }
+    if (file.size > 25 * 1024 * 1024) { window.showAlert('Max file size is 25MB', 'OK'); return; }
     var reader = new FileReader();
     reader.onload = function(e) {
         luaShowPreview(e.target.result, file.name);
@@ -3285,7 +3285,7 @@ $(document).on('drop', '#luaDropZone', function(e) {
     e.preventDefault();
     var file = e.originalEvent.dataTransfer.files[0];
     if (!file) return;
-    if (file.size > 8 * 1024 * 1024) { window.showAlert('Max file size is 8MB', 'OK'); return; }
+    if (file.size > 25 * 1024 * 1024) { window.showAlert('Max file size is 25MB', 'OK'); return; }
     var reader = new FileReader();
     reader.onload = function(ev) {
         luaShowPreview(ev.target.result, file.name);
