@@ -5468,7 +5468,11 @@
             dialog.close();
         };
         dialog.querySelector('.size-picker__close').addEventListener('click', closeSizePicker);
-        dialog.querySelector('.size-picker__done').addEventListener('click', closeSizePicker);
+        dialog.querySelector('.size-picker__done').addEventListener('click', () => {
+            closeSizePicker();
+            // Done confirms the sizes: add them to the basket and show the "Added to basket" popup.
+            if (state.quantity > 0) addSelectionToBasket();
+        });
         dialog.addEventListener('click', (e) => {
             if (e.target === dialog) closeSizePicker();
         });
@@ -9977,6 +9981,35 @@
         }, RAINBOW_ATC_TIMING.resetMs));
     }
 
+    // Shared by the action-bar button and the size picker "Done" button.
+    async function addSelectionToBasket() {
+        const addToBasketBtn = document.getElementById('addToBasketBtn');
+        if (addToBasketBtn) {
+            if (addToBasketBtn.dataset.saving === '1') return;
+            addToBasketBtn.dataset.saving = '1';
+            addToBasketBtn.setAttribute('aria-busy', 'true');
+        }
+        try {
+            debugLog('🔘 Add to basket requested! state.quantity:', state.quantity);
+            if (state.quantity === 0 && !isBasketSingleItemEdit()) {
+                showToast('Please add at least one item', true);
+                return;
+            }
+            if (needsLogoStepBeforeBasket()) {
+                runRainbowAtcAnimation(addToBasketBtn);
+                await addToQuote();
+                return;
+            }
+            runRainbowAtcAnimation(addToBasketBtn);
+            await addToQuote();
+        } finally {
+            if (addToBasketBtn) {
+                addToBasketBtn.dataset.saving = '0';
+                addToBasketBtn.removeAttribute('aria-busy');
+            }
+        }
+    }
+
     // === Modals ===
     function setupModals() {
         // Size Guide Modal
@@ -9999,28 +10032,9 @@
         // Add to Basket button
         const addToBasketBtn = document.getElementById('addToBasketBtn');
         if (addToBasketBtn) {
-            addToBasketBtn.addEventListener('click', async (event) => {
+            addToBasketBtn.addEventListener('click', (event) => {
                 event.preventDefault();
-                if (addToBasketBtn.dataset.saving === '1') return;
-                addToBasketBtn.dataset.saving = '1';
-                addToBasketBtn.setAttribute('aria-busy', 'true');
-                try {
-                debugLog('🔘 Add to basket button clicked! state.quantity:', state.quantity);
-                if (state.quantity === 0 && !isBasketSingleItemEdit()) {
-                    showToast('Please add at least one item', true);
-                    return;
-                }
-                if (needsLogoStepBeforeBasket()) {
-                    runRainbowAtcAnimation(addToBasketBtn);
-                    await addToQuote();
-                    return;
-                }
-                runRainbowAtcAnimation(addToBasketBtn);
-                await addToQuote();
-                } finally {
-                    addToBasketBtn.dataset.saving = '0';
-                    addToBasketBtn.removeAttribute('aria-busy');
-                }
+                addSelectionToBasket();
             });
         }
 
