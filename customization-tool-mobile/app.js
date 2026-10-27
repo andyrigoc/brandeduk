@@ -38,7 +38,10 @@ const state = {
   basketItemId: null,
   customizationNotes: "",
   guidedReady: false,
-  logoUploadBusy: false
+  logoUploadBusy: false,
+  // Set by the guided library "Upload another logo" tile: the upload is only
+  // remembered in the logo library and never placed on the current position.
+  libraryOnlyUpload: false
 };
 
 const customizationRouteParams = new URLSearchParams(window.location.search);
@@ -4579,6 +4582,7 @@ document.querySelectorAll("[data-design-type]").forEach(card => {
   card.addEventListener("click", () => {
     if (card.classList.contains("is-disabled")) return;
     state.pendingDecorationType = card.dataset.designType;
+    state.libraryOnlyUpload = false;
     const library = getSessionLogoLibrary();
     if (library.length > 0 && !isMobileCustomizationExperience()) {
       showLogoLibraryPicker(library);
@@ -4666,6 +4670,7 @@ function showLogoLibraryPicker(library) {
 
   panel.querySelector("#toolLogoLibraryUpload").addEventListener("click", () => {
     overlay.remove();
+    state.libraryOnlyUpload = false;
     document.getElementById("logoFileInput").click();
   });
   panel.querySelector("#toolLogoLibraryCancel").addEventListener("click", () => {
@@ -5098,6 +5103,12 @@ document.getElementById("copyrightOkBtn").addEventListener("click", () => {
   state.pendingDecorationType = null;
   rememberUploadedLogo(state.uploadedLogo, state.decorationType);
   openScreen("mainEditor");
+  if (state.libraryOnlyUpload) {
+    state.libraryOnlyUpload = false;
+    restoreAreaDesign(getDesignAreaKey());
+    window.dispatchEvent(new CustomEvent("customizer:logo-library-added"));
+    return;
+  }
   showLogoOnCanvas(state.uploadedLogo);
   calculatePrice();
   updateConfirmButtonState();
@@ -5107,6 +5118,7 @@ document.getElementById("copyrightOkBtn").addEventListener("click", () => {
 document.querySelectorAll('#copyrightPage [data-open="mainEditor"]').forEach((button) => {
   button.addEventListener("click", () => {
     state.pendingDecorationType = null;
+    state.libraryOnlyUpload = false;
     restoreAreaDesign(getDesignAreaKey());
     window.dispatchEvent(new CustomEvent("customizer:logo-cancelled"));
   });

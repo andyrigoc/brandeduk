@@ -88,10 +88,12 @@ The desktop and mobile tools share technique/conflict rules through
 - There is no global technique selector. The plus button opens a compact
   Embroidery/Printing popup before artwork selection; existing logos can then be
   reused, or a new image uploaded. Logos only go to a position the customer picked:
-  tapping a library logo (or "Upload another logo") opens the same popup for a
-  position they have tapped or used the + of; dropping a logo onto a position does
-  the same for that position. Until a position is picked, library logos stay in the
-  library and a hint explains how to place them. Tapping an assigned logo changes only that position's
+  tapping a library logo opens the same popup for a position they have tapped or
+  used the + of; dropping a logo onto a position does the same for that position.
+  Until a position is picked, library logos stay in the library and a hint explains
+  how to place them. "Upload another logo" in the library only adds the artwork to
+  the library (after the copyright check) without asking for a technique; print or
+  embroidery is chosen when it is dropped on a position. Tapping an assigned logo changes only that position's
   technique. Overlapping positions are removed only once the new logo is assigned.
 - The guided upload accepts PNG, JPG, WEBP and SVG up to 25 MB. Other artwork
   formats are not advertised as supported by this image-based flow.

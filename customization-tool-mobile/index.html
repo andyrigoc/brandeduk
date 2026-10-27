@@ -94,7 +94,7 @@
 
       var guidedStyles = document.createElement("link");
       guidedStyles.rel = "stylesheet";
-      guidedStyles.href = folderPath + "guided.css?v=20261025-logo-zoom";
+      guidedStyles.href = folderPath + "guided.css?v=20261027-library-upload";
       document.head.appendChild(guidedStyles);
     })();
   </script>
@@ -1177,11 +1177,11 @@
   // extensionless document URL, whose native relative base is the site root.
   (function loadCustomizationToolApp() {
     var appScript = document.createElement("script");
-    appScript.src = new URL("app.js?v=20261025-storage", document.baseURI).href;
+    appScript.src = new URL("app.js?v=20261027-library-upload", document.baseURI).href;
     appScript.async = false;
     appScript.onload = function () {
       var guidedScript = document.createElement("script");
-      guidedScript.src = new URL("guided.js?v=20261027-chosen-position", document.baseURI).href;
+      guidedScript.src = new URL("guided.js?v=20261027-library-upload", document.baseURI).href;
       document.body.appendChild(guidedScript);
     };
     document.body.appendChild(appScript);

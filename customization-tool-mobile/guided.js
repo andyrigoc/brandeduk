@@ -431,7 +431,20 @@
 
   function startUpload() {
     uploadContext = { position: popupContext.position, conflicts: popupContext.conflicts };
+    state.libraryOnlyUpload = false;
     closeMethodDialog(true);
+    openFilePicker();
+  }
+
+  // Library uploads only add the artwork to "Your uploaded logos"; print or
+  // embroidery is chosen once the logo is dropped on (or picked for) a position.
+  function startLibraryUpload() {
+    if (switching || state.logoUploadBusy || !ready) return;
+    captureCurrentAreaDesign();
+    uploadContext = null;
+    state.pendingDecorationType = null;
+    state.libraryOnlyUpload = true;
+    message("");
     openFilePicker();
   }
 
@@ -630,13 +643,7 @@
     upload.className = "guided-upload";
     upload.innerHTML = "<span aria-hidden='true'>+</span><small>Upload another logo</small>";
     upload.disabled = state.logoUploadBusy || !getConfiguredViewPositions().length;
-    upload.addEventListener("click", () => {
-      if (!positionChosen) {
-        askForPosition("Tap + on the position where you want your new logo.");
-        return;
-      }
-      openMethodPopup(getDesignAreaKey(), "upload");
-    });
+    upload.addEventListener("click", startLibraryUpload);
     libraryEl.replaceChildren(...cells, upload);
   }
 
@@ -766,6 +773,7 @@
   });
   byId("logoFileInput").addEventListener("cancel", () => {
     state.pendingDecorationType = null;
+    state.libraryOnlyUpload = false;
     uploadContext = null;
   });
   window.addEventListener("customizer:logo-confirmed", () => {
@@ -774,6 +782,10 @@
     scheduleRender();
   });
   window.addEventListener("customizer:logo-cancelled", () => { uploadContext = null; });
+  window.addEventListener("customizer:logo-library-added", () => {
+    message("Logo added to your uploaded logos. Drag it onto a position to choose print or embroidery.");
+    scheduleRender();
+  });
   byId("guidedManageLogos").addEventListener("click", () => { managing = !managing; renderLibrary(); });
 
   // Continuous horizontal scrolling: touch uses native swipe; mouse users

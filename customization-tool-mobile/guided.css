@@ -206,6 +206,12 @@ body.guided-customizer {
 .guided-swipe-row[hidden] { display: none; }
 .guided-swipe-arrow { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; padding: 0; border: 0; background: none; color: var(--guided-orange); font-size: 16px; }
 .guided-swipe-arrow:disabled { visibility: hidden; }
+/* Blink the arrows on and off so customers notice there are more positions. */
+@keyframes guided-swipe-arrow-blink {
+  0%, 100% { opacity: 1; filter: drop-shadow(0 0 5px rgba(249, 115, 22, 0.9)); }
+  50% { opacity: 0.2; filter: none; }
+}
+.guided-swipe-arrow:not(:disabled) i { animation: guided-swipe-arrow-blink 1.1s ease-in-out infinite; }
 .guided-positions {
   display: flex;
   gap: 7px;
@@ -454,4 +460,5 @@ body.guided-customizer {
 
 @media (prefers-reduced-motion: reduce) {
   .guided-positions { scroll-behavior: auto; }
+  .guided-swipe-arrow:not(:disabled) i { animation: none; }
 }
