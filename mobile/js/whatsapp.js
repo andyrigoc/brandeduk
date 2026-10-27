@@ -81,6 +81,9 @@
     var RECENT_OUTBOUND_TTL_MS = 8000;
     var CRISP_READY_WAIT_MS = 6000;
     var pendingCrispWatchdogs = {};
+    var attachmentBusy = false;
+    var pendingAttachment = null;
+    var ATTACHMENT_MAX_BYTES = 3 * 1024 * 1024;
 
     // Self-heal: if footer.js failed to parse/inject crisp-chat.js, load it here.
     function ensureCrispBackendLoader() {
@@ -219,10 +222,12 @@
     }
 
     var chatConsentAsked = false;
-    function askChatConsent() {
+    function askChatConsent(forAttachment) {
         if (!chatConsentAsked) {
             chatConsentAsked = true;
-            appendAgentBubble('Live chat needs your permission to use cookies. Please allow Analytics cookies in the cookie settings and your message will be sent. Or WhatsApp us on 07447 348564, or call ' + PHONE_DISPLAY + '.');
+            appendAgentBubble('Live chat needs your permission to use cookies. Please allow Analytics cookies in the cookie settings' +
+                (forAttachment ? ', then choose your attachment again.' : ' and your message will be sent.') +
+                ' Or WhatsApp us on 07447 348564, or call ' + PHONE_DISPLAY + '.');
         }
         if (window.BrandedCookieConsent && typeof window.BrandedCookieConsent.open === 'function') {
             window.BrandedCookieConsent.open();
@@ -261,6 +266,12 @@
 
         window.$crisp.push(['on', 'message:received', function (data) {
             forceHideCrispUi();
+            if (data && data.type === 'file' && data.content) {
+                cancelPendingWelcomeForOperatorReply();
+                appendFileBubble(data.content, false);
+                if (popup && !popup.classList.contains('is-active')) openPopup();
+                return;
+            }
             var text = extractCrispText(data);
             if (!text) return;
             // Ignore echoes of our own outbound if SDK surfaces them here
@@ -278,6 +289,10 @@
         // We already render our own bubble on Send — skip duplicates.
         window.$crisp.push(['on', 'message:sent', function (data) {
             forceHideCrispUi();
+            if (data && data.type === 'file' && data.content && pendingAttachment &&
+                data.content.url === pendingAttachment.url) {
+                pendingAttachment.resolve();
+            }
             var text = extractCrispText(data);
             if (text) wasRecentOutbound(text);
         }]);
@@ -395,6 +410,7 @@
             '  <div class="wa-popup__composer" id="waComposer">' +
             '    <div class="wa-popup__input-wrap">' +
             '      <input class="wa-popup__input" id="waChatInput" type="text" placeholder="Write a message…" autocomplete="off">' +
+            '      <input type="file" id="waChatFile" accept=".png,.jpg,.jpeg,.gif,.webp,.svg,.pdf,.ai,.eps" aria-label="Choose chat attachment" hidden>' +
             '      <button type="button" class="wa-popup__icon-btn" id="waChatAttach" aria-label="Attach file">' +
             '        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>' +
             '      </button>' +
@@ -535,6 +551,12 @@
     var inputEl = document.getElementById('waChatInput');
     var sendBtn = document.getElementById('waChatSend');
     var attachBtn = document.getElementById('waChatAttach');
+    var fileInput = document.getElementById('waChatFile');
+    var attachmentStatus = document.createElement('p');
+    attachmentStatus.setAttribute('role', 'status');
+    attachmentStatus.hidden = true;
+    var chatComposer = document.getElementById('waComposer');
+    if (chatComposer) chatComposer.appendChild(attachmentStatus);
     var chatBody = document.getElementById('waChatBody');
     var fastReplies = document.getElementById('waFastReplies');
     var fastRepliesBtn = document.getElementById('waFastRepliesBtn');
@@ -756,7 +778,7 @@
             inputEl.placeholder = chatUnlocked ? 'Write a message…' : 'Sign in with Google to write…';
         }
         if (sendBtn) sendBtn.disabled = !chatUnlocked;
-        if (attachBtn) attachBtn.disabled = !chatUnlocked;
+        if (attachBtn) attachBtn.disabled = !chatUnlocked || attachmentBusy;
         if (fastReplies) {
             fastReplies.hidden = !chatUnlocked;
             fastReplies.setAttribute('aria-hidden', chatUnlocked ? 'false' : 'true');
@@ -837,6 +859,7 @@
             chatBody.appendChild(wrap);
         }
         chatBody.scrollTop = chatBody.scrollHeight;
+        return wrap;
     }
 
     function appendUserBubble(text) {
@@ -858,6 +881,119 @@
         }
         chatBody.scrollTop = chatBody.scrollHeight;
         scheduleWelcomeAfterFirstMessage();
+        return wrap;
+    }
+
+    function appendFileBubble(file, outbound) {
+        var url;
+        try {
+            url = new URL(file.url);
+            if (url.protocol !== 'https:' && url.protocol !== 'http:') throw new Error('Unsupported attachment URL');
+        } catch (error) {
+            console.error('Invalid chat attachment:', error);
+            appendAgentBubble('An attachment could not be displayed.');
+            return;
+        }
+        var wrap = outbound ? appendUserBubble(file.name || 'File') : appendAgentBubble(file.name || 'File');
+        if (!wrap) return;
+        var link = document.createElement('a');
+        link.href = url.href;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = file.name || 'Download file';
+        wrap.querySelector('.wa-msg__bubble').replaceChildren(link);
+    }
+
+    function readAttachment(file) {
+        return new Promise(function (resolve, reject) {
+            var reader = new FileReader();
+            reader.onload = function () { resolve(String(reader.result).split(',')[1]); };
+            reader.onerror = function () { reject(new Error('Could not read the file. Please choose it again.')); };
+            reader.onabort = function () { reject(new Error('File reading was cancelled.')); };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    async function sendAttachment(file) {
+        if (!chatUnlocked || attachmentBusy) return;
+        if (!/\.(png|jpe?g|gif|webp|svg|pdf|ai|eps)$/i.test(file.name)) {
+            appendAgentBubble('Use PNG, JPG, GIF, WebP, SVG, PDF, AI or EPS files.');
+            return;
+        }
+        if (!file.size || file.size > ATTACHMENT_MAX_BYTES) {
+            appendAgentBubble('Please choose a non-empty file no larger than 3 MB.');
+            return;
+        }
+        ensureCrispBackendLoader();
+        if (window.BrandedCrispConsent && !window.BrandedCrispConsent.allowed()) {
+            askChatConsent(true);
+            appendAgentBubble('After allowing cookies, choose your attachment again to send it.');
+            return;
+        }
+        attachmentBusy = true;
+        applyAuthGateUi();
+        attachmentStatus.hidden = false;
+        attachmentStatus.textContent = 'Connecting to live chat...';
+        var controller = new AbortController();
+        var uploadTimer;
+        try {
+            var deadline = Date.now() + CRISP_READY_WAIT_MS;
+            while (!isCrispSdkReady() && Date.now() < deadline) {
+                await new Promise(function (resolve) { window.setTimeout(resolve, 100); });
+            }
+            if (!isCrispSdkReady()) throw new Error('Could not reach live chat. Please try again.');
+            attachmentStatus.textContent = 'Uploading ' + file.name + '...';
+            var data = await readAttachment(file);
+            uploadTimer = window.setTimeout(function () { controller.abort(); }, 30000);
+            var local = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
+            var response = await fetch((local ? 'https://www.brandeduk.com' : '') + '/api/chat-attachment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ filename: file.name, data: data }),
+                signal: controller.signal
+            });
+            if (!response.ok) {
+                var failure = response.headers.get('Content-Type') &&
+                    response.headers.get('Content-Type').includes('application/json') ? await response.json() : null;
+                throw new Error((failure && failure.error) || 'Could not upload the file. Please try again or email our team.');
+            }
+            var attachment = await response.json();
+            if (typeof attachment.url !== 'string' || typeof attachment.name !== 'string' ||
+                typeof attachment.type !== 'string' || !attachment.name || !attachment.type ||
+                !/^https:\/\//i.test(attachment.url)) throw new Error('The upload returned an invalid response.');
+            if (!chatUnlocked) throw new Error('Please sign in again before sending your attachment.');
+            attachmentStatus.textContent = 'Sending ' + file.name + '...';
+            syncCrispVisitorProfile();
+            await new Promise(function (resolve, reject) {
+                var timer = window.setTimeout(function () {
+                    reject(new Error('Live chat has not confirmed the attachment. Check with our team before retrying.'));
+                }, 15000);
+                pendingAttachment = {
+                    url: attachment.url,
+                    resolve: function () { window.clearTimeout(timer); resolve(); }
+                };
+                try {
+                    window.$crisp.push(['do', 'message:send', ['file', {
+                        url: attachment.url, name: attachment.name, type: attachment.type
+                    }]]);
+                } catch (error) {
+                    window.clearTimeout(timer);
+                    reject(error);
+                }
+            });
+            appendFileBubble(attachment, true);
+            forceHideCrispUi();
+        } catch (error) {
+            console.error('Chat attachment failed:', error);
+            appendAgentBubble(error.name === 'AbortError' ? 'File upload timed out. Please try again.' :
+                (error.message || 'Could not send the attachment. Please try again.'));
+        } finally {
+            window.clearTimeout(uploadTimer);
+            pendingAttachment = null;
+            attachmentBusy = false;
+            attachmentStatus.hidden = true;
+            applyAuthGateUi();
+        }
     }
 
     function openWhatsAppLink(url) {
@@ -1079,7 +1215,14 @@
                 applyAuthGateUi();
                 return;
             }
-            sendToWhatsApp('Hi, I would like to share a logo / artwork file.');
+            if (fileInput) fileInput.click();
+        });
+    }
+    if (fileInput) {
+        fileInput.addEventListener('change', function () {
+            var file = fileInput.files && fileInput.files[0];
+            fileInput.value = '';
+            if (file) sendAttachment(file);
         });
     }
 

@@ -41,6 +41,29 @@ dist/                    # Distribution ZIPs
 3. Right-click any `.html` file → "Open with Live Server"
 4. Port: `5501` (configured in `.vscode/settings.json`)
 
+## Support chat attachments
+
+The shared support panel uploads PNG, JPG, GIF, WebP, SVG, PDF, AI and EPS
+files (one at a time, maximum 3 MB) to `/api/chat-attachment`, then sends the
+public file URL through Crisp's documented `message:send` file command.
+Google sign-in and the existing Analytics-cookie consent are still required.
+The panel displays a sent attachment only after Crisp's `message:sent` event.
+
+Deploy the new Vercel function together with the frontend. It uses the same
+`DO_SPACES_KEY`, `DO_SPACES_SECRET`, `DO_SPACES_BUCKET`, `DO_SPACES_REGION` and
+optional `DO_SPACES_CDN_URL` as the existing logo uploader. Objects are stored
+under `chat-attachments/` with unique keys and a download disposition; URLs
+are public so Crisp operators can retrieve them. Do not send sensitive files.
+Local static previews call the production upload endpoint, so uploads require
+that endpoint to have been deployed. Test frontend flows with mocked uploads
+before deployment; do not treat a queued SDK command as delivery confirmation.
+
+Endpoint checks (storage mocked, no credentials or real uploads):
+
+```powershell
+node --experimental-vm-modules --test tests\chat-attachment.test.cjs
+```
+
 ## Guided mobile logo customizer
 
 The mobile **Add your logo now** flow opens `customization-tool-mobile/index.html`.
