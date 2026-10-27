@@ -270,8 +270,10 @@ export default async function handler(req, res) {
         console.error('Upload logo error:', err);
         // Storage error code only (e.g. NoSuchBucket, InvalidAccessKeyId) so
         // a misconfigured Space can be diagnosed without reading server logs.
-        const code = String((err && (err.Code || err.code || err.name)) || 'Error').slice(0, 60);
-        const detail = String((err && err.message) || '').slice(0, 120);
-        return respond(res, req, 500, { error: 'Failed to upload logo', code, detail });
+        const message = String((err && err.message) || '');
+        const code = /credential/i.test(message)
+            ? 'MissingStorageCredentials'
+            : String((err && (err.Code || err.code || err.name)) || 'Error').slice(0, 60);
+        return respond(res, req, 500, { error: 'Failed to upload logo', code });
     }
 }
