@@ -1305,12 +1305,12 @@ a {
     background: rgba(220, 38, 38, 0.1);
 }
 
-/* ONE SIZE product styling */
+/* ONE SIZE product styling (matches the dashed orange "Select sizes" button) */
 .size-qty-item.one-size-item {
     justify-content: space-between;
     padding: 12px 16px;
-    background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
-    border: 2px solid var(--purple);
+    background: #fff7ed;
+    border: 2px dashed #f97316;
 }
 
 .size-qty-item.one-size-item .one-size-label {
