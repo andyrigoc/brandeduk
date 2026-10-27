@@ -548,23 +548,6 @@
 .wa-popup__input::placeholder {
     color: #9ca3af;
 }
-.wa-popup__icon-btn {
-    width: 34px;
-    height: 34px;
-    border: none;
-    border-radius: 50%;
-    background: transparent;
-    color: #9ca3af;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-.wa-popup__icon-btn:hover {
-    color: #6b7280;
-    background: #f3f4f6;
-}
 .wa-popup__send {
     width: 36px;
     height: 36px;
@@ -582,8 +565,7 @@
 .wa-popup__send:hover {
     background: var(--buk-chat-orange-dark);
 }
-.wa-popup__send svg,
-.wa-popup__icon-btn svg {
+.wa-popup__send svg {
     width: 16px;
     height: 16px;
 }

@@ -166,7 +166,7 @@
   }
   if (document.querySelector('script[data-buk-whatsapp="1"], script[src*="whatsapp.js"]')) return;
   var s = document.createElement('script');
-  s.src = new URL('/mobile/js/whatsapp.js?v=20261027-attachments', window.location.origin).href;
+  s.src = new URL('/mobile/js/whatsapp.js?v=20261027-no-attach', window.location.origin).href;
   s.defer = true;
   s.setAttribute('data-buk-whatsapp', '1');
   document.head.appendChild(s);

@@ -8,9 +8,6 @@
   "cleanUrls": true,
 
   "functions": {
-    "api/chat-attachment.js": {
-      "maxDuration": 15
-    },
     "api/upload-logo.js": {
       "maxDuration": 15
     },
