@@ -5458,7 +5458,7 @@
             <ul class="size-picker__list"></ul>
             <div class="size-picker__footer">
                 <span class="size-picker__total" aria-live="polite">Total: <strong>0</strong> pcs</span>
-                <button type="button" class="size-picker__done">Done</button>
+                <button type="button" class="size-picker__done">Continue <span aria-hidden="true">&rarr;</span></button>
             </div>`;
         document.body.appendChild(dialog);
 
@@ -5470,7 +5470,7 @@
         dialog.querySelector('.size-picker__close').addEventListener('click', closeSizePicker);
         dialog.querySelector('.size-picker__done').addEventListener('click', () => {
             closeSizePicker();
-            // Done confirms the sizes: add them to the basket and show the "Added to basket" popup.
+            // Continue confirms the sizes: add them to the basket and show the "Added to basket" popup.
             if (state.quantity > 0) addSelectionToBasket();
         });
         dialog.addEventListener('click', (e) => {
@@ -9981,7 +9981,7 @@
         }, RAINBOW_ATC_TIMING.resetMs));
     }
 
-    // Shared by the action-bar button and the size picker "Done" button.
+    // Shared by the action-bar button and the size picker "Continue" button.
     async function addSelectionToBasket() {
         const addToBasketBtn = document.getElementById('addToBasketBtn');
         if (addToBasketBtn) {
