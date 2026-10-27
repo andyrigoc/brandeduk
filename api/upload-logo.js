@@ -268,6 +268,9 @@ export default async function handler(req, res) {
         });
     } catch (err) {
         console.error('Upload logo error:', err);
-        return respond(res, req, 500, { error: 'Failed to upload logo' });
+        // Storage error code only (e.g. NoSuchBucket, InvalidAccessKeyId) so
+        // a misconfigured Space can be diagnosed without reading server logs.
+        const code = String((err && (err.Code || err.name)) || 'Error').slice(0, 60);
+        return respond(res, req, 500, { error: 'Failed to upload logo', code });
     }
 }
