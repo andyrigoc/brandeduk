@@ -363,6 +363,13 @@
         text-decoration: none;
     }
 
+    .pc-search-footer .pc-search-suggest__view-all {
+        min-height: auto;
+        padding: 8px 0;
+        border: 0;
+        background: transparent;
+    }
+
     .pc-search-suggest__view-all:hover,
     .pc-search-suggest__view-all:focus-visible {
         color: #ff7a00;
