@@ -1665,7 +1665,10 @@
             width: 100%; max-width: 420px; background: #fff; border-radius: 16px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25); overflow: hidden; max-height: 80vh;
             display: flex; flex-direction: column;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
         }
+        .copy-logo-modal button,
+        .copy-logo-modal input { font-family: inherit; }
         .copy-logo-modal .modal-header {
             padding: 16px 20px; border-bottom: 1px solid #e5e7eb;
             display: flex; align-items: center; justify-content: space-between;
@@ -6117,15 +6120,25 @@
         const logo = sourceItem.logos && sourceItem.logos[logoIndex];
         if (!logo) return;
 
-        const method = logo.method || 'embroidery';
-        const methodIcon = method === 'embroidery' ? '' : 'Â';
+        const method = String(logo.method || 'embroidery').toLowerCase();
+        const methodLabel = method === 'embroidery-voa'
+            ? 'Embroidery VOA'
+            : method === 'embroidery'
+                ? 'Embroidery'
+                : method === 'dtf'
+                    ? 'DTF Print'
+                    : method === 'screen'
+                        ? 'Screen Print'
+                        : method === 'vinyl'
+                            ? 'Vinyl'
+                            : 'Print';
         const posName = logo.positionLabel || toReadablePosition(logo.position);
 
         const sourceEl = document.getElementById('copyLogoSource');
         sourceEl.innerHTML = `
             <img src="${logo.logo || ''}" alt="Logo">
             <div class="source-info">
-                <strong>${methodIcon} ${method.charAt(0).toUpperCase() + method.slice(1)} Logo</strong>
+                <strong>${methodLabel} Logo</strong>
                 <span>Locations: <b>${posName}</b></span>
             </div>
         `;
