@@ -811,13 +811,6 @@ window.BrandedConfig = (function () {
             mobile: { src: 'brandeduk.com/assets/Screenshot%202026-09-15%20185951.png' }
         },
         {
-            id: 'halloween',
-            enabled: true,
-            views: ['pc', 'mobile'],
-            kind: 'halloween',
-            label: 'Show Halloween banner'
-        },
-        {
             id: 'dtf',
             enabled: true,
             views: ['pc'],
