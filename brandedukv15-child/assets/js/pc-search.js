@@ -176,7 +176,7 @@
                 '<div class="pc-search-suggest__title">Brands</div>' +
                 '<div class="pc-search-suggest__grid">';
             brands.forEach(function (brand) {
-                html += textRow(brand, brandUrl(brand.value || brand.slug || ''), 'B');
+                html += textRow(brand, brandUrl(brand.label || brand.name || brand.value || brand.slug || ''), 'B');
             });
             html += '</div></div>';
         }

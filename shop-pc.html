@@ -67,7 +67,7 @@
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/promo-bar.css?v=20260425a">
     <script src="brandedukv15-child/assets/js/shared-config.js?v=20261021-hivis-unified"></script>
     <script src="brandedukv15-child/assets/js/pc-header-template.js?v=20261015-nodeals"></script>
-    <script src="brandedukv15-child/assets/js/pc-header.js?v=20261012-navmore"></script>
+    <script src="brandedukv15-child/assets/js/pc-header.js?v=20261103-brandcatalog"></script>
     <link rel="stylesheet" href="footer-dev/pc-footer.css?v=20261009-phones">
     <script src="footer-dev/pc-footer.js?v=20261020-noclose" defer></script>
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/loader.css?v=20261002-orbitloader">
@@ -3710,7 +3710,7 @@
     <script src="brandedukv15-child/assets/data/brand-hq-logos.js?v=20260915"></script>
     <script src="brandedukv15-child/assets/js/vat-toggle.js?v=20251230"></script>
     <script src="brandedukv15-child/assets/js/api-config.js?v=20261021-local-catalog-proxy"></script>
-    <script src="brandedukv15-child/assets/js/api.js?v=20261025-filterfix"></script>
+    <script src="brandedukv15-child/assets/js/api.js?v=20261103-brandcatalog"></script>
     <script src="brandedukv15-child/assets/data/organic-sustainable-codes.js?v=20261006-leaf3"></script>
     <script src="brandedukv15-child/assets/js/organic-leaf.js?v=20261006-leaf4"></script>
     <script src="brandeduk.com/js/main.js?v=20260730a"></script>
@@ -6890,11 +6890,18 @@
                 const activeSearch = (currentState.search || '').trim();
 
                 if (brandParam) {
-                    // Format brand name nicely for display
-                    const brandDisplayName = brandParam
+                    // Suggest slugs omit "&" (asquith-fox). The catalogue name
+                    // is the value /api/products actually filters on.
+                    let brandDisplayName = brandParam
                         .split('-')
                         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
                         .join(' ');
+                    if (window.BrandedAPI && typeof window.BrandedAPI.resolveCatalogBrand === 'function') {
+                        try {
+                            const resolvedName = await window.BrandedAPI.resolveCatalogBrand(brandParam);
+                            if (resolvedName) brandDisplayName = resolvedName;
+                        } catch (brandResolveError) { /* keep the slug label */ }
+                    }
                     categoryTitleEl.textContent = brandDisplayName;
                     updateCategoryBrandLogo(brandParam, brandDisplayName);
                     updateBrandEditorial(brandParam, brandDisplayName);
@@ -6924,10 +6931,16 @@
                     const exactProductType = exactSearchProductType(normQ) || exactSearchProductType(activeSearch);
                     const searchBrandSlug = BRAND_SEARCH_MAP[normQ.toLowerCase().trim()];
                     if (searchBrandSlug) {
-                        const brandDisplayName = decodeURIComponent(searchBrandSlug)
+                        let brandDisplayName = decodeURIComponent(searchBrandSlug)
                             .split('-')
                             .map(word => word.charAt(0).toUpperCase() + word.slice(1))
                             .join(' ');
+                        if (window.BrandedAPI && typeof window.BrandedAPI.resolveCatalogBrand === 'function') {
+                            try {
+                                const resolvedName = await window.BrandedAPI.resolveCatalogBrand(searchBrandSlug);
+                                if (resolvedName) brandDisplayName = resolvedName;
+                            } catch (brandResolveError) { /* keep the slug label */ }
+                        }
                         categoryTitleEl.textContent = brandDisplayName;
                         updateCategoryBrandLogo(searchBrandSlug, brandDisplayName);
                         updateBrandEditorial(searchBrandSlug, brandDisplayName);

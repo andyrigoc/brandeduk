@@ -420,6 +420,57 @@ const BrandedAPI = (function () {
         }
     };
 
+    let brandCatalogPromise = null;
+
+    function brandMatchKey(value) {
+        return String(value || '')
+            .toLowerCase()
+            .replace(/&/g, ' and ')
+            .replace(/[^a-z0-9]+/g, ' ')
+            .replace(/\band\b/g, ' ')
+            .replace(/\s+/g, '');
+    }
+
+    function loadBrandCatalog() {
+        if (!brandCatalogPromise) {
+            brandCatalogPromise = apiRequest('/api/filters/brands').then((data) => {
+                const brands = Array.isArray(data && data.brands) ? data.brands : [];
+                const byKey = new Map();
+                brands.forEach((brand) => {
+                    const name = String((brand && (brand.name || brand.label)) || '').trim();
+                    const slug = String((brand && (brand.slug || brand.value)) || '').trim();
+                    if (!name) return;
+                    [name, slug].forEach((token) => {
+                        const key = brandMatchKey(token);
+                        if (key && !byKey.has(key)) byKey.set(key, name);
+                    });
+                });
+                return byKey;
+            }).catch((error) => {
+                brandCatalogPromise = null;
+                throw error;
+            });
+        }
+        return brandCatalogPromise;
+    }
+
+    async function resolveCatalogBrand(value) {
+        const raw = String(value == null ? '' : value).trim();
+        if (!raw) return raw;
+        let decoded = raw;
+        try {
+            decoded = decodeURIComponent(raw.replace(/\+/g, ' '));
+        } catch (error) {
+            decoded = raw;
+        }
+        try {
+            const byKey = await loadBrandCatalog();
+            return byKey.get(brandMatchKey(decoded)) || byKey.get(brandMatchKey(raw)) || decoded;
+        } catch (error) {
+            return decoded;
+        }
+    }
+
     function expandFilterValues(paramName, values) {
         const aliases = FILTER_VALUE_ALIASES[paramName] || {};
         return Array.from(new Set(values.flatMap(value => {
@@ -562,9 +613,14 @@ const BrandedAPI = (function () {
             params.sort = options.sort;
         }
 
-        // Brand filter (from URL, e.g., ?brand=nike)
+        // Brand filter (from URL, e.g., ?brand=nike). Suggest and menu
+        // slugs drop "&" and apostrophes (asquith-fox vs asquith-&-fox),
+        // so resolve them to the catalogue brand name before the request.
         if (options.brand) {
-            params.brand = options.brand;
+            params.brand = await resolveCatalogBrand(options.brand);
+        }
+        if (Array.isArray(params['brand[]']) && params['brand[]'].length) {
+            params['brand[]'] = await Promise.all(params['brand[]'].map(resolveCatalogBrand));
         }
 
         // Featured products filter
@@ -1568,6 +1624,7 @@ const BrandedAPI = (function () {
         getFilterCounts,
         getPriceRange,
         getAllFilterOptions,
+        resolveCatalogBrand,
 
         // Utilities
         healthCheck,

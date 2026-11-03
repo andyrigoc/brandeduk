@@ -351,10 +351,10 @@
             });
         }
         chain.then(function () {
-            return appendScript('js/pc-search.js?v=20261030-live-search', { 'data-pc-search': 'true' });
+            return appendScript('js/pc-search.js?v=20261103-brandcatalog', { 'data-pc-search': 'true' });
         }).catch(function () {
             // Search should still work even if the eco badge assets fail to load.
-            appendScript('js/pc-search.js?v=20261030-live-search', { 'data-pc-search': 'true' });
+            appendScript('js/pc-search.js?v=20261103-brandcatalog', { 'data-pc-search': 'true' });
         });
     }
 
