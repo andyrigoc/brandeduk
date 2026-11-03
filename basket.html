@@ -3635,6 +3635,12 @@
         return source.indexOf('bklogo:') === 0 ? '' : source;
     }
 
+    function getLogoPreviewFallback(method) {
+        const isEmbroidery = ['embroidery', 'embroidery-voa'].includes(String(method || '').trim().toLowerCase());
+        const filename = isEmbroidery ? 'your-logo-embroidery.png' : 'your-logo-print.png';
+        return `brandedukv15-child/assets/images/customization/${filename}`;
+    }
+
     /** Total garment units for one line (sizes map first, then qty fields). */
     function getItemQty(item) {
         if (!item) return 0;
@@ -4926,7 +4932,7 @@
         }
     }
 
-    function openImagePreview(src, titleText, altText, isLogo) {
+    function openImagePreview(src, titleText, altText, isLogo, fallbackSrc) {
         const modal = document.getElementById('placementPreviewModal');
         const stage = document.getElementById('placementPreviewStage');
         const title = document.getElementById('placementPreviewTitle');
@@ -4934,7 +4940,10 @@
 
         if (title) title.textContent = titleText;
         stage.classList.toggle('preview-image-modal__stage--logo', !!isLogo);
-        stage.innerHTML = `<img src="${escapeAttr(src)}" alt="${escapeAttr(altText)}">`;
+        const fallbackAttribute = fallbackSrc
+            ? ` onerror="this.onerror=null;this.src='${escapeAttr(fallbackSrc)}'"`
+            : '';
+        stage.innerHTML = `<img src="${escapeAttr(src)}" alt="${escapeAttr(altText)}"${fallbackAttribute}>`;
         modal.classList.add('active');
         modal.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
@@ -4952,10 +4961,10 @@
     function openLogoImagePreview(index, logoIdx) {
         const item = getBasket()[index];
         const logo = item && item.logos && item.logos[logoIdx];
-        const src = resolveLogoImageSource(logo);
-        if (!src) return;
+        const fallbackSrc = getLogoPreviewFallback(logo && logo.method);
+        const src = resolveLogoImageSource(logo) || fallbackSrc;
         const position = logo.positionLabel || toReadablePosition(logo.position);
-        openImagePreview(src, position ? `Your logo - ${position}` : 'Your logo', 'Uploaded logo', true);
+        openImagePreview(src, position ? `Your logo - ${position}` : 'Your logo', 'Logo preview', true, fallbackSrc);
     }
 
     function closePlacementPreview() {
@@ -5033,13 +5042,14 @@
                     logo.unitPrice = logoUnit;
                     const logoTotal = logoUnit * qty;
                     const thumbSrc = resolveLogoImageSource(logo);
+                    const fallbackSrc = getLogoPreviewFallback(methodNorm);
                     const posLabel = logo.positionLabel || toReadablePosition(logo.position);
                     const thumbWrapClass = 'logo-thumb-wrap' + (garmentHexLight ? ' logo-thumb-wrap--light' : '');
                     const colorTitle = getItemColorLabel(item).replace(/"/g, '&quot;');
 
                     logosHtml += `
                         <div class="logo-row">
-                            ${thumbSrc ? `<button type="button" class="${thumbWrapClass} is-zoomable" title="View logo larger" aria-label="View logo larger" onclick="openLogoImagePreview(${index}, ${logoIdx})"><img class="logo-thumb" src="${thumbSrc}" alt="Logo" onerror="this.style.display='none'"></button>` : ''}
+                            <button type="button" class="${thumbWrapClass} is-zoomable" title="View logo larger" aria-label="View logo larger" onclick="openLogoImagePreview(${index}, ${logoIdx})"><img class="logo-thumb" src="${escapeAttr(thumbSrc || fallbackSrc)}" alt="${escapeAttr(methodLabel)} logo preview" onerror="this.onerror=null;this.src='${escapeAttr(fallbackSrc)}'"></button>
                             <div class="logo-info">
                                 <div class="logo-title-line">
                                     <div class="logo-method-label">${methodLabel}<span class="logo-method-badge logo-method-badge--${methodBadgeClass}">${methodBadgeText}</span></div>
