@@ -358,16 +358,21 @@
       if (!remoteUrl || typeof fetch !== 'function') return null;
 
       return fetch(remoteUrl, { credentials: 'omit' }).then(function (response) {
-        if (!response.ok) return null;
+        if (!response.ok) return isHttpUrl(remoteUrl) ? remoteUrl : null;
         var contentType = String(response.headers && response.headers.get
           ? response.headers.get('content-type') || ''
           : '');
-        if (contentType && contentType.indexOf('image/') !== 0) return null;
-        return response.blob();
-      }).then(function (blob) {
-        return blob && (!blob.size || blob.size > 0) ? blob : null;
+        // Spaces often serves artwork as application/octet-stream. Only reject
+        // an HTML or JSON error page; keep the bytes for png, jpg, svg and pdf.
+        if (/^(text\/html|application\/json)/i.test(contentType)) {
+          return isHttpUrl(remoteUrl) ? remoteUrl : null;
+        }
+        return response.blob().then(function (blob) {
+          if (blob && blob.size > 0) return blob;
+          return isHttpUrl(remoteUrl) ? remoteUrl : null;
+        });
       }).catch(function () {
-        return null;
+        return isHttpUrl(remoteUrl) ? remoteUrl : null;
       });
     });
   }

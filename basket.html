@@ -6450,6 +6450,8 @@
                     if (customerNote) notesList.push('Customer note: ' + customerNote);
 
                     const quoteLogoFiles = await collectQuoteLogoFiles(basket);
+                    const artworkUrls = quoteLogoFiles.__artworkUrls || {};
+                    delete quoteLogoFiles.__artworkUrls;
                     const quotePreviewFiles = collectQuotePreviewFiles(basket, renderedPreviewEntries);
 
                     const quoteData = {
@@ -6469,6 +6471,7 @@
                         },
                         basket: basketItems, customizations: customizationsList,
                         logoFiles: quoteLogoFiles,
+                        artworkUrls: artworkUrls,
                         previewFiles: quotePreviewFiles,
                         notes: notesList,
                         source: 'basket_quote_request',
@@ -6939,20 +6942,28 @@
 
     async function collectQuoteLogoFiles(basket) {
         const logoFiles = {};
+        const artworkUrls = {};
         const unresolved = [];
         const storage = window.BrandedQuoteStorage;
+        const httpUrl = (value) => /^https?:\/\//i.test(String(value || '')) ? String(value) : '';
         const addLogo = async (position, entry, value) => {
+            const place = position || 'logo';
             if (!value && !entry?.logoId) return;
             let file = value;
             if (storage && typeof storage.getQuoteFile === 'function') {
                 file = await storage.getQuoteFile(value, entry?.logoId || '');
             }
             if (file instanceof File || file instanceof Blob || /^data:(image|application)\//i.test(String(file || '')) || /^data:.*;base64,/i.test(String(file || ''))) {
-                logoFiles[position || 'logo'] = file;
+                logoFiles[place] = file;
+                return;
+            }
+            const remote = httpUrl(file) || httpUrl(value);
+            if (remote) {
+                artworkUrls[place] = remote;
                 return;
             }
             if (/^(?:bklogo|blob):/i.test(String(value || '')) || entry?.logoId) {
-                unresolved.push(position || 'logo');
+                unresolved.push(place);
             }
         };
         const pending = [];
@@ -6980,10 +6991,11 @@
             });
         });
         await Promise.all(pending);
-        const missingPositions = [...new Set(unresolved)].filter(position => !logoFiles[position]);
+        const missingPositions = [...new Set(unresolved)].filter(position => !logoFiles[position] && !artworkUrls[position]);
         if (missingPositions.length) {
             throw new Error(`Artwork is still being prepared for ${missingPositions.join(', ')}. Please wait a moment and submit again.`);
         }
+        logoFiles.__artworkUrls = artworkUrls;
         return logoFiles;
     }
     </script>
@@ -7053,7 +7065,7 @@
             </div>
         </div>
     </div>
-<script src="brandedukv15-child/assets/js/storage/quote-storage.js?v=20261028-fit-upload"></script>
+<script src="brandedukv15-child/assets/js/storage/quote-storage.js?v=20261103-quote-artwork"></script>
 <script src="brandedukv15-child/assets/js/cart.js?v=20261025-storage"></script>
 <script src="brandedukv15-child/assets/js/header.js?v=20261020-suggest"></script>
 <script src="brandedukv15-child/assets/js/api-config.js?v=20260530"></script>
