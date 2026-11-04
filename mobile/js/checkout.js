@@ -644,6 +644,12 @@ function normalizePositionSlug(value) {
     return String(value || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 }
 
+const LARGE_CHECKOUT_EXCLUSIONS = {
+    'large-front-center': true,
+    'large-centre-front': true,
+    'large-center-front': true
+};
+
 function isLargePrintPosition(customization) {
     return [
         customization.position,
@@ -652,13 +658,24 @@ function isLargePrintPosition(customization) {
         customization.area,
         customization.name,
         customization.slug,
-    ].some(value => ['large-front', 'large-back', 'front-large', 'back-large'].includes(normalizePositionSlug(value)));
+    ].some(value => {
+        const key = normalizePositionSlug(value);
+        return key && !LARGE_CHECKOUT_EXCLUSIONS[key] && /(^|-)large(-|$)/.test(key);
+    });
 }
 
 function getCheckoutCustomizationUnitPrice(customization, quantity) {
     const method = String(customization?.method || '').toLowerCase();
     if (method === 'embroidery-voa') return 0;
-    if (method !== 'embroidery' && isLargePrintPosition(customization)) return 7.70;
+    if (isLargePrintPosition(customization)) {
+        if (method !== 'embroidery') return 7.70;
+        const largeEmbroidery = [[1, 11.25], [9, 8.75], [25, 6.75], [100, 5.75], [250, 4.50]];
+        let largePrice = largeEmbroidery[0][1];
+        largeEmbroidery.forEach(([minimum, tierPrice]) => {
+            if (quantity >= minimum) largePrice = tierPrice;
+        });
+        return largePrice;
+    }
 
     const tiers = method === 'embroidery'
         ? [[1, 8], [9, 6], [25, 4.75], [100, 3.75], [250, 2.5], [500, 2.25], [750, 2], [1000, 1.75]]

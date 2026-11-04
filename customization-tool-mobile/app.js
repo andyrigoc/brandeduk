@@ -568,9 +568,29 @@ const APPLICATION_PRICE_TIERS = {
 // Large Front + Large Back print are a flat rate at every quantity, as in the basket.
 const LARGE_PRINT_FLAT_RATE = 7.70;
 
+const LARGE_APPLICATION_EXCLUSIONS = {
+  "large-front-center": true,
+  "large-centre-front": true,
+  "large-center-front": true
+};
+const LARGE_EMBROIDERY_TIERS = [
+  { min: 1, max: 8, price: 11.25 },
+  { min: 9, max: 24, price: 8.75 },
+  { min: 25, max: 99, price: 6.75 },
+  { min: 100, max: 249, price: 5.75 },
+  { min: 250, max: Infinity, price: 4.50 }
+];
+
 function isLargePrintPosition(position) {
   const key = String(position || "").trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-  return /^large-(front|back)/.test(key) || /^(front|back)-large/.test(key);
+  if (!key || LARGE_APPLICATION_EXCLUSIONS[key]) return false;
+  return /(^|-)large(-|$)/.test(key);
+}
+
+function largeEmbroideryPrice(quantity) {
+  const qty = Math.max(1, Number(quantity) || 1);
+  const tier = LARGE_EMBROIDERY_TIERS.find((item) => qty >= item.min && qty <= item.max) || LARGE_EMBROIDERY_TIERS[LARGE_EMBROIDERY_TIERS.length - 1];
+  return tier.price;
 }
 
 // Standard rates returned by the pricing API, keyed by "method|quantity".
@@ -1176,7 +1196,9 @@ function getProductPricingQuantity(currentQty) {
 
 function getLogoUnitPrice(method, quantity = getProductPricingQuantity(state.totalQty), position = "") {
   const bucket = normalizeDecorationMethod(method) === "embroidery" ? "embroidery" : "print";
-  if (bucket === "print" && isLargePrintPosition(position)) return LARGE_PRINT_FLAT_RATE;
+  if (isLargePrintPosition(position)) {
+    return bucket === "embroidery" ? largeEmbroideryPrice(quantity) : LARGE_PRINT_FLAT_RATE;
+  }
   return getApplicationUnitPrice(bucket, quantity);
 }
 

@@ -175,6 +175,10 @@
         if (!code) return;
 
         var settings = options || {};
+        if (!settings.keepSizeEdit) {
+            window.pcBasketSizeEdit = false;
+            try { sessionStorage.removeItem('pcBasketSizeEdit'); } catch (error) {}
+        }
         if (settings.updateUrl !== false) {
             setProductInUrl(code, settings.replaceHistory ? 'replace' : 'push');
         }
@@ -277,18 +281,75 @@
         }
     });
 
+    function sameBasketColour(a, b) {
+        return String(a || '').trim().toLowerCase() === String(b || '').trim().toLowerCase();
+    }
+
+    function loadRoutingBasket() {
+        if (window.BrandedQuoteStorage && typeof window.BrandedQuoteStorage.loadBasket === 'function') {
+            try {
+                var stored = window.BrandedQuoteStorage.loadBasket();
+                if (Array.isArray(stored)) return stored;
+            } catch (error) {}
+        }
+        try {
+            var parsed = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+            return Array.isArray(parsed) ? parsed : [];
+        } catch (error) {
+            return [];
+        }
+    }
+
+    function openBasketSizeEdit(url, code) {
+        window.pcBasketSizeEdit = true;
+        try { sessionStorage.setItem('pcBasketSizeEdit', '1'); } catch (error) {}
+        try { sessionStorage.removeItem('pcOrderResume'); } catch (error) {}
+        var colour = url.searchParams.get('color') || '';
+        var quantities = {};
+        loadRoutingBasket().forEach(function (entry) {
+            var entryCode = cleanCode(entry.code || entry.productCode);
+            var entryColour = entry.color || entry.colour || entry.selectedColorName || '';
+            if (entryCode.toLowerCase() !== code.toLowerCase()) return;
+            if (colour && !sameBasketColour(entryColour, colour)) return;
+            var size = cleanCode(entry.size);
+            if (!size) return;
+            quantities[size] = (quantities[size] || 0) + (parseInt(entry.qty, 10) || 0);
+        });
+        window.quantities = quantities;
+
+        var match = null;
+        if (colour) {
+            document.querySelectorAll('.colour-swatch-item').forEach(function (el) {
+                var name = el.dataset.name || el.dataset.colour || '';
+                if (sameBasketColour(name, colour)) match = el;
+            });
+        }
+        if (match) {
+            match.click();
+        } else if (colour) {
+            window.selectedColour = colour;
+        }
+        if (typeof window.goToPage === 'function') window.goToPage(2);
+    }
+
     function openRequestedProduct() {
         var url = new URL(window.location.href);
         var code = cleanCode(url.searchParams.get('product'));
         if (!code) return;
 
+        var editSizes = url.searchParams.get('editSizes') === '1';
         var request = window.openPcProductDetails(code, getCachedProduct(code), {
             updateUrl: false,
-            replaceHistory: true
+            replaceHistory: true,
+            keepSizeEdit: editSizes
         });
         Promise.resolve(request).then(function () {
-            openBasketCustomization(url, code);
-            restoreTabletUploadStep(url, code);
+            if (editSizes) {
+                openBasketSizeEdit(url, code);
+            } else {
+                openBasketCustomization(url, code);
+                restoreTabletUploadStep(url, code);
+            }
             notifyBasketWhenReady(url);
         });
     }

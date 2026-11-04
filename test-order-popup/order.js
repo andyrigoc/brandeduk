@@ -701,12 +701,34 @@ window.addEventListener("message", function (event) {
 // up that row's qty instead of creating a duplicate line: e.g. 5 already in
 // the basket + 5 selected here = 10 in that single row. Editing quantity
 // directly on the basket page is unaffected — that still sets the value.
+function basketRowKey(value) {
+    return String(value || '').trim().toLowerCase();
+}
+
 function findExistingBasketRow(basket, code, colourName, size) {
+    var wantedCode = basketRowKey(code);
+    var wantedColour = basketRowKey(colourName);
+    var wantedSize = basketRowKey(size);
     return basket.findIndex(function(entry) {
-        var entryCode = entry.code || entry.productCode || '';
-        var entryColour = entry.color || entry.colour || entry.selectedColorName || '';
-        return entryCode === code && entryColour === colourName && String(entry.size || '') === String(size);
+        var entryCode = basketRowKey(entry.code || entry.productCode || '');
+        var entryColour = basketRowKey(entry.color || entry.colour || entry.selectedColorName || '');
+        return entryCode === wantedCode && entryColour === wantedColour && basketRowKey(entry.size) === wantedSize;
     });
+}
+
+function siblingBasketDecoration(basket, code, colourName) {
+    var wantedCode = basketRowKey(code);
+    var wantedColour = basketRowKey(colourName);
+    var best = null;
+    basket.forEach(function(entry) {
+        var entryCode = basketRowKey(entry.code || entry.productCode || '');
+        var entryColour = basketRowKey(entry.color || entry.colour || entry.selectedColorName || '');
+        if (entryCode !== wantedCode || entryColour !== wantedColour) return;
+        var logoCount = Array.isArray(entry.logos) ? entry.logos.length : 0;
+        var bestCount = best && Array.isArray(best.logos) ? best.logos.length : 0;
+        if (!best || logoCount > bestCount) best = entry;
+    });
+    return best;
 }
 
 function savePage3SelectionToBasket() {
@@ -738,15 +760,23 @@ function savePage3SelectionToBasket() {
     var basket = [];
     try { basket = loadQuoteBasket(); } catch(e) {}
 
+    // Opened from a basket row: the size form is the current order, so each
+    // size is replaced. A fresh catalogue add still tops up the same size.
+    var editSizesInUrl = false;
+    try { editSizesInUrl = new URLSearchParams(window.location.search).get('editSizes') === '1'; } catch (e) {}
+    var replaceExisting = window.pcBasketSizeEdit === true
+        || editSizesInUrl
+        || sessionStorage.getItem('pcBasketSizeEdit') === '1';
+
     // Bulk price tier is based on the combined quantity for this product +
     // colour across every size (existing rows plus this new selection).
     var existingColourRows = basket.filter(function(entry) {
-        var entryCode = entry.code || entry.productCode || '';
-        var entryColour = entry.color || entry.colour || entry.selectedColorName || '';
-        return entryCode === productCode && entryColour === colourName;
+        var entryCode = basketRowKey(entry.code || entry.productCode || '');
+        var entryColour = basketRowKey(entry.color || entry.colour || entry.selectedColorName || '');
+        return entryCode === basketRowKey(productCode) && entryColour === basketRowKey(colourName);
     });
     var existingColourQty = existingColourRows.reduce(function(sum, entry) { return sum + (parseInt(entry.qty, 10) || 0); }, 0);
-    var combinedColourQty = existingColourQty + newQty;
+    var combinedColourQty = replaceExisting ? newQty : (existingColourQty + newQty);
 
     var unitPrice = basePrice;
     priceBreaks.forEach(function(tier) {
@@ -762,28 +792,53 @@ function savePage3SelectionToBasket() {
         var existingIndex = findExistingBasketRow(basket, productCode, colourName, size);
 
         if (existingIndex !== -1) {
-            basket[existingIndex].qty = (parseInt(basket[existingIndex].qty, 10) || 0) + addQty;
+            var currentQty = parseInt(basket[existingIndex].qty, 10) || 0;
+            basket[existingIndex].qty = replaceExisting ? addQty : (currentQty + addQty);
             basket[existingIndex].unitPrice = unitPrice;
         } else {
+            var sibling = siblingBasketDecoration(basket, productCode, colourName);
+            var storedColour = (sibling && (sibling.color || sibling.colour)) || colourName;
             basket.push({
-                id: (productCode + '-' + colourName + '-' + size).toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+                id: (productCode + '-' + storedColour + '-' + size).toLowerCase().replace(/[^a-z0-9]+/g, '-'),
                 code: productCode,
-                name: product.name || '',
-                brand: product.brand || '',
-                color: colourName,
-                colour: colourName,
-                colorImage: colourImg,
-                colourImg: colourImg,
-                image: colourImg || product.image || '',
+                name: (sibling && sibling.name) || product.name || '',
+                brand: (sibling && sibling.brand) || product.brand || '',
+                color: storedColour,
+                colour: storedColour,
+                colorHex: (sibling && sibling.colorHex) || '',
+                colorImage: (sibling && (sibling.colorImage || sibling.image)) || colourImg,
+                colourImg: (sibling && (sibling.colourImg || sibling.colorImage)) || colourImg,
+                image: (sibling && (sibling.image || sibling.colorImage)) || colourImg || product.image || '',
                 size: size,
                 qty: addQty,
                 price: parseFloat(product.price) || 0,
                 basePrice: basePrice,
                 unitPrice: unitPrice,
-                priceBreaks: priceBreaks
+                priceBreaks: priceBreaks,
+                productType: (sibling && sibling.productType) || '',
+                logos: sibling && Array.isArray(sibling.logos) ? JSON.parse(JSON.stringify(sibling.logos)) : [],
+                texts: sibling && Array.isArray(sibling.texts) ? JSON.parse(JSON.stringify(sibling.texts)) : [],
+                designPreview: sibling && sibling.designPreview ? JSON.parse(JSON.stringify(sibling.designPreview)) : undefined
             });
         }
     });
+
+    if (replaceExisting) {
+        var gridSizes = {};
+        $('#sizeQtyGridP3 .qty-input').each(function() {
+            gridSizes[basketRowKey($(this).data('size'))] = true;
+        });
+        basket = basket.filter(function(entry) {
+            var entryCode = basketRowKey(entry.code || entry.productCode || '');
+            var entryColour = basketRowKey(entry.color || entry.colour || entry.selectedColorName || '');
+            if (entryCode !== basketRowKey(productCode) || entryColour !== basketRowKey(colourName)) return true;
+            var sizeKey = basketRowKey(entry.size);
+            if (!gridSizes[sizeKey]) return true;
+            return Object.keys(sizeQuantities).some(function(size) {
+                return basketRowKey(size) === sizeKey;
+            });
+        });
+    }
 
     persistQuoteBasket(basket);
     window.dispatchEvent(new Event('basketUpdated'));
@@ -1309,10 +1364,17 @@ function page4PositionCard(product, position) {
     var embroideryPrice = methods.embroidery.price != null ? methods.embroidery.price.toFixed(2) : '0';
     var printPrice = methods.print.price != null ? methods.print.price.toFixed(2) : '0';
     var safeSlug = String(slug).replace(/"/g, '');
-    // Large Front / Large Back print always show flat £7.70 (not API position flats).
-    if (p4IsLargePrintPosition(safeSlug) && methods.print && methods.print.status === 'yes') {
-        printPrice = LARGE_PRINT_FLAT_RATE.toFixed(2);
-        methods.print = Object.assign({}, methods.print, { price: LARGE_PRINT_FLAT_RATE });
+    // Large Front, Large Back and any other "Large …" position.
+    if (p4IsLargePrintPosition({ label: position.label, slug: safeSlug, name: position.name })) {
+        if (methods.print && methods.print.status === 'yes') {
+            printPrice = LARGE_PRINT_FLAT_RATE.toFixed(2);
+            methods.print = Object.assign({}, methods.print, { price: LARGE_PRINT_FLAT_RATE });
+        }
+        if (methods.embroidery && methods.embroidery.status === 'yes') {
+            var largeEmbroideryPrice = p4LargeEmbroideryPrice(p4ProductQty());
+            embroideryPrice = largeEmbroideryPrice.toFixed(2);
+            methods.embroidery = Object.assign({}, methods.embroidery, { price: largeEmbroideryPrice });
+        }
     }
     var safeLabel = label.replace(/"/g, '&quot;');
     return '<div class="position-card" data-position="' + safeSlug + '" data-embroidery="' + embroideryPrice + '" data-print="' + printPrice + '" data-embroidery-voa="0">' +
@@ -1330,8 +1392,24 @@ function page4NormalizePositionKey(value) {
     return String(value || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 
-// Large Front + Large Back Print — flat £7.70 (pricing-guide Large Back Print column).
+// Any application whose name says Large uses the Large columns.
+// large-front-center / large-centre-front are the standard centre, not a large print.
 var LARGE_PRINT_FLAT_RATE = 7.70;
+var LARGE_APPLICATION_EXCLUSIONS = {
+    'large-front-center': true,
+    'large-centre-front': true,
+    'large-center-front': true
+};
+var LARGE_EMBROIDERY_TIERS = [
+    { min: 1, max: 8, price: 11.25 },
+    { min: 9, max: 24, price: 8.75 },
+    { min: 25, max: 99, price: 6.75 },
+    { min: 100, max: 249, price: 5.75 },
+    { min: 250, max: 499, price: 4.50 },
+    { min: 500, max: 749, price: 4.50 },
+    { min: 750, max: 999, price: 4.50 },
+    { min: 1000, max: Infinity, price: 4.50 }
+];
 
 function p4IsLargePrintPosition(position) {
     var candidates = [];
@@ -1342,13 +1420,22 @@ function p4IsLargePrintPosition(position) {
     }
     for (var i = 0; i < candidates.length; i++) {
         var key = page4NormalizePositionKey(candidates[i]);
-        if (!key) continue;
-        if (key === 'large-back' || key === 'large-front' || key === 'back-large' || key === 'front-large') return true;
-        if (/^large-(front|back)/.test(key)) return true;
-        if (/^(front|back)-large/.test(key)) return true;
-        if (/^large-(front|back)-print/.test(key)) return true;
+        if (!key || LARGE_APPLICATION_EXCLUSIONS[key]) continue;
+        if (/(^|-)large(-|$)/.test(key)) return true;
     }
     return false;
+}
+
+function p4LargeEmbroideryPrice(quantity) {
+    var qty = Math.max(1, Number(quantity) || 1);
+    var tier = LARGE_EMBROIDERY_TIERS[LARGE_EMBROIDERY_TIERS.length - 1];
+    for (var i = 0; i < LARGE_EMBROIDERY_TIERS.length; i++) {
+        if (qty >= LARGE_EMBROIDERY_TIERS[i].min && qty <= LARGE_EMBROIDERY_TIERS[i].max) {
+            tier = LARGE_EMBROIDERY_TIERS[i];
+            break;
+        }
+    }
+    return Number(tier.price) || 0;
 }
 
 var page4PositionRequest = 0;
@@ -2069,9 +2156,12 @@ function p4ApplicationTierPrice(method, quantity, position) {
     var key = String(method || '').toLowerCase();
     if (key === 'embroidery-voa') return 0;
     var bucket = key === 'embroidery' ? 'embroidery' : 'print';
-    if (bucket === 'print' && p4IsLargePrintPosition(position)) return LARGE_PRINT_FLAT_RATE;
-    var tiers = APPLICATION_PRICE_TIERS[bucket] || APPLICATION_PRICE_TIERS.print;
     var qty = Math.max(1, Number(quantity) || 1);
+    if (p4IsLargePrintPosition(position)) {
+        if (bucket === 'print') return LARGE_PRINT_FLAT_RATE;
+        return p4LargeEmbroideryPrice(qty);
+    }
+    var tiers = APPLICATION_PRICE_TIERS[bucket] || APPLICATION_PRICE_TIERS.print;
     var tier = null;
     for (var i = 0; i < tiers.length; i++) {
         if (qty >= tiers[i].min && qty <= tiers[i].max) {
@@ -2125,9 +2215,10 @@ function p4LoadBackendPrices() {
 function p4MethodUnitPrice(method, fallback, position) {
     var key = String(method || '').toLowerCase();
     if (key === 'embroidery-voa') return 0;
-    // Large Front / Large Back print always flat £7.70 — never qty ladder or stale card flat.
-    if ((key === 'print' || key === 'dtf' || key === 'screen' || key === 'vinyl') && p4IsLargePrintPosition(position)) {
-        return LARGE_PRINT_FLAT_RATE;
+    // "Large …" positions: flat large print, or the 8,000+ stitch embroidery column.
+    if (p4IsLargePrintPosition(position)) {
+        if (key === 'print' || key === 'dtf' || key === 'screen' || key === 'vinyl') return LARGE_PRINT_FLAT_RATE;
+        if (key === 'embroidery') return p4LargeEmbroideryPrice(p4ProductQty());
     }
     var record = window.p4Pricing[key === 'print' || key === 'dtf' || key === 'screen' || key === 'vinyl' ? 'print' : key];
     if (record && record.unitPrice != null && !isNaN(record.unitPrice)) return Number(record.unitPrice);
@@ -2144,7 +2235,11 @@ function p4ApplyBackendPricesToCards() {
         if (card.querySelector('.price-emb')) {
             card.setAttribute('data-embroidery', embroidery.toFixed(2));
             var emb = card.querySelector('.price-emb');
-            if (emb) emb.dataset.defaultPrice = '£' + embroidery.toFixed(2);
+            if (emb) {
+                emb.dataset.defaultPrice = '£' + embroidery.toFixed(2);
+                var embValue = emb.querySelector('.price-value');
+                if (embValue && !emb.classList.contains('poa-badge')) embValue.textContent = '£' + embroidery.toFixed(2);
+            }
         }
         if (card.querySelector('.price-print')) {
             card.setAttribute('data-print', print.toFixed(2));
@@ -2229,6 +2324,7 @@ function p4UpdateSummary() {
     $('#p4SumEx').text(money(ex));
     $('#p4SumVat').text(money(vat));
     $('#p4SumInc').text(money(ex + vat));
+    if (typeof window.pcRefreshFlowProgress === 'function') window.pcRefreshFlowProgress();
 }
 
 function p4CardMethods(card) {
@@ -2865,6 +2961,73 @@ async function p4CreateBasketShareUrl() {
     }
     return p4BasketShareUrl(result.token);
 }
+
+function p4OpenShareModal(url) {
+    var existing = document.getElementById('p4ShareModal');
+    if (existing) existing.remove();
+    var overlay = document.createElement('div');
+    overlay.id = 'p4ShareModal';
+    overlay.innerHTML = '<div class="p4-share-dialog" role="dialog" aria-modal="true" aria-labelledby="p4ShareTitle">' +
+        '<h3 id="p4ShareTitle">Share your basket</h3>' +
+        '<p>Anyone with this link can open the same basket.</p>' +
+        '<div class="p4-share-link-row">' +
+        '<input type="text" class="p4-share-link" readonly aria-label="Shared basket link">' +
+        '<button type="button" class="p4-share-copy">Copy</button>' +
+        '</div>' +
+        '<button type="button" class="p4-share-close">Close</button>' +
+        '</div>';
+    var input = overlay.querySelector('.p4-share-link');
+    if (input) input.value = url;
+    function closeShare() {
+        if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    }
+    overlay.querySelector('.p4-share-close').addEventListener('click', closeShare);
+    overlay.addEventListener('click', function (event) {
+        if (event.target === overlay) closeShare();
+    });
+    overlay.querySelector('.p4-share-copy').addEventListener('click', async function () {
+        var copyButton = this;
+        try {
+            await navigator.clipboard.writeText(url);
+        } catch (error) {
+            input.focus();
+            input.select();
+            document.execCommand('copy');
+        }
+        copyButton.textContent = 'Copied';
+        window.setTimeout(function () { copyButton.textContent = 'Copy'; }, 1600);
+    });
+    document.body.appendChild(overlay);
+    if (input) input.focus();
+}
+
+// Same share API as basket.html (initShareBasketFlow / POST /api/basket-shares).
+$(document).on('click', '#p4ShareBasket', async function () {
+    var button = this;
+    var original = button.textContent;
+    button.disabled = true;
+    button.textContent = 'Creating link...';
+    try {
+        p4SaveLogosToBasket();
+        p4EnsureQuoteBasketForShare();
+        p4SaveLogosToBasket();
+        var url = await p4CreateBasketShareUrl();
+        if (navigator.share) {
+            try {
+                await navigator.share({ title: 'BrandedUK basket', text: 'View this BrandedUK basket', url: url });
+                return;
+            } catch (error) {
+                if (error && error.name === 'AbortError') return;
+            }
+        }
+        p4OpenShareModal(url);
+    } catch (error) {
+        window.showAlert((error && error.message) || 'Unable to share this basket.', 'OK');
+    } finally {
+        button.disabled = false;
+        button.textContent = original || 'Share basket';
+    }
+});
 
 function p4OpenQuoteContact(message) {
     if (typeof window.openContactPopup === 'function') {

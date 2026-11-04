@@ -113,6 +113,10 @@
   function initBottomNavigation() {
     var nav = document.querySelector('.bottom-nav');
     if (!nav || nav.querySelector('[data-home-nav]')) return;
+    var alreadyHasHome = Array.prototype.some.call(nav.querySelectorAll('.nav-item-label'), function (el) {
+      return (el.textContent || '').trim() === 'Home';
+    });
+    if (alreadyHasHome) return;
 
     var home = document.createElement('a');
     home.href = '/index-mobile.html?force=mobile';

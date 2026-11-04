@@ -462,9 +462,35 @@
         ]
     };
 
-    function getApplicationUnitPrice(method, quantity) {
-        const tiers = APPLICATION_PRICE_TIERS[method] || APPLICATION_PRICE_TIERS.print;
+    const LARGE_EMBROIDERY_TIERS = [
+        { min: 1, max: 8, price: 11.25 },
+        { min: 9, max: 24, price: 8.75 },
+        { min: 25, max: 99, price: 6.75 },
+        { min: 100, max: 249, price: 5.75 },
+        { min: 250, max: Infinity, price: 4.50 }
+    ];
+    const LARGE_POSITION_EXCLUSIONS = {
+        'large-front-center': true,
+        'large-centre-front': true,
+        'large-center-front': true
+    };
+
+    function isLargeApplicationPosition(position) {
+        const key = String(position || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+        if (!key || LARGE_POSITION_EXCLUSIONS[key]) return false;
+        return /(^|-)large(-|$)/.test(key);
+    }
+
+    function getApplicationUnitPrice(method, quantity, position) {
         const qty = Math.max(1, Number(quantity) || 1);
+        if (isLargeApplicationPosition(position)) {
+            if (String(method || '').toLowerCase() === 'embroidery') {
+                const largeTier = LARGE_EMBROIDERY_TIERS.find((item) => qty >= item.min && qty <= item.max) || LARGE_EMBROIDERY_TIERS[LARGE_EMBROIDERY_TIERS.length - 1];
+                return largeTier.price.toFixed(2);
+            }
+            return '7.70';
+        }
+        const tiers = APPLICATION_PRICE_TIERS[method] || APPLICATION_PRICE_TIERS.print;
         const tier = tiers.find((item) => qty >= item.min && qty <= item.max) || tiers[tiers.length - 1];
         return tier.price.toFixed(2);
     }
@@ -477,7 +503,8 @@
             'small-centre-front': { embroidery: getApplicationUnitPrice('embroidery', quantity), print: getApplicationUnitPrice('print', quantity) },
             'large-front-center': { embroidery: getApplicationUnitPrice('embroidery', quantity), print: getApplicationUnitPrice('print', quantity) },
             'large-centre-front': { embroidery: getApplicationUnitPrice('embroidery', quantity), print: getApplicationUnitPrice('print', quantity) },
-            'large-back': { embroidery: getApplicationUnitPrice('embroidery', quantity), print: getApplicationUnitPrice('print', quantity) },
+            'large-back': { embroidery: getApplicationUnitPrice('embroidery', quantity, 'large-back'), print: getApplicationUnitPrice('print', quantity, 'large-back') },
+            'large-front': { embroidery: getApplicationUnitPrice('embroidery', quantity, 'large-front'), print: getApplicationUnitPrice('print', quantity, 'large-front') },
             'left-arm': { embroidery: getApplicationUnitPrice('embroidery', quantity), print: getApplicationUnitPrice('print', quantity) },
             'right-arm': { embroidery: getApplicationUnitPrice('embroidery', quantity), print: getApplicationUnitPrice('print', quantity) }
         };

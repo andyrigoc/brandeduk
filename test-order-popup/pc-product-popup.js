@@ -135,18 +135,58 @@
         window.updateP3QuantitySummary();
     }
 
+    function cardHasPlacedLogo(card) {
+        var under = card.querySelector('.p4-logo-under');
+        var underImage = under && under.querySelector('img');
+        var underSrc = underImage ? String(underImage.getAttribute('src') || '').trim() : '';
+        if (under && !under.hidden && underSrc) return true;
+        var box = card.querySelector('.uploaded-logo-container');
+        var thumb = card.querySelector('.uploaded-logo-thumb');
+        var thumbSrc = thumb ? String(thumb.getAttribute('src') || '').trim() : '';
+        return !!(box && !box.hidden && thumbSrc);
+    }
+
+    function cardHasChosenMethod(card) {
+        if (card.querySelector('.price-badge.active')) return true;
+        var position = String(card.getAttribute('data-position') || '');
+        var assignments = window.p4Assignments || {};
+        var assignment = assignments[position];
+        if (!assignment) {
+            var folded = position.toLowerCase().replace(/[\s_]+/g, '-');
+            Object.keys(assignments).some(function (key) {
+                var foldedKey = String(key).toLowerCase().replace(/[\s_]+/g, '-');
+                if (foldedKey === folded) assignment = assignments[key];
+                return !!assignment;
+            });
+        }
+        return !!(assignment && String(assignment.method || '').trim());
+    }
+
+    // Step 4 is complete only when at least one position shows a logo and a method.
+    function customiseStepComplete() {
+        var cards = popup.querySelectorAll('#p4PositionOptions .position-card');
+        for (var i = 0; i < cards.length; i++) {
+            if (cardHasPlacedLogo(cards[i]) && cardHasChosenMethod(cards[i])) return true;
+        }
+        return false;
+    }
+
     function updateProgress(step) {
         var activeStep = Math.max(0, Math.min(3, Number(step) || 0));
+        var customiseDone = customiseStepComplete();
         progressItems.forEach(function (item, index) {
             item.classList.toggle('is-active', index === activeStep);
             var complete = index < activeStep;
             if (index === 1 && window.selectedColour) complete = true;
             if (index === 2 && quantityTotal() > 0) complete = true;
+            if (index === 3) complete = customiseDone;
             item.classList.toggle('is-complete', complete);
             if (index === activeStep) item.setAttribute('aria-current', 'step');
             else item.removeAttribute('aria-current');
         });
         updateStepSummary();
+        var customiseSummary = progressItems[3] && progressItems[3].querySelector('small');
+        if (customiseSummary) customiseSummary.textContent = customiseDone ? 'Logo added' : 'Add your design';
     }
 
     function resetPanelScroll() {
@@ -305,6 +345,22 @@
         } catch (error) { /* basket unreadable: keep badge hidden */ }
         badge.textContent = String(totalQty);
         badge.hidden = totalQty === 0;
+    }
+
+    window.pcRefreshFlowProgress = function () {
+        updateProgress(popup.classList.contains('pc-customizer-active') ? 3 : window.current);
+    };
+
+    var positionHost = document.getElementById('p4PositionOptions');
+    if (positionHost) {
+        new MutationObserver(function () {
+            window.pcRefreshFlowProgress();
+        }).observe(positionHost, {
+            subtree: true,
+            childList: true,
+            attributes: true,
+            attributeFilter: ['hidden', 'class', 'src']
+        });
     }
 
     window.addEventListener('basketUpdated', updateFlowBasketBadge);

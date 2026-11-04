@@ -5121,7 +5121,7 @@
 
             html += `
                 <div class="basket-item-row" data-index="${index}" data-id="${item.id || ''}">
-                    <div class="item-row-header item-row-header--clickable" role="button" tabindex="0" aria-label="Edit item" onclick="editBasketItem(${index})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();editBasketItem(${index});}">
+                    <div class="item-row-header item-row-header--clickable" role="button" tabindex="0" aria-label="Edit sizes and quantities" onclick="editBasketItem(${index})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();editBasketItem(${index});}">
                         <div class="item-row-top">
 
                             ${renderGarmentThumb(item, img, item.name || 'Product', index)}
@@ -5212,6 +5212,19 @@
         return String(value || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
     }
 
+    const LARGE_APPLICATION_EXCLUSIONS = {
+        'large-front-center': true,
+        'large-centre-front': true,
+        'large-center-front': true
+    };
+    const LARGE_EMBROIDERY_TIERS = [
+        { min: 1, max: 8, price: 11.25 },
+        { min: 9, max: 24, price: 8.75 },
+        { min: 25, max: 99, price: 6.75 },
+        { min: 100, max: 249, price: 5.75 },
+        { min: 250, max: Infinity, price: 4.50 }
+    ];
+
     function isLargePrintPosition(position) {
         const candidates = [];
         if (position && typeof position === 'object') {
@@ -5229,14 +5242,8 @@
         }
         return candidates.some(function (value) {
             const key = normalizePositionSlug(value);
-            if (!key) return false;
-            // Explicit large front/back placements (not small-centre-front / left-breast).
-            if (key === 'large-back' || key === 'large-front' || key === 'back-large' || key === 'front-large') return true;
-            if (/^large-(front|back)/.test(key)) return true;
-            if (/^(front|back)-large/.test(key)) return true;
-            // Labels like "Large Front Print" / "Large Back Print"
-            if (/^large-(front|back)-print/.test(key)) return true;
-            return false;
+            if (!key || LARGE_APPLICATION_EXCLUSIONS[key]) return false;
+            return /(^|-)large(-|$)/.test(key);
         });
     }
 
@@ -5244,12 +5251,13 @@
         const methodKey = String(method || '').toLowerCase();
         if (methodKey === 'embroidery-voa') return 0;
         const bucket = normalizeDecorationMethod(method) === 'embroidery' ? 'embroidery' : 'print';
-        // Large Front / Large Back print: fixed £7.70 regardless of qty.
-        if (bucket === 'print' && isLargePrintPosition(position)) {
-            return LARGE_PRINT_FLAT_RATE;
+        const qty = Math.max(1, Number(quantity) || 1);
+        if (isLargePrintPosition(position)) {
+            if (bucket === 'print') return LARGE_PRINT_FLAT_RATE;
+            const largeTier = LARGE_EMBROIDERY_TIERS.find((item) => qty >= item.min && qty <= item.max) || LARGE_EMBROIDERY_TIERS[LARGE_EMBROIDERY_TIERS.length - 1];
+            return largeTier.price;
         }
         const tiers = APPLICATION_PRICE_TIERS[bucket] || APPLICATION_PRICE_TIERS.print;
-        const qty = Math.max(1, Number(quantity) || 1);
         const tier = tiers.find((item) => qty >= item.min && qty <= item.max) || tiers[tiers.length - 1];
         return tier.price;
     }
@@ -5875,7 +5883,15 @@
         const isMobile = window.innerWidth < 700;
         const code = item.code || item.productCode || '';
         if (!isMobile) {
-            window.location.href = `shop-pc.html?product=${encodeURIComponent(code)}`;
+            const colour = item.color || item.selectedColorName || item.colour || '';
+            sessionStorage.setItem('pcBasketSizeEdit', '1');
+            sessionStorage.removeItem('pcOrderResume');
+            const params = new URLSearchParams({
+                product: code,
+                editSizes: '1',
+                color: colour
+            });
+            window.location.href = 'shop-pc.html?' + params.toString();
             return;
         }
 

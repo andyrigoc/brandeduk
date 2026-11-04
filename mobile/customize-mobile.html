@@ -1218,11 +1218,11 @@
     <script src="../brandedukv15-child/assets/js/color-hex.js?v=20260704a"></script>
     <script src="../brandedukv15-child/assets/js/garment-color-behind-scenes.js?v=20260610h"></script>
     <script src="js/basket-logos.js?v=20260519"></script>
-    <script src="js/customize.js?v=20261104-colour-price"></script>
+    <script src="js/customize.js?v=20261103-large-application"></script>
     <script src="js/order-steps.js?v=20261019c"></script>
     <script src="js/marker-editor.js?v=20260531a"></script>
     <script src="../brandedukv15-child/assets/js/api-config.js?v=20260530"></script>
-    <script src="../brandedukv15-child/assets/js/api.js?v=20261104-colour-price"></script>
+    <script src="../brandedukv15-child/assets/js/api.js?v=20260629a"></script>
     <script src="../brandedukv15-child/assets/js/product-recommendations.js?v=20260526d"></script>
     <script>
     // Initialize Related & Alternative Recommendations on Customize page
@@ -1357,37 +1357,52 @@
 
         const LARGE_PRINT_FLAT_RATE = 7.70;
 
+        const LARGE_APPLICATION_EXCLUSIONS = {
+            'large-front-center': true,
+            'large-centre-front': true,
+            'large-center-front': true
+        };
+        const LARGE_EMBROIDERY_TIERS = [
+            { min: 1, max: 8, price: 11.25 },
+            { min: 9, max: 24, price: 8.75 },
+            { min: 25, max: 99, price: 6.75 },
+            { min: 100, max: 249, price: 5.75 },
+            { min: 250, max: Infinity, price: 4.50 }
+        ];
+
         function isLargePrintPosition(position) {
             const key = String(position || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-            if (!key) return false;
-            if (key === 'large-back' || key === 'large-front' || key === 'back-large' || key === 'front-large') return true;
-            if (/^large-(front|back)/.test(key)) return true;
-            if (/^(front|back)-large/.test(key)) return true;
-            return false;
+            if (!key || LARGE_APPLICATION_EXCLUSIONS[key]) return false;
+            return /(^|-)large(-|$)/.test(key);
         }
 
         function getApplicationUnitPrice(method, quantity, position) {
-            if (String(method || '').toLowerCase() !== 'embroidery' && isLargePrintPosition(position)) {
+            const qty = Math.max(1, Number(quantity) || 1);
+            if (isLargePrintPosition(position)) {
+                if (String(method || '').toLowerCase() === 'embroidery') {
+                    const largeTier = LARGE_EMBROIDERY_TIERS.find((item) => qty >= item.min && qty <= item.max) || LARGE_EMBROIDERY_TIERS[LARGE_EMBROIDERY_TIERS.length - 1];
+                    return largeTier.price.toFixed(2);
+                }
                 return LARGE_PRINT_FLAT_RATE.toFixed(2);
             }
             const tiers = APPLICATION_PRICE_TIERS[method] || APPLICATION_PRICE_TIERS.print;
-            const qty = Math.max(1, Number(quantity) || 1);
             const tier = tiers.find((item) => qty >= item.min && qty <= item.max) || tiers[tiers.length - 1];
             return tier.price.toFixed(2);
         }
 
-        // Default prices per position type — quantity-tiered (evaluated at qty=1 for display defaults)
         function getDefaultPositionPrices(quantity) {
             const embroidery = getApplicationUnitPrice('embroidery', quantity);
             const print = getApplicationUnitPrice('print', quantity);
-            const largePrint = LARGE_PRINT_FLAT_RATE.toFixed(2);
+            const largeEmbroidery = getApplicationUnitPrice('embroidery', quantity, 'large-front');
+            const largePrint = getApplicationUnitPrice('print', quantity, 'large-front');
             return {
                 'left-breast': { embroidery, print },
                 'right-breast': { embroidery, print },
                 'small-centre-front': { embroidery, print },
-                'large-front-center': { embroidery, print: largePrint },
-                'large-centre-front': { embroidery, print: largePrint },
-                'large-back': { embroidery, print: largePrint },
+                'large-front-center': { embroidery, print },
+                'large-centre-front': { embroidery, print },
+                'large-front': { embroidery: largeEmbroidery, print: largePrint },
+                'large-back': { embroidery: largeEmbroidery, print: largePrint },
                 'left-arm': { embroidery, print },
                 'right-arm': { embroidery, print }
             };
@@ -2375,6 +2390,6 @@
 
 </script>
 
-    <script src="footer/footer.js?v=20261020-noclose"></script>
+    <script src="footer/footer.js?v=20261028-onehome"></script>
 </body>
 </html>
