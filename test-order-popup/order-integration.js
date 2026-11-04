@@ -501,16 +501,28 @@
             if (fullData && String(fullData.description || '').trim()) {
                 merged.description = fullData.description;
             }
-            const pricingSource = catalogueProduct || productData || fullData || merged;
-            ['price', 'basePrice', 'priceBreaks', 'tiers', 'priceTiers'].forEach(function (field) {
-                if (pricingSource[field] !== undefined) merged[field] = pricingSource[field];
-            });
-            if (Number.isFinite(Number(pricingSource.price)) &&
-                (!Number.isFinite(Number(pricingSource.basePrice)) || Number(pricingSource.basePrice) <= 0)) {
-                merged.basePrice = pricingSource.price;
+            const hasColourPrices = fullData && Array.isArray(fullData.variants) && fullData.variants.length;
+            if (hasColourPrices) {
+                merged.variants = fullData.variants;
+                if (Array.isArray(fullData.priceBreaks) && fullData.priceBreaks.length) {
+                    merged.priceBreaks = fullData.priceBreaks;
+                    delete merged._cataloguePriceBreaks;
+                }
+            } else {
+                const pricingSource = catalogueProduct || productData || fullData || merged;
+                ['price', 'basePrice', 'priceBreaks', 'tiers', 'priceTiers'].forEach(function (field) {
+                    if (pricingSource[field] !== undefined) merged[field] = pricingSource[field];
+                });
+                if (Number.isFinite(Number(pricingSource.price)) &&
+                    (!Number.isFinite(Number(pricingSource.basePrice)) || Number(pricingSource.basePrice) <= 0)) {
+                    merged.basePrice = pricingSource.price;
+                }
+                if (catalogueProduct && Number.isFinite(Number(catalogueProduct.price))) {
+                    merged.basePrice = catalogueProduct.price;
+                }
             }
-            if (catalogueProduct && Number.isFinite(Number(catalogueProduct.price))) {
-                merged.basePrice = catalogueProduct.price;
+            if (window.BrandedColourPricing) {
+                window.BrandedColourPricing.apply(merged, window.selectedColour || '');
             }
 
             window.currentOrderProduct = merged;

@@ -1657,3 +1657,105 @@ if (typeof window !== 'undefined') {
     window.BrandedAPI = BrandedAPI;
     if (window.BRANDED_DEBUG === true) { console.debug('[BrandedAPI] Module loaded successfully. submitQuote available:', typeof BrandedAPI.submitQuote === 'function'); }
 }
+
+// Quantity breaks must follow each colour's own sell price. A Ralawise
+// clearance colour must not become the base for every other colour.
+(function (window) {
+    function priceOf(value) {
+        var amount = Number(value);
+        return Number.isFinite(amount) && amount > 0 ? amount : 0;
+    }
+
+    function roundMoney(amount) {
+        return Math.round(amount * 100) / 100;
+    }
+
+    function colourName(value) {
+        return String(value || '').trim().toLowerCase();
+    }
+
+    function mostCommon(values) {
+        var counts = {};
+        var seen = [];
+        values.forEach(function (value) {
+            var key = value.toFixed(2);
+            if (!counts[key]) {
+                counts[key] = 0;
+                seen.push(value);
+            }
+            counts[key] += 1;
+        });
+        var chosen = 0;
+        var chosenCount = 0;
+        seen.forEach(function (value) {
+            var count = counts[value.toFixed(2)];
+            if (count > chosenCount || (count === chosenCount && value > chosen)) {
+                chosen = value;
+                chosenCount = count;
+            }
+        });
+        return chosen;
+    }
+
+    function colourPrices(product) {
+        var grouped = {};
+        (product && product.variants || []).forEach(function (variant) {
+            var name = colourName(variant && (variant.color || variant.colour));
+            var price = priceOf(variant && (variant.sell_price || variant.sellPrice || variant.price));
+            if (!name || name === 'model' || !price) return;
+            if (!grouped[name]) grouped[name] = [];
+            grouped[name].push(price);
+        });
+        var prices = {};
+        Object.keys(grouped).forEach(function (name) {
+            prices[name] = mostCommon(grouped[name]);
+        });
+        return prices;
+    }
+
+    function scaleBreaks(breaks, base) {
+        var source = Array.isArray(breaks) ? breaks : [];
+        if (!source.length) {
+            return [{ min: 1, max: 99999, price: roundMoney(base), percentage: 0 }];
+        }
+        return source.map(function (tier) {
+            var percentage = Number(tier.percentage != null ? tier.percentage : tier.discount);
+            var price = Number.isFinite(percentage)
+                ? roundMoney(base * (1 - percentage / 100))
+                : roundMoney(base);
+            return Object.assign({}, tier, {
+                price: price,
+                percentage: Number.isFinite(percentage) ? percentage : 0
+            });
+        });
+    }
+
+    function apply(product, selectedColour) {
+        if (!product || !Array.isArray(product.variants) || !product.variants.length) return product;
+        if (!product._cataloguePriceBreaks) {
+            product._cataloguePriceBreaks = (product.priceBreaks || []).map(function (tier) {
+                return Object.assign({}, tier);
+            });
+        }
+        var prices = colourPrices(product);
+        var names = Object.keys(prices);
+        if (!names.length) return product;
+        var selected = colourName(selectedColour);
+        var base = selected && prices[selected]
+            ? prices[selected]
+            : mostCommon(names.map(function (name) { return prices[name]; }));
+        var breaks = scaleBreaks(product._cataloguePriceBreaks, base);
+        product.colourPrices = prices;
+        product.price = breaks[0].price;
+        product.basePrice = breaks[0].price;
+        product.priceBreaks = breaks;
+        product.tiers = breaks;
+        product.priceTiers = breaks;
+        return product;
+    }
+
+    window.BrandedColourPricing = {
+        apply: apply,
+        colourPrices: colourPrices
+    };
+})(typeof window !== 'undefined' ? window : globalThis);

@@ -3035,6 +3035,14 @@ $(document).on("click", ".colour-swatch-item", function(e) {
     const imgUrl = $(this).data("img");
     const colourHex = $(this).data("hex") || '#64748b';
     window.selectedColour = colourName;
+    if (window.BrandedColourPricing && window.productData) {
+        window.BrandedColourPricing.apply(window.productData, colourName);
+        if (window.currentOrderProduct && window.currentOrderProduct !== window.productData) {
+            window.BrandedColourPricing.apply(window.currentOrderProduct, colourName);
+        }
+        if (typeof populatePage3 === 'function') populatePage3();
+        if (typeof updateP3QuantitySummary === 'function') updateP3QuantitySummary();
+    }
     $("#selectedColourName").text(colourName + ' selected');
     $("#p2ColourSelect").val(colourName);
     $("#orderPopup").css("--pc-selected-colour", colourHex);

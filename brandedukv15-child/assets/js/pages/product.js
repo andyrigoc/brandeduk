@@ -364,6 +364,18 @@ async function loadProductData() {
         BASE_PRICE = DISCOUNTS[0].price;
         ORIGINAL_BASE_PRICE = BASE_PRICE;
         ORIGINAL_DISCOUNTS = DISCOUNTS.map(d => ({ ...d }));
+        if (window.BrandedColourPricing && productData.variants && productData.variants.length) {
+            window.BrandedColourPricing.apply(productData, '');
+            DISCOUNTS = (productData.priceBreaks || []).map((breakItem) => ({
+                min: breakItem.min,
+                max: breakItem.max,
+                price: breakItem.price,
+                save: breakItem.percentage || 0
+            }));
+            BASE_PRICE = DISCOUNTS[0] ? DISCOUNTS[0].price : BASE_PRICE;
+            ORIGINAL_BASE_PRICE = BASE_PRICE;
+            ORIGINAL_DISCOUNTS = DISCOUNTS.map(d => ({ ...d }));
+        }
     } else {
         // Fallback: single price tier
         BASE_PRICE = productData.price;
@@ -2169,8 +2181,21 @@ function changeColor(name, url, colorDiv) {
     // Rebuild size price map for this color's variants
     if (PRODUCT_DATA && PRODUCT_DATA.variants && PRODUCT_DATA.variants.length > 0) {
         buildSizePriceMap(PRODUCT_DATA.variants, name);
-        // Restore original pricing when switching colors (sizes are reset)
-        restoreOriginalTierPricing();
+        if (window.BrandedColourPricing) {
+            window.BrandedColourPricing.apply(PRODUCT_DATA, name);
+            DISCOUNTS = (PRODUCT_DATA.priceBreaks || []).map((breakItem) => ({
+                min: breakItem.min,
+                max: breakItem.max,
+                price: breakItem.price,
+                save: breakItem.percentage || 0
+            }));
+            BASE_PRICE = DISCOUNTS[0] ? DISCOUNTS[0].price : BASE_PRICE;
+            ORIGINAL_BASE_PRICE = BASE_PRICE;
+            ORIGINAL_DISCOUNTS = DISCOUNTS.map(d => ({ ...d }));
+            initTierPricing();
+        } else {
+            restoreOriginalTierPricing();
+        }
     }
 
     // Update thumbnail gallery active state

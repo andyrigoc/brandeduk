@@ -2038,7 +2038,9 @@
                 }
             }
 
-            // Store priceBreaks DIRECTLY from API - no modifications
+            if (window.BrandedColourPricing && productData.variants && productData.variants.length) {
+                window.BrandedColourPricing.apply(productData, state.selectedColorName || '');
+            }
             state.product.priceBreaks = productData.priceBreaks || productData.tiers || productData.discounts || [];
             
             // Map pricing tiers if present (for backward compatibility)
@@ -4947,6 +4949,11 @@
         state.selectedColor = colorData.id;
         state.selectedColorName = colorData.name;
         state.selectedColorImage = colorData.image;
+        if (window.BrandedColourPricing && state.product) {
+            window.BrandedColourPricing.apply(state.product, colorData.name);
+            updatePricingTiers();
+            updatePricingSummary();
+        }
         if (window.BrandedColorHex && isUsableColorHex(colorData.hex)) {
             BrandedColorHex.register(colorData.name, colorData.hex, state.product && state.product.code);
         }
