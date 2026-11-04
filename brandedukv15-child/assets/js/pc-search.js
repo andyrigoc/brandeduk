@@ -154,12 +154,13 @@
     function render(payload, query) {
         var brands = Array.isArray(payload.brands) ? payload.brands : [];
         var types = Array.isArray(payload.types) ? payload.types : [];
+        var keywords = Array.isArray(payload.keywords) ? payload.keywords.slice(0, 3) : [];
         var products = Array.isArray(payload.products) ? filterSuggestByTitle(payload.products, query).slice(0, SUGGEST_LIMIT) : [];
         var total = Number(payload.total);
         if (!Number.isFinite(total)) total = products.length;
         var html = '';
 
-        if (!brands.length && !types.length && !products.length) {
+        if (!keywords.length && !brands.length && !types.length && !products.length) {
             dropdown.innerHTML = '<div class="pc-search-empty"><strong>No suggestions</strong>' +
                 '<span>Try another product name, brand or code.</span></div>' +
                 '<a class="pc-search-suggest__view-all" href="' + escapeHtml(shopUrl(query)) +
@@ -170,6 +171,17 @@
 
         html += '<div class="pc-search-head"><span>Matches for “' + escapeHtml(query) + '”</span>' +
             '<a href="' + escapeHtml(shopUrl(query)) + '">View all results →</a></div>';
+
+        if (keywords.length) {
+            html += '<div class="pc-search-suggest__group">' +
+                '<div class="pc-search-suggest__title">Suggested searches</div>' +
+                '<div class="pc-search-suggest__grid">';
+            keywords.forEach(function (keyword) {
+                var value = keyword.value || keyword.label || '';
+                html += textRow(keyword, shopUrl(value), '↗');
+            });
+            html += '</div></div>';
+        }
 
         if (brands.length) {
             html += '<div class="pc-search-suggest__group">' +

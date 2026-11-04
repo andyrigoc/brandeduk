@@ -643,6 +643,23 @@
     border-bottom: none;
 }
 
+.suggestion-keyword {
+    min-height: 44px;
+}
+
+.suggestion-keyword-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 28px;
+    color: #273469;
+    background: #eef2ff;
+    font-weight: 700;
+}
+
 .suggestion-item:hover {
     background: #f1f5f9;
     padding-left: 24px;

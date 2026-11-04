@@ -357,7 +357,8 @@ function initSearch() {
         const debounce = (cb, ms) => { clearTimeout(debounceTimer); debounceTimer = setTimeout(cb, ms); };
 
         const renderSuggestions = (data, query) => {
-            let { products = [] } = data;
+            let { products = [], keywords = [] } = data;
+            keywords = Array.isArray(keywords) ? keywords.slice(0, 3) : [];
             products = filterSuggestByTitle(products, query);
             // Strip hidden brand names
             products = products.map(p => {
@@ -365,17 +366,36 @@ function initSearch() {
                 _HIDDEN_BRANDS.forEach(b => { label = label.replace(new RegExp(b, 'gi'), '').trim(); });
                 return { ...p, label };
             });
-            if (products.length === 0) { suggestionBox.classList.remove('active'); return; }
+            if (products.length === 0 && keywords.length === 0) { suggestionBox.classList.remove('active'); return; }
+
+            const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
             const highlight = (text) => {
                 const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-                return text.replace(regex, '<mark>$1</mark>');
+                return esc(text).replace(regex, '<mark>$1</mark>');
             };
 
-            let html = '<div class="suggestion-group-title">Product Results</div>';
+            let html = '';
             
             // Check if we're not already in the mobile folder (e.g. from index-mobile.html)
             const baseUrl = getMobileBaseUrl();
+
+            if (keywords.length) {
+                html += '<div class="suggestion-group-title">Suggested searches</div>';
+                keywords.forEach(keyword => {
+                    const value = keyword.value || keyword.label || '';
+                    const keywordUrl = getCanonicalShopUrl(`q=${encodeURIComponent(value)}`);
+                    html += `
+                        <a href="${keywordUrl}" class="suggestion-item suggestion-keyword">
+                            <span class="suggestion-keyword-icon" aria-hidden="true">↗</span>
+                            <div class="suggestion-item-content">
+                                <div class="suggestion-item-label">${highlight(value)}</div>
+                            </div>
+                        </a>`;
+                });
+            }
+
+            if (products.length) html += '<div class="suggestion-group-title">Product Results</div>';
 
             products.slice(0, 8).forEach(product => {
                 const detailUrl = `${baseUrl}customize-mobile.html?code=${product.value}`;
@@ -385,7 +405,6 @@ function initSearch() {
                 const priceVal = Number(product.price);
                 const vatOn = typeof window.isVatOn === 'function' && window.isVatOn();
                 const amount = Number.isFinite(priceVal) ? (vatOn ? priceVal * 1.2 : priceVal) : null;
-                const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
                 const brandHtml = brand ? `<span class="suggestion-item-brand">${esc(brand)}</span>` : '';
                 const priceHtml = amount == null ? '' : `<span class="suggestion-item-price">From <strong>£${amount.toFixed(2)}</strong> ${vatOn ? 'inc. VAT' : 'ex. VAT'}</span>`;
                 html += `
@@ -405,7 +424,7 @@ function initSearch() {
         };
 
         const fetchSuggestions = async (query) => {
-            if (query.length < 2) { suggestionBox.classList.remove('active'); return; }
+            if (query.length < 1) { suggestionBox.classList.remove('active'); return; }
             try {
                 const apiBase = (typeof window.resolveBrandedApiBase === 'function'
                     ? window.resolveBrandedApiBase()
