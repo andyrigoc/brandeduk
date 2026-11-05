@@ -577,6 +577,7 @@ function buildBasketItems(basket) {
             code: item.code || item.productCode || '',
             color: item.color || item.colour || '',
             size: item.size || '',
+            quantities: item.quantities || item.sizes || undefined,
             quantity: qty,
             unitPrice,
             itemTotal: unitPrice * qty,

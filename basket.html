@@ -3277,6 +3277,8 @@
     }
 
     let includeVAT = readVatPreference();
+    const liveBasketProducts = new Map();
+    let basketPricingReady = false;
 
     // --- Init ---
     document.addEventListener('DOMContentLoaded', async () => {
@@ -3305,7 +3307,6 @@
     async function hydrateMissingBasketPricing() {
         const basket = getBasket();
         const missingCodes = [...new Set(basket
-            .filter(item => !Array.isArray(item.priceBreaks) || item.priceBreaks.length === 0)
             .map(item => String(item.code || item.productCode || '').trim())
             .filter(Boolean))];
         if (missingCodes.length === 0) return;
@@ -3317,13 +3318,11 @@
 
         await Promise.all(missingCodes.map(async code => {
             try {
-                const response = await fetch(`${apiBase}/api/products?q=${encodeURIComponent(code)}&limit=10`);
+                const response = await fetch(`${apiBase}/api/products/${encodeURIComponent(code)}?pricing=variant-v1`, { cache: 'no-store' });
                 if (!response.ok) return;
-                const data = await response.json();
-                const products = data.items || data.products || [];
-                const product = products.find(candidate =>
-                    String(candidate.code || candidate.style_code || '').trim().toLowerCase() === code.toLowerCase()
-                );
+                const product = await response.json();
+                if (!Array.isArray(product.variants) || !product.variants.length) return;
+                liveBasketProducts.set(code.toLowerCase(), product);
                 const priceBreaks = product && (product.priceBreaks || product.price_breaks);
                 if (!Array.isArray(priceBreaks) || priceBreaks.length === 0) return;
 
@@ -3340,6 +3339,7 @@
             }
         }));
 
+        basketPricingReady = missingCodes.every(code => liveBasketProducts.has(code.toLowerCase()));
         if (changed) saveBasket(basket);
     }
 
@@ -5149,7 +5149,7 @@
                             <button type="button" class="qty-btn" onclick="changeQty(${index}, 1)">+</button>
                         </div>
                         <div class="item-row-price">
-                            <div class="price-amount">${formatCurrency(unitPrice)}</div>
+                            <div class="price-amount">${item.pricingError ? 'Price unavailable' : formatCurrency(unitPrice)}</div>
                             <div class="price-detail">each (${vatSuffix()})</div>
                         </div>
                     </div>
@@ -5548,27 +5548,18 @@
 
         const grandQty = related.reduce((sum, item) => sum + (item.qty || 0), 0);
 
-        // Garment volume breaks (optional — skip if missing)
-        let priceBreaks = null;
-        for (const item of related) {
-            if (item.priceBreaks && item.priceBreaks.length > 0) {
-                priceBreaks = item.priceBreaks;
-                break;
+        const product = liveBasketProducts.get(String(productCode).toLowerCase());
+        related.forEach(item => {
+            try {
+                const priced = BrandedVariantPricing.priceLine(product || {}, item, grandQty);
+                item.unitPrice = priced.unitPrice;
+                item.priceBreaks = priced.variants[0].priceBreaks;
+                item.pricingError = '';
+            } catch (error) {
+                item.pricingError = error.message;
+                basketPricingReady = false;
             }
-        }
-        if (priceBreaks && priceBreaks.length > 0) {
-            const sortedTiers = priceBreaks.slice().sort((a, b) => (b.min || 0) - (a.min || 0));
-            let tierPrice = sortedTiers[sortedTiers.length - 1].price;
-            for (const tier of sortedTiers) {
-                if (grandQty >= (tier.min || 0)) {
-                    tierPrice = tier.price;
-                    break;
-                }
-            }
-            related.forEach(item => {
-                item.unitPrice = parseFloat(tierPrice);
-            });
-        }
+        });
 
         // Decoration: always reprice from official qty bands
         // (Large Front/Back print stays flat £7.70 — not the Standard Print ladder)
@@ -6324,7 +6315,14 @@
             document.getElementById('quoteName')?.focus();
         };
         // "Proceed to Checkout" → 3-step checkout page (minimum order rules in delivery-config.js)
-        if (checkoutBtn) checkoutBtn.addEventListener('click', () => {
+        if (checkoutBtn) checkoutBtn.addEventListener('click', async () => {
+            await hydrateMissingBasketPricing();
+            recalcAllTierPricing();
+            renderBasket();
+            if (!basketPricingReady || getBasket().some(item => item.pricingError)) {
+                alert('We could not verify every selected colour and size price. Please refresh your basket or contact us for a quote.');
+                return;
+            }
             const basket = getBasket();
             if (basket.length === 0) { alert('Please add items to your basket first'); return; }
             const totals = computeBasketTotals(basket);
@@ -7097,6 +7095,7 @@
 <script src="brandedukv15-child/assets/js/api-config.js?v=20260530"></script>
 <script src="brandedukv15-child/assets/js/color-eyedropper.js?v=20260610n"></script>
 <script src="brandedukv15-child/assets/js/color-hex.js?v=20260704a"></script>
+<script src="brandedukv15-child/assets/js/variant-pricing.js?v=20261104"></script>
 <script src="brandedukv15-child/assets/js/api.js?v=20260731a"></script>
 <script src="mobile/js/whatsapp.js?v=20261027-no-attach"></script>
 <script src="brandedukv15-child/assets/js/upload/logo-upload.js?v=20261028-fit-upload"></script>

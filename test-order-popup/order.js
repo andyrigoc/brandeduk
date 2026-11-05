@@ -840,6 +840,20 @@ function savePage3SelectionToBasket() {
         });
     }
 
+    try {
+        var relatedRows = basket.filter(function(entry) { return (entry.code || entry.productCode) === productCode; });
+        var totalProductQty = relatedRows.reduce(function(sum, entry) { return sum + Number(entry.qty || entry.quantity || entry.totalQty || 0); }, 0);
+        relatedRows.forEach(function(entry) {
+            var priced = BrandedVariantPricing.priceLine(product, entry, totalProductQty);
+            entry.unitPrice = priced.unitPrice;
+            entry.price = priced.unitPrice;
+            entry.basePrice = priced.variants[0].sell_price;
+            entry.priceBreaks = priced.variants[0].priceBreaks;
+        });
+    } catch (error) {
+        window.showAlert(error.message, 'Price unavailable');
+        return false;
+    }
     persistQuoteBasket(basket);
     window.dispatchEvent(new Event('basketUpdated'));
 
@@ -3334,6 +3348,31 @@ function updateP3QuantitySummary() {
         }
     });
 
+    if (window.selectedColour && window.productData && window.productData.variants) {
+        var sizes = {};
+        $('#sizeQtyGridP3 .qty-input').each(function() {
+            if (Number(this.value) > 0) sizes[this.dataset.size] = Number(this.value);
+        });
+        if (!Object.keys(sizes).length) {
+            var first = window.productData.variants.find(function(v) { return v.color === window.selectedColour; });
+            if (first) sizes[first.size] = 1;
+        }
+        var existingQty = loadQuoteBasket().filter(function(i) { return (i.code || i.productCode) === window.productData.code; })
+            .reduce(function(sum, i) { return sum + Number(i.qty || i.quantity || i.totalQty || 0); }, 0);
+        try {
+            var line = { color: window.selectedColour, quantities: sizes };
+            var priced = BrandedVariantPricing.priceLine(window.productData, line, Math.max(1, total + existingQty));
+            unitPrice = priced.unitPrice;
+            $('#p3DiscountTiers .discount-tier-card').each(function() {
+                var price = BrandedVariantPricing.priceLine(window.productData, line, Number(this.dataset.min)).unitPrice;
+                $(this).find('.tier-price').text('£' + price.toFixed(2));
+            });
+        } catch (error) {
+            $('#p3CurrentUnitPrice').text('Price unavailable');
+            $('#p3TotalCost').text('—');
+            return;
+        }
+    }
     $('#p3TotalPieces').text(total);
     $('#p3CurrentUnitPrice').text('£' + unitPrice.toFixed(2));
     $('#p3TotalCost').text('£' + (unitPrice * total).toFixed(2));

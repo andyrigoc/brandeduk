@@ -1241,6 +1241,7 @@
 <script src="../brandedukv15-child/assets/js/storage/quote-storage.js?v=20261028-fit-upload"></script>
 <script src="../brandedukv15-child/assets/js/upload/logo-upload.js?v=20261028-fit-upload"></script>
 <script src="decoration-rules.js?v=20261017"></script>
+<script src="../brandedukv15-child/assets/js/variant-pricing.js?v=20261104"></script>
 <script>
   // Resolve app.js from the established tool folder instead of from the
   // extensionless document URL, whose native relative base is the site root.
@@ -1249,7 +1250,7 @@
     apiScript.src = new URL("customization-api.js?v=20261002-api-positions", document.baseURI).href;
     apiScript.onload = function () {
       var appScript = document.createElement("script");
-      appScript.src = new URL("app.js?v=20261025-storage", document.baseURI).href;
+      appScript.src = new URL("app.js?v=20261104-variant-pricing", document.baseURI).href;
       appScript.async = false;
       document.body.appendChild(appScript);
     };

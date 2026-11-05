@@ -275,7 +275,7 @@ async function loadProductData() {
             }
 
             // Merge: the listing endpoint is the canonical PC price source.
-            if (productData && listingProduct) {
+            if (productData && listingProduct && !productData.variants?.length) {
                 const listingPrice = Number(listingProduct.price) || 0;
                 if (listingPrice > 0) {
                     const detailPrice = Number(productData.price) || 0;
@@ -463,13 +463,7 @@ function buildSizePriceMap(variants, colorName) {
         }
     });
 
-    // Check if there are actually different prices across sizes
-    const uniquePrices = [...new Set(Object.values(SIZE_PRICE_MAP))];
-    if (uniquePrices.length <= 1) {
-        SIZE_PRICE_MAP = {}; // No size-based pricing differences
-    } else {
-        console.log('📊 Size-based pricing detected:', SIZE_PRICE_MAP);
-    }
+    // Keep a single size too: its colour may cost more than the style minimum.
 }
 
 // Recalculate DISCOUNTS and tier pricing based on a new base sell_price
@@ -2287,6 +2281,14 @@ function updateDiscountBox(total) {
 --------------------------------------------------- */
 
 function getUnitPrice(totalItems) {
+    if (PRODUCT_DATA && PRODUCT_DATA.variants && selectedColorName) {
+        const sizes = Object.fromEntries(Object.entries(qty).filter(([, count]) => count > 0));
+        if (!Object.keys(sizes).length) {
+            const variant = PRODUCT_DATA.variants.find(v => v.color === selectedColorName);
+            if (variant) sizes[variant.size] = 1;
+        }
+        return BrandedVariantPricing.priceLine(PRODUCT_DATA, { color: selectedColorName, quantities: sizes }, Math.max(1, totalItems)).unitPrice;
+    }
     if (totalItems === 0) return BASE_PRICE;
     const tier = DISCOUNTS.find(t => totalItems >= t.min && totalItems <= t.max);
     return tier ? tier.price : BASE_PRICE;
@@ -2567,8 +2569,10 @@ function saveCurrentSelectionToBasket() {
     // Update price for ALL items of the SAME PRODUCT (all colors) - handle both V2 and old format
     basket.forEach(item => {
         if (item.code === PRODUCT_CODE) {
-            item.price = newUnitPrice.toFixed(2);
-            item.unitPrice = parseFloat(newUnitPrice);
+            const priced = BrandedVariantPricing.priceLine(PRODUCT_DATA, item, newTotal);
+            item.price = priced.unitPrice.toFixed(2);
+            item.unitPrice = priced.unitPrice;
+            item.priceBreaks = priced.variants[0].priceBreaks;
         }
     });
 

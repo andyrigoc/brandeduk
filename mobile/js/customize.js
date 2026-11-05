@@ -1887,7 +1887,7 @@
                         listingProduct = items.find(p => p.code === productCode) || items[0] || null;
                     }
 
-                    if (productData && listingProduct) {
+                    if (productData && listingProduct && !productData.variants?.length) {
                         const detailPrice = Number(productData.price) || 0;
                         const listingPrice = Number(listingProduct.price) || 0;
                         if (listingPrice > 0 && listingPrice !== detailPrice) {
@@ -2525,21 +2525,20 @@
         return currentQty + basketQty;
     }
     
-    function getDiscountedUnitPrice(qty) {
-        const rule = PRICING_RULES[state.product.code];
-        if (!rule) return state.product.basePrice;
-        
-        // Use cumulative quantity (current + basket) for tier calculation
-        const basketQty = getBasketQuantityForProduct(state.product.code);
-        const totalQty = qty + basketQty;
-        
-        const basePrice = rule.basePrice;
-        for (const tier of rule.tiers) {
-            if (totalQty >= tier.min) {
-                return tier.price;
-            }
+    function selectedVariantPrice(quantity) {
+        const product = state.product.rawData;
+        const color = state.selectedColorName || state.selectedColor;
+        let sizes = Object.fromEntries(Object.entries(state.sizeQuantities || {}).filter(([, qty]) => qty > 0));
+        if (!Object.keys(sizes).length) {
+            const variant = (product.variants || []).find(v => String(v.color).toLowerCase() === String(color).toLowerCase());
+            if (!variant) throw new Error('Select an available colour and size');
+            sizes = { [variant.size]: 1 };
         }
-        return basePrice;
+        return BrandedVariantPricing.priceLine(product, { color, quantities: sizes }, Math.max(1, quantity));
+    }
+
+    function getDiscountedUnitPrice(qty) {
+        return selectedVariantPrice(qty + getBasketQuantityForProduct(state.product.code)).unitPrice;
     }
 
     // Alias for getDiscountedUnitPrice (used by order card and subtotal calculations)
@@ -4715,7 +4714,7 @@
         const totalQty = state.quantity + basketQty;
 
         // Get priceBreaks DIRECTLY from API - no sessionStorage, no modifications
-        const priceBreaks = state.product.priceBreaks || [];
+        const priceBreaks = (state.product.priceBreaks || []).map(tier => ({ ...tier, price: selectedVariantPrice(tier.min).unitPrice }));
         const vatOn = isVatOn();
         const basePrice = state.product.basePrice || state.product.price || 0;
 
@@ -5803,25 +5802,7 @@
     }
 
     function getCurrentUnitPrice() {
-        const calculated = getDiscountedUnitPrice(state.quantity);
-        
-        // Fallback: read price from active tier badge in the UI
-        // (ensures we always use the price the user SEES)
-        const activeTier = document.querySelector('.tier-card.active .tier-price, .pricing-tier.active .tier-price');
-        if (activeTier) {
-            const tierText = activeTier.textContent || '';
-            const match = tierText.match(/[\d.]+/);
-            if (match) {
-                const uiPrice = parseFloat(match[0]);
-                // Use UI price if calculated seems wrong (equals base price but tier is active)
-                if (uiPrice > 0 && uiPrice < calculated) {
-                    debugLog('?? Using UI tier price:', uiPrice, 'instead of calculated:', calculated);
-                    return uiPrice;
-                }
-            }
-        }
-        
-        return calculated;
+        return getDiscountedUnitPrice(state.quantity);
     }
 
     // === Technique Selection ===
@@ -10737,34 +10718,13 @@
      * Uses the combined total quantity across all colours/sizes to determine the tier.
      */
     function _recalcPricesForProduct(basket, productCode) {
-        const rule = PRICING_RULES[productCode];
-        if (!rule || !rule.tiers || rule.tiers.length === 0) return;
-
-        // Sum total qty for this product code across all colours
-        let totalQty = 0;
-        basket.forEach(item => {
-            if ((item.productCode || item.code) === productCode) {
-                totalQty += parseInt(item.totalQty) || 0;
-            }
-        });
-
-        // Find the correct tier price
-        let tierPrice = rule.basePrice;
-        for (const tier of rule.tiers) {
-            if (totalQty >= tier.min) {
-                tierPrice = tier.price;
-                break;
-            }
-        }
-
-        // Apply to every item with this product code
-        basket.forEach(item => {
-            if ((item.productCode || item.code) === productCode) {
-                if (item.unitPrice !== tierPrice) {
-                    debugLog('💰 Price updated:', item.color, item.unitPrice, '→', tierPrice, '(total qty:', totalQty, ')');
-                    item.unitPrice = tierPrice;
-                }
-            }
+        const related = basket.filter(item => (item.productCode || item.code) === productCode);
+        const quantity = related.reduce((sum, item) => sum + Number(item.totalQty || item.qty || item.quantity || 0), 0);
+        related.forEach(item => {
+            const priced = BrandedVariantPricing.priceLine(state.product.rawData, item, quantity);
+            item.unitPrice = priced.unitPrice;
+            item.priceBreaks = priced.variants[0].priceBreaks;
+            item.basePrice = priced.variants[0].sell_price;
         });
     }
 
