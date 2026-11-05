@@ -845,8 +845,10 @@ function savePage3SelectionToBasket() {
         var totalProductQty = relatedRows.reduce(function(sum, entry) { return sum + Number(entry.qty || entry.quantity || entry.totalQty || 0); }, 0);
         relatedRows.forEach(function(entry) {
             var priced = BrandedVariantPricing.priceLine(product, entry, totalProductQty);
-            entry.unitPrice = priced.unitPrice;
-            entry.price = priced.unitPrice;
+            var textUnit = (Array.isArray(entry.texts) ? entry.texts : []).reduce(function(sum, text) { return sum + (Number(text.unitPrice) || 1.5); }, 0);
+            entry.garmentUnitPrice = priced.unitPrice;
+            entry.unitPrice = Math.round((priced.unitPrice + textUnit) * 100) / 100;
+            entry.price = entry.unitPrice;
             entry.basePrice = priced.variants[0].sell_price;
             entry.priceBreaks = priced.variants[0].priceBreaks;
         });
@@ -3357,7 +3359,11 @@ function updateP3QuantitySummary() {
             var first = window.productData.variants.find(function(v) { return v.color === window.selectedColour; });
             if (first) sizes[first.size] = 1;
         }
-        var existingQty = loadQuoteBasket().filter(function(i) { return (i.code || i.productCode) === window.productData.code; })
+        var editingSizes = window.pcBasketSizeEdit === true || sessionStorage.getItem('pcBasketSizeEdit') === '1' || new URLSearchParams(location.search).get('editSizes') === '1';
+        var existingQty = loadQuoteBasket().filter(function(i) {
+            return (i.code || i.productCode) === window.productData.code &&
+                !(editingSizes && String(i.color || i.colour).toLowerCase() === String(window.selectedColour).toLowerCase());
+        })
             .reduce(function(sum, i) { return sum + Number(i.qty || i.quantity || i.totalQty || 0); }, 0);
         try {
             var line = { color: window.selectedColour, quantities: sizes };

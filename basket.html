@@ -5552,7 +5552,9 @@
         related.forEach(item => {
             try {
                 const priced = BrandedVariantPricing.priceLine(product || {}, item, grandQty);
-                item.unitPrice = priced.unitPrice;
+                const textUnit = (Array.isArray(item.texts) ? item.texts : []).reduce((sum, text) => sum + (Number(text.unitPrice) || 1.5), 0);
+                item.garmentUnitPrice = priced.unitPrice;
+                item.unitPrice = Math.round((priced.unitPrice + textUnit) * 100) / 100;
                 item.priceBreaks = priced.variants[0].priceBreaks;
                 item.pricingError = '';
             } catch (error) {

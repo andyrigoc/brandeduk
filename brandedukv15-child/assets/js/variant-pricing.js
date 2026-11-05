@@ -9,9 +9,9 @@
     throw error;
   }
   function tiersFor(product, variant) {
-    if (Array.isArray(variant.priceBreaks) && variant.priceBreaks.length) return variant.priceBreaks;
     const base = Number(variant.sell_price);
     if (!Number.isFinite(base) || base <= 0 || base >= 999.99) fail('Selected variant has no valid selling price');
+    if (Array.isArray(variant.priceBreaks) && variant.priceBreaks.length) return variant.priceBreaks;
     return (product.priceBreaks || []).map(tier => {
       const discount = Number(tier.percentage ?? tier.save);
       if (!Number.isFinite(discount) || discount < 0 || discount >= 100) fail('Variant discount rules are unavailable; refresh the product');
@@ -40,7 +40,7 @@
       const tier = tiers.filter(t => quantity >= Number(t.min) && (t.max == null || quantity <= Number(t.max)))
         .sort((a, b) => Number(b.min) - Number(a.min))[0];
       const floor = Number(variant.minimumPrice) || 0;
-      const price = Math.max(Math.ceil(floor * 100) / 100, Number(tier ? tier.price : variant.sell_price));
+      const price = Math.max(Math.ceil(floor * 100 - 1e-8) / 100, Number(tier ? tier.price : variant.sell_price));
       if (!Number.isFinite(price) || price <= 0 || price >= 999.99) fail('Selected variant has no valid price');
       total += money(price) * units;
       count += units;

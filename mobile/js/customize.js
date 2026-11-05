@@ -10722,7 +10722,9 @@
         const quantity = related.reduce((sum, item) => sum + Number(item.totalQty || item.qty || item.quantity || 0), 0);
         related.forEach(item => {
             const priced = BrandedVariantPricing.priceLine(state.product.rawData, item, quantity);
-            item.unitPrice = priced.unitPrice;
+            const textUnit = (Array.isArray(item.texts) ? item.texts : []).reduce((sum, text) => sum + (Number(text.unitPrice) || 1.5), 0);
+            item.garmentUnitPrice = priced.unitPrice;
+            item.unitPrice = Math.round((priced.unitPrice + textUnit) * 100) / 100;
             item.priceBreaks = priced.variants[0].priceBreaks;
             item.basePrice = priced.variants[0].sell_price;
         });
