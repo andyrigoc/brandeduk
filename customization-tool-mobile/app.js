@@ -28,6 +28,8 @@ const state = {
   names: [],
   basePrice: 11.99,
   priceBreaks: [],
+  variantProduct: null,
+  garmentPricingError: '',
   price: 11.99,
   logoRotation: 0,
   textRotation: 0,
@@ -1416,6 +1418,7 @@ async function hydrateSelectedProductFromApi() {
 
     const productData = await detailResponse.json();
     if (!productData || typeof productData !== "object") return;
+    state.variantProduct = productData;
 
     const listingData = listingResponse.ok ? await listingResponse.json() : null;
     const listingItems = listingData?.items || listingData?.products || [];
@@ -1425,9 +1428,7 @@ async function hydrateSelectedProductFromApi() {
     const cataloguePriceBreaks = Array.isArray(listingProduct?.priceBreaks)
       ? listingProduct.priceBreaks.filter((tier) => Number.isFinite(Number(tier?.price)))
       : [];
-    const priceBreaks = cataloguePriceBreaks.length > 0
-      ? cataloguePriceBreaks
-      : (Array.isArray(productData.priceBreaks) ? productData.priceBreaks : []);
+    const priceBreaks = Array.isArray(productData.priceBreaks) ? productData.priceBreaks : [];
     const firstTierPrice = Number(priceBreaks[0]?.price);
     if (Number.isFinite(firstTierPrice)) {
       state.basePrice = firstTierPrice;
@@ -3360,10 +3361,15 @@ function collectSizes() {
 function calculatePrice() {
   const qty = parseInt(mainQtyInput.value) || state.totalQty || 1;
   const pricingQty = getProductPricingQuantity(qty);
-  const tier = state.priceBreaks.find((item) =>
-    pricingQty >= Number(item.min || 1) && pricingQty <= Number(item.max || Number.MAX_SAFE_INTEGER)
-  );
-  let unit = tier ? Number(tier.price) : state.basePrice;
+  let unit;
+  try {
+    const quantities = Object.fromEntries(state.sizes.filter(entry => Number(entry.qty) > 0).map(entry => [entry.size, Number(entry.qty)]));
+    unit = BrandedVariantPricing.priceLine(state.variantProduct || {}, { color: state.colourName, quantities }, pricingQty).unitPrice;
+    state.garmentPricingError = '';
+  } catch (error) {
+    state.garmentPricingError = error.message;
+    return;
+  }
 
   Object.entries(getDraftAreaDesigns()).forEach(([area, design]) => {
     if (design?.logo) unit += getLogoUnitPrice(design.method, pricingQty, area);
@@ -3810,9 +3816,12 @@ function repriceBasketProductCode(basket, productCode) {
   const priceBreaks = related.find((item) => Array.isArray(item?.priceBreaks) && item.priceBreaks.length)?.priceBreaks
     || state.priceBreaks;
   const totalQty = related.reduce((sum, item) => sum + getItemQty(item), 0);
-  const garmentUnitPrice = getTierUnitPrice(priceBreaks, totalQty, state.basePrice);
 
   related.forEach((item) => {
+    const priced = BrandedVariantPricing.priceLine(state.variantProduct || {}, item, totalQty);
+    const garmentUnitPrice = priced.unitPrice;
+    item.basePrice = priced.variants[0].sell_price;
+    item.priceBreaks = priced.variants[0].priceBreaks;
     const textUnitPrice = (Array.isArray(item.texts) ? item.texts : []).reduce(
       (sum, textDesign) => sum + (parseFloat(textDesign?.unitPrice || 1.5) || 1.5),
       0
@@ -4160,7 +4169,12 @@ function upsertBasketItemFromState() {
     basket.push(compactBasketItemForStorage(nextItem));
   }
 
-  repriceBasketProductCode(basket, nextItem.productCode || nextItem.code);
+  try {
+    repriceBasketProductCode(basket, nextItem.productCode || nextItem.code);
+  } catch (error) {
+    alert(error.message + '. Please refresh the product before saving.');
+    return { item: nextItem, saved: false };
+  }
   const saved = writeQuoteBasket(basket);
   updateBasketUIFromStorage();
 
