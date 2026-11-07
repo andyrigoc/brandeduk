@@ -602,6 +602,50 @@
         $('body').css('overflow', 'auto').removeClass('popup-open');
     };
     
+    // Mode of per-colour sell prices. A colour is discounted at 5% or more under that mode.
+    function colourDiscountPercents(product) {
+        var prices = window.BrandedColourPricing && typeof window.BrandedColourPricing.colourPrices === 'function'
+            ? window.BrandedColourPricing.colourPrices(product)
+            : null;
+        var names = prices ? Object.keys(prices) : [];
+        if (!names.length) return {};
+        var counts = {};
+        var seen = [];
+        names.forEach(function (name) {
+            var value = prices[name];
+            var key = value.toFixed(2);
+            if (!counts[key]) {
+                counts[key] = { count: 0, value: value };
+                seen.push(key);
+            }
+            counts[key].count += 1;
+        });
+        var normal = 0;
+        var normalCount = 0;
+        seen.forEach(function (key) {
+            var entry = counts[key];
+            if (entry.count > normalCount || (entry.count === normalCount && entry.value > normal)) {
+                normal = entry.value;
+                normalCount = entry.count;
+            }
+        });
+        var badges = {};
+        if (!(normal > 0)) return badges;
+        names.forEach(function (name) {
+            var colourPrice = prices[name];
+            if (!(colourPrice > 0)) return;
+            var ratio = 1 - (colourPrice / normal);
+            if (ratio >= 0.05) badges[name] = Math.round(ratio * 100);
+        });
+        return badges;
+    }
+
+    function colourOffBadgeHtml(colorName, discounts) {
+        var percent = discounts && discounts[String(colorName || '').trim().toLowerCase()];
+        if (!percent) return '';
+        return '<span class="colour-off-badge">' + percent + '% OFF</span>';
+    }
+
     // Load product data into popup
     function loadProductIntoPopup(product) {
         console.log('Loading product into popup:', product);
@@ -987,6 +1031,7 @@
         
         if (colors.length > 0) {
             console.log('Loading', colors.length, 'colors for product');
+            const colourDiscounts = colourDiscountPercents(product);
             
             // Update color count
             $("#productColourCount").text(colors.length + " colours");
@@ -1003,12 +1048,14 @@
                 const imgUrl = colour.main || colour.image || product.image;
                 const colorName = colour.name || 'Unknown';
                 const colorHex = colour.hex || getColourHex(colorName);
+                const offBadge = colourOffBadgeHtml(colorName, colourDiscounts);
+                const offClass = offBadge ? ' colour-swatch-item--off' : '';
                 
                 // Create swatch for PAGE 2 - grid layout with checkbox + thumbnail + name + view button
                 const swatchPage2 = $(`
-                    <div class="colour-swatch-item ${index >= initialShow ? 'hidden' : ''}" data-colour="${colorName}" data-colour-family="${getColourFamily(colorName)}" data-hex="${colorHex}" data-img="${imgUrl}" data-name="${colorName}" data-index="${index}">
+                    <div class="colour-swatch-item${offClass} ${index >= initialShow ? 'hidden' : ''}" data-colour="${colorName}" data-colour-family="${getColourFamily(colorName)}" data-hex="${colorHex}" data-img="${imgUrl}" data-name="${colorName}" data-index="${index}">
                         <div class="swatch-checkbox"></div>
-                        <div class="swatch-thumb" style="background-image: url('${imgUrl}');"></div>
+                        <div class="swatch-thumb" style="background-image: url('${imgUrl}');">${offBadge}</div>
                         <div class="swatch-info">
                             <p class="swatch-name">${colorName}</p>
                         </div>
@@ -1038,9 +1085,10 @@
                     const imgUrl = colour.main || colour.image || product.image || '';
                     const colorName = colour.name || 'Unknown';
                     const colorHex = colour.hex || getColourHex(colorName);
+                    const offBadge = colourOffBadgeHtml(colorName, colourDiscounts);
                     popularHost.insertAdjacentHTML('beforeend',
-                        '<div class="colour-swatch-item" data-colour="' + colorName + '" data-colour-family="' + getColourFamily(colorName) + '" data-hex="' + colorHex + '" data-img="' + imgUrl + '" data-name="' + colorName + '" data-index="p' + index + '">' +
-                        '<div class="swatch-thumb" style="background-image: url(\'' + imgUrl + '\');"></div>' +
+                        '<div class="colour-swatch-item' + (offBadge ? ' colour-swatch-item--off' : '') + '" data-colour="' + colorName + '" data-colour-family="' + getColourFamily(colorName) + '" data-hex="' + colorHex + '" data-img="' + imgUrl + '" data-name="' + colorName + '" data-index="p' + index + '">' +
+                        '<div class="swatch-thumb" style="background-image: url(\'' + imgUrl + '\');">' + offBadge + '</div>' +
                         '<div class="swatch-info"><p class="swatch-name">' + colorName + '</p></div>' +
                         '</div>'
                     );

@@ -1312,10 +1312,32 @@ body.popup-open {
     font-weight: 700;
 }
 
+/* All colours holds every discounted swatch. Keep that grid in the first
+   screen; the shorter popular row follows and stays reachable by scrolling. */
+#orderPopup .op-scroll.p2-colour-scroll {
+    display: flex;
+    flex-direction: column;
+}
+
+#orderPopup .p2-colour-scroll > .colour-section {
+    flex: 0 0 auto;
+}
+
+#orderPopup .p2-all-section {
+    order: 1;
+}
+
+#orderPopup .p2-popular-section {
+    order: 2;
+}
+
 #orderPopup .p2-popular-grid {
     display: grid;
     grid-template-columns: repeat(6, minmax(0, 1fr));
     gap: 10px;
+    align-items: end;
+    padding: 8px 8px 2px;
+    box-sizing: border-box;
 }
 
 #orderPopup .p2-colour-footer {
@@ -1601,6 +1623,7 @@ body.popup-open {
     width: 100%;
     min-width: 100%;
     box-sizing: border-box;
+    padding: 8px 10px 4px;
 }
 
 #orderPopup .p2-all-hidden {
@@ -1621,7 +1644,7 @@ body.popup-open {
     display: grid;
     grid-template-columns: repeat(10, minmax(0, 1fr));
     gap: 10px 12px;
-    align-items: start;
+    align-items: end;
 }
 
 #orderPopup .page-2 .colour-swatch-item,
@@ -1653,6 +1676,7 @@ body.popup-open {
 }
 
 #orderPopup .page-2 .swatch-thumb {
+    position: relative;
     width: 100%;
     height: 76px;
     border: 1px solid transparent;
@@ -1660,6 +1684,60 @@ body.popup-open {
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
+}
+
+#orderPopup .page-2 .colour-swatch-item.colour-swatch-item--off,
+#orderPopup .page-2 .colour-swatch-item.colour-swatch-item--off:hover,
+#orderPopup .page-2 .colour-swatch-item.colour-swatch-item--off.selected {
+    z-index: 3;
+    width: 150%;
+    margin-left: 0;
+    margin-right: -50%;
+}
+
+#orderPopup .page-2 .colour-swatch-item.colour-swatch-item--off.selected {
+    z-index: 4;
+}
+
+#orderPopup .page-2 .colour-swatch-item.colour-swatch-item--off .swatch-thumb {
+    width: 100%;
+    height: calc(76px * 1.5);
+    margin: 0;
+}
+
+#orderPopup .colour-off-badge {
+    position: absolute;
+    left: 50%;
+    bottom: 4px;
+    z-index: 2;
+    padding: 2px 5px;
+    border-radius: 999px;
+    background: #3D7BD0;
+    color: #fff;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    line-height: 1.15;
+    text-align: center;
+    text-transform: uppercase;
+    white-space: nowrap;
+    pointer-events: none;
+    transform: translateX(-50%) scale(1);
+    transform-origin: center center;
+    animation: colour-off-badge-pulse 1.7s ease-in-out infinite;
+}
+
+@keyframes colour-off-badge-pulse {
+    0%, 56%, 100% { transform: translateX(-50%) scale(1); }
+    12% { transform: translateX(-50%) scale(1.12); }
+    24% { transform: translateX(-50%) scale(1); }
+    40% { transform: translateX(-50%) scale(1.18); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #orderPopup .colour-off-badge {
+        animation: none;
+    }
 }
 
 #orderPopup .page-2 .swatch-name {
