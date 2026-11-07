@@ -1049,9 +1049,13 @@ a {
 
 /* === Color Options === */
 .color-options {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 6px;
+    --colour-cols: 6;
+    --colour-gap: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--colour-gap);
     padding: 8px;
     background: var(--gray-50, #f9fafb);
     border: 1px solid var(--gray-200, #e5e7eb);
@@ -1070,14 +1074,63 @@ a {
 }
 
 .color-btn {
-    width: 100%;
+    /* Cell width is the reserved slot. A sale colour is 1.5× this, so the
+       image grows inside its own cell and the row reflows instead of covering
+       the swatches beside it. */
+    width: calc((100% - (var(--colour-cols) - 1) * var(--colour-gap)) / var(--colour-cols));
+    flex: 0 0 auto;
+    min-width: 0;
+    max-width: 100%;
+    height: auto;
     aspect-ratio: 1;
+    align-self: center;
     border-radius: var(--radius);
     position: relative;
     transition: transform var(--transition-fast), box-shadow var(--transition-fast);
     border: 2px solid transparent;
     overflow: hidden;
     background-color: #fff;
+}
+
+.color-options .color-btn.color-btn--off {
+    width: calc(((100% - (var(--colour-cols) - 1) * var(--colour-gap)) / var(--colour-cols)) * 1.5);
+}
+
+.color-options .colour-off-badge {
+    position: absolute;
+    left: 50%;
+    bottom: 3px;
+    z-index: 2;
+    max-width: calc(100% - 4px);
+    box-sizing: border-box;
+    padding: 1px 4px;
+    border-radius: 999px;
+    background: #3D7BD0;
+    color: #fff;
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    line-height: 1.15;
+    text-align: center;
+    text-transform: uppercase;
+    white-space: nowrap;
+    pointer-events: none;
+    transform: translateX(-50%) scale(1);
+    transform-origin: center center;
+    animation: colour-off-badge-pulse 1.7s ease-in-out infinite;
+}
+
+@keyframes colour-off-badge-pulse {
+    0%, 56%, 100% { transform: translateX(-50%) scale(1); }
+    12% { transform: translateX(-50%) scale(1.12); }
+    24% { transform: translateX(-50%) scale(1); }
+    40% { transform: translateX(-50%) scale(1.18); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .color-options .colour-off-badge {
+        animation: none;
+    }
 }
 
 .color-btn:active {

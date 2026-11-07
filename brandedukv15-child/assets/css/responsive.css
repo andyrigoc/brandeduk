@@ -1503,7 +1503,7 @@
 
     /* Color swatches â€” more columns */
     .customize-page .color-options {
-        grid-template-columns: repeat(10, 1fr);
+        --colour-cols: 10;
         gap: 6px;
     }
 

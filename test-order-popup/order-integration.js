@@ -602,6 +602,27 @@
         $('body').css('overflow', 'auto').removeClass('popup-open');
     };
     
+    // 250+ break: open-ended tier (max >= 99999), otherwise the highest minimum.
+    function volumeFromAmount(product, fallback) {
+        var breaks = Array.isArray(product && product.priceBreaks) ? product.priceBreaks : [];
+        var parsed = breaks.map(function (tier) {
+            var price = parseFloat(tier && (tier.price != null ? tier.price : tier.unitPrice));
+            var min = Number(tier && (tier.min != null ? tier.min : (tier.minQty != null ? tier.minQty : tier.qty))) || 0;
+            var max = Number(tier && (tier.max != null ? tier.max : tier.maxQty)) || 0;
+            return { price: price, min: min, max: max };
+        }).filter(function (tier) {
+            return Number.isFinite(tier.price) && tier.price > 0;
+        });
+        if (!parsed.length) return fallback;
+        var openEnded = parsed.filter(function (tier) { return tier.max >= 99999; });
+        var pool = openEnded.length ? openEnded : parsed;
+        pool.sort(function (a, b) {
+            if (b.min !== a.min) return b.min - a.min;
+            return a.price - b.price;
+        });
+        return pool[0].price;
+    }
+
     // Mode of per-colour sell prices. A colour is discounted at 5% or more under that mode.
     function colourDiscountPercents(product) {
         var prices = window.BrandedColourPricing && typeof window.BrandedColourPricing.colourPrices === 'function'
@@ -770,16 +791,14 @@
             $ratingBlock.attr('hidden', true);
         }
         
-        // Price — use priceBreaks if available, else basePrice
+        // Volume cards keep the active ladder (normal colour until one is chosen).
+        // With no colour selected, the headline From is the 250+ break, not the 1–9 price.
         const basePrice = parseFloat(product.basePrice) || parseFloat(product.price) || 5.90;
-        let fromPrice = basePrice;
-        if (product.priceBreaks && product.priceBreaks.length > 0) {
-            // lowest price across all tiers
-            fromPrice = Math.min(...product.priceBreaks.map(b => parseFloat(b.price) || basePrice));
-        }
-        $("#tier1Price").text("£" + basePrice.toFixed(2));
-        $("#productPrice").text("£" + basePrice.toFixed(2));
-        // p3BasePrice shown on page 3
+        const colourChosen = !!String(window.selectedColour || '').trim();
+        const headlinePrice = colourChosen ? basePrice : volumeFromAmount(product, basePrice);
+        $("#tier1Price").text("£" + headlinePrice.toFixed(2));
+        $("#productPrice").text("£" + headlinePrice.toFixed(2));
+        // Quantity step keeps the colour's own 1–9 price once a colour is chosen.
         $("#p3BasePrice").text("£" + basePrice.toFixed(2));
         
         setProductMainImage(product, imageCandidates);
@@ -823,7 +842,25 @@
 
     var allColourPage = 0;
     var ALL_COLOUR_PAGE_SIZE = 20;
+    var ALL_COLOUR_COLUMNS = 10;
+    var POPULAR_COLOUR_COLUMNS = 6;
     var colourPagerBusy = false;
+
+    // Discounted swatches take a 1.5fr track; every other slot stays 1fr,
+    // including empty slots, so a short row does not stretch and the larger
+    // shirt stays centred in its own cell.
+    function layoutSwatchRow(row, columns) {
+        if (!row) return;
+        var items = Array.from(row.children).filter(function (item) {
+            return item.classList && item.classList.contains('colour-swatch-item') && !item.hidden;
+        });
+        var tracks = [];
+        for (var c = 0; c < columns; c++) {
+            var item = items[c];
+            tracks.push(item && item.classList.contains('colour-swatch-item--off') ? 'minmax(0, 1.5fr)' : 'minmax(0, 1fr)');
+        }
+        row.style.gridTemplateColumns = tracks.join(' ');
+    }
 
     function refreshColourScrollAffordance() {
         if (typeof window.refreshOrderPopupScrollAffordances === 'function') {
@@ -889,10 +926,17 @@
         for (var i = 0; i < visible.length; i += ALL_COLOUR_PAGE_SIZE) {
             var page = document.createElement('div');
             page.className = 'colour-swatches-grid p2-all-page';
-            visible.slice(i, i + ALL_COLOUR_PAGE_SIZE).forEach(function (item) {
-                item.classList.remove('p2-off-page');
-                page.appendChild(item);
-            });
+            var slice = visible.slice(i, i + ALL_COLOUR_PAGE_SIZE);
+            for (var r = 0; r < slice.length; r += ALL_COLOUR_COLUMNS) {
+                var row = document.createElement('div');
+                row.className = 'p2-colour-row';
+                slice.slice(r, r + ALL_COLOUR_COLUMNS).forEach(function (item) {
+                    item.classList.remove('p2-off-page');
+                    row.appendChild(item);
+                });
+                layoutSwatchRow(row, ALL_COLOUR_COLUMNS);
+                page.appendChild(row);
+            }
             track.appendChild(page);
         }
 
@@ -983,6 +1027,7 @@
         if (popularSection) {
             popularSection.hidden = !popular.querySelector('.colour-swatch-item:not([hidden])');
         }
+        layoutSwatchRow(popular, POPULAR_COLOUR_COLUMNS);
         updateAllColourPager(0, { rebuild: true, animate: false });
     }
 

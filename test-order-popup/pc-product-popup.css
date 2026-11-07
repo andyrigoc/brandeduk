@@ -1647,6 +1647,24 @@ body.popup-open {
     align-items: end;
 }
 
+/* Each page is two rows. A discounted colour gets a wider track (set in JS)
+   so the 1.5× shirt stays inside its own cell. */
+#orderPopup .page-2 .p2-all-page.colour-swatches-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+}
+
+#orderPopup .page-2 .p2-colour-row {
+    display: grid;
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+    align-items: end;
+    gap: 12px;
+    width: 100%;
+    min-width: 0;
+}
+
 #orderPopup .page-2 .colour-swatch-item,
 #orderPopup .page-2 .colour-swatch-item:hover,
 #orderPopup .page-2 .colour-swatch-item.selected {
@@ -1688,21 +1706,20 @@ body.popup-open {
 
 #orderPopup .page-2 .colour-swatch-item.colour-swatch-item--off,
 #orderPopup .page-2 .colour-swatch-item.colour-swatch-item--off:hover,
-#orderPopup .page-2 .colour-swatch-item.colour-swatch-item--off.selected {
-    z-index: 3;
-    width: 150%;
-    margin-left: 0;
-    margin-right: -50%;
-}
-
-#orderPopup .page-2 .colour-swatch-item.colour-swatch-item--off.selected {
-    z-index: 4;
+#orderPopup .page-2 .colour-swatch-item.colour-swatch-item--off.selected,
+#orderPopup .p2-popular-grid > .colour-swatch-item.colour-swatch-item--off,
+#orderPopup .p2-popular-grid > .colour-swatch-item.colour-swatch-item--off:hover,
+#orderPopup .p2-popular-grid > .colour-swatch-item.colour-swatch-item--off.selected {
+    width: auto;
+    min-width: 0;
+    margin: 0;
+    justify-self: stretch;
 }
 
 #orderPopup .page-2 .colour-swatch-item.colour-swatch-item--off .swatch-thumb {
     width: 100%;
     height: calc(76px * 1.5);
-    margin: 0;
+    margin: 0 auto;
 }
 
 #orderPopup .colour-off-badge {

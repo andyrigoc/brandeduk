@@ -5069,6 +5069,44 @@
         setTimeout(scrollToQtyAnchor, 380);
     }
 
+    // Same rule as the PC order popup: mode sell price, badge at 5% or more under it.
+    function colourDiscountPercents(product) {
+        var prices = window.BrandedColourPricing && typeof window.BrandedColourPricing.colourPrices === 'function'
+            ? window.BrandedColourPricing.colourPrices(product)
+            : (product && product.colourPrices) || null;
+        var names = prices ? Object.keys(prices) : [];
+        if (!names.length) return {};
+        var counts = {};
+        var seen = [];
+        names.forEach(function (name) {
+            var value = prices[name];
+            var key = value.toFixed(2);
+            if (!counts[key]) {
+                counts[key] = { count: 0, value: value };
+                seen.push(key);
+            }
+            counts[key].count += 1;
+        });
+        var normal = 0;
+        var normalCount = 0;
+        seen.forEach(function (key) {
+            var entry = counts[key];
+            if (entry.count > normalCount || (entry.count === normalCount && entry.value > normal)) {
+                normal = entry.value;
+                normalCount = entry.count;
+            }
+        });
+        var badges = {};
+        if (!(normal > 0)) return badges;
+        names.forEach(function (name) {
+            var colourPrice = prices[name];
+            if (!(colourPrice > 0)) return;
+            var ratio = 1 - (colourPrice / normal);
+            if (ratio >= 0.05) badges[name] = Math.round(ratio * 100);
+        });
+        return badges;
+    }
+
     // Render color buttons with product thumbnails
     function renderColorButtons() {
         const colorOptions = document.getElementById('colorOptions');
@@ -5085,18 +5123,24 @@
             colorOptions.innerHTML = '<p style="color: #6b7280; padding: 16px;">No colors available</p>';
             return;
         }
+
+        const colourDiscounts = colourDiscountPercents(state.product && (state.product.rawData || state.product));
         
         colorOptions.innerHTML = PRODUCT_COLORS.map((color, index) => {
             // Use color image with cache buster to prevent showing cached images from other products
             const imageUrl = color.image || '';
             const cacheBuster = imageUrl ? (imageUrl.includes('?') ? '&' : '?') + '_t=' + Date.now() + '_' + index : '';
             const fullImageUrl = imageUrl + cacheBuster;
+            const offPercent = colourDiscounts[String(color.name || '').trim().toLowerCase()];
+            const offClass = offPercent ? ' color-btn--off' : '';
+            const offBadge = offPercent ? `<span class="colour-off-badge">${offPercent}% OFF</span>` : '';
             
             return `
-            <button class="color-btn ${color.id === state.selectedColor ? 'active' : ''}" 
+            <button class="color-btn${offClass} ${color.id === state.selectedColor ? 'active' : ''}" 
                     data-color="${color.id}" 
                     data-name="${color.name}"
                     style="background-image: url('${fullImageUrl}'); background-size: cover; background-position: center;">
+                ${offBadge}
                 <svg class="color-check" width="14" height="14" viewBox="0 0 24 24" fill="white">
                     <polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" fill="none"/>
                 </svg>
