@@ -1,6 +1,14 @@
 /* Mobile JavaScript - BrandedUK */
 
 document.addEventListener('DOMContentLoaded', function() {
+    const mobileNavigation = window.matchMedia('(max-width: 699px)');
+    if (mobileNavigation.matches) initMobileNavigation();
+    mobileNavigation.addEventListener('change', (event) => {
+        if (event.matches) {
+            initMobileNavigation();
+            initBottomNav();
+        }
+    });
     initVatToggle();
     initMobileMenu();
     initSearch();
@@ -11,6 +19,57 @@ document.addEventListener('DOMContentLoaded', function() {
     initBrandsMarqueeLogos();
     initStickyBarFooterPush();
 });
+
+function initMobileNavigation() {
+    const actions = document.querySelector('.mobile-header--v2 .mh-actions');
+    if (!actions || actions.querySelector('.mh-account')) return;
+
+    const nav = document.querySelector('.bottom-nav');
+    const shop = nav && Array.from(nav.querySelectorAll('a.nav-item')).find((item) => {
+        return item.textContent.trim() === 'Shop';
+    });
+    if (shop) shop.href = '/mobile/shop-categories-mobile.html?force=mobile';
+
+    let account = nav && Array.from(nav.querySelectorAll('a.nav-item')).find((item) => {
+        return item.id === 'accountNavBtn' || item.textContent.trim() === 'Account';
+    });
+
+    if (account) {
+        const bundles = document.createElement('a');
+        bundles.href = '/bundles.html';
+        bundles.className = 'nav-item nav-item--limited-bundles';
+        bundles.setAttribute('aria-label', 'Limited Bundles');
+
+        const icon = document.createElement('img');
+        icon.className = 'nav-limited-bundles-icon';
+        icon.src = '/brandedukv15-child/assets/images/ui/icons/limited-bundles.png?v=20261111-nav2';
+        icon.alt = '';
+        icon.width = 36;
+        icon.height = 36;
+
+        const label = document.createElement('span');
+        label.className = 'nav-item-label';
+        label.textContent = 'Limited Bundles';
+        bundles.append(icon, label);
+        account.replaceWith(bundles);
+
+        const accountLabel = account.querySelector('.nav-item-label');
+        if (accountLabel) accountLabel.remove();
+    } else {
+        account = document.createElement('a');
+        account.className = 'nav-item';
+        account.href = '/profile.html';
+        account.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>';
+    }
+
+    if (!document.getElementById('accountPanel') && account.getAttribute('href') === '#') {
+        account.href = '/profile.html';
+    }
+    account.id = 'accountNavBtn';
+    account.classList.add('mh-icon-btn', 'mh-account');
+    account.setAttribute('aria-label', 'Account');
+    actions.insertBefore(account, actions.querySelector('a[href^="tel:"]'));
+}
 
 // The shop's sticky category bar lives directly in <body>, so CSS sticky never releases it and it
 // would sit on top of the footer. Push it up with the footer, like the end of a sticky container.

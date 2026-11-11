@@ -408,17 +408,22 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
-        .fl-card .fc-price-label,
+        .fl-card .fc-price-label {
+            font-size: 11px;
+            font-weight: 500;
+            color: #f97316;
+        }
         .fl-card .fc-price-suffix {
             font-size: 11px;
-            color: #9ca3af;
+            font-weight: 400;
+            color: #111827;
         }
         .fl-card .fc-price-label { margin-right: 4px; }
         .fl-card .fc-price-suffix { margin-left: 4px; }
         .fl-card .fc-price-value {
             font-size: 16px;
-            font-weight: 700;
-            color: #273469;
+            font-weight: 600;
+            color: #f97316;
         }
 
         .featured-card-skeleton {
@@ -1016,9 +1021,10 @@
         .ac-prod-name .ac-match { color: #273469; font-weight: 700; }
         .ac-prod-price {
             font-size: 11px;
-            color: #374151;
+            color: #111827;
+            font-weight: 400;
         }
-        .ac-prod-price .ac-price-val { color: #273469; font-weight: 700; }
+        .ac-prod-price .ac-price-val { color: #f97316; font-weight: 600; }
 
         /* View all results link */
         .ac-view-all {
@@ -2552,6 +2558,9 @@
                                 </aside>
                             </div>
                         </div>
+                    </li>
+                    <li>
+                        <a href="workwear-bundles/index.html">Bundles</a>
                     </li>
                     <li class="nav-more" hidden>
                         <a class="nav-more-toggle" href="#" aria-haspopup="true" aria-expanded="false" aria-controls="primary-nav-more-panel">
@@ -4415,13 +4424,18 @@ document.addEventListener('DOMContentLoaded', function() {
         return 'men';
     }
 
-    function getLowestPrice(product) {
-        var breaks = product.priceBreaks || product.price_breaks || [];
-        if (breaks.length > 0) {
-            var prices = breaks.map(function(b) { return Number(b.price) || 999; });
-            return Math.min.apply(null, prices);
+    function getPriceRange(product) {
+        var values = [];
+        function add(raw) {
+            var amount = Number(raw);
+            if (isFinite(amount) && amount > 0 && amount < 999.99) values.push(amount);
         }
-        return Number(product.price) || 0;
+        add(product && product.price);
+        add(product && product.basePrice);
+        var breaks = (product && (product.priceBreaks || product.price_breaks)) || [];
+        breaks.forEach(function (step) { add(step && step.price); });
+        if (!values.length) return { min: 0, max: 0 };
+        return { min: Math.min.apply(null, values), max: Math.max.apply(null, values) };
     }
 
     function formatPrice(amount) {
@@ -4557,7 +4571,10 @@ document.addEventListener('DOMContentLoaded', function() {
         function buildProductRow(product, query) {
             var img = product.image || (product.colors && product.colors[0] && (product.colors[0].main || product.colors[0].image)) || 'brandedukv15-child/assets/images/ui/no-image.png';
             var name = stripBrands(product.name || '');
-            var price = getLowestPrice(product);
+            var range = getPriceRange(product);
+            var priceText = Math.abs(range.min - range.max) < 0.005
+                ? formatPrice(range.min)
+                : formatPrice(range.min) + ' - ' + formatPrice(range.max);
             var code = product.code || product.style_code || '';
             // Escape HTML attributes
             var safeName = name.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -4567,7 +4584,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 '<img class="ac-prod-img" src="' + safeImg + '" alt="" onerror="this.src=\'brandedukv15-child/assets/images/ui/no-image.png\'">' +
                 '<div class="ac-prod-info">' +
                     '<div class="ac-prod-name">' + highlightMatch(name, query) + '</div>' +
-                    '<div class="ac-prod-price">From <span class="ac-price-val">' + formatPrice(price) + '</span> ex. VAT</div>' +
+                    '<div class="ac-prod-price"><span class="ac-price-val">' + priceText + '</span> ex. VAT</div>' +
                 '</div>' +
             '</a>';
         }
@@ -4684,11 +4701,17 @@ document.addEventListener('DOMContentLoaded', function() {
         return _fmtCurrency(min) + ' \u2013 ' + _fmtCurrency(max);
     }
     function _productMinMax(product) {
-        var breaks = product.priceBreaks || [];
-        if (!breaks.length) { var b = Number(product.price)||0; return {min:b, max:b}; }
-        var vals = breaks.map(function(s){return Number(s.price);}).filter(function(p){return p>0;});
-        if (!vals.length) { var f = Number(product.price)||0; return {min:f, max:f}; }
-        return { min: Math.min.apply(null, vals), max: Math.max.apply(null, vals) };
+        var values = [];
+        function add(raw) {
+            var amount = Number(raw);
+            if (isFinite(amount) && amount > 0 && amount < 999.99) values.push(amount);
+        }
+        add(product && product.price);
+        add(product && product.basePrice);
+        var breaks = (product && product.priceBreaks) || [];
+        breaks.forEach(function (step) { add(step && step.price); });
+        if (!values.length) return { min: 0, max: 0 };
+        return { min: Math.min.apply(null, values), max: Math.max.apply(null, values) };
     }
 
     // Hidden brands
@@ -4715,10 +4738,10 @@ document.addEventListener('DOMContentLoaded', function() {
             card.tabIndex = -1;
         }
 
-        var priceVal = Number(item.price) || 0;
+        var range = _productMinMax(item);
         var name = (item.style_name || '').replace(/[\u00AE\u2122\u00A9]/g, '');
         var brand = _shouldHideBrand(item.brand_name) ? '' : (item.brand_name || '');
-        card.setAttribute('aria-label', name + ', from ' + _fmtCurrency(priceVal) + ' ' + _vatSuffix());
+        card.setAttribute('aria-label', name + ', ' + _priceRange(range.min, range.max) + ' ' + _vatSuffix());
 
         card.innerHTML =
             '<div class="fl-card">' +
@@ -4728,9 +4751,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 '<div class="fl-info">' +
                     '<div class="fl-code">' + _escapeHtml(item.style_code || '') + (brand ? ' &middot; ' + _escapeHtml(brand) : '') + '</div>' +
                     '<div class="fl-name">' + _escapeHtml(name) + '</div>' +
-                    '<div class="fc-price" data-price-min="' + priceVal + '" data-price-max="' + priceVal + '">' +
-                        '<span class="fc-price-label">From</span>' +
-                        '<span class="fc-price-value">' + _fmtCurrency(priceVal) + '</span>' +
+                    '<div class="fc-price" data-price-min="' + range.min + '" data-price-max="' + range.max + '">' +
+                        '<span class="fc-price-value">' + _priceRange(range.min, range.max) + '</span>' +
                         '<span class="fc-price-suffix">' + _vatSuffix() + '</span>' +
                     '</div>' +
                 '</div>' +
@@ -4794,6 +4816,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     brand_name: p.brand_name || p.brand || '',
                     image: p.image || '',
                     price: p.price,
+                    priceBreaks: p.priceBreaks || [],
                     is_best_seller: p.is_best_seller,
                     is_featured: p.is_featured,
                     is_recommended: p.is_recommended

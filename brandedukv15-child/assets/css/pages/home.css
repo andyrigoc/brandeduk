@@ -2261,10 +2261,20 @@ body {
 
 .product-price-label {
     font-size: 17px;
-    font-weight: 700;
-    color: #f99400;
+    font-weight: 500;
+    color: #f97316;
     text-transform: none;
     letter-spacing: 0.08em;
+}
+
+.product-card .product-price-value {
+    color: #f97316;
+    font-weight: 600;
+}
+
+.product-card .product-price-suffix {
+    color: #111827;
+    font-weight: 400;
 }
 
 .product-card .color-dot {

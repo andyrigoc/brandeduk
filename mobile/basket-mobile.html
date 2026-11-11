@@ -1328,6 +1328,26 @@
             let html = '';
             
             basket.forEach((item, index) => {
+                if (item && item.lineType === 'bundle') {
+                    const chosen = Array.isArray(item.chosenLines) ? item.chosenLines : [];
+                    const lines = chosen.map(line => {
+                        const text = String((line.quantity || 0) + ' ' + (line.label || '') + (line.detail ? ' (' + line.detail + ')' : '')).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+                        return `<p>${text}</p>`;
+                    }).join('');
+                    const raw = item.bundlePrice != null ? item.bundlePrice : item.price;
+                    const money = raw == null || raw === '' ? null : Number(raw);
+                    const priceText = Number.isFinite(money) ? ('\u00A3' + money.toFixed(2)) : '\u2014';
+                    html += `
+                    <div class="basket-item-card" data-index="${index}" data-line-type="bundle">
+                        <div class="basket-item-info">
+                            <h4>${String(item.name || 'Bundle').replace(/&/g, '&amp;').replace(/</g, '&lt;')}</h4>
+                            ${lines}
+                            <p>Bundle price ${priceText}</p>
+                        </div>
+                        <button type="button" class="basket-item-remove" data-index="${index}" onclick="event.stopPropagation()">Remove</button>
+                    </div>`;
+                    return;
+                }
                 const itemImage = item.colorImage || item.image || '../brandedukv15-child/assets/images/products/default.jpg';
                 const itemColor = item.color || 'Black';
                 const garmentHex = getItemGarmentHex(item);
@@ -1414,6 +1434,7 @@
             let allCustomizations = [];
             
             basket.forEach((item) => {
+                if (item && item.lineType === 'bundle') return;
                 const totalQty = item.totalQty || item.qty || Object.values(item.quantities || item.sizes || {}).reduce((s, q) => s + q, 0) || 1;
                 const logos = collectItemLogos(item);
                 logos.forEach(logo => {
@@ -1462,6 +1483,12 @@
             let customTotal = 0;
             
             basket.forEach(item => {
+                if (item && item.lineType === 'bundle') {
+                    const raw = item.bundlePrice != null ? item.bundlePrice : item.price;
+                    const money = raw == null || raw === '' ? null : Number(raw);
+                    if (Number.isFinite(money)) garmentsTotal += money;
+                    return;
+                }
                 const sizes = item.sizes || item.quantities || {};
                 const unitPrice = item.unitPrice || item.price || 0;
                 const qty = Object.keys(sizes).length > 0
@@ -1478,12 +1505,21 @@
             });
             
             const grandTotal = garmentsTotal + customTotal;
+            const onlyUnpricedBundle = basket.length > 0 && basket.every(item => item && item.lineType === 'bundle') && garmentsTotal === 0 && customTotal === 0;
             
             // Update DOM
             const garmentsSubtotal = document.getElementById('garmentsSubtotal');
             const customSubtotal = document.getElementById('customSubtotal');
             const grandTotalEl = document.getElementById('grandTotal');
             const actionBarTotal = document.getElementById('actionBarTotal');
+
+            if (onlyUnpricedBundle) {
+                if (garmentsSubtotal) garmentsSubtotal.textContent = '\u2014';
+                if (customSubtotal) customSubtotal.textContent = '\u2014';
+                if (grandTotalEl) grandTotalEl.textContent = '\u2014';
+                if (actionBarTotal) actionBarTotal.textContent = '\u2014';
+                return;
+            }
             
             if (garmentsSubtotal) garmentsSubtotal.textContent = formatCurrency(garmentsTotal);
             if (customSubtotal) customSubtotal.textContent = formatCurrency(customTotal);

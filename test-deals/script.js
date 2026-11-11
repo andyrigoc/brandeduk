@@ -1,9 +1,63 @@
 /* Branded UK · workwear industries motion page. Native JS; DM Sans unchanged. */
-const SECTORS = {
- construction: {name:'Construction',label:'BUILT FOR THE SITE',image:'assets/construction-site.jpg',description:'Practical, durable workwear for teams that need to look professional while working safely and comfortably on site.',products:['Hi-vis jackets and vests','Embroidered polos and hoodies','Softshell jackets and work trousers']},
- hospitality: {name:'Hospitality',label:'READY FOR SERVICE',image:'assets/hospitality-apron.jpg',description:'A cohesive look for cafés, restaurants, bars and front-of-house staff. Mix easy-care garments and refined details that suit your venue.',products:['Bib and waist aprons','Shirts and polos','Chefwear and branded layers']},
- sport: {name:'Sport',label:'ONE TEAM. ONE IDENTITY.',image:'assets/sport-training.jpg',description:'From grassroots clubs to coaching and leisure teams, coordinated sportswear helps everyone represent the same identity.',products:['Training tops and team T-shirts','Tracksuits and hoodies','Branded jackets and headwear']},
- cleaning: {name:'Cleaning',label:'PROFESSIONAL EVERY SHIFT',image:'assets/cleaning-workwear.jpg',description:'Comfortable workwear that helps cleaning and facilities teams look consistent across sites and client-facing jobs.',products:['Easy-care polos and T-shirts','Fleece and softshell layers','Hi-vis options and practical uniforms']}
+const DEALS = {
+  construction: {
+    code: '01',
+    sector: 'Construction',
+    tagline: 'Ready for every shift.',
+    description: 'Hard-wearing uniform systems for site teams.',
+    perk: 'Free logo & setup',
+    banner: 'assets/construction-deal-01-banner.jpg',
+    bannerAlt: 'Site team wearing a navy hoodie, a charcoal softshell and a hi-vis jacket',
+    items: [
+      { qty: 3, name: 'Navy hoodies', image: 'assets/deals/construction/navy-hoodie.jpg' },
+      { qty: 2, name: 'Charcoal softshells', image: 'assets/deals/construction/charcoal-softshell.jpg' },
+      { qty: 1, name: 'Hi-vis jacket', image: 'assets/deals/construction/hivis-jacket.jpg' },
+      { qty: 2, name: 'Hi-vis vests', image: 'assets/deals/construction/hivis-vest.jpg' },
+      { qty: 3, name: 'Work trousers', image: 'assets/deals/construction/work-trousers.jpg' }
+    ]
+  },
+  hospitality: {
+    code: '03',
+    sector: 'Hospitality',
+    tagline: 'Built for the busiest service.',
+    description: 'A refined everyday uniform for cafés, restaurants and front-of-house teams.',
+    perk: 'Free logo & setup',
+    banner: 'hospitality-bar.jpg',
+    bannerAlt: 'Bar team in white shirts and brown aprons',
+    items: [
+      { qty: 2, name: 'Bib aprons', image: 'products/bib-apron.svg' },
+      { qty: 3, name: 'Shirts', image: 'products/shirt.svg' },
+      { qty: 1, name: 'Waist apron', image: 'products/waist-apron.svg' }
+    ]
+  },
+  sport: {
+    code: '01',
+    sector: 'Sport',
+    tagline: 'One team. One identity.',
+    description: 'Coordinated training kit for clubs, coaches and match-day staff.',
+    perk: 'Free logo & setup',
+    banner: 'assets/sport-teamwear.jpg',
+    bannerAlt: 'Athlete wearing a navy sports team jacket',
+    items: [
+      { qty: 4, name: 'Training tops' },
+      { qty: 2, name: 'Hoodies' },
+      { qty: 1, name: 'Team jackets' }
+    ]
+  },
+  cleaning: {
+    code: '01',
+    sector: 'Cleaning',
+    tagline: 'Professional every shift.',
+    description: 'Easy-care uniforms for cleaning and facilities teams on every site.',
+    perk: 'Free logo & setup',
+    banner: 'assets/cleaning-workwear.jpg',
+    bannerAlt: 'Cleaner wearing a navy workwear polo',
+    items: [
+      { qty: 4, name: 'Polos' },
+      { qty: 2, name: 'Softshells' },
+      { qty: 2, name: 'Hi-vis vests' }
+    ]
+  }
 };
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const cards = [...document.querySelectorAll('.cards-row .card')];
@@ -12,7 +66,7 @@ const results = document.querySelector('.big-results');
 const little = document.querySelector('.small-team');
 const subline = document.querySelector('.subline');
 const nav = document.querySelector('.nav');
-const dialog = document.querySelector('#sector-dialog');
+const dialog = document.querySelector('#deal-pop');
 let pointerX=0,pointerY=0,currentX=0,currentY=0,scrollProgress=0,frame=0;
 const moves=[[-260,-40,-25],[-200,20,-18],[-120,80,-10],[-40,120,-4],[40,120,4],[120,80,12],[200,20,22],[260,-40,28]];
 
@@ -67,21 +121,47 @@ if('IntersectionObserver' in window&&!reduceMotion.matches){
  reveal.forEach(el=>{el.classList.add('reveal');observer.observe(el);});
 }else document.querySelectorAll('.reveal').forEach(el=>el.classList.add('is-visible'));
 
-function openSector(id){
- const sector=SECTORS[id];if(!sector)return;
- document.querySelector('#sector-dialog-eyebrow').textContent=sector.label;
- document.querySelector('#sector-dialog-title').textContent=sector.name+' uniforms';
- document.querySelector('#sector-dialog-description').textContent=sector.description;
- const img=document.querySelector('#sector-dialog-image');img.src=sector.image;img.alt=sector.name+' uniform example';
- const list=document.querySelector('#sector-dialog-products');list.replaceChildren();
- for(const product of sector.products){const li=document.createElement('li');li.textContent=product;list.append(li);}
- const subject=encodeURIComponent(sector.name+' uniforms enquiry');
- document.querySelector('#sector-dialog-cta').href='mailto:info@brandeduk.com?subject='+subject;
+function openDeal(id){
+ const deal=DEALS[id];if(!deal||!dialog)return;
+ document.querySelector('#deal-pop-kicker').textContent=deal.sector+' deal '+deal.code;
+ document.querySelector('#deal-pop-title').textContent=deal.sector;
+ document.querySelector('#deal-pop-tagline').textContent=deal.tagline;
+ document.querySelector('#deal-pop-lead').textContent=deal.description;
+ document.querySelector('#deal-pop-perk').textContent=deal.perk;
+ const banner=document.querySelector('#deal-pop-banner');
+ banner.src=deal.banner;
+ banner.alt=deal.bannerAlt;
+ const list=document.querySelector('#deal-pop-items');
+ list.style.gridTemplateColumns='repeat('+deal.items.length+', minmax(0, 1fr))';
+ list.replaceChildren();
+ for(const item of deal.items){
+  const li=document.createElement('li');
+  li.className='deal-pop__item';
+  const shot=document.createElement('div');
+  shot.className='deal-pop__shot';
+  if(item.image){
+   const img=document.createElement('img');
+   img.src=item.image;
+   img.alt='';
+   shot.append(img);
+  }
+  const qty=document.createElement('p');
+  qty.className='deal-pop__qty';
+  qty.textContent='\u00d7'+item.qty;
+  const name=document.createElement('p');
+  name.className='deal-pop__name';
+  name.textContent=item.name;
+  li.append(shot,qty,name);
+  list.append(li);
+ }
  dialog.showModal();
 }
-document.querySelectorAll('[data-sector]').forEach(el=>el.addEventListener('click',()=>openSector(el.dataset.sector)));
-document.querySelector('#sector-dialog-close').addEventListener('click',()=>dialog.close());
+document.querySelectorAll('[data-sector]').forEach(el=>el.addEventListener('click',()=>openDeal(el.dataset.sector)));
+document.querySelector('#deal-pop-close').addEventListener('click',()=>dialog.close());
 dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close();});
+document.querySelector('#deal-pop-cta').addEventListener('click',event=>event.preventDefault());
+const requestedDeal=new URLSearchParams(location.search).get('deal');
+if(requestedDeal)openDeal(requestedDeal);
 
 // Demonstration counters. Actual 2001 establishment year stays literal.
 if('IntersectionObserver' in window&&!reduceMotion.matches){

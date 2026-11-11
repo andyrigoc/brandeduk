@@ -294,16 +294,16 @@ function getRangeFromProducts(list) {
 }
 
 function getProductPriceRange(product) {
-    const breaks = PRICE_BREAKS_BY_CODE[product.code];
-    if (!breaks || !breaks.length) {
-        const base = toPriceNumber(product.price);
-        return { min: base, max: base };
-    }
-    const values = breaks.map(step => toPriceNumber(step.price)).filter(price => price > 0);
-    if (!values.length) {
-        const fallback = toPriceNumber(product.price);
-        return { min: fallback, max: fallback };
-    }
+    const values = [];
+    const add = (raw) => {
+        const price = toPriceNumber(raw);
+        if (price > 0 && price < 999.99) values.push(price);
+    };
+    add(product && product.price);
+    add(product && product.basePrice);
+    const breaks = PRICE_BREAKS_BY_CODE[product && product.code] || (product && product.priceBreaks) || [];
+    breaks.forEach(step => add(step && step.price));
+    if (!values.length) return { min: 0, max: 0 };
     return {
         min: Math.min(...values),
         max: Math.max(...values)
@@ -381,7 +381,6 @@ function renderProducts(productsToRender = PRODUCTS_DB) {
                 </div>
                 <div class="product-name">${(product.name||'').replace(/[\u00AE\u2122\u00A9]/g,'')}</div>
                 <div class="product-price" data-price-min="${minPrice}" data-price-max="${maxPrice}">
-                    <span class="product-price-label">Start From</span>
                     <span class="product-price-value">${formatPriceRange(minPrice, maxPrice)}</span>
                     <span class="product-price-suffix">${vatSuffix()}</span>
                 </div>

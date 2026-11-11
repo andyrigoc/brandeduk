@@ -1,4 +1,4 @@
-/* Homepage mobile header: hamburger, centered logo, phone, cart, search. */
+/* Mobile header: hamburger, logo, account, phone, cart, search. */
 body.home-page,
 body:has(.mobile-header--v2) {
     --header-height: 136px;
@@ -70,6 +70,60 @@ body:has(.mobile-header--v2) {
     border: 0;
     background: transparent;
     padding: 0;
+}
+
+@media (max-width: 699px) {
+    .mobile-header--v2 .mh-bar {
+        grid-template-columns: 44px minmax(0, 1fr) auto;
+    }
+
+    .mobile-header--v2 .mh-logo,
+    .mobile-header--v2 .mobile-logo-center {
+        min-width: 0;
+        max-width: 100% !important;
+        overflow: hidden !important;
+    }
+
+    .mobile-header--v2 .mh-actions .mh-account {
+        flex: 0 0 44px;
+        padding: 0;
+        gap: 0;
+    }
+
+    .bottom-nav .nav-item--limited-bundles {
+        align-self: stretch;
+        justify-content: center;
+        gap: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+        text-align: center;
+    }
+
+    .bottom-nav .nav-limited-bundles-icon {
+        display: block;
+        width: 46.8px;
+        height: 46.8px;
+        object-fit: contain;
+    }
+
+    .bottom-nav .nav-item--limited-bundles .nav-item-label {
+        display: none;
+    }
+}
+
+@media (max-width: 359px) {
+    .mobile-header--v2 .mh-logo .mobile-logo-badge,
+    .mobile-header--v2 .mobile-logo-center .mobile-logo-badge {
+        height: 44px !important;
+        max-height: 44px !important;
+        max-width: 44px !important;
+    }
+
+    .mobile-header--v2 .mh-logo .mobile-logo-word,
+    .mobile-header--v2 .mobile-logo-center .mobile-logo-word {
+        height: 44px !important;
+        max-height: 44px !important;
+    }
 }
 
 .mobile-header--v2 .mh-search {

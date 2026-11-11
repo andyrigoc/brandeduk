@@ -132,8 +132,25 @@
     };
 
     // === API ===
-    // Minimal API base used by desktop product.js — reuse here for mobile fetches
-    const API_BASE_URL = 'https://api.brandeduk.com/api';
+    // Direct calls to api.brandeduk.com from 127.0.0.1 are rejected (403, no CORS).
+    // Resolve at request time so api-config.js (loaded after this file) can point
+    // local preview at the CORS proxy. Production still uses api.brandeduk.com.
+    function brandedApiBase() {
+        var host = (window.location && window.location.hostname) || '';
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+        // Local preview cannot call api.brandeduk.com (403). Use the CORS proxy
+        // even if a cached api-config.js still points at the production host.
+        if (isLocal && window.API_USE_LOCAL === true) {
+            return 'http://localhost:3004/api';
+        }
+        if (isLocal && window.API_USE_LOCAL_PROXY !== false) {
+            return 'http://127.0.0.1:3005/api';
+        }
+        var root = (typeof window.resolveBrandedApiBase === 'function')
+            ? window.resolveBrandedApiBase()
+            : (window.API_BASE_URL || 'https://api.brandeduk.com');
+        return String(root || 'https://api.brandeduk.com').replace(/\/+$/, '') + '/api';
+    }
     const CUSTOMIZATION_CONFIG_CACHE = new Map();
     const CUSTOMIZATION_CONFIGS = new Map();
     const CUSTOMIZATION_PRODUCT_TYPE_SLUGS = new Set([
@@ -322,7 +339,7 @@
         if (!CUSTOMIZATION_CONFIG_CACHE.has(cacheKey)) {
             const controller = new AbortController();
             const timeoutId = window.setTimeout(() => controller.abort(), 3000);
-            const configUrl = new URL(`${API_BASE_URL}/customization-config/${encodeURIComponent(slug)}`);
+            const configUrl = new URL(`${brandedApiBase()}/customization-config/${encodeURIComponent(slug)}`);
             if (template.subtype) configUrl.searchParams.set('subtype', template.subtype);
             const request = fetch(
                 configUrl.toString(),
@@ -1842,19 +1859,19 @@
             }
 
             // ALWAYS fetch fresh product detail from API to get complete sizes
-            // Also fetch from listing endpoint for up-to-date pricing
-            // Read from sessionStorage first, then fall back to URL ?code= parameter
-            let productCode = savedProductCode || (cachedData ? cachedData.code : null);
-            
-            // Fallback: read code from URL parameter (for direct/shared links)
+            // Also fetch from listing endpoint for up-to-date pricing.
+            // A ?code= in the URL is the product this page is showing. Session
+            // storage is only the fallback for opens that have no code in the URL.
+            let productCode = null;
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                productCode = urlParams.get('code') || null;
+                if (productCode) {
+                    debugLog('🔗 Product code from URL parameter:', productCode);
+                }
+            } catch (e) { /* ignore */ }
             if (!productCode) {
-                try {
-                    const urlParams = new URLSearchParams(window.location.search);
-                    productCode = urlParams.get('code') || null;
-                    if (productCode) {
-                        debugLog('🔗 Product code from URL parameter:', productCode);
-                    }
-                } catch (e) { /* ignore */ }
+                productCode = savedProductCode || (cachedData ? cachedData.code : null);
             }
             
             if (productCode) {
@@ -1862,8 +1879,8 @@
                     debugLog('📦 Fetching fresh product detail from API for:', productCode);
                     // Fetch detail (full data) and listing (accurate prices) in parallel
                     const [detailRes, listingRes] = await Promise.allSettled([
-                        fetch(`${API_BASE_URL}/products/${encodeURIComponent(productCode)}`),
-                        fetch(`${API_BASE_URL}/products?q=${encodeURIComponent(productCode)}&limit=1`)
+                        fetch(`${brandedApiBase()}/products/${encodeURIComponent(productCode)}`),
+                        fetch(`${brandedApiBase()}/products?q=${encodeURIComponent(productCode)}&limit=1`)
                     ]);
 
                     if (detailRes.status === 'fulfilled' && detailRes.value.ok) {
@@ -5070,10 +5087,65 @@
     }
 
     // Same rule as the PC order popup: mode sell price, badge at 5% or more under it.
-    function colourDiscountPercents(product) {
-        var prices = window.BrandedColourPricing && typeof window.BrandedColourPricing.colourPrices === 'function'
+    function mostCommonSellPrice(values) {
+        var counts = {};
+        var seen = [];
+        values.forEach(function (value) {
+            var key = value.toFixed(2);
+            if (!counts[key]) {
+                counts[key] = 0;
+                seen.push(value);
+            }
+            counts[key] += 1;
+        });
+        var chosen = 0;
+        var chosenCount = 0;
+        seen.forEach(function (value) {
+            var count = counts[value.toFixed(2)];
+            if (count > chosenCount || (count === chosenCount && value > chosen)) {
+                chosen = value;
+                chosenCount = count;
+            }
+        });
+        return chosen;
+    }
+
+    // Variant sell_price, same source as BrandedColourPricing. colour.fromPrice is
+    // that sell price on the colour record when the variant list is absent.
+    function colourSellPrices(product) {
+        var fromHelper = window.BrandedColourPricing && typeof window.BrandedColourPricing.colourPrices === 'function'
             ? window.BrandedColourPricing.colourPrices(product)
-            : (product && product.colourPrices) || null;
+            : null;
+        if (fromHelper && Object.keys(fromHelper).length) return fromHelper;
+        if (product && product.colourPrices && Object.keys(product.colourPrices).length) return product.colourPrices;
+
+        var grouped = {};
+        function add(name, amount) {
+            var key = String(name || '').trim().toLowerCase();
+            var price = Number(amount);
+            if (!key || key === 'model' || !(price > 0)) return;
+            if (!grouped[key]) grouped[key] = [];
+            grouped[key].push(price);
+        }
+        (product && product.variants || []).forEach(function (variant) {
+            if (!variant) return;
+            add(variant.color || variant.colour, variant.sell_price || variant.sellPrice || variant.price);
+        });
+        if (!Object.keys(grouped).length) {
+            (product && (product.colors || product.colorOptions) || []).forEach(function (color) {
+                if (!color) return;
+                add(color.name || color.displayName, color.fromPrice || color.sell_price || color.sellPrice || color.price);
+            });
+        }
+        var prices = {};
+        Object.keys(grouped).forEach(function (name) {
+            prices[name] = mostCommonSellPrice(grouped[name]);
+        });
+        return prices;
+    }
+
+    function colourDiscountPercents(product) {
+        var prices = colourSellPrices(product);
         var names = prices ? Object.keys(prices) : [];
         if (!names.length) return {};
         var counts = {};

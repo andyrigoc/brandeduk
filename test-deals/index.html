@@ -9,7 +9,7 @@
   <title>Shop by Industry | Branded UK</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..900;1,9..40,400..900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400..900;1,9..40,400..900&family=Libre+Baskerville:ital@1&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
   <script src="../brandedukv15-child/assets/js/pc-header-template.js?v=20261015-nodeals"></script>
   <script src="../brandedukv15-child/assets/js/pc-header.js?v=20260913c"></script>
@@ -93,10 +93,27 @@
 
   <footer id="contact" class="footer"><span><span class="logo-dot logo-dot--small" aria-hidden="true"></span> BRANDED UK</span><p>Custom uniforms. Embroidery. Printing. Made for every team.</p><a href="https://brandeduk.com" target="_blank" rel="noopener noreferrer">brandeduk.com ↗</a></footer>
 
-  <!-- Sector details, not fabricated catalogue products or prices. -->
-  <dialog class="sector-dialog" id="sector-dialog" aria-labelledby="sector-dialog-title">
-    <div class="sector-dialog__head"><span>BRANDED UK / SHOP BY INDUSTRY</span><button id="sector-dialog-close" type="button" aria-label="Close panel">×</button></div>
-    <div class="sector-dialog__body"><div class="sector-dialog__image"><img id="sector-dialog-image" alt="" /></div><div class="sector-dialog__copy"><span class="sector-dialog__eyebrow" id="sector-dialog-eyebrow"></span><h2 id="sector-dialog-title"></h2><p id="sector-dialog-description"></p><div class="sector-dialog__label">EXPLORE THESE GARMENTS</div><ul id="sector-dialog-products"></ul><a class="sector-dialog__cta" id="sector-dialog-cta" href="mailto:info@brandeduk.com">Enquire about this collection ↗</a></div></div>
+  <!-- First deal step only. The second popup is not wired yet. -->
+  <dialog class="deal-pop" id="deal-pop" aria-labelledby="deal-pop-title">
+    <button type="button" class="deal-pop__close" id="deal-pop-close" aria-label="Close">×</button>
+    <article class="deal-pop__card">
+      <div class="deal-pop__banner">
+        <img id="deal-pop-banner" alt="" />
+      </div>
+      <div class="deal-pop__body">
+        <div class="deal-pop__copy">
+          <p class="deal-pop__kicker" id="deal-pop-kicker"></p>
+          <h2 class="deal-pop__title" id="deal-pop-title"></h2>
+          <p class="deal-pop__tagline" id="deal-pop-tagline"></p>
+          <p class="deal-pop__lead" id="deal-pop-lead"></p>
+          <div class="deal-pop__actions">
+            <p class="deal-pop__perk"><span class="deal-pop__dot" aria-hidden="true"></span><span id="deal-pop-perk"></span></p>
+            <button type="button" class="deal-pop__cta" id="deal-pop-cta">View deal <span aria-hidden="true">→</span></button>
+          </div>
+        </div>
+        <ul class="deal-pop__items" id="deal-pop-items"></ul>
+      </div>
+    </article>
   </dialog>
 </body>
 </html>

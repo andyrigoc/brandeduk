@@ -1,0 +1,87 @@
+/* Shop by category – mobile grid */
+.shop-cats {
+    padding: 16px 14px 28px;
+    background: #fff;
+}
+
+.shop-cats__title {
+    margin: 0 0 14px;
+    font-family: 'Poppins', 'Inter', system-ui, sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1.15;
+    color: #1f2433;
+    text-align: center;
+}
+
+.shop-cats__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.shop-cats__card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 4px;
+    height: 100%;
+    min-height: 118px;
+    padding: 8px 6px 10px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(17, 24, 39, 0.06);
+    color: #111827;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+}
+
+a.shop-cats__card:active {
+    transform: scale(0.97);
+    border-color: #ff6a00;
+    box-shadow: 0 2px 8px rgba(255, 106, 0, 0.18);
+}
+
+a.shop-cats__card:focus-visible {
+    outline: 2px solid #ff6a00;
+    outline-offset: 2px;
+}
+
+.shop-cats__icon {
+    display: block;
+    width: 76px;
+    height: 76px;
+    object-fit: contain;
+}
+
+.shop-cats__name {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.15;
+    text-align: center;
+}
+
+/* Build your own / Mix & Match: shown but not active yet */
+.shop-cats__card--soon {
+    cursor: default;
+}
+
+@media (max-width: 359px) {
+    .shop-cats__icon {
+        width: 62px;
+        height: 62px;
+    }
+
+    .shop-cats__name {
+        font-size: 12px;
+    }
+}

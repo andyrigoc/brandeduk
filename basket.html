@@ -3916,6 +3916,10 @@
         let newBasket = [];
 
         basket.forEach(item => {
+            if (isBundleLine(item)) {
+                newBasket.push(item);
+                return;
+            }
             // --- Step 1: Extract logos from old positions/positionDesigns ---
             const logos = _extractLogos(item);
 
@@ -4011,6 +4015,7 @@
         // If some sizes have a logo and others don't, copy logos to all
         const grouped = {};
         newBasket.forEach((item, idx) => {
+            if (isBundleLine(item)) return;
             const key = getItemCode(item) + '|' + getItemColor(item);
             if (!grouped[key]) grouped[key] = [];
             grouped[key].push(idx);
@@ -4074,6 +4079,10 @@
         const seen = {};
         const deduped = [];
         newBasket.forEach(item => {
+            if (isBundleLine(item)) {
+                deduped.push(item);
+                return;
+            }
             const key = getItemCode(item) + '|' + getItemColor(item) + '|' + (item.size || '');
             if (seen[key]) {
                 // Merge qty into the first occurrence
@@ -4297,6 +4306,24 @@
     function formatCurrency(amount) {
         const val = includeVAT ? amount * 1.2 : amount;
         return '\u00A3' + val.toFixed(2);
+    }
+
+    function isBundleLine(item) {
+        return !!(item && item.lineType === 'bundle');
+    }
+
+    function bundlePriceNumber(item) {
+        if (!isBundleLine(item)) return null;
+        const raw = item.bundlePrice != null ? item.bundlePrice : item.price;
+        if (raw == null || raw === '') return null;
+        const amount = Number(raw);
+        return Number.isFinite(amount) ? amount : null;
+    }
+
+    function formatBundlePrice(item) {
+        const amount = bundlePriceNumber(item);
+        if (amount == null) return '\u2014';
+        return '\u00A3' + amount.toFixed(2);
     }
 
     function vatSuffix() {
@@ -4992,6 +5019,53 @@
         let html = '';
         const chargedEmbroideryDesigns = new Set();
         basket.forEach((item, index) => {
+            if (isBundleLine(item)) {
+                const chosen = Array.isArray(item.chosenLines) ? item.chosenLines : [];
+                const lines = chosen.map((line) => {
+                    const detail = line.detail ? `<small style="display:block;color:#6b7280;font-weight:500">${escapeAttr(line.detail)}</small>` : '';
+                    const thumb = line.image
+                        ? `<img src="${escapeAttr(line.image)}" alt="" width="64" height="64" style="width:64px;height:64px;object-fit:contain;background:#f3f4f6;border-radius:8px;flex:0 0 auto">`
+                        : '';
+                    return `<li style="display:flex;gap:10px;align-items:center;margin:0 0 10px">${thumb}<span><strong>${escapeAttr((line.quantity || 0) + ' × ' + (line.label || 'Item'))}</strong>${detail}</span></li>`;
+                }).join('');
+                const logo = (item.logos && item.logos[0]) || (item.selection && item.selection.logo) || null;
+                const logoSrc = logo ? resolveLogoImageSource({
+                    logo: logo.logo || logo.ref || '',
+                    logoId: logo.logoId || ''
+                }) : '';
+                const logoName = logo && (logo.filename || logo.positionLabel) ? escapeAttr(logo.filename || 'Logo') : '';
+                const logoLine = logo
+                    ? `<div style="display:flex;gap:10px;align-items:center;margin-top:8px">${logoSrc ? `<img src="${escapeAttr(logoSrc)}" alt="Logo preview" width="56" height="56" style="width:56px;height:56px;object-fit:contain;background:#fff;border:1px solid #e5e7eb;border-radius:8px">` : ''}<span style="color:#374151">Logo preview${logoName ? ': ' + logoName : ''}${logo.positionLabel ? ' · ' + escapeAttr(logo.positionLabel) : ''}</span></div>`
+                    : '';
+                const notes = item.selection && item.selection.notes
+                    ? `<p style="margin:6px 0 0;color:#6b7280">Note: ${escapeAttr(item.selection.notes)}</p>`
+                    : '';
+                const amount = bundlePriceNumber(item);
+                html += `
+                <div class="basket-item-row" data-index="${index}" data-line-type="bundle">
+                    <div class="item-row-header">
+                        <div class="item-row-top">
+                            <div class="item-row-head-text">
+                                <div class="item-row-title-line">
+                                    <h4 class="item-row-title">${escapeAttr(item.name || 'Bundle')}</h4>
+                                </div>
+                                <ul style="list-style:none;margin:10px 0 0;padding:0;font-size:14px">${lines}</ul>
+                                ${logoLine}
+                                ${notes}
+                                <div class="item-row-meta">
+                                    <button type="button" class="item-row-remove" onclick="event.stopPropagation(); removeItem(${index})">Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item-row-total">
+                        <span class="total-label">Bundle price</span>
+                        <span class="total-value">${amount == null ? '\u2014' : formatCurrency(amount)}</span>
+                        <small>${vatSuffix()}</small>
+                    </div>
+                </div>`;
+                return;
+            }
             const img = item.colorImage || item.image || 'brandedukv15-child/assets/images/products/default.jpg';
             const unitPrice = parseFloat(item.unitPrice) || 0;
             const qty = item.qty || 0;
@@ -5338,18 +5412,28 @@
     function computeBasketTotals(basket) {
         let productCosts = 0;
         let logoCosts = 0;
+        let unpricedBundleCount = 0;
+        let bundleCount = 0;
         const uniqueEmbroideryDesigns = new Set();
         const customisationGroups = new Map();
         const setupBreakdown = [];
         const grandQtyByCode = new Map();
 
         (basket || []).forEach((item) => {
+            if (isBundleLine(item)) return;
             const code = item.code || item.productCode || '';
             if (!code) return;
             grandQtyByCode.set(code, (grandQtyByCode.get(code) || 0) + (item.qty || 0));
         });
 
         (basket || []).forEach((item, itemIndex) => {
+            if (isBundleLine(item)) {
+                bundleCount += 1;
+                const bundleAmount = bundlePriceNumber(item);
+                if (bundleAmount == null) unpricedBundleCount += 1;
+                else productCosts += bundleAmount;
+                return;
+            }
             const qty = item.qty || 0;
             const unitPrice = parseFloat(item.unitPrice) || 0;
             productCosts += unitPrice * qty;
@@ -5407,10 +5491,12 @@
         const order = window.brandedOrderTotals(subtotalExVat, basket.length);
         const orderRules = window.brandedCheckOrderRules(basket, subtotalExVat);
 
+        const pricedGoods = (basket || []).filter((item) => !isBundleLine(item)).length;
         return {
             productCosts,
             logoCosts,
             digitizingFee,
+            unpricedBundleOnly: bundleCount > 0 && unpricedBundleCount === bundleCount && pricedGoods === 0 && logoCosts === 0 && digitizingFee === 0,
             embroideryDesignCount,
             customisationBreakdown: Array.from(customisationGroups.values()),
             setupBreakdown,
@@ -5454,6 +5540,17 @@
     }
 
     function renderSummary(basket) {
+        const totals = computeBasketTotals(basket);
+        if (totals.unpricedBundleOnly) {
+            const dash = '\u2014';
+            const setDash = (id) => { const node = document.getElementById(id); if (node) node.textContent = dash; };
+            ['summaryProductCosts', 'summaryLogoCosts', 'summaryCustomisationWithSetup', 'summaryDelivery', 'summaryDeliveryExVat', 'summaryExcVat', 'summaryVat', 'summaryGrandTotal', 'actionBarTotal', 'summaryDeliveryIncVatNote'].forEach(setDash);
+            const breakdown = document.getElementById('summaryCustomisationBreakdown');
+            if (breakdown) breakdown.innerHTML = '';
+            const digitizingRow = document.getElementById('digitizingFeeRow');
+            if (digitizingRow) digitizingRow.style.display = 'none';
+            return;
+        }
         const {
             productCosts,
             logoCosts,
@@ -5466,7 +5563,7 @@
             totalExVat,
             vatAmount,
             grandTotalIncVat: grandTotal
-        } = computeBasketTotals(basket);
+        } = totals;
 
         // Update summary
         const el = (id) => document.getElementById(id);
@@ -5527,6 +5624,7 @@
     function setQty(index, value) {
         let basket = getBasket();
         if (index < 0 || index >= basket.length) return;
+        if (isBundleLine(basket[index])) return;
 
         const parsed = parseInt(value, 10);
         basket[index].qty = Number.isFinite(parsed) ? Math.min(99999, Math.max(1, parsed)) : (basket[index].qty || 1);
@@ -5738,6 +5836,7 @@
     function addLogoToItem(itemIndex) {
         const basket = getBasket();
         if (itemIndex < 0 || itemIndex >= basket.length) return;
+        if (isBundleLine(basket[itemIndex])) return;
         _openFullCustomizeForItem(itemIndex);
     }
 
@@ -5872,6 +5971,7 @@
             console.warn('editBasketItem: no item at index', itemIndex);
             return;
         }
+        if (isBundleLine(item)) return;
 
         const isMobile = window.innerWidth < 700;
         const code = item.code || item.productCode || '';

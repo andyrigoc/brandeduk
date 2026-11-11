@@ -1865,29 +1865,29 @@
         .product-price {
             display: flex;
             align-items: baseline;
-            gap: 3px;
+            gap: 4px;
             margin-bottom: 12px;
-            flex-wrap: nowrap;
-            white-space: nowrap;
-            height: 20px;
-            /* Fixed height */
+            flex-wrap: wrap;
+            min-height: 20px;
         }
 
         .price-label {
             font-size: 10px;
-            color: #10b981;
+            color: #16a34a;
             font-weight: 600;
         }
 
-        .price-value {
-            font-size: 12px;
-            font-weight: 700;
-            color: #1f2937;
+        .product-card .product-price .price-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #f97316;
+            line-height: 1.2;
         }
 
-        .price-suffix {
-            font-size: 9px;
-            color: #9ca3af;
+        .product-card .product-price .price-suffix {
+            font-size: 11px;
+            font-weight: 400;
+            color: #111827;
         }
 
         .product-colors-wrapper {
@@ -6698,6 +6698,27 @@
             return isVatOn() ? 'inc VAT' : 'ex VAT';
         }
 
+        function getProductPriceRange(product) {
+            const values = [];
+            const add = (raw) => {
+                const price = Number(raw);
+                if (Number.isFinite(price) && price > 0 && price < 999.99) values.push(price);
+            };
+            add(product && product.price);
+            add(product && product.basePrice);
+            const breaks = product && Array.isArray(product.priceBreaks) ? product.priceBreaks : [];
+            breaks.forEach(step => add(step && step.price));
+            if (!values.length) return { min: 0, max: 0 };
+            return { min: Math.min(...values), max: Math.max(...values) };
+        }
+
+        function formatPriceRange(minPrice, maxPrice) {
+            const minVal = Number(minPrice) || 0;
+            const maxVal = Number(maxPrice) || 0;
+            if (Math.abs(minVal - maxVal) < 0.005) return formatCurrency(minVal);
+            return formatCurrency(minVal) + ' - ' + formatCurrency(maxVal);
+        }
+
         function getBaseTierPrice(product) {
             const breaks = product && Array.isArray(product.priceBreaks) ? product.priceBreaks : [];
             if (!breaks.length) return null;
@@ -7183,13 +7204,7 @@
                     }
                 }
 
-                // The backend product price is the opening price shown in the product card.
-                const baseTierPrice = getBaseTierPrice(product);
-                const productPrice = parseFloat(product.price) || parseFloat(product.basePrice) || baseTierPrice || 0;
-
-                // For display purposes, we only need the single price
-                const minPrice = productPrice;
-                const maxPrice = productPrice;
+                const { min: minPrice, max: maxPrice } = getProductPriceRange(product);
 
                 const card = document.createElement('div');
                 card.className = 'product-card';
@@ -7243,8 +7258,7 @@
                 </div>
                 <div class="product-name">${(product.name || '').replace(/[\u00AE\u2122\u00A9]/g, '')}</div>
                 <div class="product-price" data-price-min="${minPrice}" data-price-max="${maxPrice}">
-                    <span class="price-label">From</span>
-                    <span class="price-value">${formatCurrency(productPrice)}</span>
+                    <span class="price-value">${formatPriceRange(minPrice, maxPrice)}</span>
                     <span class="price-suffix">${vatSuffix()}</span>
                 </div>
                 <div class="product-colors-wrapper">
@@ -8117,7 +8131,7 @@
 
                 if (valueEl && Number.isFinite(min)) {
                     const oldValue = valueEl.textContent;
-                    const newValue = formatCurrency(min);
+                    const newValue = formatPriceRange(min, Number.isFinite(max) ? max : min);
                     valueEl.textContent = newValue;
                     if (index < 3) { // Log first 3 for debugging
                         console.log(`Product ${index + 1}: ${oldValue} -> ${newValue} (base: ${POUND_SYMBOL}${min})`);

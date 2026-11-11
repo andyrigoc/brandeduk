@@ -1,0 +1,162 @@
+/* Bundle flow inside the existing order-popup shell. */
+#orderPopup.bundle-host {
+  display: none;
+}
+
+#orderPopup.bundle-host.active {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#orderPopup.bundle-host .pc-product-progress {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+#orderPopup.bundle-host .viewport {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  background: #f6f8fb;
+}
+
+#orderPopup.bundle-host .pc-flow-page-nav .btn-continue,
+#orderPopup.bundle-host .pc-flow-page-nav .p4-btn-next,
+#orderPopup.bundle-host .pc-flow-page-nav .pc-step-back {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 150px;
+}
+
+#orderPopup.bundle-host .p2-nav-title {
+  min-width: 0;
+  text-align: center;
+}
+
+#orderPopup.bundle-host .p2-nav-title strong,
+#orderPopup.bundle-host .p2-nav-title small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#orderPopup.bundle-host .p2-nav-title strong {
+  color: #111827;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+#orderPopup.bundle-host .p2-nav-title small {
+  color: #667085;
+  font-size: 12px;
+}
+
+#orderPopup.bundle-host .bundle-step {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding: 16px 22px 8px;
+}
+
+#orderPopup.bundle-host .bundle-status {
+  flex: 0 0 auto;
+  min-height: 28px;
+  margin: 0;
+  padding: 6px 22px 12px;
+  color: #667085;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+#orderPopup.bundle-host .overview-grid,
+#orderPopup.bundle-host .colour-layout {
+  align-items: start;
+}
+
+#orderPopup.bundle-host .included-item,
+#orderPopup.bundle-host .colour-card,
+#orderPopup.bundle-host .size-row,
+#orderPopup.bundle-host .pos,
+#orderPopup.bundle-host .garment-tab,
+#orderPopup.bundle-host .colour-stage {
+  border-color: #e3e8ef;
+  border-radius: 12px;
+  background: #fff;
+  color: #111827;
+}
+
+#orderPopup.bundle-host .included-item:hover,
+#orderPopup.bundle-host .colour-card:hover,
+#orderPopup.bundle-host .garment-tab:hover {
+  border-color: #e85d04;
+}
+
+#orderPopup.bundle-host .colour-card[aria-pressed="true"],
+#orderPopup.bundle-host .garment-tab[aria-pressed="true"],
+#orderPopup.bundle-host .pos.is-on {
+  border-color: #e85d04;
+  box-shadow: 0 0 0 1px #e85d04;
+}
+
+#orderPopup.bundle-host .pos-method.emb {
+  background: #ffc107;
+  color: #1e2749;
+}
+
+#orderPopup.bundle-host .pos-method.print {
+  background: #1769d2;
+  color: #fff;
+}
+
+#orderPopup.bundle-host .pos-method[aria-pressed="true"] {
+  outline: 3px solid #e85d04;
+}
+
+#orderPopup.bundle-host .upload-zone {
+  border-color: #c5cedd;
+  background: #fff;
+}
+
+#orderPopup.bundle-host .flow-head h3,
+#orderPopup.bundle-host .logo-standard h3 {
+  color: #111827;
+}
+
+#orderPopup.bundle-host .pc-product-progress button.step-hit {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+#orderPopup.bundle-host .pc-product-progress button.step-hit > span:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+#orderPopup .page-2 .colour-swatches-grid {
+  grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
+  gap: 12px 10px;
+}
+
+#orderPopup .page-2 .colour-swatch-item {
+  width: 100%;
+  cursor: pointer;
+}
+
+#orderPopup .page-2 .swatch-name {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  white-space: normal;
+}

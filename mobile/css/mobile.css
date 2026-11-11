@@ -8866,6 +8866,23 @@ a {
     object-fit: contain;
 }
 
+@media (max-width: 699px) {
+    .category-filter-card.active .category-icon img {
+        filter: none;
+    }
+
+    .category-filter-card .category-icon {
+        width: 32px;
+        height: 32px;
+        margin-bottom: 0;
+    }
+
+    .category-filter-card .category-icon img {
+        width: 30px;
+        height: 30px;
+    }
+}
+
 .category-filter-card span {
     font-size: 13px;
     font-weight: 700;
@@ -9364,8 +9381,10 @@ a {
 
 .product-price {
     display: flex;
-    flex-direction: column;
-    gap: 2px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px;
     margin: 4px 0;
 }
 
@@ -9379,13 +9398,14 @@ a {
 
 .product-price-value {
     font-size: 14px;
-    font-weight: 700;
-    color: var(--gray-900);
+    font-weight: 600;
+    color: #f97316;
 }
 
 .product-price-suffix {
-    font-size: 9px;
-    color: var(--gray-500);
+    font-size: 11px;
+    font-weight: 400;
+    color: #111827;
 }
 
 /* Color Scrolling Bar - Identical to Desktop */

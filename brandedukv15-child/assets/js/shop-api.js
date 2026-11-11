@@ -89,16 +89,16 @@ const ShopManager = (function () {
     }
 
     function getProductPriceRange(product) {
-        const breaks = product.priceBreaks || [];
-        if (!breaks.length) {
-            const base = Number(product.price) || 0;
-            return { min: base, max: base };
-        }
-        const values = breaks.map(step => Number(step.price)).filter(price => price > 0);
-        if (values.length === 0) {
-            const base = Number(product.price) || 0;
-            return { min: base, max: base };
-        }
+        const values = [];
+        const add = (raw) => {
+            const price = Number(raw);
+            if (Number.isFinite(price) && price > 0 && price < 999.99) values.push(price);
+        };
+        add(product && product.price);
+        add(product && product.basePrice);
+        const breaks = (product && product.priceBreaks) || [];
+        breaks.forEach(step => add(step && step.price));
+        if (!values.length) return { min: 0, max: 0 };
         return {
             min: Math.min(...values),
             max: Math.max(...values)
@@ -336,8 +336,7 @@ const ShopManager = (function () {
                 </div>
                 <div class="product-name">${(product.name||'').replace(/[\u00AE\u2122\u00A9]/g,'')}</div>
                 <div class="product-price" data-price-min="${minPrice}" data-price-max="${maxPrice}">
-                    <span class="product-price-label">From</span>
-                    <span class="product-price-value">${formatCurrency(minPrice)}</span>
+                    <span class="product-price-value">${formatPriceRange(minPrice, maxPrice)}</span>
                     <span class="product-price-suffix">${vatSuffix()}</span>
                 </div>
                 <div class="product-colors">${colorsHTML}${moreColorsHTML}</div>
@@ -903,9 +902,10 @@ const ShopManager = (function () {
     function updatePrices() {
         document.querySelectorAll('.product-price').forEach(priceEl => {
             const min = Number(priceEl.dataset.priceMin);
+            const max = Number(priceEl.dataset.priceMax);
             const valueEl = priceEl.querySelector('.product-price-value');
             if (valueEl && Number.isFinite(min)) {
-                valueEl.textContent = formatCurrency(min);
+                valueEl.textContent = formatPriceRange(min, Number.isFinite(max) ? max : min);
             }
             const suffixEl = priceEl.querySelector('.product-price-suffix');
             if (suffixEl) {

@@ -1708,10 +1708,40 @@
             let productCosts = 0;
             let logoCosts = 0;
             let totalQtyAll = 0;
+            let bundleCount = 0;
+            let unpricedBundleCount = 0;
             const uniqueEmbroideryDesigns = new Set();
             let html = '';
 
-            basket.forEach(item => {
+            basket.forEach((item, itemIndex) => {
+                if (item && item.lineType === 'bundle') {
+                    bundleCount += 1;
+                    const raw = item.bundlePrice != null ? item.bundlePrice : item.price;
+                    const money = raw == null || raw === '' ? null : Number(raw);
+                    const priced = Number.isFinite(money);
+                    if (priced) productCosts += money;
+                    else unpricedBundleCount += 1;
+                    const chosen = Array.isArray(item.chosenLines) ? item.chosenLines : [];
+                    const linesHtml = chosen.map(line => `<div class="basket-item-meta">${escapeHtml((line.quantity || 0) + ' ' + (line.label || ''))}</div>`).join('');
+                    const priceText = priced ? ('£' + money.toFixed(2)) : '\u2014';
+                    totalQtyAll += 1;
+                    html += `
+                    <div class="basket-item">
+                        <div class="basket-item-main">
+                            <div class="basket-item-top">
+                                <div>
+                                    <div class="basket-item-name">${escapeHtml(item.name || 'Bundle')}</div>
+                                    ${linesHtml}
+                                </div>
+                                <div class="basket-item-price">${priceText}<small>Bundle price</small></div>
+                            </div>
+                            <div class="basket-item-tools">
+                                <button type="button" class="basket-item-remove" data-drawer-action="remove" data-index="${itemIndex}">Remove</button>
+                            </div>
+                        </div>
+                    </div>`;
+                    return;
+                }
                 const quantityDetails = getItemQuantityDetails(item);
                 const totalQty = quantityDetails.total;
                 const sizesText = quantityDetails.sizeText;
@@ -1741,8 +1771,6 @@
                     const thumb = src ? `<img class="basket-logo-thumb" src="${escapeHtml(src)}" alt="">` : '';
                     return `<div class="basket-logo-row">${thumb}<span class="basket-logo-label">${escapeHtml(formatMethod(logo.method) + ' – ' + formatPosition(logo))}</span></div>`;
                 }).join('');
-                const itemIndex = basket.indexOf(item);
-
                 html += `
                     <div class="basket-item">
                         <img class="basket-item-img" src="${escapeHtml(item.image || item.colourImg || 'brandedukv15-child/assets/images/ui/no-image.png')}" alt="${escapeHtml(item.name || '')}">
@@ -1776,20 +1804,29 @@
             const subtotalExVat = productCosts + logoCosts + digitizingFee;
             const vatAmount = subtotalExVat * 0.20;
             const grandTotal = subtotalExVat + vatAmount;
+            const unpricedOnly = bundleCount > 0 && unpricedBundleCount === bundleCount && productCosts === 0 && logoCosts === 0 && digitizingFee === 0;
 
             container.innerHTML = html;
+            if (unpricedOnly) {
+                setEl('drProductCosts', '\u2014');
+                setEl('drLogoCosts', '\u2014');
+                setEl('drExcVat', '\u2014');
+                setEl('drVat', '\u2014');
+                totalEl.textContent = '\u2014';
+            } else {
             setEl('drProductCosts', `\u00a3${productCosts.toFixed(2)}`);
             setEl('drLogoCosts', `£${logoCosts.toFixed(2)}`);
             setEl('drExcVat', `£${subtotalExVat.toFixed(2)}`);
             setEl('drVat', `£${vatAmount.toFixed(2)}`);
             totalEl.textContent = `£${grandTotal.toFixed(2)}`;
+            }
             setEl('drProductLines', basket.length);
             const linesLabel = document.getElementById('drProductLinesLabel');
             if (linesLabel) linesLabel.textContent = basket.length === 1 ? 'product line' : 'product lines';
             setEl('drTotalQty', totalQtyAll);
             const drRow = document.getElementById('drDigitizingRow');
             if (drRow) drRow.style.display = digitizingFee > 0 ? 'flex' : 'none';
-            setEl('drDigitizingFee', `\u00a3${digitizingFee.toFixed(2)}`);
+            setEl('drDigitizingFee', unpricedOnly ? '\u2014' : ('\u00a3' + digitizingFee.toFixed(2)));
             const logoDetail = document.getElementById('drLogoDetail');
             if (logoDetail) {
                 // Aggregate by decoration method: qty = garments, unit = total ÷ qty
