@@ -527,6 +527,156 @@ const BrandedAPI = (function () {
         };
     }
 
+    // The products search treats "hi-vis" as a short keyword list (about 115 styles).
+    // The same garments are filed as "Hi Vis", "High-viz", "Hi-Vis", "Waistcoat"
+    // or plain "Safety jacket", sometimes with no brand (the UC range). The
+    // hi-vis category reads every supplier that stocks them, plus that keyword
+    // list and the high-visibility feature, and keeps the real hi-vis styles.
+    const HI_VIS_NAME = /\bhi[\s-]*viz\b|\bhi[\s-]*vis(?:ibility)?\b|\bhigh[\s-]*viz\b|\bhigh[\s-]*vis(?:ibility)?\b|\bhivis\b|\bhiviz\b|\(hv[a-z]{0,4}\d+/i;
+    const HI_VIS_BRANDS = [
+        'Yoko', 'Regatta High Visibility', 'Regatta Professional', 'Portwest',
+        'Result Safeguard', 'Result Core', 'Result Recycled', 'Result Headwear',
+        'ProRTX High Visibility', 'Warrior', 'Scruffs', 'Spiro', 'Atlantis',
+        'Personal Protective Wear'
+    ];
+    const HI_VIS_MISFILED_TYPES = ['Hi Vis', 'Polo', 'Jacket', 'Hood', 'Gilet', 'Waistcoat', 'Tabard'];
+    const hiVisListCache = {};
+
+    function isHiVisTypeName(value) {
+        const key = String(value || '').toLowerCase().replace(/[^a-z]/g, '');
+        return key === 'hivis' || key === 'hiviz' || key === 'highvis' || key === 'highviz'
+            || key === 'safetyvest' || key === 'safetyvests';
+    }
+
+    function isHiVisCatalogItem(item) {
+        const name = String(item.name || '');
+        const type = String(item.productType || item.product_type || '');
+        const brand = String(item.brand || item.brand_name || '').trim().toLowerCase();
+        if (/^hi[\s-]*v[iz]/i.test(type) || HI_VIS_NAME.test(name) || HI_VIS_NAME.test(type)) return true;
+        if ((brand === 'regatta high visibility' || brand === 'prortx high visibility') && !/storage bag/i.test(name)) return true;
+        if (brand === 'result safeguard' && !/storage bag/i.test(name)) return true;
+        if (brand === 'yoko' && /reflective/i.test(name) && /trouser|jacket|vest|waistcoat|polo|hoodie|fleece|softshell/i.test(name + ' ' + type)) return true;
+        return false;
+    }
+
+    function sortHiVisItems(items, sort) {
+        const list = items.slice();
+        const priceOf = (item) => Number(item.price) || 0;
+        const brandOf = (item) => String(item.brand || item.brand_name || '');
+        const scoreOf = (item) =>
+            (item.is_best_seller === true || item.is_best_seller === 'true' || item.is_best_seller === 1 ? 2 : 0) +
+            (item.is_recommended === true || item.is_recommended === 'true' || item.is_recommended === 1 ? 1 : 0);
+        if (sort === 'price-lh') list.sort((a, b) => priceOf(a) - priceOf(b));
+        else if (sort === 'price-hl') list.sort((a, b) => priceOf(b) - priceOf(a));
+        else if (sort === 'brand-az') list.sort((a, b) => brandOf(a).localeCompare(brandOf(b)) || String(a.name || '').localeCompare(String(b.name || '')));
+        else if (sort === 'brand-za') list.sort((a, b) => brandOf(b).localeCompare(brandOf(a)) || String(a.name || '').localeCompare(String(b.name || '')));
+        else if (sort === 'newest') list.sort((a, b) => (Number(b.display_order) || 0) - (Number(a.display_order) || 0));
+        else list.sort((a, b) => scoreOf(b) - scoreOf(a) || brandOf(a).localeCompare(brandOf(b)) || String(a.name || '').localeCompare(String(b.name || '')));
+        return list;
+    }
+
+    async function mapPool(items, limit, task) {
+        const results = new Array(items.length);
+        let cursor = 0;
+        async function worker() {
+            while (cursor < items.length) {
+                const index = cursor;
+                cursor += 1;
+                results[index] = await task(items[index], index);
+            }
+        }
+        const workers = Math.min(limit, items.length);
+        await Promise.all(Array.from({ length: workers }, worker));
+        return results;
+    }
+
+    async function fetchHiVisTypeItems(extra, fetchOptions) {
+        const pageSize = 200;
+        const queries = HI_VIS_BRANDS.map((brand) => ({ brand }))
+            .concat(HI_VIS_MISFILED_TYPES.map((productType) => ({ productType })))
+            .concat([
+                { q: 'hi-vis' },
+                { q: 'UC8' },
+                { 'feature[]': ['high-visibility'], _feature: true }
+            ]);
+        const firstPages = await mapPool(queries, 8, (query) => {
+            const params = Object.assign({ page: 1, limit: pageSize }, query, extra);
+            delete params._feature;
+            return apiRequest('/api/products', params, fetchOptions)
+                .then((response) => ({ response, feature: !!query._feature }))
+                .catch(() => ({ response: { items: [], total: 0 }, feature: !!query._feature }));
+        });
+        const pageJobs = [];
+        firstPages.forEach((entry, index) => {
+            const pages = Math.min(Math.ceil((entry.response.total || 0) / pageSize), 4);
+            for (let page = 2; page <= pages; page += 1) {
+                pageJobs.push({ query: queries[index], page });
+            }
+        });
+        const restPages = await mapPool(pageJobs, 8, (job) => {
+            const params = Object.assign({ page: job.page, limit: pageSize }, job.query, extra);
+            delete params._feature;
+            return apiRequest('/api/products', params, fetchOptions)
+                .then((response) => ({ response, feature: !!job.query._feature }))
+                .catch(() => ({ response: { items: [] }, feature: !!job.query._feature }));
+        });
+        return firstPages.concat(restPages).flatMap((entry) => {
+            return (entry.response.items || []).map((item) => {
+                if (entry.feature) item._hiVisFeature = true;
+                return item;
+            });
+        });
+    }
+
+    async function getHiVisCatalogue(params, fetchOptions) {
+        const extra = Object.assign({}, params);
+        delete extra.page;
+        delete extra.limit;
+        delete extra.sort;
+        delete extra.productType;
+        delete extra['productType[]'];
+        delete extra.q;
+        const key = buildQueryString(extra);
+        if (!hiVisListCache[key]) {
+            hiVisListCache[key] = fetchHiVisTypeItems(extra, fetchOptions).then((raw) => {
+                const seen = new Set();
+                const kept = [];
+                raw.forEach((item) => {
+                    const code = String(item.code || item.style_code || '');
+                    if (!code || seen.has(code)) return;
+                    // Feature-flagged styles can omit "hi-vis" from the name (for example PW109).
+                    if (!item._hiVisFeature && !isHiVisCatalogItem(item)) return;
+                    delete item._hiVisFeature;
+                    seen.add(code);
+                    kept.push(item);
+                });
+                return kept;
+            }).catch((error) => {
+                delete hiVisListCache[key];
+                throw error;
+            });
+        }
+
+        const items = await hiVisListCache[key];
+        const sorted = sortHiVisItems(items, params.sort);
+        const page = params.page || 1;
+        const limit = params.limit || DEFAULT_LIMIT;
+        let min = Infinity;
+        let max = 0;
+        sorted.forEach((item) => {
+            const price = Number(item.price) || 0;
+            if (price < min) min = price;
+            if (price > max) max = price;
+        });
+        return {
+            items: sorted.slice((page - 1) * limit, page * limit).map(transformProduct),
+            page,
+            limit,
+            total: sorted.length,
+            priceRange: { min: Number.isFinite(min) ? min : 0, max: max || 200 }
+        };
+    }
+
     /**
      * Get products with filters
      * @param {Object} options - Filter options (can include array params like gender[]: ['male', 'female'])
@@ -639,6 +789,9 @@ const BrandedAPI = (function () {
         const capsType = !params.q && typeKeys.length === 1 && typeKeys[0] === 'caps';
         if (capsSearch || capsType) {
             return getCapsOnly(params, fetchOptions);
+        }
+        if (!params.q && typeKeys.length === 1 && isHiVisTypeName(typeKeys[0])) {
+            return getHiVisCatalogue(params, fetchOptions);
         }
 
         const response = await apiRequest('/api/products', params, fetchOptions);
