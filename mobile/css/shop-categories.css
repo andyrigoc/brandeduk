@@ -70,7 +70,7 @@ a.shop-cats__card:focus-visible {
     text-align: center;
 }
 
-/* Build your own / Mix & Match: shown but not active yet */
+/* Build your own: shown but not active yet */
 .shop-cats__card--soon {
     cursor: default;
 }

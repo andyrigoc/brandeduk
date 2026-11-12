@@ -7,7 +7,9 @@
     'use strict';
 
     var STYLE_ID = 'branded-organic-leaf-style';
-    var CACHE_BUST = '20261006-leaf4';
+    var CACHE_BUST = '20261112-inset1';
+    /* Visible gap between the badge box and the bottom-right of the photo. */
+    var PHOTO_INSET = 6;
 
     var ACCREDITATION_TOKENS = [
         'organic', 'certified-organic', 'recycled', 'certified-recycled',
@@ -84,7 +86,8 @@
             '    left: 6px !important;',
             '    align-items: flex-start !important;',
             '  }',
-            '  .product-eco-leaf { width: 32px; height: 32px; right: 6px; bottom: 6px; }',
+            '  /* Fallback until the photo bounds are measured. */',
+            '  .product-eco-leaf { width: 32px; height: 32px; right: 19px; bottom: 12px; }',
             '}'
         ].join('\n');
         document.head.appendChild(style);
@@ -206,7 +209,132 @@
         ensureStyles();
         if (mediaEl.querySelector('.product-eco-leaf')) return true;
         mediaEl.appendChild(leafElement());
+        placeAll();
         return true;
+    }
+
+    function axisFraction(token) {
+        if (!token) return 0.5;
+        if (token === 'left' || token === 'top') return 0;
+        if (token === 'right' || token === 'bottom') return 1;
+        if (token === 'center') return 0.5;
+        if (token.charAt(token.length - 1) === '%') {
+            var percent = parseFloat(token);
+            return isNaN(percent) ? 0.5 : percent / 100;
+        }
+        return null;
+    }
+
+    function objectPositionFractions(value) {
+        var parts = String(value || '50% 50%').trim().split(/\s+/);
+        var x = axisFraction(parts[0]);
+        var y = parts.length > 1 ? axisFraction(parts[1]) : 0.5;
+        return {
+            x: x == null ? 0.5 : x,
+            y: y == null ? 0.5 : y
+        };
+    }
+
+    // Visible bitmap inside an object-fit box. Cover/fill fill the element.
+    function photoRect(img) {
+        var box = img.getBoundingClientRect();
+        var nw = img.naturalWidth;
+        var nh = img.naturalHeight;
+        if (!nw || !nh || box.width < 1 || box.height < 1) return null;
+        var cs = getComputedStyle(img);
+        var fit = (cs.objectFit || 'fill').trim();
+        if (fit !== 'contain' && fit !== 'scale-down' && fit !== 'none') return box;
+        var scale = fit === 'none' ? 1 : Math.min(box.width / nw, box.height / nh);
+        if (fit === 'scale-down') scale = Math.min(1, scale);
+        var dw = nw * scale;
+        var dh = nh * scale;
+        var pos = objectPositionFractions(cs.objectPosition);
+        var ox = pos.x * (box.width - dw);
+        var oy = pos.y * (box.height - dh);
+        return {
+            left: box.left + ox,
+            top: box.top + oy,
+            right: box.left + ox + dw,
+            bottom: box.top + oy + dh
+        };
+    }
+
+    function siblingPhoto(leaf) {
+        var parent = leaf.parentElement;
+        if (!parent) return null;
+        var kids = parent.children;
+        for (var i = 0; i < kids.length; i++) {
+            if (kids[i] !== leaf && kids[i].tagName === 'IMG') return kids[i];
+        }
+        return null;
+    }
+
+    function placeLeaf(leaf) {
+        var img = siblingPhoto(leaf);
+        if (!img) return false;
+        var photo = photoRect(img);
+        if (!photo) return false;
+        var parent = leaf.parentElement;
+        var parentRect = parent.getBoundingClientRect();
+        var ps = getComputedStyle(parent);
+        var borderRight = parseFloat(ps.borderRightWidth) || 0;
+        var borderBottom = parseFloat(ps.borderBottomWidth) || 0;
+        var edgeRight = parentRect.right - borderRight;
+        var edgeBottom = parentRect.bottom - borderBottom;
+        var right = edgeRight - photo.right + PHOTO_INSET;
+        var bottom = edgeBottom - photo.bottom + PHOTO_INSET;
+        if (right < PHOTO_INSET) right = PHOTO_INSET;
+        if (bottom < PHOTO_INSET) bottom = PHOTO_INSET;
+        var leafBox = leaf.getBoundingClientRect();
+        var innerW = parentRect.width - borderRight - (parseFloat(ps.borderLeftWidth) || 0);
+        var innerH = parentRect.height - borderBottom - (parseFloat(ps.borderTopWidth) || 0);
+        var maxRight = Math.max(PHOTO_INSET, innerW - leafBox.width - PHOTO_INSET);
+        var maxBottom = Math.max(PHOTO_INSET, innerH - leafBox.height - PHOTO_INSET);
+        if (right > maxRight) right = maxRight;
+        if (bottom > maxBottom) bottom = maxBottom;
+        leaf.style.right = (Math.round(right * 10) / 10) + 'px';
+        leaf.style.bottom = (Math.round(bottom * 10) / 10) + 'px';
+        return true;
+    }
+
+    function placeAll() {
+        if (!document.querySelectorAll) return;
+        var leaves = document.querySelectorAll('.product-eco-leaf');
+        for (var i = 0; i < leaves.length; i++) placeLeaf(leaves[i]);
+    }
+
+    function bindPlacement() {
+        if (root.__brandedEcoLeafPlace || !document.documentElement) return;
+        root.__brandedEcoLeafPlace = true;
+        ensureStyles();
+        var pending = false;
+        function schedule() {
+            if (pending) return;
+            pending = true;
+            var run = function () {
+                pending = false;
+                placeAll();
+            };
+            if (typeof Promise !== 'undefined') Promise.resolve().then(run);
+            else if (typeof root.requestAnimationFrame === 'function') root.requestAnimationFrame(run);
+            else root.setTimeout(run, 16);
+        }
+        root.addEventListener('resize', schedule);
+        document.addEventListener('load', function (event) {
+            var target = event.target;
+            if (!target || target.tagName !== 'IMG') return;
+            if (target.classList && target.classList.contains('product-eco-leaf')) return;
+            schedule();
+        }, true);
+        if (typeof MutationObserver === 'function') {
+            new MutationObserver(schedule).observe(document.documentElement, {
+                childList: true,
+                subtree: true,
+                attributes: true,
+                attributeFilter: ['src']
+            });
+        }
+        schedule();
     }
 
     root.BrandedOrganicLeaf = {
@@ -215,6 +343,9 @@
         leafHtml: leafHtml,
         maybeLeafHtml: maybeLeafHtml,
         decorateMedia: decorateMedia,
-        ensureStyles: ensureStyles
+        ensureStyles: ensureStyles,
+        placeLeaves: placeAll
     };
+
+    if (typeof document !== 'undefined') bindPlacement();
 })(typeof window !== 'undefined' ? window : globalThis);

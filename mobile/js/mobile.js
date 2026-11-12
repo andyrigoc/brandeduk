@@ -16,6 +16,8 @@ document.addEventListener('DOMContentLoaded', function() {
     initBottomNav();
     updateCartCount();
     initAccountPanel();
+    bindMobileAccountAvatarSync();
+    syncMobileAccountAvatar();
     initBrandsMarqueeLogos();
     initStickyBarFooterPush();
     applyShopNavIcon();
@@ -112,6 +114,7 @@ function initMobileNavigation() {
     const menu = document.getElementById('menuToggle');
     if (menu) menu.insertAdjacentElement('afterend', account);
     else actions.insertBefore(account, actions.querySelector('a[href^="tel:"]'));
+    syncMobileAccountAvatar();
 }
 
 // The shop's sticky category bar lives directly in <body>, so CSS sticky never releases it and it
@@ -1606,6 +1609,159 @@ function initFiltersDropup() {
 }
 
 // ============================================
+// HEADER ACCOUNT PHOTO
+// The person control is moved beside the hamburger on pages that do not
+// include the account panel. The photo swap has to run for that button too.
+// ============================================
+const MOBILE_ACCOUNT_SESSION_KEY = 'brandeduk-user-session';
+const MOBILE_BRANDED_MARK_URL = '/brandedukv15-child/assets/images/ui/bd-mark-orange.png';
+
+function parseStoredAccountUser(key) {
+    try {
+        const parsed = JSON.parse(localStorage.getItem(key) || '');
+        return parsed && typeof parsed === 'object' ? parsed : null;
+    } catch (e) {
+        return null;
+    }
+}
+
+function mobileAccountPhoto(user) {
+    if (!user) return '';
+    const url = user.picture || user.avatar || user.avatarUrl || user.photo ||
+        user.photoURL || user.image || user.imageUrl || user.profileImage || '';
+    return typeof url === 'string' ? url.trim() : '';
+}
+
+function mobileAccountFirstName(user) {
+    if (!user) return '';
+    if (user.firstName) return String(user.firstName).trim();
+    if (user.givenName) return String(user.givenName).trim();
+    if (user.name) return String(user.name).trim().split(/\s+/)[0];
+    if (user.email) return String(user.email).split('@')[0];
+    return 'there';
+}
+
+function mobileAccountInitials(user) {
+    const src = (user && (user.name || [user.firstName, user.lastName].filter(Boolean).join(' ') || user.email)) || 'BU';
+    const letters = String(src).match(/\b\w/g) || ['B', 'U'];
+    return letters.slice(0, 2).join('').toUpperCase();
+}
+
+function isMobileBrandedMarkAccount(user) {
+    if (!user) return false;
+    const email = String(user.email || '').toLowerCase();
+    const provider = String(user.provider || '').toLowerCase();
+    const picture = mobileAccountPhoto(user).toLowerCase();
+    const name = String(user.name || [user.firstName, user.lastName].filter(Boolean).join(' ')).toLowerCase();
+    if (provider.includes('google-local-preview')) return true;
+    if (email.endsWith('@brandeduk.com') || email.endsWith('@brandeduk.co.uk') || email.endsWith('@brandeduk.test')) return true;
+    if (/bd-logo|bd-mark|orange-circle|use-the-provided-circular/.test(picture)) return true;
+    if (name === 'branded' || name === 'branded uk' || name === 'brandeduk') return true;
+    return false;
+}
+
+function readMobileAccountUser() {
+    const googleUser = parseStoredAccountUser('authUser') || parseStoredAccountUser('coUser');
+    const legacyUser = parseStoredAccountUser(MOBILE_ACCOUNT_SESSION_KEY);
+    if (googleUser && (mobileAccountPhoto(googleUser) || googleUser.email || googleUser.name)) return googleUser;
+    return legacyUser || googleUser || null;
+}
+
+function mobileAccountButton() {
+    return document.getElementById('accountNavBtn') || document.querySelector('.mobile-header--v2 .mh-account');
+}
+
+function ensureMobileAccountAvatarStyles() {
+    if (document.getElementById('accountNavAvatarStyle')) return;
+    const style = document.createElement('style');
+    style.id = 'accountNavAvatarStyle';
+    style.textContent = '.account-nav-avatar{width:36.25px;height:36.25px;border-radius:999px;overflow:hidden;display:inline-grid;place-items:center;background:#273469;color:#fff;font-size:12.5px;font-weight:900;line-height:1;flex:0 0 36.25px;}.account-nav-avatar img{width:36.25px;height:36.25px;max-width:none;max-height:none;object-fit:cover;display:block;border-radius:999px;}.account-nav-avatar.is-brand-mark{border-radius:0;background:transparent;}.account-nav-avatar.is-brand-mark img{object-fit:contain;border-radius:0;}.mh-account:has(.account-nav-avatar)>svg,.nav-item.is-signed-in>svg{display:none!important;}';
+    document.head.appendChild(style);
+}
+
+function paintMobileAccountAvatar(accountBtn, user) {
+    if (!accountBtn) return;
+    ensureMobileAccountAvatarStyles();
+    const svg = accountBtn.querySelector(':scope > svg') || accountBtn.querySelector('svg');
+    const label = accountBtn.querySelector('.nav-item-label');
+    let avatar = accountBtn.querySelector('.account-nav-avatar');
+    const inHeader = accountBtn.classList.contains('mh-account') || !!accountBtn.closest('.mobile-header--v2');
+
+    if (!user) {
+        if (avatar) avatar.remove();
+        accountBtn.classList.remove('is-signed-in');
+        if (svg) svg.hidden = false;
+        if (svg) svg.style.display = '';
+        if (label && !inHeader) label.textContent = 'Account';
+        if (accountBtn.getAttribute('aria-label') !== 'Account') accountBtn.setAttribute('aria-label', 'Account');
+        return;
+    }
+
+    accountBtn.classList.add('is-signed-in');
+    if (svg) svg.hidden = true;
+    if (svg) svg.style.display = 'none';
+    if (inHeader && label) label.remove();
+    if (!avatar) {
+        avatar = document.createElement('span');
+        avatar.className = 'account-nav-avatar';
+        const liveLabel = accountBtn.querySelector('.nav-item-label');
+        if (liveLabel) accountBtn.insertBefore(avatar, liveLabel);
+        else accountBtn.appendChild(avatar);
+    }
+
+    const brandMark = isMobileBrandedMarkAccount(user);
+    const photo = brandMark ? MOBILE_BRANDED_MARK_URL : mobileAccountPhoto(user);
+    const initials = mobileAccountInitials(user);
+    avatar.classList.toggle('is-brand-mark', brandMark);
+    avatar.replaceChildren();
+    if (photo) {
+        const img = document.createElement('img');
+        img.src = photo;
+        img.alt = '';
+        img.width = 36;
+        img.height = 36;
+        img.referrerPolicy = 'no-referrer';
+        img.addEventListener('error', function () {
+            avatar.classList.remove('is-brand-mark');
+            avatar.textContent = initials;
+        });
+        avatar.appendChild(img);
+    } else {
+        avatar.textContent = initials;
+    }
+
+    const liveLabel = accountBtn.querySelector('.nav-item-label');
+    if (!inHeader && liveLabel) liveLabel.textContent = 'Hi, ' + mobileAccountFirstName(user);
+    const who = user.email || mobileAccountFirstName(user) || 'customer';
+    accountBtn.setAttribute('aria-label', 'My account, signed in as ' + who);
+}
+
+function syncMobileAccountAvatar(user) {
+    const accountBtn = mobileAccountButton();
+    if (!accountBtn) return;
+    const resolved = arguments.length ? user : readMobileAccountUser();
+    paintMobileAccountAvatar(accountBtn, resolved || null);
+}
+
+function bindMobileAccountAvatarSync() {
+    if (window.__buMobileAccountAvatarBound) return;
+    window.__buMobileAccountAvatarBound = true;
+    window.addEventListener('branded:auth-changed', function (event) {
+        const detail = event && event.detail;
+        if (detail && detail.signedIn === false) {
+            syncMobileAccountAvatar(null);
+            return;
+        }
+        if (detail && detail.user) syncMobileAccountAvatar(detail.user);
+        else syncMobileAccountAvatar();
+    });
+    window.addEventListener('storage', function (event) {
+        if (event.key && event.key !== 'authUser' && event.key !== 'coUser' && event.key !== 'authToken' && event.key !== 'coAuthToken' && event.key !== MOBILE_ACCOUNT_SESSION_KEY) return;
+        syncMobileAccountAvatar();
+    });
+}
+
+// ============================================
 // ACCOUNT PANEL - SIGN IN / SIGN UP
 // ============================================
 function initAccountPanel() {
@@ -1620,104 +1776,18 @@ function initAccountPanel() {
     const signupFormData = document.getElementById('signupFormData');
     const accountLoggedIn = document.getElementById('accountLoggedIn');
     const accountLogoutBtn = document.getElementById('accountLogoutBtn');
-    
+
+    bindMobileAccountAvatarSync();
+    syncMobileAccountAvatar();
+
     if (!accountBtn || !accountPanel) return;
     
     // Storage key for user session
     const USER_SESSION_KEY = 'brandeduk-user-session';
 
-    if (!document.getElementById('accountNavAvatarStyle')) {
-        const navAvatarStyle = document.createElement('style');
-        navAvatarStyle.id = 'accountNavAvatarStyle';
-        navAvatarStyle.textContent = '.account-nav-avatar{width:24px;height:24px;border-radius:999px;overflow:hidden;display:inline-grid;place-items:center;background:#273469;color:#fff;font-size:10px;font-weight:900;line-height:1;}.account-nav-avatar img{width:100%;height:100%;object-fit:cover;display:block;}';
-        document.head.appendChild(navAvatarStyle);
-    }
-
-    // Resolve the signed-in user from the mobile session OR the shared
-    // Google/OAuth keys, so the nav reflects any sign-in method.
-    function getCurrentUser() {
-        const sources = [USER_SESSION_KEY, 'authUser', 'coUser'];
-        for (const key of sources) {
-            try {
-                const raw = localStorage.getItem(key);
-                if (raw) {
-                    const parsed = JSON.parse(raw);
-                    if (parsed && typeof parsed === 'object') return parsed;
-                }
-            } catch (e) {}
-        }
-        return null;
-    }
-
-    function userFirstName(user) {
-        if (!user) return '';
-        if (user.firstName) return String(user.firstName).trim();
-        if (user.name) return String(user.name).trim().split(/\s+/)[0];
-        if (user.email) return String(user.email).split('@')[0];
-        return 'there';
-    }
-
-    function userInitials(user) {
-        const src = (user && (user.name || [user.firstName, user.lastName].filter(Boolean).join(' ') || user.email)) || 'BU';
-        const m = String(src).match(/\b\w/g) || ['B', 'U'];
-        return m.slice(0, 2).join('').toUpperCase();
-    }
-
-    function userPhoto(user) {
-        if (!user) return '';
-        const url = user.picture || user.avatar || user.avatarUrl || user.photo ||
-            user.photoURL || user.image || user.imageUrl || user.profileImage || '';
-        return typeof url === 'string' ? url.trim() : '';
-    }
-
-    const BRANDED_MARK_URL = '/brandedukv15-child/assets/images/ui/bd-mark-orange.png';
-
-    function isBrandedMarkAccount(user) {
-        if (!user) return false;
-        const email = String(user.email || '').toLowerCase();
-        const provider = String(user.provider || '').toLowerCase();
-        const picture = userPhoto(user).toLowerCase();
-        const name = String(user.name || [user.firstName, user.lastName].filter(Boolean).join(' ')).toLowerCase();
-        if (provider.includes('google-local-preview')) return true;
-        if (email.endsWith('@brandeduk.com') || email.endsWith('@brandeduk.co.uk') || email.endsWith('@brandeduk.test')) return true;
-        if (/bd-logo|bd-mark|orange-circle|use-the-provided-circular/.test(picture)) return true;
-        if (name === 'branded' || name === 'branded uk' || name === 'brandeduk') return true;
-        return false;
-    }
-
-    // Swap the bottom-nav person icon for the Google profile photo (or initials)
-    // when signed in, so it's obvious the user is logged in.
     function updateAccountNavIcon(user) {
-        const svg = accountBtn.querySelector('svg');
-        const label = accountBtn.querySelector('.nav-item-label');
-        let avatar = accountBtn.querySelector('.account-nav-avatar');
-        if (user) {
-            if (svg) svg.style.display = 'none';
-            const inHeader = accountBtn.classList.contains('mh-account');
-            if (inHeader && label) label.remove();
-            if (!avatar) {
-                avatar = document.createElement('span');
-                avatar.className = 'account-nav-avatar';
-                if (label && label.isConnected) accountBtn.insertBefore(avatar, label);
-                else accountBtn.appendChild(avatar);
-            }
-            const brandMark = isBrandedMarkAccount(user);
-            const photo = brandMark ? BRANDED_MARK_URL : userPhoto(user);
-            const initials = userInitials(user);
-            avatar.classList.toggle('is-brand-mark', brandMark);
-            avatar.innerHTML = photo
-                ? '<img src="' + photo + '" alt="" referrerpolicy="no-referrer" onerror="this.remove();this.parentNode.textContent=\'' + initials + '\';">'
-                : initials;
-            if (!inHeader && label && label.isConnected) label.textContent = 'Hi, ' + userFirstName(user);
-        } else {
-            if (avatar) avatar.remove();
-            if (svg) svg.style.display = '';
-            if (label) label.textContent = 'Account';
-        }
+        syncMobileAccountAvatar(user);
     }
-
-    // Reflect any existing session in the nav as soon as the page loads.
-    updateAccountNavIcon(getCurrentUser());
     
     // Check if user is logged in
     function checkLoggedIn() {

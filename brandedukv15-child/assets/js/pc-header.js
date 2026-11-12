@@ -347,7 +347,7 @@
         }
         if (!window.BrandedOrganicLeaf && !document.querySelector('script[data-organic-leaf]')) {
             chain = chain.then(function () {
-                return appendScript('js/organic-leaf.js?v=20261006-leaf4', { 'data-organic-leaf': 'true' });
+                return appendScript('js/organic-leaf.js?v=20261112-inset1', { 'data-organic-leaf': 'true' });
             });
         }
         chain.then(function () {

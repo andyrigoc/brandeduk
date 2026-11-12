@@ -125,7 +125,13 @@ const BrandedAPI = (function () {
     function mapCategoryToProductType(category) {
         if (!category || category === 'all') return null;
         const normalized = category.toLowerCase().trim();
-        return CATEGORY_SLUG_MAP[normalized] || normalized;
+        // A mapped null means "this category is not a product type" (sustainable,
+        // workwear). `|| normalized` would turn that into productType=sustainable
+        // and the catalogue would return nothing.
+        if (Object.prototype.hasOwnProperty.call(CATEGORY_SLUG_MAP, normalized)) {
+            return CATEGORY_SLUG_MAP[normalized];
+        }
+        return normalized;
     }
 
     /**
