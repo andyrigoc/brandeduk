@@ -84,6 +84,21 @@ window.BrandedAccountPanel = (function () {
         return typeof url === 'string' ? url.trim() : '';
     }
 
+    var BRANDED_MARK_URL = '/brandedukv15-child/assets/images/ui/bd-mark-orange.png';
+
+    function isBrandedMarkAccount(user) {
+        if (!user) return false;
+        var email = String(user.email || '').toLowerCase();
+        var provider = String(user.provider || '').toLowerCase();
+        var picture = avatarUrlFromUser(user).toLowerCase();
+        var name = String(fullNameFromUser(user) || '').toLowerCase();
+        if (provider.indexOf('google-local-preview') !== -1) return true;
+        if (email.endsWith('@brandeduk.com') || email.endsWith('@brandeduk.co.uk') || email.endsWith('@brandeduk.test')) return true;
+        if (/bd-logo|bd-mark|orange-circle|use-the-provided-circular/.test(picture)) return true;
+        if (name === 'branded' || name === 'branded uk' || name === 'brandeduk') return true;
+        return false;
+    }
+
     function escapeAttr(value) {
         return String(value == null ? '' : value)
             .replace(/&/g, '&amp;')
@@ -205,7 +220,7 @@ window.BrandedAccountPanel = (function () {
     // On the mobile bottom-nav (.nav-item), swap the person icon for the Google
     // profile photo so it's obvious the user is signed in. On desktop, decorateAccountTrigger
     // replaces the Account chrome with the Google profile pill only.
-    function setNavIconAvatar(trigger, photoUrl, initials) {
+    function setNavIconAvatar(trigger, photoUrl, initials, brandMark) {
         if (!trigger || !trigger.classList.contains('nav-item')) return;
         var svg = trigger.querySelector('svg');
         var navAvatar = trigger.querySelector('.account-nav-avatar');
@@ -218,6 +233,7 @@ window.BrandedAccountPanel = (function () {
                 if (label) trigger.insertBefore(navAvatar, label);
                 else trigger.insertBefore(navAvatar, trigger.firstChild);
             }
+            navAvatar.classList.toggle('is-brand-mark', !!brandMark);
             if (photoUrl) {
                 navAvatar.innerHTML = '<img src="' + escapeAttr(photoUrl) + '" alt="" ' +
                     'referrerpolicy="no-referrer" ' +
@@ -267,11 +283,18 @@ window.BrandedAccountPanel = (function () {
         trigger.classList.add('is-signed-in');
         trigger.setAttribute('aria-label', 'My account, signed in as ' + (user.email || firstName));
 
-        // Mobile bottom-nav: keep greeting + avatar swap.
+        // Mobile header: profile image only. The Branded Google account shows the circle mark, with no name beside it.
         if (trigger.classList.contains('nav-item')) {
             var labelEl = trigger.querySelector('.nav-item-label');
+            var inHeader = trigger.classList.contains('mh-account') || !!trigger.closest('.mh-actions');
+            var brandMark = isBrandedMarkAccount(user);
+            if (inHeader) {
+                if (labelEl) labelEl.remove();
+                setNavIconAvatar(trigger, brandMark ? BRANDED_MARK_URL : photoUrl, initials, brandMark);
+                return;
+            }
             if (labelEl) labelEl.textContent = 'Hi, ' + firstName;
-            setNavIconAvatar(trigger, photoUrl, initials);
+            setNavIconAvatar(trigger, photoUrl, initials, false);
             return;
         }
 

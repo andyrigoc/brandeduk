@@ -18,7 +18,47 @@ document.addEventListener('DOMContentLoaded', function() {
     initAccountPanel();
     initBrandsMarqueeLogos();
     initStickyBarFooterPush();
+    applyShopNavIcon();
+    applyHomeNavIcon();
 });
+
+function applyHomeNavIcon() {
+    const nav = document.querySelector('.bottom-nav');
+    if (!nav) return;
+    const home = nav.querySelector('[data-home-nav]') || Array.from(nav.querySelectorAll('a.nav-item')).find((item) => {
+        const label = item.querySelector('.nav-item-label');
+        return (label ? label.textContent : item.textContent).trim() === 'Home';
+    });
+    if (!home || home.querySelector('.nav-home-icon')) return;
+    const icon = document.createElement('img');
+    icon.className = 'nav-home-icon';
+    icon.src = '/brandedukv15-child/assets/images/ui/home-nav.png?v=20261112-home';
+    icon.alt = '';
+    icon.width = 34;
+    icon.height = 34;
+    const svg = home.querySelector('svg');
+    if (svg) svg.replaceWith(icon);
+    else home.insertBefore(icon, home.querySelector('.nav-item-label'));
+}
+
+function applyShopNavIcon() {
+    const nav = document.querySelector('.bottom-nav');
+    if (!nav) return;
+    const shop = Array.from(nav.querySelectorAll('a.nav-item')).find((item) => {
+        const label = item.querySelector('.nav-item-label');
+        return (label ? label.textContent : item.textContent).trim() === 'Shop';
+    });
+    if (!shop || shop.querySelector('.nav-shop-icon')) return;
+    const icon = document.createElement('img');
+    icon.className = 'nav-shop-icon';
+    icon.src = '/brandedukv15-child/assets/images/ui/shop-storefront.png?v=20261112-shop';
+    icon.alt = '';
+    icon.width = 34;
+    icon.height = 34;
+    const svg = shop.querySelector('svg');
+    if (svg) svg.replaceWith(icon);
+    else shop.insertBefore(icon, shop.querySelector('.nav-item-label'));
+}
 
 function initMobileNavigation() {
     const actions = document.querySelector('.mobile-header--v2 .mh-actions');
@@ -1627,6 +1667,21 @@ function initAccountPanel() {
         return typeof url === 'string' ? url.trim() : '';
     }
 
+    const BRANDED_MARK_URL = '/brandedukv15-child/assets/images/ui/bd-mark-orange.png';
+
+    function isBrandedMarkAccount(user) {
+        if (!user) return false;
+        const email = String(user.email || '').toLowerCase();
+        const provider = String(user.provider || '').toLowerCase();
+        const picture = userPhoto(user).toLowerCase();
+        const name = String(user.name || [user.firstName, user.lastName].filter(Boolean).join(' ')).toLowerCase();
+        if (provider.includes('google-local-preview')) return true;
+        if (email.endsWith('@brandeduk.com') || email.endsWith('@brandeduk.co.uk') || email.endsWith('@brandeduk.test')) return true;
+        if (/bd-logo|bd-mark|orange-circle|use-the-provided-circular/.test(picture)) return true;
+        if (name === 'branded' || name === 'branded uk' || name === 'brandeduk') return true;
+        return false;
+    }
+
     // Swap the bottom-nav person icon for the Google profile photo (or initials)
     // when signed in, so it's obvious the user is logged in.
     function updateAccountNavIcon(user) {
@@ -1635,18 +1690,22 @@ function initAccountPanel() {
         let avatar = accountBtn.querySelector('.account-nav-avatar');
         if (user) {
             if (svg) svg.style.display = 'none';
+            const inHeader = accountBtn.classList.contains('mh-account');
+            if (inHeader && label) label.remove();
             if (!avatar) {
                 avatar = document.createElement('span');
                 avatar.className = 'account-nav-avatar';
-                if (label) accountBtn.insertBefore(avatar, label);
+                if (label && label.isConnected) accountBtn.insertBefore(avatar, label);
                 else accountBtn.appendChild(avatar);
             }
-            const photo = userPhoto(user);
+            const brandMark = isBrandedMarkAccount(user);
+            const photo = brandMark ? BRANDED_MARK_URL : userPhoto(user);
             const initials = userInitials(user);
+            avatar.classList.toggle('is-brand-mark', brandMark);
             avatar.innerHTML = photo
                 ? '<img src="' + photo + '" alt="" referrerpolicy="no-referrer" onerror="this.remove();this.parentNode.textContent=\'' + initials + '\';">'
                 : initials;
-            if (label) label.textContent = 'Hi, ' + userFirstName(user);
+            if (!inHeader && label && label.isConnected) label.textContent = 'Hi, ' + userFirstName(user);
         } else {
             if (avatar) avatar.remove();
             if (svg) svg.style.display = '';

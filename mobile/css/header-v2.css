@@ -22,27 +22,37 @@ body:has(.mobile-header--v2) {
 }
 
 .mobile-header--v2 .mh-bar {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    position: relative;
+    display: flex;
     align-items: center;
+    justify-content: space-between;
     min-height: 64px;
     overflow: visible;
 }
 
 .mobile-header--v2 .mh-logo,
 .mobile-header--v2 .mobile-logo-center {
-    justify-self: center;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(calc(-50% - 8px), -50%);
     max-width: 331px !important;
     max-height: none !important;
     overflow: visible !important;
+    z-index: 1;
+}
+
+.mobile-header--v2 .mh-logo,
+.mobile-header--v2 .mobile-logo-center {
+    gap: 3px;
 }
 
 .mobile-header--v2 .mh-logo .mobile-logo-badge,
 .mobile-header--v2 .mobile-logo-center .mobile-logo-badge {
-    height: 52px !important;
-    max-height: 52px !important;
+    height: 46px !important;
+    max-height: 46px !important;
     width: auto !important;
-    max-width: 52px !important;
+    max-width: 46px !important;
 }
 
 .mobile-header--v2 .mh-logo .mobile-logo-word,
@@ -55,9 +65,18 @@ body:has(.mobile-header--v2) {
 }
 
 .mobile-header--v2 .mh-actions {
+    position: relative;
+    z-index: 2;
     justify-self: end;
     display: flex;
     align-items: center;
+    gap: 0;
+    margin-right: -6px;
+}
+
+.mobile-header--v2 .mh-actions .mh-icon-btn {
+    width: 26px;
+    flex: 0 0 26px;
 }
 
 .mh-icon-btn {
@@ -73,21 +92,58 @@ body:has(.mobile-header--v2) {
 }
 
 @media (max-width: 699px) {
-    .mobile-header--v2 .mh-bar {
-        grid-template-columns: 44px minmax(0, 1fr) auto;
-    }
-
     .mobile-header--v2 .mh-logo,
     .mobile-header--v2 .mobile-logo-center {
         min-width: 0;
-        max-width: 100% !important;
-        overflow: hidden !important;
+        max-width: calc(100% - 156px) !important;
     }
 
     .mobile-header--v2 .mh-actions .mh-account {
-        flex: 0 0 44px;
+        flex: 0 0 26px;
+        width: 26px;
         padding: 0;
         gap: 0;
+    }
+
+    .mobile-header--v2 .mh-account .nav-item-label,
+    .mobile-header--v2 .mh-account .account-trigger-name {
+        display: none !important;
+    }
+
+    .mobile-header--v2 .mh-account .account-trigger-profile {
+        padding: 0;
+        border: 0;
+        background: transparent;
+        box-shadow: none;
+        gap: 0;
+        left: 0;
+    }
+
+    .mobile-header--v2 .mh-account .account-nav-avatar,
+    .mobile-header--v2 .mh-account .account-trigger-avatar {
+        width: 24px;
+        height: 24px;
+        flex: 0 0 24px;
+        border-radius: 999px;
+        overflow: hidden;
+        background: transparent;
+    }
+
+    .mobile-header--v2 .mh-account .account-nav-avatar img,
+    .mobile-header--v2 .mh-account .account-trigger-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .mobile-header--v2 .mh-account .account-nav-avatar.is-brand-mark,
+    .mobile-header--v2 .mh-account .account-trigger-avatar.is-brand-mark {
+        border-radius: 0;
+    }
+
+    .mobile-header--v2 .mh-account .account-nav-avatar.is-brand-mark img,
+    .mobile-header--v2 .mh-account .account-trigger-avatar.is-brand-mark img {
+        object-fit: contain;
     }
 
     .bottom-nav .nav-item--limited-bundles {
@@ -112,11 +168,22 @@ body:has(.mobile-header--v2) {
 }
 
 @media (max-width: 359px) {
+    .mobile-header--v2 .mh-logo,
+    .mobile-header--v2 .mobile-logo-center {
+        max-width: calc(100% - 132px) !important;
+    }
+
+    .mobile-header--v2 .mh-actions .mh-icon-btn,
+    .mobile-header--v2 .mh-actions .mh-account {
+        width: 24px;
+        flex-basis: 24px;
+    }
+
     .mobile-header--v2 .mh-logo .mobile-logo-badge,
     .mobile-header--v2 .mobile-logo-center .mobile-logo-badge {
-        height: 44px !important;
-        max-height: 44px !important;
-        max-width: 44px !important;
+        height: 40px !important;
+        max-height: 40px !important;
+        max-width: 40px !important;
     }
 
     .mobile-header--v2 .mh-logo .mobile-logo-word,
@@ -287,8 +354,8 @@ body:has(.mobile-header--v2) {
 
 .mh-cart-count {
     position: absolute;
-    top: 4px;
-    right: 2px;
+    top: 2px;
+    right: -1px;
 }
 
 .mh-cart-count[hidden],

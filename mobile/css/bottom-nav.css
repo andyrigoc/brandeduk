@@ -32,6 +32,37 @@
     white-space: nowrap;
 }
 
+.bottom-nav--v2 > .nav-item:has(.nav-shop-icon) {
+    gap: 1px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+.bottom-nav--v2 .nav-shop-icon,
+.bottom-nav--v2 .nav-home-icon {
+    display: block;
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+}
+
+.bottom-nav--v2 > .nav-item:has(.nav-home-icon) {
+    gap: 1px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+.bottom-nav--v2 > .nav-item .nav-item-label,
+.bottom-nav--v2 > .nav-item.active .nav-item-label,
+.bottom-nav--v2 > .nav-item[aria-current="page"] .nav-item-label {
+    color: #111;
+}
+
+.bottom-nav--v2 > .nav-item--customise .nav-item-label,
+.bottom-nav--v2 > .nav-item--customise.active .nav-item-label {
+    color: #ea580c;
+}
+
 /* The highlighted item comes from aria-current only: mobile.js marks every
    .html link as .active when the page is served from an extensionless URL. */
 .bottom-nav--v2 > .nav-item.active {
