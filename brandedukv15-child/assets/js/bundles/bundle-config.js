@@ -1,7 +1,7 @@
 /**
- * Local bundle shape. The builder only reads this object.
- * The future API should return the same fields.
- * Preview only: no live deal, no catalogue SKU, no price.
+ * Bundle shape. The builder reads this object, then loads any productCode
+ * from the catalogue. Do not put colour lists, size lists, or prices here
+ * for catalogue lines — those come from the product response.
  */
 (function (window) {
   'use strict';
@@ -18,6 +18,39 @@
   window.BrandedBundleConfig = {
     source: 'local-preview',
     bundles: [
+      {
+        bundleId: 'logistics',
+        bundleName: 'Logistics',
+        bundleSlug: 'logistics',
+        bundleDescription: 'Move with confidence. Built for every delivery.',
+        banner: '/brandedukv15-child/assets/images/bundles/logistics-banner.jpg',
+        bundlePrice: null,
+        currency: 'GBP',
+        vatExcluded: true,
+        includedLogo: true,
+        logoUploadEnabled: true,
+        customerNotesEnabled: true,
+        activeStatus: true,
+        hideFromList: true,
+        logoMethod: 'dtf',
+        printColourCount: 1,
+        groups: [
+          {
+            groupId: 'pieces',
+            groupName: 'Pieces',
+            selectionMode: 'FIXED',
+            requiredQuantity: 4,
+            allowMixedOptions: false,
+            allowMultipleColours: true,
+            options: [
+              { optionId: 'rg478', productCode: 'RG478', quantity: 1, preferredColour: 'Black/Yellow' },
+              { optionId: 'rg465', productCode: 'RG465', quantity: 1 },
+              { optionId: 'ss224', productCode: 'SS224', quantity: 1, preferredColour: 'Navy' },
+              { optionId: 'uc905', productCode: 'UC905', quantity: 1 }
+            ]
+          }
+        ]
+      },
       {
         bundleId: 'preview-workwear-bundle',
         bundleName: 'Preview Workwear Bundle',

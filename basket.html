@@ -915,6 +915,52 @@
             appearance: none;
         }
         .item-row-remove:hover { color: #dc2626; text-decoration: underline; }
+        .basket-item-row.basket-item-row--bundle { display: block; }
+        .bundle-row-banner {
+            width: 96px;
+            height: 42px;
+            flex: 0 0 96px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+        }
+        .bundle-row-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .bundle-row-price {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-top: 4px;
+        }
+        .bundle-row-price-label {
+            color: #6b7280;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .bundle-row-price-value {
+            color: var(--basket-navy, #273469);
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+        .bundle-row-edit {
+            margin-top: 8px;
+            border: 1px solid #273469;
+            background: #fff;
+            color: #273469;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font: inherit;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .bundle-row-edit:hover { background: #f6f7fa; }
         .item-row-meta {
             margin: 4px 0 0;
             display: flex;
@@ -4326,6 +4372,14 @@
         return '\u00A3' + amount.toFixed(2);
     }
 
+    function bundleBannerSrc(item) {
+        if (!item) return '';
+        if (item.banner) return String(item.banner);
+        const key = String(item.bundleSlug || item.bundleId || '');
+        if (key === 'logistics') return '/brandedukv15-child/assets/images/bundles/logistics-banner.jpg';
+        return '';
+    }
+
     function vatSuffix() {
         return includeVAT ? 'inc. VAT' : 'exc. VAT';
     }
@@ -5020,48 +5074,26 @@
         const chargedEmbroideryDesigns = new Set();
         basket.forEach((item, index) => {
             if (isBundleLine(item)) {
-                const chosen = Array.isArray(item.chosenLines) ? item.chosenLines : [];
-                const lines = chosen.map((line) => {
-                    const detail = line.detail ? `<small style="display:block;color:#6b7280;font-weight:500">${escapeAttr(line.detail)}</small>` : '';
-                    const thumb = line.image
-                        ? `<img src="${escapeAttr(line.image)}" alt="" width="64" height="64" style="width:64px;height:64px;object-fit:contain;background:#f3f4f6;border-radius:8px;flex:0 0 auto">`
-                        : '';
-                    return `<li style="display:flex;gap:10px;align-items:center;margin:0 0 10px">${thumb}<span><strong>${escapeAttr((line.quantity || 0) + ' × ' + (line.label || 'Item'))}</strong>${detail}</span></li>`;
-                }).join('');
-                const logo = (item.logos && item.logos[0]) || (item.selection && item.selection.logo) || null;
-                const logoSrc = logo ? resolveLogoImageSource({
-                    logo: logo.logo || logo.ref || '',
-                    logoId: logo.logoId || ''
-                }) : '';
-                const logoName = logo && (logo.filename || logo.positionLabel) ? escapeAttr(logo.filename || 'Logo') : '';
-                const logoLine = logo
-                    ? `<div style="display:flex;gap:10px;align-items:center;margin-top:8px">${logoSrc ? `<img src="${escapeAttr(logoSrc)}" alt="Logo preview" width="56" height="56" style="width:56px;height:56px;object-fit:contain;background:#fff;border:1px solid #e5e7eb;border-radius:8px">` : ''}<span style="color:#374151">Logo preview${logoName ? ': ' + logoName : ''}${logo.positionLabel ? ' · ' + escapeAttr(logo.positionLabel) : ''}</span></div>`
-                    : '';
-                const notes = item.selection && item.selection.notes
-                    ? `<p style="margin:6px 0 0;color:#6b7280">Note: ${escapeAttr(item.selection.notes)}</p>`
-                    : '';
+                const banner = bundleBannerSrc(item);
                 const amount = bundlePriceNumber(item);
+                const priceText = amount == null ? '\u2014' : formatBundlePrice(item);
                 html += `
-                <div class="basket-item-row" data-index="${index}" data-line-type="bundle">
+                <div class="basket-item-row basket-item-row--bundle" data-index="${index}" data-line-type="bundle">
                     <div class="item-row-header">
                         <div class="item-row-top">
+                            ${banner ? `<div class="bundle-row-banner"><img src="${escapeAttr(banner)}" alt=""></div>` : ''}
                             <div class="item-row-head-text">
                                 <div class="item-row-title-line">
                                     <h4 class="item-row-title">${escapeAttr(item.name || 'Bundle')}</h4>
-                                </div>
-                                <ul style="list-style:none;margin:10px 0 0;padding:0;font-size:14px">${lines}</ul>
-                                ${logoLine}
-                                ${notes}
-                                <div class="item-row-meta">
                                     <button type="button" class="item-row-remove" onclick="event.stopPropagation(); removeItem(${index})">Remove</button>
                                 </div>
+                                <div class="bundle-row-price">
+                                    <span class="bundle-row-price-label">Offer price</span>
+                                    <span class="bundle-row-price-value">${priceText}</span>
+                                </div>
+                                <button type="button" class="bundle-row-edit" onclick="event.stopPropagation(); modifyBundle(${index})">Modifica bundle</button>
                             </div>
                         </div>
-                    </div>
-                    <div class="item-row-total">
-                        <span class="total-label">Bundle price</span>
-                        <span class="total-value">${amount == null ? '\u2014' : formatCurrency(amount)}</span>
-                        <small>${vatSuffix()}</small>
                     </div>
                 </div>`;
                 return;
@@ -5693,6 +5725,16 @@
     // ========================
     // REMOVE ITEM
     // ========================
+
+    function modifyBundle(index) {
+        const item = getBasket()[index];
+        if (!isBundleLine(item)) return;
+        const params = new URLSearchParams();
+        params.set('force', 'mobile');
+        params.set('bundle', item.bundleSlug || item.bundleId || '');
+        if (item.id) params.set('edit', item.id);
+        window.location.href = '/bundles.html?' + params.toString();
+    }
 
     function removeItem(index) {
         let basket = getBasket();

@@ -10,11 +10,11 @@
   var MAX_FILE_BYTES = 25 * 1024 * 1024;
   var FILE_ACCEPT = 'image/*,.pdf,.ai,.svg,.eps';
   var FILE_TYPES = 'JPG, PNG, GIF, WebP, SVG, PDF, AI, EPS';
-  var STEPS = ['Included', 'Groups', 'Products', 'Logo'];
   var root = null;
   var bundle = null;
   var state = null;
   var logoPreviewUrl = '';
+  var logoPreviewOwned = false;
   var logoSave = Promise.resolve();
 
   function configBundles() {
@@ -38,24 +38,206 @@
       .replace(/"/g, '&quot;');
   }
 
+  function cssAttr(value) {
+    return String(value == null ? '' : value).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+  }
+
   function coloursOf(option) {
-    return Array.isArray(option.colours) && option.colours.length
-      ? option.colours
-      : [{ colourId: 'colour', label: 'Colour', hex: '#d5d8e0' }];
+    if (Array.isArray(option.colours) && option.colours.length) return option.colours;
+    if (option && option.productCode) return [];
+    return [{ colourId: 'colour', label: 'Colour', hex: '#d5d8e0' }];
   }
 
   function sizesOf(option) {
-    return Array.isArray(option.sizes) && option.sizes.length ? option.sizes : ['One size'];
+    if (Array.isArray(option.sizes) && option.sizes.length) return option.sizes;
+    if (option && option.productCode) return [];
+    return ['One size'];
   }
 
   function blankLine(option, colourId) {
     var colours = coloursOf(option);
+    var preferred = preferredColour(option, colours);
     var sizes = {};
     sizesOf(option).forEach(function (size) { sizes[size] = 0; });
     return {
-      colourId: colourId || colours[0].colourId,
+      colourId: colourId || (preferred && preferred.colourId) || (colours[0] && colours[0].colourId) || '',
       sizes: sizes
     };
+  }
+
+  var catalogueRequest = 0;
+
+  function isCatalogueBundle(item) {
+    return (item && item.groups || []).some(function (group) {
+      return (group.options || []).some(function (option) { return option.productCode; });
+    });
+  }
+
+  function apiBase() {
+    var base = '';
+    if (typeof window.resolveBrandedApiBase === 'function') base = window.resolveBrandedApiBase();
+    else if (window.API_BASE_URL) base = window.API_BASE_URL;
+    return String(base || '').replace(/\/+$/, '');
+  }
+
+  function colourKey(name) {
+    return String(name || '').toLowerCase().replace(/[*†△®™]/g, '').replace(/\s+/g, ' ').trim();
+  }
+
+  function colourIdFor(name, used) {
+    var id = colourKey(name).replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'colour';
+    var unique = id;
+    var n = 2;
+    while (used[unique]) {
+      unique = id + '-' + n;
+      n += 1;
+    }
+    used[unique] = true;
+    return unique;
+  }
+
+  function preferredColour(option, colours) {
+    var list = colours || [];
+    var want = colourKey(option && option.preferredColour);
+    if (!want) return list[0] || null;
+    return list.filter(function (colour) { return colourKey(colour.label) === want; })[0] || list[0] || null;
+  }
+
+  function mapCatalogueColours(product) {
+    var used = {};
+    return (product.colors || []).filter(function (color) {
+      return color && colourKey(color.name) && colourKey(color.name) !== 'model';
+    }).map(function (color) {
+      return {
+        colourId: colourIdFor(color.name, used),
+        label: String(color.name),
+        image: color.main || color.thumb || color.image_url || '',
+        thumb: color.thumb || color.main || color.image_url || ''
+      };
+    });
+  }
+
+  function firstProductImage(product) {
+    var images = product.images || [];
+    var main = images.filter(function (img) { return img && img.url && img.type === 'main'; })[0]
+      || images.filter(function (img) { return img && img.url; })[0];
+    return (main && main.url) || product.image || '';
+  }
+
+  function isLifestyleUrl(url) {
+    return /(?:^|\/)model[-_]|_ls00|lifestyle|model-highres/i.test(String(url || ''));
+  }
+
+  function catalogueDefaultImage(product) {
+    var colors = (product && product.colors) || [];
+    var i;
+    for (i = 0; i < colors.length; i++) {
+      var color = colors[i];
+      if (!color || colourKey(color.name) === 'model') continue;
+      var url = color.main || color.thumb || color.image_url || '';
+      if (url && !isLifestyleUrl(url)) return url;
+    }
+    var listed = (product && (product.image || product.main_image)) || '';
+    if (listed && !isLifestyleUrl(listed)) return listed;
+    var images = (product && product.images) || [];
+    var main = images.filter(function (img) {
+      return img && img.url && img.type === 'main' && !isLifestyleUrl(img.url);
+    })[0];
+    if (main && main.url) return main.url;
+    for (i = 0; i < colors.length; i++) {
+      var fallbackColor = colors[i];
+      if (!fallbackColor || colourKey(fallbackColor.name) === 'model') continue;
+      var anyUrl = fallbackColor.main || fallbackColor.thumb || fallbackColor.image_url || '';
+      if (anyUrl) return anyUrl;
+    }
+    return firstProductImage(product || {});
+  }
+
+  function colourPhoto(colour) {
+    if (!colour) return '';
+    return colour.image || colour.thumb || '';
+  }
+
+  function photoFor(option, colour) {
+    var selected = colourPhoto(colour);
+    if (selected) return selected;
+    if (!option) return '';
+    return option.fallbackImage || option.image || '';
+  }
+
+  function activeColour(group, option) {
+    if (!state || !group || !option || !state.groups || !state.groups[group.groupId]) return null;
+    var bucket = state.groups[group.groupId].options[option.optionId];
+    var lines = (bucket && bucket.lines) || [];
+    var chosen = null;
+    lines.some(function (line) {
+      if (lineQty(line) > 0) {
+        chosen = line;
+        return true;
+      }
+      return false;
+    });
+    var line = chosen || lines[0];
+    if (!line || !line.colourId) return null;
+    return coloursOf(option).filter(function (colour) { return colour.colourId === line.colourId; })[0] || null;
+  }
+
+  function applyCatalogueProduct(option, product) {
+    if (!product || (!product.name && !product.code)) {
+      option.catalogueMissing = true;
+      option.label = option.productCode || 'Piece';
+      option.colours = [];
+      option.sizes = [];
+      option.image = '';
+      option.fallbackImage = '';
+      return;
+    }
+    option.catalogueMissing = false;
+    option.catalogueLoaded = true;
+    option.label = product.name || option.productCode;
+    option.colours = mapCatalogueColours(product);
+    option.sizes = (product.sizes || []).map(function (size) { return String(size); }).filter(Boolean);
+    option.fallbackImage = catalogueDefaultImage(product);
+    var chosen = preferredColour(option, option.colours);
+    option.image = (chosen && (chosen.image || chosen.thumb)) || option.fallbackImage;
+  }
+
+  function fetchCatalogueProduct(code) {
+    return fetch(apiBase() + '/api/products/' + encodeURIComponent(code)).then(function (response) {
+      if (response.status === 404) return null;
+      if (!response.ok) throw new Error('Catalogue request failed (' + response.status + ')');
+      return response.json();
+    });
+  }
+
+  function hydrateCatalogue(target) {
+    var options = [];
+    (target.groups || []).forEach(function (group) {
+      (group.options || []).forEach(function (option) {
+        if (option.productCode) options.push(option);
+      });
+    });
+    return Promise.all(options.map(function (option) {
+      return fetchCatalogueProduct(option.productCode).then(function (product) {
+        applyCatalogueProduct(option, product);
+      }).catch(function () {
+        option.catalogueMissing = true;
+        option.label = option.productCode || 'Piece';
+        option.colours = [];
+        option.sizes = [];
+        option.image = '';
+        option.fallbackImage = '';
+      });
+    })).then(function () {
+      target.catalogueStatus = 'ready';
+    });
+  }
+
+  function lineColour(option, line) {
+    if (!line) return coloursOf(option)[0] || null;
+    return coloursOf(option).filter(function (colour) { return colour.colourId === line.colourId; })[0]
+      || coloursOf(option)[0]
+      || null;
   }
 
   function emptyState(nextBundle) {
@@ -69,12 +251,17 @@
     });
     return {
       step: 1,
+      reached: 1,
+      dirty: false,
+      saving: false,
       activeGroupId: (nextBundle.groups && nextBundle.groups[0] && nextBundle.groups[0].groupId) || '',
       groups: groups,
       logo: null,
       notes: '',
       message: '',
-      confirm: false
+      confirm: false,
+      scrollPiece: null,
+      editingId: ''
     };
   }
 
@@ -146,18 +333,43 @@
   }
 
   function isDirty() {
-    if (state.notes.trim() || state.logo) return true;
-    return (bundle.groups || []).some(function (group) {
-      if (state.groups[group.groupId].selectedOptionId) return true;
-      return (group.options || []).some(function (option) { return optionQty(group, option) > 0; });
-    });
+    return !!(state && state.dirty);
+  }
+
+  function markDirty() {
+    if (state) state.dirty = true;
+  }
+
+  function canLeaveStep(step) {
+    var id = flowSteps()[step - 1];
+    if (id === 'Included') return true;
+    if (id === 'Groups') return allGroupsValid();
+    if (id === 'Products') {
+      if (skipGroups()) return allGroupsValid();
+      var group = groupById(state.activeGroupId);
+      return !!(group && groupValid(group));
+    }
+    if (id === 'Logo') return canAdd();
+    return false;
+  }
+
+  function canReach(step) {
+    var total = flowSteps().length;
+    if (!state || step < 1 || step > total) return false;
+    if (!skipGroups()) return true;
+    if (step > (state.reached || 1)) return false;
+    var index;
+    for (index = 1; index < step; index += 1) {
+      if (!canLeaveStep(index)) return false;
+    }
+    return true;
   }
 
   function modeLine(group) {
     var mode = effectiveMode(group);
     if (mode === 'FIXED') {
       return (group.options || []).map(function (option) {
-        return (Number(option.quantity) || 0) + ' ' + option.label;
+        return (Number(option.quantity) || 0) + ' ' + (option.label || option.productCode || 'Item');
       }).join(' + ');
     }
     if (mode === 'EXCLUSIVE') {
@@ -222,40 +434,111 @@
     try { next.setSelectionRange(length, length); } catch (error) { /* number inputs */ }
   }
 
+  function skipGroups() {
+    return isCatalogueBundle(bundle);
+  }
+
+  function flowSteps() {
+    if (skipGroups()) return ['Included', 'Products', 'Logo'];
+    return ['Included', 'Groups', 'Products', 'Logo'];
+  }
+
+  function stepId(step) {
+    return flowSteps()[(step || state.step) - 1] || '';
+  }
+
   function render() {
     var key = focusKey();
     root.hidden = false;
     document.body.style.overflow = 'hidden';
     root.querySelector('.bb__title').textContent = bundle.bundleName || 'Bundle';
-    root.querySelector('#bbProgress').innerHTML = progressHtml();
+    var progress = root.querySelector('#bbProgress');
+    progress.style.gridTemplateColumns = 'repeat(' + flowSteps().length + ', minmax(0, 1fr))';
+    progress.innerHTML = progressHtml();
     root.querySelector('#bbBody').innerHTML = bodyHtml();
     root.querySelector('#bbFoot').innerHTML = footHtml();
     var confirm = root.querySelector('#bbConfirm');
     confirm.hidden = !state.confirm;
     restoreFocus(key);
+    scrollToPiece(consumeScrollPiece());
+  }
+
+  function consumeScrollPiece() {
+    if (!state || !state.scrollPiece) return null;
+    var piece = state.scrollPiece;
+    state.scrollPiece = null;
+    return piece;
+  }
+
+  function scrollToPiece(piece) {
+    if (!piece) return;
+    var body = root.querySelector('#bbBody');
+    if (!body) return;
+    var card = null;
+    if (piece.productCode) {
+      card = body.querySelector('.bb__option[data-product-code="' + cssAttr(piece.productCode) + '"]');
+    }
+    if (!card && piece.optionId) {
+      card = body.querySelector('.bb__option[data-option-id="' + cssAttr(piece.optionId) + '"]');
+    }
+    if (!card) return;
+    card.classList.add('is-jumped');
+    var top = card.getBoundingClientRect().top - body.getBoundingClientRect().top + body.scrollTop - 8;
+    body.scrollTop = top > 0 ? top : 0;
   }
 
   function progressHtml() {
-    return STEPS.map(function (label, index) {
+    var steps = flowSteps();
+    return steps.map(function (label, index) {
       var step = index + 1;
-      var disabled = step === 4 && !allGroupsValid();
-      var cls = step === state.step ? 'bb__step is-active' : 'bb__step';
+      var current = step === state.step;
+      var enabled = !state.saving && !current && canReach(step);
+      if (!skipGroups()) {
+        enabled = !state.saving && !current && !(label === 'Logo' && !allGroupsValid());
+      }
+      var complete = skipGroups() && !current && step < state.step && canLeaveStep(step);
+      var cls = 'bb__step' + (current ? ' is-active' : '') + (complete ? ' is-complete' : '');
       return '<button type="button" class="' + cls + '" data-bb-action="step" data-step="' + step + '"' +
-        (disabled ? ' disabled' : '') + '>' + step + ' ' + esc(label) + '</button>';
+        (current ? ' aria-current="step"' : '') +
+        (enabled ? '' : ' disabled') + '>' + step + ' ' + esc(label) + '</button>';
     }).join('');
   }
 
   function bodyHtml() {
-    if (state.step === 1) return stepIncluded();
-    if (state.step === 2) return stepGroups();
-    if (state.step === 3) return stepProducts();
+    var id = stepId();
+    if (id === 'Included') return stepIncluded();
+    if (id === 'Groups') return stepGroups();
+    if (id === 'Products') return stepProducts();
     return stepLogo();
   }
 
+  function cataloguePieceCards() {
+    var cards = [];
+    (bundle.groups || []).forEach(function (group) {
+      (group.options || []).forEach(function (option) {
+        if (option.catalogueMissing) {
+          cards.push('<article data-product-code="' + esc(option.productCode || '') + '"><strong>' + esc(option.productCode || 'Piece') + '</strong><p>Not found in the catalogue.</p></article>');
+          return;
+        }
+        var photo = photoFor(option, activeColour(group, option));
+        var img = photo ? '<img src="' + esc(photo) + '" alt="">' : '';
+        cards.push('<article class="bb__piece-card" data-product-code="' + esc(option.productCode || '') + '">' + img +
+          '<div><strong>' + esc(option.label || option.productCode || '') + '</strong><p>' + esc(option.productCode || '') + '</p></div></article>');
+      });
+    });
+    return cards.join('');
+  }
+
   function stepIncluded() {
-    var cards = (bundle.groups || []).map(function (group) {
-      return '<article><strong>' + esc(group.groupName) + '</strong><p>' + esc(modeLine(group)) + '. ' + esc(modeHint(group)) + '</p></article>';
-    }).join('');
+    if (bundle.catalogueStatus === 'loading') {
+      return '<p class="bb__kicker">What\u2019s included</p><h3>' + esc(bundle.bundleName || 'Bundle') + '</h3>' +
+        '<p class="bb__lead">Loading the pieces from the catalogue\u2026</p>';
+    }
+    var cards = isCatalogueBundle(bundle)
+      ? cataloguePieceCards()
+      : (bundle.groups || []).map(function (group) {
+        return '<article><strong>' + esc(group.groupName) + '</strong><p>' + esc(modeLine(group)) + '. ' + esc(modeHint(group)) + '</p></article>';
+      }).join('');
     var logo = bundle.includedLogo
       ? '<article><strong>One logo</strong><p>One file for the whole bundle, DTF, one print colour. The same logo goes on every piece. Notes are optional.</p></article>'
       : '';
@@ -280,6 +563,11 @@
   }
 
   function stepProducts() {
+    if (bundle.catalogueStatus === 'loading') {
+      return '<p class="bb__kicker">Products</p><h3>' + esc(bundle.bundleName || 'Bundle') + '</h3>' +
+        '<p class="bb__lead">Loading the pieces from the catalogue\u2026</p>';
+    }
+    if (skipGroups()) return stepCatalogueProducts();
     var group = groupById(state.activeGroupId) || (bundle.groups || [])[0];
     if (!group) return '<p>This bundle has no groups.</p>';
     var qty = groupQty(group);
@@ -293,7 +581,30 @@
       (state.message ? '<p class="bb__warn">' + esc(state.message) + '</p>' : '');
   }
 
+  function stepCatalogueProducts() {
+    var groups = bundle.groups || [];
+    var qty = groups.reduce(function (sum, group) { return sum + groupQty(group); }, 0);
+    var required = groups.reduce(function (sum, group) { return sum + (Number(group.requiredQuantity) || 0); }, 0);
+    var options = groups.map(function (group) {
+      return (group.options || []).map(function (option) {
+        return optionCard(group, option);
+      }).join('');
+    }).join('');
+    if (!options) return '<p>This bundle has no pieces.</p>';
+    var lead = groups.length === 1
+      ? modeHint(groups[0])
+      : 'Choose a colour and size for each piece.';
+    return '<p class="bb__kicker">Products</p><h3>' + qty + ' / ' + required + ' selected</h3>' +
+      '<p class="bb__lead">' + esc(lead) + '</p>' +
+      '<div class="bb__options">' + options + '</div>' +
+      (state.message ? '<p class="bb__warn">' + esc(state.message) + '</p>' : '');
+  }
+
   function optionCard(group, option) {
+    if (option.catalogueMissing) {
+      return '<article class="bb__option" data-product-code="' + esc(option.productCode || '') + '" data-option-id="' + esc(option.optionId) + '"><h4>' +
+        esc(option.productCode || 'Piece') + '</h4><p class="bb__warn">Not found in the catalogue.</p></article>';
+    }
     var mode = effectiveMode(group);
     var selected = state.groups[group.groupId].selectedOptionId;
     var active = mode !== 'EXCLUSIVE' || selected === option.optionId;
@@ -304,12 +615,20 @@
     var cap = optionCap(group, option);
     var count = mode === 'FLEXIBLE_MIX' ? String(qty) : (qty + ' / ' + cap);
     var editor = active ? linesHtml(group, option) : '';
+    var shownColour = activeColour(group, option);
+    var photo = photoFor(option, shownColour);
+    var visual = photo
+      ? '<img src="' + esc(photo) + '" alt="">'
+      : (option.productCode ? '' : silhouette(option.silhouette));
+    var colourLine = shownColour && (shownColour.image || shownColour.thumb || option.productCode)
+      ? '<p class="bb__code">' + esc(shownColour.label) + '</p>'
+      : '';
     var pick = mode === 'EXCLUSIVE'
       ? '<button type="button" class="bb__btn bb__btn--primary bb__pick" data-bb-action="select-option" data-group="' + esc(group.groupId) + '" data-option="' + esc(option.optionId) + '">' +
         (selected === option.optionId ? 'Selected' : 'Choose ' + esc(option.label)) + '</button>'
       : '';
-    return '<article class="' + cls + '"><div class="bb__option-top"><div class="bb__sil">' + silhouette(option.silhouette) +
-      '</div><div><h4>' + esc(option.label) + '</h4>' + code + '<p class="bb__code">' + count + '</p></div></div>' +
+    return '<article class="' + cls + '" data-product-code="' + esc(option.productCode || '') + '" data-option-id="' + esc(option.optionId) + '"><div class="bb__option-top"><div class="bb__sil">' + visual +
+      '</div><div><h4>' + esc(option.label) + '</h4>' + code + colourLine + '<p class="bb__code">' + count + '</p></div></div>' +
       pick + editor + '</article>';
   }
 
@@ -319,7 +638,12 @@
     var html = (bucket.lines || []).map(function (line, index) {
       var swatches = colours.map(function (colour) {
         var on = line.colourId === colour.colourId ? ' is-on' : '';
-        return '<button type="button" class="bb__swatch' + on + '" style="background:' + esc(colour.hex || '#ddd') + '" title="' + esc(colour.label) + '" aria-label="' + esc(colour.label) + '" data-bb-action="colour" data-group="' + esc(group.groupId) + '" data-option="' + esc(option.optionId) + '" data-line="' + index + '" data-colour="' + esc(colour.colourId) + '"></button>';
+        var photo = colour.thumb || colour.image || '';
+        var attrs = ' type="button" class="bb__swatch' + (photo ? ' bb__swatch--photo' : '') + on + '" title="' + esc(colour.label) + '" aria-label="' + esc(colour.label) + '" data-bb-action="colour" data-group="' + esc(group.groupId) + '" data-option="' + esc(option.optionId) + '" data-line="' + index + '" data-colour="' + esc(colour.colourId) + '"';
+        if (photo) {
+          return '<button' + attrs + '><img src="' + esc(photo) + '" alt=""><span>' + esc(colour.label) + '</span></button>';
+        }
+        return '<button' + attrs + ' style="background:' + esc(colour.hex || '#ddd') + '"></button>';
       }).join('');
       var sizes = sizesOf(option).map(function (size) {
         var value = Number(line.sizes[size]) || 0;
@@ -339,16 +663,80 @@
     return html + add;
   }
 
+  function summaryCountText(qty, required) {
+    if (!(Number(required) > 0)) return String(qty);
+    return String(qty) + '/' + String(required);
+  }
+
+  function logoDetailRows() {
+    var rows = [];
+    (bundle.groups || []).forEach(function (group) {
+      var selected = state.groups[group.groupId].selectedOptionId;
+      var mode = effectiveMode(group);
+      (group.options || []).forEach(function (option) {
+        if (mode === 'EXCLUSIVE' && option.optionId !== selected) return;
+        var bucket = state.groups[group.groupId].options[option.optionId];
+        var required = optionCap(group, option);
+        var productQty = optionQty(group, option);
+        if (productQty <= 0) return;
+        (bucket.lines || []).forEach(function (line) {
+          var colour = coloursOf(option).filter(function (item) { return item.colourId === line.colourId; })[0] || null;
+          sizesOf(option).forEach(function (size) {
+            var qty = Number(line.sizes && line.sizes[size]) || 0;
+            if (qty <= 0) return;
+            rows.push({
+              groupId: group.groupId,
+              optionId: option.optionId,
+              productCode: option.productCode || '',
+              label: option.label || option.productCode || 'Piece',
+              colour: colour ? colour.label : '',
+              size: size,
+              qty: qty,
+              quantity: productQty,
+              required: required,
+              image: photoFor(option, colour)
+            });
+          });
+        });
+      });
+    });
+    return rows;
+  }
+
+  function logoSummaryHtml() {
+    return logoDetailRows().map(function (line) {
+      var facts = [line.colour, line.size, String(line.qty)].filter(function (part) {
+        return part != null && String(part) !== '';
+      }).join(' \u00b7 ');
+      var photo = line.image
+        ? '<img class="bb__summary-photo" src="' + esc(line.image) + '" alt="">'
+        : '';
+      var required = Number(line.required) || 0;
+      var countText = summaryCountText(line.quantity, required);
+      var done = required > 0 && Number(line.quantity) === required;
+      var countClass = 'bb__summary-count' + (done ? ' is-done' : ' is-short');
+      var name = line.label || line.productCode || 'this piece';
+      return '<li class="is-jump"><button type="button" class="bb__summary-jump" data-bb-action="edit-piece" data-group="' + esc(line.groupId) + '" data-option="' + esc(line.optionId) + '" data-product="' + esc(line.productCode) + '" aria-label="' + esc('Change ' + name + ', ' + facts + ', ' + countText + ' selected') + '">' +
+        photo +
+        '<span class="bb__summary-copy"><strong>' + esc(line.label) + '</strong><small>' + esc(facts) + '</small></span>' +
+        '<span class="' + countClass + '">' + esc(countText) + '</span></button></li>';
+    }).join('');
+  }
+
   function stepLogo() {
-    var lines = chosenLines().map(function (line) {
+    var editable = skipGroups();
+    var lines = editable ? logoSummaryHtml() : chosenLines().map(function (line) {
       var detail = line.detail ? '<small style="display:block;color:#5c6578;font-weight:500">' + esc(line.detail) + '</small>' : '';
       return '<li><span>' + esc(line.quantity + ' ' + line.label) + detail + '</span></li>';
     }).join('');
     var logoBlock = '';
     if (bundle.logoUploadEnabled !== false) {
-      var preview = state.logo && logoPreviewUrl
-        ? '<div class="bb__logo-preview"><img src="' + esc(logoPreviewUrl) + '" alt=""><div><strong>' + esc(state.logo.filename) + '</strong><p>DTF, one print colour. Replacing the file keeps a single logo.</p></div></div>'
-        : '';
+      var preview = '';
+      if (state.logo && logoPreviewUrl) {
+        preview = '<div class="bb__logo-preview"><img src="' + esc(logoPreviewUrl) + '" alt=""><div><strong>' + esc(state.logo.filename) + '</strong><p>DTF, one print colour. Replacing the file keeps a single logo.</p></div></div>';
+      } else if (state.logo && state.logo.filename) {
+        preview = '<div class="bb__logo-preview"><div><strong>' + esc(state.logo.filename) + '</strong><p>DTF, one print colour. Replacing the file keeps a single logo.</p></div></div>';
+      }
       logoBlock = '<div class="bb__drop" data-bb-drop="1"><strong>One logo for every piece</strong>' +
         '<p>DTF only. One print colour. ' + FILE_TYPES + '. Max 25MB.</p>' +
         '<label class="bb__file">Add logo<input type="file" accept="' + FILE_ACCEPT + '" data-bb-file="1"></label>' +
@@ -356,9 +744,19 @@
     }
     var notes = bundle.customerNotesEnabled === false ? '' :
       '<label><span class="bb__code">Notes, optional</span><textarea class="bb__notes" data-bb-notes="1" data-bb-focus="notes" maxlength="500" placeholder="Anything the team should know. Notes do not add positions.">' + esc(state.notes) + '</textarea></label>';
+    var totalHtml = '';
+    if (editable) {
+      var groups = bundle.groups || [];
+      var totalQty = groups.reduce(function (sum, group) { return sum + groupQty(group); }, 0);
+      var totalRequired = groups.reduce(function (sum, group) { return sum + (Number(group.requiredQuantity) || 0); }, 0);
+      var totalDone = totalRequired > 0 && totalQty === totalRequired;
+      var totalClass = totalDone ? ' is-done' : ' is-short';
+      totalHtml = '<div class="bb__summary-all' + totalClass + '"><span>Selected</span><span class="bb__summary-count' + totalClass + '">' +
+        esc(summaryCountText(totalQty, totalRequired)) + '</span></div>';
+    }
     return '<p class="bb__kicker">Logo and summary</p><h3>One logo for every piece</h3>' +
       logoBlock + notes +
-      '<div class="bb__summary"><ul>' + lines +
+      '<div class="bb__summary">' + totalHtml + '<ul>' + lines +
       '<li class="is-price"><span>Bundle price</span><span>' + priceText(bundle.bundlePrice) + '</span></li></ul></div>' +
       (bundle.logoUploadEnabled !== false && !state.logo ? '<p class="bb__warn">Add one logo file before this bundle can go in the basket.</p>' : '') +
       (state.message ? '<p class="bb__warn">' + esc(state.message) + '</p>' : '');
@@ -366,27 +764,30 @@
 
   function footHtml() {
     var back = state.step > 1
-      ? '<button type="button" class="bb__btn bb__btn--ghost bb__btn--back" data-bb-action="back">Back</button>'
-      : '<span></span>';
+      ? '<button type="button" class="bb__btn bb__btn--ghost bb__btn--back" data-bb-action="back"' +
+        (state.saving ? ' disabled' : '') + '>Back</button>'
+      : '';
     var primary = '<button type="button" class="bb__btn bb__btn--primary" data-bb-action="next"' +
       (primaryDisabled() ? ' disabled' : '') + '>' + esc(primaryLabel()) + '</button>';
     return back + primary;
   }
 
   function primaryLabel() {
-    if (state.step === 1) return 'Build your bundle';
-    if (state.step === 4) return 'Add bundle to basket';
+    if (state && state.saving) return 'Saving\u2026';
+    var id = stepId();
+    if (skipGroups()) {
+      if (id === 'Included') return 'Choose colours & sizes';
+      if (id === 'Products') return 'Continue to logo';
+      if (id === 'Logo') return state.editingId ? 'Save bundle' : 'Add to basket';
+    }
+    if (id === 'Included') return 'Build your bundle';
+    if (id === 'Logo') return 'Add bundle to basket';
     return 'Next';
   }
 
   function primaryDisabled() {
-    if (state.step === 2) return !allGroupsValid();
-    if (state.step === 3) {
-      var group = groupById(state.activeGroupId);
-      return !group || !groupValid(group);
-    }
-    if (state.step === 4) return !canAdd();
-    return false;
+    if (state && state.saving) return true;
+    return !canLeaveStep(state.step);
   }
 
   function canAdd() {
@@ -422,6 +823,7 @@
           label: option.label,
           productCode: option.productCode || '',
           quantity: qty,
+          required: optionCap(group, option),
           detail: detail
         });
       });
@@ -493,34 +895,65 @@
   }
 
   function addToBasket() {
+    if (!state || state.saving) return;
     if (!canAdd()) {
       state.message = bundle.logoUploadEnabled !== false && !state.logo
         ? 'Add one logo file before this bundle can go in the basket.'
-        : 'Every group needs its exact quantity first.';
+        : (skipGroups() ? 'Each piece needs its exact quantity first.' : 'Every group needs its exact quantity first.');
       render();
       return;
     }
     var price = bundle.bundlePrice == null || bundle.bundlePrice === '' ? null : Number(bundle.bundlePrice);
     if (!isFinite(price)) price = null;
+    state.saving = true;
+    render();
     logoSave.then(function () {
     var basket = readBasket();
-    basket.push({
+    var editingId = state.editingId || '';
+    var entry = {
       lineType: 'bundle',
-      id: 'bundle-' + bundle.bundleId + '-' + Date.now(),
+      id: editingId || ('bundle-' + bundle.bundleId + '-' + Date.now()),
       name: bundle.bundleName,
       bundleId: bundle.bundleId,
       bundleSlug: bundle.bundleSlug,
+      banner: bundle.banner || '',
       currency: bundle.currency || 'GBP',
       vatExcluded: bundle.vatExcluded !== false,
       price: price,
       bundlePrice: price,
       qty: 1,
-      chosenLines: chosenLines(),
-      selection: selectionPayload()
-    });
+      selection: selectionPayload(),
+      builderState: {
+        groups: JSON.parse(JSON.stringify(state.groups)),
+        notes: state.notes,
+        activeGroupId: state.activeGroupId,
+        logo: state.logo ? {
+          filename: state.logo.filename,
+          logoId: state.logo.logoId || '',
+          ref: state.logo.ref || ''
+        } : null
+      }
+    };
+    var index = -1;
+    if (editingId) {
+      basket.some(function (item, itemIndex) {
+        if (item && item.lineType === 'bundle' && item.id === editingId) {
+          index = itemIndex;
+          return true;
+        }
+        return false;
+      });
+    }
+    if (index >= 0) basket[index] = entry;
+    else basket.push(entry);
     writeBasket(basket);
     state.confirm = false;
+    state.dirty = false;
     window.location.href = '/basket.html#orderSummary';
+    }).catch(function () {
+      state.saving = false;
+      state.message = 'The basket could not be saved. Your configuration is still open. Please try again.';
+      render();
     });
   }
 
@@ -554,11 +987,13 @@
     var bucket = state.groups[group.groupId].options[option.optionId];
     var line = bucket.lines[lineIndex];
     if (!line) return;
+    var previous = Number(line.sizes[size]) || 0;
     var requested = parseInt(raw, 10);
     if (!isFinite(requested) || requested < 0) requested = 0;
     if (requested > 9999) requested = 9999;
     line.sizes[size] = requested;
     state.message = mismatchMessage(group);
+    if (previous !== requested) markDirty();
   }
 
   function selectOption(group, optionId) {
@@ -571,6 +1006,7 @@
     });
     bucket.selectedOptionId = optionId;
     state.message = mismatchMessage(group);
+    markDirty();
   }
 
   function addColour(group, option) {
@@ -581,6 +1017,7 @@
     var next = coloursOf(option).filter(function (colour) { return !used[colour.colourId]; })[0];
     if (!next) return;
     bucket.lines.push(blankLine(option, next.colourId));
+    markDirty();
   }
 
   function onFile(file) {
@@ -600,10 +1037,14 @@
       render();
       return;
     }
-    if (logoPreviewUrl) URL.revokeObjectURL(logoPreviewUrl);
-    logoPreviewUrl = /^image\//.test(file.type) ? URL.createObjectURL(file) : '';
+    clearLogoPreview();
+    if (/^image\//.test(file.type)) {
+      logoPreviewUrl = URL.createObjectURL(file);
+      logoPreviewOwned = true;
+    }
     state.logo = { filename: file.name, logoId: '', ref: '' };
     state.message = '';
+    markDirty();
     render();
     var reader = new FileReader();
     reader.onload = function () {
@@ -623,9 +1064,14 @@
   }
 
   function go(step) {
-    if (step === 4 && !allGroupsValid()) {
+    if (!state || state.saving) return;
+    var steps = flowSteps();
+    var id = steps[step - 1];
+    if (!id) return;
+    if (skipGroups() && !canReach(step)) return;
+    if (!skipGroups() && id === 'Logo' && !allGroupsValid()) {
       state.message = 'Every group needs its exact quantity first.';
-      state.step = 2;
+      state.step = steps.indexOf('Products') + 1;
       render();
       return;
     }
@@ -634,7 +1080,31 @@
     render();
   }
 
+  function advance() {
+    if (!state || state.saving) return;
+    var id = stepId();
+    if (id === 'Logo') {
+      addToBasket();
+      return;
+    }
+    if (skipGroups()) {
+      if (!canLeaveStep(state.step)) return;
+      var nextStep = state.step + 1;
+      state.reached = Math.max(state.reached || 1, nextStep);
+      go(nextStep);
+      return;
+    }
+    var steps = flowSteps();
+    if (id === 'Included') go(state.step + 1);
+    else if (id === 'Groups') go(steps.indexOf('Logo') + 1);
+    else if (id === 'Products') {
+      var current = groupById(state.activeGroupId);
+      if (current && groupValid(current)) go(steps.indexOf('Groups') + 1);
+    }
+  }
+
   function requestClose() {
+    if (state && state.saving) return;
     if (isDirty()) {
       state.confirm = true;
       render();
@@ -644,9 +1114,11 @@
   }
 
   function closeNow() {
+    var returnToBasket = !!(state && state.editingId);
     root.hidden = true;
-    state.confirm = false;
+    if (state) state.confirm = false;
     document.body.style.overflow = '';
+    if (returnToBasket) window.location.href = '/basket.html#orderSummary';
   }
 
   function onClick(event) {
@@ -660,21 +1132,22 @@
     if (action === 'keep') { state.confirm = false; render(); }
     if (action === 'discard') closeNow();
     if (action === 'step') go(Number(actionEl.getAttribute('data-step')));
-    if (action === 'back') {
-      if (state.step === 3) go(2);
-      else go(Math.max(1, state.step - 1));
-    }
-    if (action === 'next') {
-      if (state.step === 1) go(2);
-      else if (state.step === 2) go(4);
-      else if (state.step === 3) {
-        var current = groupById(state.activeGroupId);
-        if (current && groupValid(current)) go(2);
-      } else addToBasket();
-    }
+    if (action === 'back') go(Math.max(1, state.step - 1));
+    if (action === 'next') advance();
     if (action === 'open-group') {
       state.activeGroupId = actionEl.getAttribute('data-group');
-      go(3);
+      go(flowSteps().indexOf('Products') + 1);
+    }
+    if (action === 'edit-piece') {
+      if (!skipGroups()) return;
+      var pieceGroup = actionEl.getAttribute('data-group') || '';
+      if (pieceGroup) state.activeGroupId = pieceGroup;
+      state.scrollPiece = {
+        productCode: actionEl.getAttribute('data-product') || '',
+        optionId: actionEl.getAttribute('data-option') || ''
+      };
+      var productStep = flowSteps().indexOf('Products') + 1;
+      if (productStep > 0) go(productStep);
     }
     if (action === 'select-option') {
       var group = groupById(actionEl.getAttribute('data-group'));
@@ -698,6 +1171,7 @@
         } else {
           line.colourId = nextColour;
           state.message = mismatchMessage(colourGroup);
+          markDirty();
         }
         render();
       }
@@ -714,6 +1188,7 @@
         var lines = state.groups[removeGroup.groupId].options[removeOption.optionId].lines;
         lines.splice(Number(actionEl.getAttribute('data-line')), 1);
         if (!lines.length) lines.push(blankLine(removeOption));
+        markDirty();
         render();
       }
     }
@@ -722,7 +1197,11 @@
   function onInput(event) {
     var input = event.target;
     if (input.hasAttribute('data-bb-notes')) {
-      state.notes = input.value.slice(0, 500);
+      var nextNotes = input.value.slice(0, 500);
+      if (nextNotes !== state.notes) {
+        state.notes = nextNotes;
+        markDirty();
+      }
       return;
     }
     if (!input.hasAttribute('data-bb-qty')) return;
@@ -761,23 +1240,125 @@
     });
   }
 
-  function openBundle(next) {
-    bundle = next;
-    state = emptyState(next);
-    if (logoPreviewUrl) URL.revokeObjectURL(logoPreviewUrl);
+  function clearLogoPreview() {
+    if (logoPreviewOwned && logoPreviewUrl) {
+      try { URL.revokeObjectURL(logoPreviewUrl); } catch (error) { /* ignore */ }
+    }
     logoPreviewUrl = '';
+    logoPreviewOwned = false;
+  }
+
+  function savedBundleItem(id, bundleKey) {
+    var key = String(id || '');
+    if (!key) return null;
+    var item = readBasket().filter(function (entry) {
+      return entry && entry.lineType === 'bundle' && String(entry.id) === key;
+    })[0] || null;
+    if (!item) return null;
+    if (bundleKey && item.bundleId !== bundleKey && item.bundleSlug !== bundleKey) return null;
+    return item;
+  }
+
+  function restoreLogoPreview() {
+    var logo = state && state.logo;
+    var storage = window.BrandedQuoteStorage;
+    if (!logo || !storage || typeof storage.resolveSrc !== 'function') return;
+    var apply = function () {
+      if (!state || !state.logo || state.logo.logoId !== logo.logoId || state.logo.filename !== logo.filename) return;
+      var src = storage.resolveSrc(logo.ref || '', logo.logoId || '');
+      if (!src || !/^data:image|^blob:|^https?:/i.test(src)) return;
+      if (logoPreviewUrl === src) return;
+      clearLogoPreview();
+      logoPreviewUrl = src;
+      if (stepId() === 'Logo') render();
+    };
+    apply();
+    if (typeof storage.migrateLegacy === 'function') {
+      storage.migrateLegacy().then(apply).catch(function () { /* preview can stay as the filename */ });
+    }
+  }
+
+  function applySavedBuilderState(saved) {
+    var snap = saved && saved.builderState;
+    if (!snap || !state) return;
+    state.editingId = saved.id || '';
+    state.notes = typeof snap.notes === 'string' ? snap.notes : '';
+    if (snap.logo && snap.logo.filename) {
+      state.logo = {
+        filename: String(snap.logo.filename),
+        logoId: snap.logo.logoId || '',
+        ref: snap.logo.ref || ''
+      };
+    }
+    if (snap.activeGroupId && state.groups[snap.activeGroupId]) state.activeGroupId = snap.activeGroupId;
+    var savedGroups = snap.groups || {};
+    Object.keys(savedGroups).forEach(function (groupId) {
+      if (!state.groups[groupId] || !savedGroups[groupId]) return;
+      var group = groupById(groupId);
+      var savedGroup = savedGroups[groupId];
+      if (savedGroup.selectedOptionId && state.groups[groupId].options[savedGroup.selectedOptionId]) {
+        state.groups[groupId].selectedOptionId = savedGroup.selectedOptionId;
+      }
+      var savedOptions = savedGroup.options || {};
+      Object.keys(savedOptions).forEach(function (optionId) {
+        var bucket = state.groups[groupId].options[optionId];
+        var option = group && optionById(group, optionId);
+        if (!bucket || !option) return;
+        var lines = savedOptions[optionId] && savedOptions[optionId].lines;
+        if (!Array.isArray(lines) || !lines.length) return;
+        bucket.lines = lines.map(function (line) {
+          var sizes = {};
+          sizesOf(option).forEach(function (size) { sizes[size] = 0; });
+          Object.keys(line && line.sizes || {}).forEach(function (size) {
+            var qty = Number(line.sizes[size]) || 0;
+            if (qty > 0) sizes[size] = qty;
+          });
+          return {
+            colourId: (line && line.colourId) || '',
+            sizes: sizes
+          };
+        });
+      });
+    });
+    var logoStep = flowSteps().indexOf('Logo') + 1;
+    if (logoStep > 0 && (allGroupsValid() || logoDetailRows().length)) {
+      state.step = logoStep;
+      state.reached = logoStep;
+    }
+    state.dirty = false;
+    state.saving = false;
+    restoreLogoPreview();
+  }
+
+  function openBundle(next, savedItem) {
+    bundle = JSON.parse(JSON.stringify(next));
+    state = emptyState(bundle);
+    clearLogoPreview();
+    if (!isCatalogueBundle(bundle)) {
+      if (savedItem) applySavedBuilderState(savedItem);
+      render();
+      return;
+    }
+    var requestId = ++catalogueRequest;
+    bundle.catalogueStatus = 'loading';
     render();
+    hydrateCatalogue(bundle).then(function () {
+      if (requestId !== catalogueRequest) return;
+      state = emptyState(bundle);
+      if (savedItem) applySavedBuilderState(savedItem);
+      render();
+    });
   }
 
   function renderList() {
     var list = document.getElementById('bundleList');
-    if (!list) return;
+    if (!list || document.getElementById('bundleLanding')) return;
     var bundles = configBundles();
     if (!bundles.length) {
       list.innerHTML = '<div class="bundle-empty">No bundles are available yet.</div>';
       return;
     }
-    list.innerHTML = bundles.map(function (item) {
+    list.innerHTML = bundles.filter(function (item) { return !item.hideFromList; }).map(function (item) {
       var includes = (item.groups || []).map(function (group) {
         return '<li>' + esc(group.groupName) + ': ' + esc(modeLine(group)) + '</li>';
       }).join('');
@@ -795,15 +1376,32 @@
     };
   }
 
+  function sessionSignedIn() {
+    try {
+      if (window.BrandedAccountPanel && typeof window.BrandedAccountPanel.isSignedIn === 'function') {
+        return !!window.BrandedAccountPanel.isSignedIn();
+      }
+      if (window.BrandedAccount && typeof window.BrandedAccount.token === 'function') {
+        return !!window.BrandedAccount.token();
+      }
+      return !!(localStorage.getItem('authToken') || localStorage.getItem('coAuthToken'));
+    } catch (error) {
+      return false;
+    }
+  }
+
   function mount() {
+    if (!sessionSignedIn()) return;
     root = document.getElementById('bundleBuilder');
     if (!root) return;
     bind();
     renderList();
-    var query = new URLSearchParams(window.location.search).get('bundle');
+    var params = new URLSearchParams(window.location.search);
+    var query = params.get('bundle');
     if (query) {
       var next = findBundle(query);
-      if (next) openBundle(next);
+      var saved = savedBundleItem(params.get('edit'), query);
+      if (next) openBundle(next, saved);
     }
   }
 
