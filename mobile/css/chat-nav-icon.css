@@ -9,35 +9,36 @@
     position: relative;
     display: block;
     flex: none;
-    width: 28px;
-    height: 28px;
-    /* Keeps the label aligned with the 22px icons of the other items. */
-    margin: -3px 0;
-    border-radius: 50%;
-    background: #ff7100;
-    box-shadow: 0 2px 6px rgba(255, 113, 0, 0.35);
+    width: 32px;
+    height: 32px;
+    margin: 0;
+    border-radius: 0;
+    background: transparent url("/brandedukv15-child/assets/images/ui/chat-nav.png?v=20261112-chat") center / contain no-repeat;
+    box-shadow: none;
 }
 
+/* Covers the dots drawn in the image, so only the animated ones show. */
 .chat-nav-bubble {
     position: absolute;
-    top: 50%;
-    left: 50%;
+    top: 64%;
+    left: 69%;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 2px;
-    width: 16px;
-    height: 12px;
-    border: 2px solid #fff;
-    border-radius: 7px 7px 7px 0;
+    width: 13px;
+    height: 6px;
+    border: 0;
+    border-radius: 3px;
+    background: #ef7e20;
     transform: translate(-50%, -50%);
-    box-sizing: content-box;
+    box-sizing: border-box;
 }
 
 .chat-nav-dot {
     display: block;
-    width: 3px;
-    height: 3px;
+    width: 2.5px;
+    height: 2.5px;
     border-radius: 50%;
     background: #fff;
 }

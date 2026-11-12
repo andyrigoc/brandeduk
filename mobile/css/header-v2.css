@@ -25,7 +25,7 @@ body:has(.mobile-header--v2) {
     position: relative;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     min-height: 64px;
     overflow: visible;
 }
@@ -71,12 +71,31 @@ body:has(.mobile-header--v2) {
     display: flex;
     align-items: center;
     gap: 0;
+    margin-left: auto;
     margin-right: -6px;
+}
+
+.mobile-header--v2 .mh-bar > .mh-account {
+    position: relative;
+    z-index: 2;
+    width: 34px;
+    height: 44px;
+    flex: 0 0 34px;
+    margin-left: 2px;
+}
+
+.mobile-header--v2 .mh-account svg {
+    width: 26px;
+    height: 26px;
 }
 
 .mobile-header--v2 .mh-actions .mh-icon-btn {
     width: 26px;
     flex: 0 0 26px;
+}
+
+.mobile-header--v2 .mh-actions .mh-cart {
+    margin-left: 10px;
 }
 
 .mh-icon-btn {
@@ -98,9 +117,9 @@ body:has(.mobile-header--v2) {
         max-width: calc(100% - 156px) !important;
     }
 
-    .mobile-header--v2 .mh-actions .mh-account {
-        flex: 0 0 26px;
-        width: 26px;
+    .mobile-header--v2 .mh-account {
+        flex: 0 0 34px;
+        width: 34px;
         padding: 0;
         gap: 0;
     }
@@ -121,9 +140,9 @@ body:has(.mobile-header--v2) {
 
     .mobile-header--v2 .mh-account .account-nav-avatar,
     .mobile-header--v2 .mh-account .account-trigger-avatar {
-        width: 24px;
-        height: 24px;
-        flex: 0 0 24px;
+        width: 29px;
+        height: 29px;
+        flex: 0 0 29px;
         border-radius: 999px;
         overflow: hidden;
         background: transparent;
@@ -149,21 +168,17 @@ body:has(.mobile-header--v2) {
     .bottom-nav .nav-item--limited-bundles {
         align-self: stretch;
         justify-content: center;
-        gap: 0;
-        padding-top: 0;
-        padding-bottom: 0;
+        gap: 1px;
+        padding-top: 2px;
+        padding-bottom: 2px;
         text-align: center;
     }
 
     .bottom-nav .nav-limited-bundles-icon {
         display: block;
-        width: 46.8px;
-        height: 46.8px;
+        width: 34px;
+        height: 34px;
         object-fit: contain;
-    }
-
-    .bottom-nav .nav-item--limited-bundles .nav-item-label {
-        display: none;
     }
 }
 
@@ -173,8 +188,7 @@ body:has(.mobile-header--v2) {
         max-width: calc(100% - 132px) !important;
     }
 
-    .mobile-header--v2 .mh-actions .mh-icon-btn,
-    .mobile-header--v2 .mh-actions .mh-account {
+    .mobile-header--v2 .mh-actions .mh-icon-btn {
         width: 24px;
         flex-basis: 24px;
     }

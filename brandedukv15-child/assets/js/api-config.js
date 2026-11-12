@@ -4,7 +4,7 @@
  * Production / Vercel: https://api.brandeduk.com
  *
  * Local preview (127.0.0.1 / localhost, any port):
- *   localhost:3005 (scripts/api-cors-proxy.js; start with `npm run api-proxy`)
+ *   same-origin /__api (npm run dev proxies that to https://api.brandeduk.com)
  *
  * Direct browser calls to api.brandeduk.com fail with HTTP 403 because CORS_ORIGIN
  * allow-lists only www.brandeduk.com / brandeduk.com (Guardian CORS scope).
@@ -23,7 +23,7 @@
 
     var PRODUCTION_API = 'https://api.brandeduk.com';
     var LOCAL_API = 'http://localhost:3004';
-    var LOCAL_CORS_PROXY = 'http://127.0.0.1:3005';
+    var LOCAL_CORS_PROXY = '/__api';
 
     function isLocalHost() {
         var host = (window.location && window.location.hostname) || '';
@@ -42,10 +42,9 @@
         if (window.API_USE_LOCAL === true) {
             return LOCAL_API;
         }
-        // Local static servers (including VS Code Live Server) cannot proxy API
-        // requests, so always use the local CORS bridge regardless of port.
+        // npm run dev proxies /__api on the same origin, so the port can change.
         if (isLocalHttpPreview() && window.API_USE_LOCAL_PROXY !== false) {
-            return LOCAL_CORS_PROXY;
+            return window.location.origin.replace(/\/+$/, '') + LOCAL_CORS_PROXY;
         }
         return PRODUCTION_API;
     }

@@ -282,6 +282,118 @@
             .form-grid, .order-meta { grid-template-columns:1fr; }
             .order-summary { align-items:flex-start; }
         }
+        /* Mobile personal details: compact stats, hairline rules, more of the form on screen. */
+        @media (max-width: 699px) {
+            .account-shell { border-color:#e7ebf3; }
+            .account-content { padding:6px 16px 12px; }
+            .mobile-account-actions { margin-bottom:6px; }
+            .mobile-back { font-size:13px; line-height:1.2; }
+            .mobile-signout {
+                min-height:40px;
+                padding:0 14px;
+                border-width:1px;
+                font-size:13px;
+                font-weight:700;
+            }
+            .content-head { margin-bottom:10px; gap:10px; align-items:center; }
+            .content-head h1 {
+                font-size:22px;
+                font-weight:700;
+                line-height:1.15;
+                letter-spacing:-.03em;
+            }
+            .content-head p { margin-top:2px; font-size:13px; line-height:1.3; }
+            .content-head .btn {
+                min-height:40px;
+                padding:0 14px;
+                font-size:13px;
+                font-weight:700;
+                border-width:1px;
+                box-shadow:none;
+            }
+            .stats {
+                grid-template-columns:repeat(3, minmax(0, 1fr));
+                gap:0;
+                border:1px solid #e7ebf3;
+                border-radius:8px;
+                background:#f7f8fb;
+                overflow:hidden;
+            }
+            .stat {
+                padding:8px 8px 7px;
+                border:0;
+                border-radius:0;
+                background:transparent;
+                text-align:center;
+            }
+            .stat + .stat { border-left:1px solid #e7ebf3; }
+            .stat span {
+                font-size:11px;
+                font-weight:600;
+                line-height:1.25;
+                letter-spacing:0;
+            }
+            .stat strong {
+                margin-top:2px;
+                color:var(--navy);
+                font-size:18px;
+                font-weight:600;
+                line-height:1.1;
+                letter-spacing:-.02em;
+            }
+            .layout, .stack { gap:12px; }
+            .panel, .address-card, .order-row, .logo-card { border-width:1px; border-color:#e7ebf3; }
+            .panel-head {
+                flex-direction:row;
+                align-items:flex-start;
+                gap:6px 12px;
+                padding:10px 0 8px;
+                border-bottom:1px solid #e7ebf3;
+            }
+            .panel-head h2 {
+                font-size:16px;
+                font-weight:700;
+                line-height:1.2;
+                letter-spacing:-.02em;
+            }
+            .panel-head p { margin-top:2px; font-size:12.5px; line-height:1.35; }
+            .panel-head .badge,
+            .panel-head .btn,
+            .panel-head button {
+                align-self:center;
+                margin-left:auto;
+                flex:none;
+            }
+            .panel-head .badge {
+                min-height:22px;
+                padding:0 8px;
+                font-size:11px;
+                font-weight:700;
+            }
+            .panel-body { padding:10px 0 2px; }
+            .form-grid { gap:10px; }
+            .field { gap:4px; }
+            .account-content label {
+                font-size:11px;
+                font-weight:700;
+                letter-spacing:.06em;
+                line-height:1.2;
+            }
+            .account-content input {
+                min-height:40px;
+                padding:8px 12px;
+                border:1px solid #e7ebf3;
+                border-radius:6px;
+                font-size:16px;
+                line-height:1.3;
+            }
+            .account-content .btn,
+            .account-content button {
+                min-height:40px;
+                font-weight:700;
+            }
+            .empty { border-width:1px; }
+        }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="(max-width: 699px)">
     <link rel="stylesheet" href="/mobile/css/mobile-chrome-base.css?v=20261018" media="(max-width: 699px)">

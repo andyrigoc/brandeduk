@@ -56,6 +56,7 @@
 .bottom-nav--v2 > .nav-item.active .nav-item-label,
 .bottom-nav--v2 > .nav-item[aria-current="page"] .nav-item-label {
     color: #111;
+    font-weight: 700;
 }
 
 .bottom-nav--v2 > .nav-item--customise .nav-item-label,

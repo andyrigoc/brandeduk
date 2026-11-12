@@ -30,7 +30,7 @@
   height: 100px;
   background: #fff;
   border-radius: 16px;
-  border: none;
+  border: 1.5px solid #ff7100;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   cursor: pointer;
   flex-shrink: 0;
@@ -129,27 +129,27 @@
   padding: 0 16px 16px;
 }
 
-/* Arrow Circle - Purple pointing DOWN when closed */
+/* Arrow circle — orange, pointing down when closed */
 .faq-question::after {
   content: "";
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  border: 2px solid #273469;
+  border: 2px solid #ff7100;
   position: absolute;
   right: 12px;
   top: 50%;
   transform: translateY(-50%);
   background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236b21a8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23ff7100' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")
     no-repeat center;
   transition: all 0.3s ease;
 }
 
-/* Grey pointing UP when open */
+/* Same orange, pointing up when open */
 .faq-row.open .faq-question::after {
-  border-color: #9ca3af;
+  border-color: #ff7100;
   background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='18 15 12 9 6 15'/%3E%3C/svg%3E")
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23ff7100' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='18 15 12 9 6 15'/%3E%3C/svg%3E")
     no-repeat center;
 }

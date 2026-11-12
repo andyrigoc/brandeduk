@@ -62,7 +62,8 @@ function applyShopNavIcon() {
 
 function initMobileNavigation() {
     const actions = document.querySelector('.mobile-header--v2 .mh-actions');
-    if (!actions || actions.querySelector('.mh-account')) return;
+    const header = document.querySelector('.mobile-header--v2');
+    if (!actions || !header || header.querySelector('.mh-account')) return;
 
     const nav = document.querySelector('.bottom-nav');
     const shop = nav && Array.from(nav.querySelectorAll('a.nav-item')).find((item) => {
@@ -82,14 +83,14 @@ function initMobileNavigation() {
 
         const icon = document.createElement('img');
         icon.className = 'nav-limited-bundles-icon';
-        icon.src = '/brandedukv15-child/assets/images/ui/icons/limited-bundles.png?v=20261111-nav2';
+        icon.src = '/brandedukv15-child/assets/images/ui/limited-bundles-nav.png?v=20261112-bundles';
         icon.alt = '';
-        icon.width = 36;
-        icon.height = 36;
+        icon.width = 34;
+        icon.height = 34;
 
         const label = document.createElement('span');
         label.className = 'nav-item-label';
-        label.textContent = 'Limited Bundles';
+        label.textContent = 'Bundles';
         bundles.append(icon, label);
         account.replaceWith(bundles);
 
@@ -108,7 +109,9 @@ function initMobileNavigation() {
     account.id = 'accountNavBtn';
     account.classList.add('mh-icon-btn', 'mh-account');
     account.setAttribute('aria-label', 'Account');
-    actions.insertBefore(account, actions.querySelector('a[href^="tel:"]'));
+    const menu = document.getElementById('menuToggle');
+    if (menu) menu.insertAdjacentElement('afterend', account);
+    else actions.insertBefore(account, actions.querySelector('a[href^="tel:"]'));
 }
 
 // The shop's sticky category bar lives directly in <body>, so CSS sticky never releases it and it
@@ -1787,7 +1790,13 @@ function initAccountPanel() {
     accountOverlay.addEventListener('click', closePanel);
     
     // Form switching
-    signinForm.addEventListener('click', () => {
+    signinForm.addEventListener('click', (e) => {
+        if (window.BrandedAccountPanel && typeof window.BrandedAccountPanel.openGoogleSignIn === 'function') {
+            e.preventDefault();
+            e.stopPropagation();
+            window.BrandedAccountPanel.openGoogleSignIn();
+            return;
+        }
         if (!signinForm.classList.contains('active')) {
             signinForm.classList.add('active');
             signinForm.classList.remove('inactive');

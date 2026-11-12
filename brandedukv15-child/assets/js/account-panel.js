@@ -145,12 +145,28 @@ window.BrandedAccountPanel = (function () {
             '<p><strong>Provider:</strong> ' + (user.provider || 'customer') + '</p>',
             '<p><strong>History:</strong> View orders, addresses and profile from here.</p>'
         ].join('');
+        paintLoggedInAvatar(refs, user);
         decorateAccountTrigger(refs, user);
+    }
+
+    function paintLoggedInAvatar(refs, user) {
+        var avatar = refs.loggedIn && refs.loggedIn.querySelector('.account-user-avatar');
+        if (!avatar) return;
+        var branded = isBrandedMarkAccount(user);
+        var photo = branded ? BRANDED_MARK_URL : avatarUrlFromUser(user);
+        avatar.classList.toggle('has-photo', !!photo);
+        avatar.classList.toggle('is-brand-mark', !!(photo && branded));
+        if (photo) {
+            avatar.innerHTML = '<img src="' + escapeAttr(photo) + '" alt="" referrerpolicy="no-referrer">';
+        } else {
+            avatar.innerHTML = '<i class="fas fa-user-circle"></i>';
+        }
     }
 
     function renderSignedOutView(refs) {
         refs.formsContainer.style.display = 'flex';
         refs.loggedIn.style.display = 'none';
+        paintLoggedInAvatar(refs, null);
         decorateAccountTrigger(refs, null);
     }
 
@@ -214,7 +230,17 @@ window.BrandedAccountPanel = (function () {
             '.header-util-link .account-trigger-profile,.searchbar-header__account .account-trigger-profile,#accountBtn .account-trigger-profile{font-size:12px!important;}' +
             '.nav-item.is-signed-in{color:#273469;font-weight:800;}' +
             '.nav-item .account-trigger-profile{display:none!important;}' +
-            '@media(max-width:767px){.account-trigger-profile{left:0;}}';
+            '@media(max-width:767px){.account-trigger-profile{left:0;}}' +
+            '.google-signin-sheet{position:fixed;inset:0;z-index:10050;display:flex;align-items:center;justify-content:center;padding:24px;}' +
+            '.google-signin-sheet[hidden]{display:none!important;}' +
+            '.google-signin-sheet__backdrop{position:absolute;inset:0;background:rgba(255,255,255,.28);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);}' +
+            '.google-signin-sheet__card{position:relative;width:min(360px,100%);padding:34px 26px 26px;border-radius:28px;background:rgba(255,255,255,.58);border:1px solid rgba(255,255,255,.8);box-shadow:0 24px 70px rgba(15,23,42,.18);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);text-align:center;color:#1f2937;}' +
+            '.google-signin-sheet__close{position:absolute;top:12px;right:12px;width:32px;height:32px;border:0;border-radius:999px;background:rgba(255,255,255,.7);color:#374151;font-size:20px;line-height:1;cursor:pointer;}' +
+            '.google-signin-sheet__logo{display:flex;align-items:center;justify-content:center;gap:8px;font-size:22px;font-weight:500;color:#3c4043;margin-bottom:8px;}' +
+            '.google-signin-sheet__card h2{margin:8px 0 4px;font-size:28px;font-weight:500;color:#202124;}' +
+            '.google-signin-sheet__card p{margin:0 0 22px;color:#5f6368;font-size:15px;}' +
+            '.google-signin-sheet__go{width:100%;min-height:46px;border:1px solid #dadce0;border-radius:12px;background:#fff;color:#1f2937;font-weight:700;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;}' +
+            '.google-signin-sheet__go:hover{background:#f8f9fa;}';
     }
 
     // On the mobile bottom-nav (.nav-item), swap the person icon for the Google
@@ -440,6 +466,56 @@ window.BrandedAccountPanel = (function () {
             window.location.href = Account.apiBaseUrl() + '/auth/google';
         }
 
+        function ensureGoogleSheet() {
+            var sheet = byId('googleSignInSheet');
+            if (sheet) return sheet;
+            sheet = document.createElement('div');
+            sheet.id = 'googleSignInSheet';
+            sheet.className = 'google-signin-sheet';
+            sheet.hidden = true;
+            sheet.innerHTML =
+                '<div class="google-signin-sheet__backdrop" data-google-sheet-close></div>' +
+                '<div class="google-signin-sheet__card" role="dialog" aria-modal="true" aria-labelledby="googleSignInTitle">' +
+                    '<button type="button" class="google-signin-sheet__close" data-google-sheet-close aria-label="Close">&times;</button>' +
+                    '<div class="google-signin-sheet__logo" aria-hidden="true">' +
+                        '<svg width="28" height="28" viewBox="0 0 18 18">' +
+                            '<path fill="#EA4335" d="M9 7.364v3.55h4.94c-.216 1.14-.865 2.106-1.844 2.756l2.982 2.314c1.737-1.602 2.737-3.96 2.737-6.756 0-.65-.058-1.274-.166-1.864H9z"/>' +
+                            '<path fill="#34A853" d="M9 18c2.484 0 4.567-.824 6.09-2.236l-2.982-2.314c-.824.553-1.88.88-3.108.88-2.39 0-4.416-1.614-5.14-3.784H.78v2.378A8.997 8.997 0 009 18z"/>' +
+                            '<path fill="#4A90E2" d="M3.86 10.546A5.41 5.41 0 013.572 9c0-.536.097-1.056.288-1.546V5.076H.78A8.997 8.997 0 000 9c0 1.45.347 2.824.78 3.924l3.08-2.378z"/>' +
+                            '<path fill="#FBBC05" d="M9 3.58c1.35 0 2.565.465 3.52 1.377l2.64-2.64C13.56.802 11.477 0 9 0 5.48 0 2.43 2.02.78 5.076l3.08 2.378C4.584 5.194 6.61 3.58 9 3.58z"/>' +
+                        '</svg>' +
+                        '<span>Google</span>' +
+                    '</div>' +
+                    '<h2 id="googleSignInTitle">Sign in</h2>' +
+                    '<p>to continue to Branded UK</p>' +
+                    '<button type="button" class="google-signin-sheet__go" id="googleSignInContinue">' +
+                        '<span>Continue with Google</span>' +
+                    '</button>' +
+                '</div>';
+            document.body.appendChild(sheet);
+            sheet.addEventListener('click', function (event) {
+                if (event.target.closest('[data-google-sheet-close]')) closeGoogleSheet();
+            });
+            sheet.querySelector('#googleSignInContinue').addEventListener('click', function () {
+                startGoogleAuth();
+                closeGoogleSheet();
+            });
+            return sheet;
+        }
+
+        function openGoogleSignIn() {
+            closePanel();
+            var sheet = ensureGoogleSheet();
+            sheet.hidden = false;
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeGoogleSheet() {
+            var sheet = byId('googleSignInSheet');
+            if (sheet) sheet.hidden = true;
+            document.body.style.overflow = '';
+        }
+
         function openPanel(preferredCard) {
             refs.panel.classList.add('active');
             refs.overlay.classList.add('active');
@@ -481,8 +557,10 @@ window.BrandedAccountPanel = (function () {
         refs.overlay.addEventListener('click', closePanel);
 
         if (refs.signin) {
-            refs.signin.addEventListener('click', function () {
-                if (!refs.loggedIn || refs.loggedIn.style.display !== 'block') activateCard('signin');
+            refs.signin.addEventListener('click', function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+                if (!refs.loggedIn || refs.loggedIn.style.display !== 'block') openGoogleSignIn();
             });
         }
         if (refs.signup) {
@@ -636,6 +714,7 @@ window.BrandedAccountPanel = (function () {
 
         activeController = {
             openSignIn: function () { openPanel('signin'); },
+            openGoogleSignIn: openGoogleSignIn,
             startGoogle: startGoogleAuth,
             refresh: refreshSessionUser
         };
@@ -677,6 +756,11 @@ window.BrandedAccountPanel = (function () {
 
     return {
         init: bindPanel,
+        openGoogleSignIn: function () {
+            if (activeController && typeof activeController.openGoogleSignIn === 'function') {
+                activeController.openGoogleSignIn();
+            }
+        },
         openSignIn: function () {
             if (activeController) {
                 activeController.openSignIn();
