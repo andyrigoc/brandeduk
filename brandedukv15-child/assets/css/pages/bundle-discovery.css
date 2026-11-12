@@ -146,15 +146,30 @@ body.bundle-page {
 .bd-back {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  margin: 0 0 10px;
-  padding: 0;
+  justify-content: center;
+  gap: 6px;
+  margin: 0 0 12px;
+  padding: 0 18px;
+  min-height: 44px;
   border: 0;
-  background: none;
-  color: #273469;
+  border-radius: 12px;
+  background: #273469;
+  color: #fff;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1;
   cursor: pointer;
+}
+
+.bd-back .bd-icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+}
+
+.bd-back:active {
+  background: #1e2956;
 }
 
 .bd-panel {

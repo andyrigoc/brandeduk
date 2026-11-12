@@ -197,7 +197,7 @@
     display: none !important;
   }
   .bundle-page .bundles-container {
-    margin-top: calc(var(--header-height, 136px) + 8px);
+    margin-top: 4px;
     padding-bottom: 96px;
   }
   .bundle-page .bundles-header h1 { font-size: 30px; }

@@ -396,7 +396,7 @@
   }
 
   function backHtml() {
-    return '<button type="button" class="bd-back" data-bd-action="back">' + icon('back') + 'Back</button>';
+    return '<button type="button" class="bd-back" data-bd-action="back">' + icon('back') + 'BACK</button>';
   }
 
   function gapNote(bundles) {
