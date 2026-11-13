@@ -8,14 +8,14 @@
   <meta name="description" content="Configure Branded UK workwear bundles with your team’s colours, sizes and logo.">
   <title>Workwear Bundles | Branded UK</title>
   <link rel="icon" href="./assets/branded-logo.webp" type="image/webp">
-  <link rel="stylesheet" href="./styles.css?v=20261113-bundle-filters2">
+  <link rel="stylesheet" href="./styles.css?v=20261113-radial-close5">
   <link rel="stylesheet" href="/mobile/css/mobile-chrome-base.css?v=20261113-bundles" media="(max-width: 699px)">
   <link rel="stylesheet" href="/mobile/css/header-v2.css?v=20261113-bundles">
   <link rel="stylesheet" href="/mobile/css/search-suggestions.css?v=20261020a">
   <link rel="stylesheet" href="/mobile/css/bottom-nav.css?v=20261113-bundles">
   <link rel="stylesheet" href="/mobile/css/chat-nav-icon.css?v=20261020b">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script type="module" src="./app.js?v=20261113-bundle-filters2"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script type="module" src="./app.js?v=20261113-radial-close4"></script>
 </head>
 <body>
   <div class="header-with-promo mobile-chrome-header">
@@ -333,6 +333,28 @@
       </form>
     </div>
   </div>
+  <div class="bundle-radial-dim" id="bundleRadialDim" aria-hidden="true"></div>
+  <div class="bundle-radial-sheet-back" id="bundleRadialSheetBack" aria-hidden="true"></div>
+  <section class="bundle-radial-sheet" id="bundleRadialSheet" role="dialog" aria-modal="true" aria-labelledby="bundleRadialSheetTitle" aria-hidden="true">
+    <div class="bundle-radial-handle"></div>
+    <div class="bundle-radial-sheet-head">
+      <h2 id="bundleRadialSheetTitle">Choose filter</h2>
+      <button class="bundle-radial-close" type="button" id="bundleRadialClose" aria-label="Close filter">&times;</button>
+    </div>
+    <p class="bundle-radial-sheet-desc" id="bundleRadialSheetDesc"></p>
+    <div class="bundle-radial-options" id="bundleRadialOptions"></div>
+    <p class="bundle-radial-status" id="bundleRadialStatus"></p>
+    <div class="bundle-radial-sheet-foot">
+      <button class="bundle-radial-secondary" id="bundleRadialClear" type="button">Clear</button>
+      <button class="bundle-radial-primary" id="bundleRadialApply" type="button">Show Bundles</button>
+    </div>
+  </section>
+  <div class="bundle-radial-anchor" id="bundleRadialAnchor">
+    <div class="bundle-radial" id="bundleRadial" aria-hidden="true" aria-label="Choose bundle filter category"></div>
+    <button type="button" class="bundle-radial-hub" id="bundleRadialHub" aria-label="Close filters">
+      <span class="bundle-radial-bars" aria-hidden="true"><span></span><span></span><span></span></span>
+    </button>
+  </div>
   <nav class="bottom-nav bottom-nav--v2" aria-label="Main navigation">
     <a href="/index-mobile.html?force=mobile" class="nav-item" data-home-nav>
       <img class="nav-home-icon" src="/brandedukv15-child/assets/images/ui/home-nav.png?v=20261112-home" alt="" width="34" height="34">
@@ -342,16 +364,17 @@
       <img class="nav-shop-icon" src="/brandedukv15-child/assets/images/ui/shop-storefront.png?v=20261112-shop" alt="" width="34" height="34">
       <span class="nav-item-label">Shop</span>
     </a>
-    <button type="button" class="nav-item nav-item--customise" id="bundleFiltersNav" aria-haspopup="dialog" aria-expanded="false" aria-controls="bundleFilterSheet">
-      <span class="nav-customise-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+    <button type="button" class="nav-item nav-item--customise" id="bundleFiltersNav" aria-haspopup="dialog" aria-expanded="false" aria-controls="bundleRadial" aria-label="Open bundle filters">
+      <span class="nav-customise-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false" aria-hidden="true">
           <line x1="6" y1="21" x2="6" y2="3"></line>
           <line x1="12" y1="21" x2="12" y2="3"></line>
           <line x1="18" y1="21" x2="18" y2="3"></line>
-          <circle cx="6" cy="8" r="2"></circle>
-          <circle cx="12" cy="14" r="2"></circle>
-          <circle cx="18" cy="10" r="2"></circle>
+          <circle class="bundle-filters-knob" cx="6" cy="8" r="2.15" fill="#fff" stroke="none"></circle>
+          <circle class="bundle-filters-knob bundle-filters-knob--mid" cx="12" cy="14" r="2.15" fill="#fff" stroke="none"></circle>
+          <circle class="bundle-filters-knob bundle-filters-knob--late" cx="18" cy="10" r="2.15" fill="#fff" stroke="none"></circle>
         </svg>
+        <span class="bundle-fab-count" id="bundleFilterCount" hidden>0</span>
       </span>
       <span class="nav-item-label">Filters</span>
     </button>

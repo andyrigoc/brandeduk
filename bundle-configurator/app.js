@@ -117,13 +117,40 @@ function optionLabel(group, value) {
   return group.labels?.[value] || value;
 }
 
-// Search filters. Industry uses the stored sector tag. Team size is how many
-// people the fixed garment lines already cover (their greatest common divisor),
-// and falls back to piece count when a deal has no fixed lines. It never
-// rewrites those quantities. Purpose is not stored, so it is inferred from
-// that kit size and the product types. Budget uses the real offer price.
-const appliedBundleFilters = {category: '', team: '', purpose: '', budget: ''};
+// Search filters from the radial demo. Industry uses the stored sector tag.
+// Team size is how many people the fixed garment lines already cover (their
+// greatest common divisor), and falls back to piece count when a deal has no
+// fixed lines. It never rewrites those quantities. Purpose, season, clothing
+// and branding are not all stored, so they are read from the sector, product
+// type, feature, title and piece count that already exist. Budget uses the
+// real offer price.
+const INDUSTRY_SECTOR = {
+  Construction: 'construction',
+  Cleaning: 'cleaning',
+  Hospitality: 'hospitality',
+  Corporate: 'corporate',
+  'Sport & Fitness': 'sport',
+  Education: 'education',
+  Warehouse: 'logistics',
+  Healthcare: 'healthcare',
+  'Film & Media': 'film'
+};
+const radialIcon = file => `<img src="./assets/filters/${file}.png?v=20261113-filters" alt="" width="72" height="72" decoding="async">`;
+const radialCatalog = [
+  {id: 'industry', title: 'Industry', icon: radialIcon('industry'), prompt: 'Which industry are you in?', values: ['Construction', 'Cleaning', 'Hospitality', 'Corporate', 'Sport & Fitness', 'Education', 'Warehouse', 'Healthcare', 'Film & Media', 'Other']},
+  {id: 'team', title: 'Team Size', icon: radialIcon('team-size'), prompt: 'How many people are you buying for?', values: ['1', '2', '3', '5', '8', '10', '15', '20', '25', '30', '50+']},
+  {id: 'budget', title: 'Budget', icon: radialIcon('budget'), prompt: 'Budget for the complete order', values: ['Any budget', 'Under £100', '£100–£250', '£250–£500', '£500–£1,000', '£1,000+']},
+  {id: 'clothing', title: 'Clothing', icon: radialIcon('clothing'), prompt: 'Which clothing type?', values: ['T-Shirts', 'Polo Shirts', 'Hoodies', 'Sweatshirts', 'Hi-Vis', 'Softshells', 'Jackets', 'Fleece', 'Caps', 'Beanies', 'Mixed Workwear']},
+  {id: 'purpose', title: 'Purpose', icon: radialIcon('purpose'), prompt: 'What do you need uniforms for?', values: ['Full Team Uniforms', 'New Starter Kits', 'Uniform Replacements', 'Complete Workwear Kits', 'Staff Uniform Refresh', 'Events & Promotions']},
+  {id: 'quantity', title: 'Quantity', icon: radialIcon('quantity'), prompt: 'How many garments are required?', values: ['1–10 items', '11–20 items', '21–50 items', '51–100 items', '100+ items']},
+  {id: 'season', title: 'Season', icon: radialIcon('season'), prompt: 'Which season are you buying for?', values: ['Summer', 'Winter', 'All-Weather', 'Year-Round']},
+  {id: 'branding', title: 'Branding', icon: radialIcon('branding'), prompt: 'Choose branding method', values: ['Printing', 'Embroidery', 'Mixed Branding', 'Any Method']}
+];
+const appliedBundleFilters = Object.fromEntries(radialCatalog.map(item => [item.id, '']));
 let announceBundleFilters = false;
+let radialOpen = false;
+let radialCurrent = null;
+let radialDraft = null;
 
 function gcd(left, right) {
   let a = Math.abs(left);
@@ -142,9 +169,15 @@ function kitPeople(deal) {
   return Number(deal.qty) || 0;
 }
 
-function categoryMatches(deal, category) {
-  if (!category) return true;
-  return facetValues(deal, 'sector').includes(category);
+function industryMatches(deal, value) {
+  if (!value) return true;
+  const sectors = facetValues(deal, 'sector');
+  if (value === 'Other') {
+    const named = new Set(Object.values(INDUSTRY_SECTOR));
+    return sectors.some(sector => sector && !named.has(sector));
+  }
+  const sector = INDUSTRY_SECTOR[value];
+  return Boolean(sector) && sectors.includes(sector);
 }
 
 function teamMatches(deal, team) {
@@ -155,65 +188,132 @@ function teamMatches(deal, team) {
   return people === Number(team);
 }
 
+function budgetMatches(deal, band) {
+  if (!band || band === 'Any budget') return true;
+  if (!deal.price) return false;
+  const pounds = deal.price / 100;
+  if (band === 'Under £100') return pounds < 100;
+  if (band === '£100–£250') return pounds >= 100 && pounds <= 250;
+  if (band === '£250–£500') return pounds >= 250 && pounds <= 500;
+  if (band === '£500–£1,000') return pounds >= 500 && pounds <= 1000;
+  if (band === '£1,000+') return pounds >= 1000;
+  return false;
+}
+
+function clothingMatches(deal, value) {
+  if (!value) return true;
+  const types = facetValues(deal, 'productType');
+  const title = deal.title || '';
+  if (value === 'T-Shirts') return types.includes('t-shirts');
+  if (value === 'Polo Shirts') return types.includes('polos');
+  if (value === 'Hoodies') return types.includes('hoodies');
+  if (value === 'Sweatshirts') return types.includes('sweatshirts');
+  if (value === 'Hi-Vis') return types.includes('safety-vests') || facetValues(deal, 'feature').includes('high-visibility');
+  if (value === 'Softshells') return /softshell/i.test(title);
+  if (value === 'Jackets') return types.includes('jackets');
+  if (value === 'Fleece') return types.includes('fleece');
+  if (value === 'Caps') return types.includes('headwear') && /cap|snapback|trucker|baseball/i.test(title) && !/beanie/i.test(title);
+  if (value === 'Beanies') return /beanie/i.test(title);
+  if (value === 'Mixed Workwear') return types.includes('workwear') || types.length > 1;
+  return false;
+}
+
 function purposeMatches(deal, purpose) {
   if (!purpose) return true;
   const people = kitPeople(deal);
   const types = facetValues(deal, 'productType');
   const lines = Object.values(deal.fixed || {}).filter(count => Number(count) > 0).length;
-  if (purpose === 'full-team') return people >= 8;
-  if (purpose === 'new-starter') return people >= 1 && people <= 3;
-  if (purpose === 'replacements') return types.length === 1;
-  if (purpose === 'complete-kits') return lines >= 2;
+  if (purpose === 'Full Team Uniforms') return people >= 8;
+  if (purpose === 'New Starter Kits') return people >= 1 && people <= 3;
+  if (purpose === 'Uniform Replacements') return types.length === 1;
+  if (purpose === 'Complete Workwear Kits') return lines >= 2;
+  if (purpose === 'Staff Uniform Refresh') return types.length === 1 && people >= 8;
+  if (purpose === 'Events & Promotions') return types.includes('t-shirts') || types.includes('polos');
   return false;
 }
 
-function budgetMatches(deal, band) {
+function quantityMatches(deal, band) {
   if (!band) return true;
-  if (!deal.price) return false;
-  const pounds = deal.price / 100;
-  if (band === 'under-100') return pounds < 100;
-  if (band === '100-250') return pounds >= 100 && pounds <= 250;
-  if (band === '250-500') return pounds >= 250 && pounds <= 500;
-  if (band === '500-1000') return pounds >= 500 && pounds <= 1000;
-  if (band === '1000-plus') return pounds >= 1000;
+  const qty = Number(deal.qty) || 0;
+  if (band === '1–10 items') return qty >= 1 && qty <= 10;
+  if (band === '11–20 items') return qty >= 11 && qty <= 20;
+  if (band === '21–50 items') return qty >= 21 && qty <= 50;
+  if (band === '51–100 items') return qty >= 51 && qty <= 100;
+  if (band === '100+ items') return qty > 100;
   return false;
+}
+
+function seasonMatches(deal, season) {
+  if (!season) return true;
+  const types = facetValues(deal, 'productType');
+  const features = facetValues(deal, 'feature');
+  const title = deal.title || '';
+  const summer = types.includes('t-shirts') || types.includes('polos') || /summer/i.test(title);
+  const winter = types.includes('fleece') || types.includes('hoodies') || types.includes('sweatshirts') || types.includes('jackets') || /beanie/i.test(title);
+  const allWeather = features.includes('waterproof') || features.includes('high-visibility') || types.includes('safety-vests') || /waterproof|hi-vis|softshell/i.test(title);
+  if (season === 'Summer') return summer;
+  if (season === 'Winter') return winter;
+  if (season === 'All-Weather') return allWeather;
+  if (season === 'Year-Round') return types.includes('workwear') || (summer && winter);
+  return false;
+}
+
+function brandingMatches(deal, value) {
+  if (!value || value === 'Any Method') return true;
+  const title = deal.title || '';
+  const print = /print/i.test(title);
+  const embroidery = /embroider|stitch/i.test(title);
+  if (value === 'Printing') return print;
+  if (value === 'Embroidery') return embroidery;
+  if (value === 'Mixed Branding') return print && embroidery;
+  return false;
+}
+
+function radialMatches(deal, id, value) {
+  if (id === 'industry') return industryMatches(deal, value);
+  if (id === 'team') return teamMatches(deal, value);
+  if (id === 'budget') return budgetMatches(deal, value);
+  if (id === 'clothing') return clothingMatches(deal, value);
+  if (id === 'purpose') return purposeMatches(deal, value);
+  if (id === 'quantity') return quantityMatches(deal, value);
+  if (id === 'season') return seasonMatches(deal, value);
+  if (id === 'branding') return brandingMatches(deal, value);
+  return true;
 }
 
 function dealMatchesBundleFilters(deal) {
-  return categoryMatches(deal, appliedBundleFilters.category)
-    && teamMatches(deal, appliedBundleFilters.team)
-    && purposeMatches(deal, appliedBundleFilters.purpose)
-    && budgetMatches(deal, appliedBundleFilters.budget);
+  return radialCatalog.every(item => radialMatches(deal, item.id, appliedBundleFilters[item.id]));
 }
 
-function filterChoiceLabel(id) {
-  const field = $(id);
-  if (!field || !field.value) return '';
-  return field.options[field.selectedIndex]?.textContent.trim() || '';
+function chosenRadialFilters() {
+  return radialCatalog.filter(item => appliedBundleFilters[item.id]);
 }
 
 function renderFilterSummary(count) {
   const line = $('bundle-result-line');
   if (!line) return;
-  const choices = [
-    filterChoiceLabel('bundle-filter-category'),
-    filterChoiceLabel('bundle-filter-team'),
-    filterChoiceLabel('bundle-filter-purpose'),
-    filterChoiceLabel('bundle-filter-budget')
-  ].filter(Boolean);
+  const choices = chosenRadialFilters().map(item => `${item.title}: ${appliedBundleFilters[item.id]}`);
   const summary = `${pluralBundles(count)}${choices.length ? ` · ${choices.map(escape).join(' · ')}` : ''}`;
   line.innerHTML = choices.length
     ? `${summary} <button type="button" data-clear-bundle-filters>Clear filters</button>`
     : summary;
+  const badge = $('bundleFilterCount');
+  if (badge) {
+    badge.hidden = choices.length === 0;
+    badge.textContent = String(choices.length);
+  }
 }
 
 function emptyFilterMessage() {
-  const category = filterChoiceLabel('bundle-filter-category');
-  if (appliedBundleFilters.category && !deals.some(deal => categoryMatches(deal, appliedBundleFilters.category))) {
-    return `No bundles are tagged for ${category}.`;
+  const industry = appliedBundleFilters.industry;
+  if (industry && !deals.some(deal => industryMatches(deal, industry))) {
+    return `No bundles are tagged for ${industry}.`;
   }
-  if (appliedBundleFilters.team && !appliedBundleFilters.category && !appliedBundleFilters.purpose && !appliedBundleFilters.budget) {
-    return `No bundles have a fixed composition for ${filterChoiceLabel('bundle-filter-team')}.`;
+  const chosen = chosenRadialFilters();
+  if (chosen.length === 1 && chosen[0].id === 'team') {
+    const team = appliedBundleFilters.team;
+    const people = team === '1' ? '1 person' : `${team} people`;
+    return `No bundles have a fixed composition for ${people}.`;
   }
   return 'No bundles match these filters.';
 }
@@ -747,77 +847,285 @@ scroll.addEventListener('drop', event => {
   upload.classList.remove('dragging');
   void chooseArtwork(event.dataTransfer.files);
 });
-const bundleFilterSheet = $('bundleFilterSheet');
+const bundleRadial = $('bundleRadial');
+const bundleRadialAnchor = $('bundleRadialAnchor');
+const bundleRadialHub = $('bundleRadialHub');
+const bundleRadialDim = $('bundleRadialDim');
+const bundleRadialSheet = $('bundleRadialSheet');
+const bundleRadialSheetBack = $('bundleRadialSheetBack');
 const bundleFiltersNav = $('bundleFiltersNav');
+let radialHideTimer = 0;
+let radialMotionStop = () => {};
 
-function syncBundleFilterForm() {
-  $('bundle-filter-category').value = appliedBundleFilters.category;
-  $('bundle-filter-team').value = appliedBundleFilters.team;
-  $('bundle-filter-purpose').value = appliedBundleFilters.purpose;
-  $('bundle-filter-budget').value = appliedBundleFilters.budget;
+function radialButtonLabel() {
+  const count = chosenRadialFilters().length;
+  const action = radialOpen ? 'Close bundle filters' : 'Open bundle filters';
+  return count ? `${action}, ${count} selected` : action;
 }
 
-function readBundleFilterForm() {
-  appliedBundleFilters.category = $('bundle-filter-category').value;
-  appliedBundleFilters.team = $('bundle-filter-team').value;
-  appliedBundleFilters.purpose = $('bundle-filter-purpose').value;
-  appliedBundleFilters.budget = $('bundle-filter-budget').value;
+function syncRadialButton() {
+  bundleFiltersNav?.setAttribute('aria-expanded', String(radialOpen));
+  bundleFiltersNav?.setAttribute('aria-label', radialButtonLabel());
 }
 
-function bundleFiltersOpen() {
-  return bundleFilterSheet && !bundleFilterSheet.hidden;
+function placeRadialHub() {
+  const nav = bundleFiltersNav?.closest('.bottom-nav');
+  if (!nav || !bundleRadialAnchor || !bundleFiltersNav) return;
+  const navRect = nav.getBoundingClientRect();
+  const btnRect = bundleFiltersNav.getBoundingClientRect();
+  const icon = bundleFiltersNav.querySelector('.nav-customise-icon');
+  const iconRect = icon ? icon.getBoundingClientRect() : btnRect;
+  const header = document.querySelector('.mobile-header');
+  const headerBottom = header ? Math.max(0, header.getBoundingClientRect().bottom) : 0;
+  const gutter = 14;
+  const labelRoom = 18;
+  const reach = 1.82;
+  const topLimit = headerBottom + gutter;
+  const bottomLimit = navRect.top - gutter;
+  const availH = Math.max(0, bottomLimit - topLimit);
+  const availW = Math.max(0, window.innerWidth - gutter * 2);
+  const factor = reach + 0.5;
+  let plate = Math.min(availW / 2 / factor, (availH - labelRoom) / (2 * factor));
+  if (!Number.isFinite(plate) || plate <= 0) plate = 56;
+  plate = Math.min(70, plate);
+  const hub = Math.min(64, Math.max(48, plate * 0.78));
+  bundleRadialAnchor.style.setProperty('--radial-plate', `${plate}px`);
+  bundleRadialAnchor.style.setProperty('--radial-hub', `${hub}px`);
+  bundleRadialAnchor.style.setProperty('--radial-reach', String(reach));
+  bundleRadialAnchor.style.setProperty('--radial-diag', String(reach / Math.SQRT2));
+  const side = plate * factor;
+  const bottomExtent = side + labelRoom;
+  const minX = gutter + side;
+  const maxX = window.innerWidth - gutter - side;
+  const centerX = Math.min(Math.max(btnRect.left + btnRect.width / 2, minX), maxX);
+  let centerY = bottomLimit - bottomExtent;
+  if (centerY - side < topLimit) centerY = (topLimit + side + bottomLimit - bottomExtent) / 2;
+  bundleRadialAnchor.style.left = `${centerX}px`;
+  bundleRadialAnchor.style.top = `${centerY}px`;
+  const iconCx = iconRect.left + iconRect.width / 2;
+  const iconCy = iconRect.top + iconRect.height / 2;
+  let fromX = iconCx - centerX;
+  let fromY = iconCy - centerY;
+  const hubTop = centerY + fromY - hub / 2;
+  const tucked = navRect.top - hubTop;
+  if (tucked < 8) fromY += 8 - tucked;
+  bundleRadialAnchor.style.setProperty('--hub-from-x', `${fromX}px`);
+  bundleRadialAnchor.style.setProperty('--hub-from-y', `${fromY}px`);
 }
 
-function openBundleFilters() {
-  if (!bundleFilterSheet || bundleFiltersOpen()) return;
-  syncBundleFilterForm();
-  bundleFilterSheet.hidden = false;
-  bundleFiltersNav?.setAttribute('aria-expanded', 'true');
-  document.body.classList.add('bundle-filters-open');
-  $('bundle-filter-category')?.focus();
+function cancelRadialMotion() {
+  clearTimeout(radialHideTimer);
+  radialMotionStop();
+  radialMotionStop = () => {};
 }
 
-function closeBundleFilters(restore = true) {
-  if (!bundleFilterSheet || !bundleFiltersOpen()) return;
-  if (restore) syncBundleFilterForm();
-  bundleFilterSheet.hidden = true;
-  bundleFiltersNav?.setAttribute('aria-expanded', 'false');
-  document.body.classList.remove('bundle-filters-open');
+function whenRadialSettles(el, propertyName, fallbackMs, fn) {
+  let settled = false;
+  const finish = event => {
+    if (settled) return;
+    if (event && (event.target !== el || event.propertyName !== propertyName)) return;
+    settled = true;
+    el?.removeEventListener('transitionend', onEnd);
+    clearTimeout(timer);
+    fn();
+  };
+  const onEnd = event => finish(event);
+  const timer = setTimeout(() => finish(), fallbackMs);
+  el?.addEventListener('transitionend', onEnd);
+  return () => {
+    settled = true;
+    el?.removeEventListener('transitionend', onEnd);
+    clearTimeout(timer);
+  };
+}
+
+function finishRadialClose() {
+  if (radialOpen) return;
+  bundleRadialDim?.classList.remove('show');
+  bundleRadialDim?.setAttribute('aria-hidden', 'true');
+  bundleRadial?.classList.remove('is-returning');
+  bundleRadial?.classList.remove('is-tucked');
+  bundleRadialAnchor?.classList.remove('is-dropping');
+  bundleRadialAnchor?.classList.remove('is-open');
+  if (bundleRadialAnchor) bundleRadialAnchor.inert = true;
+}
+
+function dropHubBehindFilters() {
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  bundleRadialAnchor?.classList.add('is-dropping');
+  if (bundleRadialHub) void bundleRadialHub.getBoundingClientRect();
+  bundleRadialAnchor?.classList.remove('show');
+  radialMotionStop = whenRadialSettles(bundleRadialHub, 'transform', reduce ? 80 : 800, finishRadialClose);
+}
+
+function toggleRadial(force) {
+  const next = typeof force === 'boolean' ? force : !radialOpen;
+  if (next === radialOpen) return;
+  radialOpen = next;
+  cancelRadialMotion();
+  if (radialOpen) {
+    placeRadialHub();
+    bundleRadialAnchor?.classList.add('is-open');
+    bundleRadialAnchor?.classList.remove('is-dropping');
+    bundleRadial?.classList.remove('is-returning');
+    bundleRadial?.classList.remove('is-tucked');
+    bundleRadialDim?.classList.add('show');
+    bundleRadial?.setAttribute('aria-hidden', 'false');
+    bundleRadialDim?.setAttribute('aria-hidden', 'false');
+    if (bundleRadial) bundleRadial.inert = false;
+    if (bundleRadialAnchor) bundleRadialAnchor.inert = false;
+    const hubAlreadyCentered = bundleRadialAnchor?.classList.contains('show');
+    if (hubAlreadyCentered) bundleRadial?.classList.add('show');
+    else {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (!radialOpen) return;
+          bundleRadial?.classList.add('show');
+          bundleRadialAnchor?.classList.add('show');
+        });
+      });
+    }
+  } else if (bundleRadial?.classList.contains('show')) {
+    bundleRadial?.classList.add('is-returning');
+    bundleRadial?.classList.remove('show');
+    bundleRadial?.setAttribute('aria-hidden', 'true');
+    if (bundleRadial) bundleRadial.inert = true;
+    const lastCircle = bundleRadial?.querySelector('.bundle-radial-item');
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    radialMotionStop = whenRadialSettles(lastCircle, 'transform', reduce ? 80 : 1600, () => {
+      if (radialOpen) return;
+      bundleRadial?.classList.add('is-tucked');
+      bundleRadial?.classList.remove('is-returning');
+      dropHubBehindFilters();
+    });
+  } else if (bundleRadialAnchor?.classList.contains('show') || bundleRadialAnchor?.classList.contains('is-dropping')) {
+    dropHubBehindFilters();
+  } else {
+    finishRadialClose();
+  }
+  syncRadialButton();
+}
+
+function renderRadialChoices() {
+  const options = $('bundleRadialOptions');
+  if (!options || !radialCurrent) return;
+  options.replaceChildren();
+  radialCurrent.values.forEach(value => {
+    const button = document.createElement('button');
+    const selected = radialDraft === value;
+    button.type = 'button';
+    button.className = `bundle-radial-option${selected ? ' selected' : ''}`;
+    button.textContent = value;
+    button.setAttribute('aria-pressed', String(selected));
+    button.addEventListener('click', () => {
+      radialDraft = value;
+      renderRadialChoices();
+    });
+    options.append(button);
+  });
+}
+
+function radialSheetOpen() {
+  return bundleRadialSheet?.classList.contains('show');
+}
+
+function openRadialSheet(item) {
+  toggleRadial(false);
+  radialCurrent = item;
+  radialDraft = appliedBundleFilters[item.id] || null;
+  $('bundleRadialSheetTitle').textContent = item.title;
+  $('bundleRadialSheetDesc').textContent = item.prompt;
+  $('bundleRadialStatus').textContent = '';
+  renderRadialChoices();
+  bundleRadialSheetBack?.classList.add('show');
+  bundleRadialSheet?.classList.add('show');
+  bundleRadialSheetBack?.setAttribute('aria-hidden', 'false');
+  bundleRadialSheet?.setAttribute('aria-hidden', 'false');
+  if (bundleRadialSheet) bundleRadialSheet.inert = false;
+  document.body.classList.add('bundle-radial-sheet-open');
+  $('bundleRadialOptions')?.querySelector('button')?.focus();
+}
+
+function closeRadialSheet(restore = true) {
+  if (!radialSheetOpen()) return;
+  bundleRadialSheetBack?.classList.remove('show');
+  bundleRadialSheet?.classList.remove('show');
+  bundleRadialSheetBack?.setAttribute('aria-hidden', 'true');
+  bundleRadialSheet?.setAttribute('aria-hidden', 'true');
+  if (bundleRadialSheet) bundleRadialSheet.inert = true;
+  document.body.classList.remove('bundle-radial-sheet-open');
+  radialCurrent = null;
   if (restore) bundleFiltersNav?.focus();
 }
 
-function applyBundleFilters() {
-  readBundleFilterForm();
+function applyRadialFilter() {
+  if (radialDraft && radialCurrent) appliedBundleFilters[radialCurrent.id] = radialDraft;
   announceBundleFilters = true;
   renderShop();
-  closeBundleFilters(false);
+  closeRadialSheet(false);
   $('bundles')?.scrollIntoView({behavior: 'smooth', block: 'start'});
 }
 
-function clearBundleFilters() {
-  appliedBundleFilters.category = '';
-  appliedBundleFilters.team = '';
-  appliedBundleFilters.purpose = '';
-  appliedBundleFilters.budget = '';
-  syncBundleFilterForm();
+function clearRadialFilter() {
+  if (!radialCurrent) return;
+  delete appliedBundleFilters[radialCurrent.id];
+  appliedBundleFilters[radialCurrent.id] = '';
+  radialDraft = null;
+  renderRadialChoices();
+  $('bundleRadialStatus').textContent = 'Filter cleared';
   announceBundleFilters = true;
   renderShop();
 }
 
+function clearBundleFilters() {
+  radialCatalog.forEach(item => { appliedBundleFilters[item.id] = ''; });
+  radialDraft = null;
+  if (radialCurrent) renderRadialChoices();
+  announceBundleFilters = true;
+  renderShop();
+}
+
+radialCatalog.forEach(item => {
+  const button = document.createElement('button');
+  const glyph = document.createElement('span');
+  const label = document.createElement('span');
+  button.type = 'button';
+  button.className = 'bundle-radial-item';
+  glyph.className = 'glyph';
+  glyph.setAttribute('aria-hidden', 'true');
+  glyph.innerHTML = item.icon;
+  label.className = 'bundle-radial-label';
+  label.setAttribute('aria-hidden', 'true');
+  label.textContent = item.title;
+  button.append(glyph, label);
+  button.setAttribute('aria-label', `Filter by ${item.title}`);
+  button.addEventListener('click', () => openRadialSheet(item));
+  bundleRadial?.append(button);
+});
+placeRadialHub();
+window.addEventListener('resize', () => {
+  if (radialOpen || bundleRadialAnchor?.classList.contains('is-open')) placeRadialHub();
+});
+if (bundleRadial) bundleRadial.inert = true;
+if (bundleRadialAnchor) bundleRadialAnchor.inert = true;
+if (bundleRadialSheet) bundleRadialSheet.inert = true;
+
 bundleFiltersNav?.addEventListener('click', () => {
-  if (bundleFiltersOpen()) closeBundleFilters();
-  else openBundleFilters();
+  if (radialSheetOpen()) closeRadialSheet(false);
+  toggleRadial();
 });
-$('bundleFilterForm')?.addEventListener('submit', event => {
-  event.preventDefault();
-  applyBundleFilters();
+bundleRadialHub?.addEventListener('click', () => {
+  toggleRadial(false);
+  bundleFiltersNav?.focus({preventScroll: true});
 });
-bundleFilterSheet?.addEventListener('click', event => {
-  if (event.target.closest('[data-bundle-filter-close]')) closeBundleFilters();
-});
-bundleFilterSheet?.addEventListener('keydown', event => {
-  if (event.key !== 'Tab' || !bundleFiltersOpen()) return;
-  const items = [...bundleFilterSheet.querySelectorAll('button, select')].filter(item => item.tabIndex !== -1 && !item.disabled);
+bundleRadialDim?.addEventListener('click', () => toggleRadial(false));
+$('bundleRadialClose')?.addEventListener('click', () => closeRadialSheet());
+bundleRadialSheetBack?.addEventListener('click', () => closeRadialSheet());
+$('bundleRadialClear')?.addEventListener('click', clearRadialFilter);
+$('bundleRadialApply')?.addEventListener('click', applyRadialFilter);
+bundleRadialSheet?.addEventListener('keydown', event => {
+  if (event.key !== 'Tab' || !radialSheetOpen()) return;
+  const items = [...bundleRadialSheet.querySelectorAll('button')].filter(item => !item.disabled);
   const first = items[0];
   const last = items[items.length - 1];
   if (!first || !last) return;
@@ -833,9 +1141,14 @@ $('bundle-result-line')?.addEventListener('click', event => {
   if (event.target.closest('[data-clear-bundle-filters]')) clearBundleFilters();
 });
 document.addEventListener('keydown', event => {
-  if (event.key !== 'Escape' || !bundleFiltersOpen()) return;
-  event.preventDefault();
-  closeBundleFilters();
+  if (event.key !== 'Escape') return;
+  if (radialSheetOpen()) {
+    event.preventDefault();
+    closeRadialSheet();
+  } else if (radialOpen) {
+    event.preventDefault();
+    toggleRadial(false);
+  }
 });
 renderShop();
 void refreshBasket();
