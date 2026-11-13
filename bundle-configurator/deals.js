@@ -1,7 +1,6 @@
 export const deals = [
   {
     "id": "WOR-001",
-    "source": "Workwear Express",
     "n": 1,
     "title": "10 x Premium Quality Organic T-Shirts + Free Logo",
     "qty": 10,
@@ -30,7 +29,6 @@ export const deals = [
   },
   {
     "id": "WOR-002",
-    "source": "Workwear Express",
     "n": 2,
     "title": "2 x Premium Quality Snickers Stretch Trousers + Free Logo",
     "qty": 2,
@@ -56,7 +54,6 @@ export const deals = [
   },
   {
     "id": "WOR-003",
-    "source": "Workwear Express",
     "n": 3,
     "title": "32 x Best Selling Beanies + Free Stitched Logo",
     "qty": 32,
@@ -83,7 +80,6 @@ export const deals = [
   },
   {
     "id": "WOR-004",
-    "source": "Workwear Express",
     "n": 4,
     "title": "4 x Premium Quality Carhartt Hoodies + Free Logo",
     "qty": 4,
@@ -110,7 +106,6 @@ export const deals = [
   },
   {
     "id": "WOR-005",
-    "source": "Workwear Express",
     "n": 5,
     "title": "6 x Premium Quality Snickers Classic Polo Shirts + Free Logo",
     "qty": 6,
@@ -137,7 +132,6 @@ export const deals = [
   },
   {
     "id": "WOR-006",
-    "source": "Workwear Express",
     "n": 6,
     "title": "8 x Premium Regatta Fleece Jackets + Free Stitched Logo",
     "qty": 8,
@@ -165,7 +159,6 @@ export const deals = [
   },
   {
     "id": "WOR-007",
-    "source": "Workwear Express",
     "n": 7,
     "title": "8 x Best Value Crew Neck Sweatshirts + Free Logo",
     "qty": 8,
@@ -193,7 +186,6 @@ export const deals = [
   },
   {
     "id": "WOR-008",
-    "source": "Workwear Express",
     "n": 8,
     "title": "100 x Best Selling T-Shirts + Free Logo",
     "qty": 100,
@@ -220,7 +212,6 @@ export const deals = [
   },
   {
     "id": "WOR-009",
-    "source": "Workwear Express",
     "n": 9,
     "title": "100 x Best Selling T-Shirts + Free Logo",
     "qty": 100,
@@ -247,7 +238,6 @@ export const deals = [
   },
   {
     "id": "WOR-010",
-    "source": "Workwear Express",
     "n": 10,
     "title": "12 x Premium Anthem Heavyweight T-Shirts + Free Logo",
     "qty": 12,
@@ -274,7 +264,6 @@ export const deals = [
   },
   {
     "id": "WOR-011",
-    "source": "Workwear Express",
     "n": 11,
     "title": "12 x TuffStuff Bodywarmers + Free Logo",
     "qty": 12,
@@ -301,7 +290,6 @@ export const deals = [
   },
   {
     "id": "WOR-012",
-    "source": "Workwear Express",
     "n": 12,
     "title": "12 x Russell Heavyweight T-Shirts + Free Logo",
     "qty": 12,
@@ -322,7 +310,6 @@ export const deals = [
   },
   {
     "id": "WOR-013",
-    "source": "Workwear Express",
     "n": 13,
     "title": "12 x Premium Regatta Bodywarmers + Free Logo",
     "qty": 12,
@@ -349,7 +336,6 @@ export const deals = [
   },
   {
     "id": "WOR-014",
-    "source": "Workwear Express",
     "n": 14,
     "title": "12 x Top Selling Regatta Dover Jackets + Free Logo",
     "qty": 12,
@@ -376,7 +362,6 @@ export const deals = [
   },
   {
     "id": "WOR-015",
-    "source": "Workwear Express",
     "n": 15,
     "title": "15 x Helly Hansen Manchester Polo Shirts + Free Logo",
     "qty": 15,
@@ -403,7 +388,6 @@ export const deals = [
   },
   {
     "id": "WOR-016",
-    "source": "Workwear Express",
     "n": 16,
     "title": "16 x Most Popular Regatta Fleeces + Free Logo",
     "qty": 16,
@@ -430,7 +414,6 @@ export const deals = [
   },
   {
     "id": "WOR-017",
-    "source": "Workwear Express",
     "n": 17,
     "title": "24 x Premium Regatta Bodywarmers + Free Logo",
     "qty": 24,
@@ -457,7 +440,6 @@ export const deals = [
   },
   {
     "id": "WOR-018",
-    "source": "Workwear Express",
     "n": 18,
     "title": "24 x Top Selling Regatta Dover Jackets + Free Logo",
     "qty": 24,
@@ -484,7 +466,6 @@ export const deals = [
   },
   {
     "id": "WOR-019",
-    "source": "Workwear Express",
     "n": 19,
     "title": "25 x Best Selling T-Shirts + Free Logo",
     "qty": 25,
@@ -511,7 +492,6 @@ export const deals = [
   },
   {
     "id": "WOR-020",
-    "source": "Workwear Express",
     "n": 20,
     "title": "25 x Best Selling T-Shirts + Free Logo",
     "qty": 25,
@@ -538,7 +518,6 @@ export const deals = [
   },
   {
     "id": "WOR-021",
-    "source": "Workwear Express",
     "n": 21,
     "title": "25 x Best Selling Overhead Hoodies + Free Logo",
     "qty": 25,
@@ -565,7 +544,6 @@ export const deals = [
   },
   {
     "id": "WOR-022",
-    "source": "Workwear Express",
     "n": 22,
     "title": "25 x Best Selling Zipped Hoodies + Free Logo",
     "qty": 25,
@@ -592,7 +570,6 @@ export const deals = [
   },
   {
     "id": "WOR-023",
-    "source": "Workwear Express",
     "n": 23,
     "title": "25 x Stanley / Stella Organic T-Shirts + Free Logo",
     "qty": 25,
@@ -621,7 +598,6 @@ export const deals = [
   },
   {
     "id": "WOR-024",
-    "source": "Workwear Express",
     "n": 24,
     "title": "25 x Best Selling Polo Shirts + Free Logo",
     "qty": 25,
@@ -648,7 +624,6 @@ export const deals = [
   },
   {
     "id": "WOR-025",
-    "source": "Workwear Express",
     "n": 25,
     "title": "30 x Helly Hansen Manchester Polo Shirts + Free Logo",
     "qty": 30,
@@ -675,7 +650,6 @@ export const deals = [
   },
   {
     "id": "WOR-026",
-    "source": "Workwear Express",
     "n": 26,
     "title": "32 x Most Popular Regatta Fleeces + Free Logo",
     "qty": 32,
@@ -702,7 +676,6 @@ export const deals = [
   },
   {
     "id": "WOR-027",
-    "source": "Workwear Express",
     "n": 27,
     "title": "50 x Best Selling Overhead Hoodies + Free Logo",
     "qty": 50,
@@ -729,7 +702,6 @@ export const deals = [
   },
   {
     "id": "WOR-028",
-    "source": "Workwear Express",
     "n": 28,
     "title": "50 x Best Selling Zipped Hoodies + Free Logo",
     "qty": 50,
@@ -756,7 +728,6 @@ export const deals = [
   },
   {
     "id": "WOR-029",
-    "source": "Workwear Express",
     "n": 29,
     "title": "50 x Stanley / Stella Organic T-Shirts + Free Logo",
     "qty": 50,
@@ -785,7 +756,6 @@ export const deals = [
   },
   {
     "id": "WOR-030",
-    "source": "Workwear Express",
     "n": 30,
     "title": "50 x Best Selling Polo Shirts + Free Logo",
     "qty": 50,
@@ -812,7 +782,6 @@ export const deals = [
   },
   {
     "id": "WOR-031",
-    "source": "Workwear Express",
     "n": 31,
     "title": "6 x TuffStuff Bodywarmers + Free Logo",
     "qty": 6,
@@ -839,7 +808,6 @@ export const deals = [
   },
   {
     "id": "WOR-032",
-    "source": "Workwear Express",
     "n": 32,
     "title": "20 x Premium Quality Snickers Classic T-Shirts",
     "qty": 20,
@@ -866,7 +834,6 @@ export const deals = [
   },
   {
     "id": "WOR-033",
-    "source": "Workwear Express",
     "n": 33,
     "title": "20 x Premium Quality Snickers Classic Polo Shirts",
     "qty": 20,
@@ -893,7 +860,6 @@ export const deals = [
   },
   {
     "id": "WOR-034",
-    "source": "Workwear Express",
     "n": 34,
     "title": "5 x Premium Quality Snickers Trousers with Holster Pockets",
     "qty": 5,
@@ -919,7 +885,6 @@ export const deals = [
   },
   {
     "id": "WOR-035",
-    "source": "Workwear Express",
     "n": 35,
     "title": "6 x Premium Quality Carhartt Quarter Zip Sweatshirts",
     "qty": 6,
@@ -947,7 +912,6 @@ export const deals = [
   },
   {
     "id": "WOR-036",
-    "source": "Workwear Express",
     "n": 36,
     "title": "8 x Premium Quality Carhartt Hooded Sweatshirts",
     "qty": 8,
@@ -976,7 +940,6 @@ export const deals = [
   },
   {
     "id": "WOR-037",
-    "source": "Workwear Express",
     "n": 37,
     "title": "8 x Premium Quality Carhartt Crewnecks",
     "qty": 8,
@@ -1003,7 +966,6 @@ export const deals = [
   },
   {
     "id": "WOR-038",
-    "source": "Workwear Express",
     "n": 38,
     "title": "8 x Premium Quality Carhartt Hooded Sweatshirts with Sleeve Logo",
     "qty": 8,
@@ -1032,7 +994,6 @@ export const deals = [
   },
   {
     "id": "WOR-039",
-    "source": "Workwear Express",
     "n": 39,
     "title": "8 x Premium Quality Snickers Classic Sweatshirts",
     "qty": 8,
@@ -1060,7 +1021,6 @@ export const deals = [
   },
   {
     "id": "GOC-001",
-    "source": "GoCustom",
     "n": 1,
     "title": "Bundle: 24 Heavy Cotton T-Shirts with Free Printing",
     "qty": 24,
@@ -1089,7 +1049,6 @@ export const deals = [
   },
   {
     "id": "GOC-002",
-    "source": "GoCustom",
     "n": 2,
     "title": "5 x Outdoor Worker Bundle with Free Logo",
     "qty": 35,
@@ -1126,7 +1085,6 @@ export const deals = [
   },
   {
     "id": "GOC-003",
-    "source": "GoCustom",
     "n": 3,
     "title": "5x Cold Weather Bundle with Free Logo",
     "qty": 10,
@@ -1158,7 +1116,6 @@ export const deals = [
   },
   {
     "id": "GOC-004",
-    "source": "GoCustom",
     "n": 4,
     "title": "Bundle: 10 x Staff Event Bundle",
     "qty": 20,
@@ -1190,7 +1147,6 @@ export const deals = [
   },
   {
     "id": "GOC-005",
-    "source": "GoCustom",
     "n": 5,
     "title": "Bundle: 100 Heavy Cotton T-Shirts with Free Printing",
     "qty": 100,
@@ -1219,7 +1175,6 @@ export const deals = [
   },
   {
     "id": "GOC-006",
-    "source": "GoCustom",
     "n": 6,
     "title": "Bundle: 100 x 5-Panel Snapback Rapper with FREE Logo",
     "qty": 100,
@@ -1248,7 +1203,6 @@ export const deals = [
   },
   {
     "id": "GOC-007",
-    "source": "GoCustom",
     "n": 7,
     "title": "Bundle: 100 x Authentic Panel Baseball Cap with FREE Logo",
     "qty": 100,
@@ -1277,7 +1231,6 @@ export const deals = [
   },
   {
     "id": "GOC-008",
-    "source": "GoCustom",
     "n": 8,
     "title": "Bundle: 100 x Snapback Trucker Baseball Cap with FREE Logo",
     "qty": 100,
@@ -1306,7 +1259,6 @@ export const deals = [
   },
   {
     "id": "GOC-009",
-    "source": "GoCustom",
     "n": 9,
     "title": "Bundle: 100 x Staff Event Bundle",
     "qty": 200,
@@ -1338,7 +1290,6 @@ export const deals = [
   },
   {
     "id": "GOC-010",
-    "source": "GoCustom",
     "n": 10,
     "title": "Bundle: 1000 x Heavy Cotton T-shirts with Free Printing",
     "qty": 1000,
@@ -1367,7 +1318,6 @@ export const deals = [
   },
   {
     "id": "GOC-011",
-    "source": "GoCustom",
     "n": 11,
     "title": "Bundle: 12 x College Hoodie with Free Logo",
     "qty": 12,
@@ -1396,7 +1346,6 @@ export const deals = [
   },
   {
     "id": "GOC-012",
-    "source": "GoCustom",
     "n": 12,
     "title": "Bundle: 12 x Drummer Unisex Hoodie with Free Logo",
     "qty": 12,
@@ -1425,7 +1374,6 @@ export const deals = [
   },
   {
     "id": "GOC-013",
-    "source": "GoCustom",
     "n": 13,
     "title": "Bundle: 12 x Portwest 1/4 Zip Sweatshirt + Free Logo",
     "qty": 12,
@@ -1449,7 +1397,6 @@ export const deals = [
   },
   {
     "id": "GOC-014",
-    "source": "GoCustom",
     "n": 14,
     "title": "Bundle: 20 x Sustainable Tote Bag with Free Printing",
     "qty": 20,
@@ -1478,7 +1425,6 @@ export const deals = [
   },
   {
     "id": "GOC-015",
-    "source": "GoCustom",
     "n": 15,
     "title": "Bundle: 24 x 5-Panel Snapback Rapper Cap with FREE Logo",
     "qty": 24,
@@ -1507,7 +1453,6 @@ export const deals = [
   },
   {
     "id": "GOC-016",
-    "source": "GoCustom",
     "n": 16,
     "title": "Bundle: 24 x AS Colour Staple Tees with Free Printing",
     "qty": 24,
@@ -1530,7 +1475,6 @@ export const deals = [
   },
   {
     "id": "GOC-017",
-    "source": "GoCustom",
     "n": 17,
     "title": "Bundle: 24 x Authentic 5-Panel Baseball Cap with FREE Logo",
     "qty": 24,
@@ -1559,7 +1503,6 @@ export const deals = [
   },
   {
     "id": "GOC-018",
-    "source": "GoCustom",
     "n": 18,
     "title": "Bundle: 24 x Baseball T-Shirts with Free Printing",
     "qty": 24,
@@ -1588,7 +1531,6 @@ export const deals = [
   },
   {
     "id": "GOC-019",
-    "source": "GoCustom",
     "n": 19,
     "title": "Bundle: 24 x Cotton Ringer T-Shirts with Free Printing",
     "qty": 24,
@@ -1617,7 +1559,6 @@ export const deals = [
   },
   {
     "id": "GOC-020",
-    "source": "GoCustom",
     "n": 20,
     "title": "Bundle: 24 x Crafter Unisex T-Shirt with Free Printing",
     "qty": 24,
@@ -1646,7 +1587,6 @@ export const deals = [
   },
   {
     "id": "GOC-021",
-    "source": "GoCustom",
     "n": 21,
     "title": "Bundle: 20 x Tote Bag For Life with Free Printing",
     "qty": 20,
@@ -1675,7 +1615,6 @@ export const deals = [
   },
   {
     "id": "GOC-022",
-    "source": "GoCustom",
     "n": 22,
     "title": "Bundle: 24 x Snapback Trucker Baseball Cap with FREE Logo",
     "qty": 24,
@@ -1704,7 +1643,6 @@ export const deals = [
   },
   {
     "id": "GOC-023",
-    "source": "GoCustom",
     "n": 23,
     "title": "Bundle: 25 x Organic Bag For Life with Free Printing",
     "qty": 25,
@@ -1733,7 +1671,6 @@ export const deals = [
   },
   {
     "id": "GOC-024",
-    "source": "GoCustom",
     "n": 24,
     "title": "Bundle: 25 x Stanley/Stella Shopping Bag 2.0 with Free Printing",
     "qty": 25,
@@ -1762,7 +1699,6 @@ export const deals = [
   },
   {
     "id": "GOC-025",
-    "source": "GoCustom",
     "n": 25,
     "title": "Bundle: 3 x Portwest 1/4 Zip Sweatshirt + Free Logo",
     "qty": 3,
@@ -1786,7 +1722,6 @@ export const deals = [
   },
   {
     "id": "GOC-026",
-    "source": "GoCustom",
     "n": 26,
     "title": "Bundle: 48 x College Hoodie with Free Logo",
     "qty": 48,
@@ -1815,7 +1750,6 @@ export const deals = [
   },
   {
     "id": "GOC-027",
-    "source": "GoCustom",
     "n": 27,
     "title": "Bundle: 50 Heavy Cotton T-Shirts with Free Printing",
     "qty": 50,
@@ -1844,7 +1778,6 @@ export const deals = [
   },
   {
     "id": "GOC-028",
-    "source": "GoCustom",
     "n": 28,
     "title": "Bundle: 50 x AS Colour Staple Tees with Free Printing",
     "qty": 50,
@@ -1867,7 +1800,6 @@ export const deals = [
   },
   {
     "id": "GOC-029",
-    "source": "GoCustom",
     "n": 29,
     "title": "Bundle: 50 x Baseball T-Shirts with Free Printing",
     "qty": 50,
@@ -1896,7 +1828,6 @@ export const deals = [
   },
   {
     "id": "GOC-030",
-    "source": "GoCustom",
     "n": 30,
     "title": "Bundle: 50 x Cotton Ringer T-Shirts with Free Printing",
     "qty": 50,
@@ -1925,7 +1856,6 @@ export const deals = [
   },
   {
     "id": "GOC-031",
-    "source": "GoCustom",
     "n": 31,
     "title": "Bundle: 50 x Crafter Unisex T-Shirt with Free Printing",
     "qty": 50,
@@ -1954,7 +1884,6 @@ export const deals = [
   },
   {
     "id": "GOC-032",
-    "source": "GoCustom",
     "n": 32,
     "title": "Bundle: 500 x Heavy Cotton T-Shirts with Free Printing",
     "qty": 500,
@@ -1983,7 +1912,6 @@ export const deals = [
   },
   {
     "id": "GOC-033",
-    "source": "GoCustom",
     "n": 33,
     "title": "Bundle: 6 x College Hoodie with Free Logo",
     "qty": 6,
@@ -2012,7 +1940,6 @@ export const deals = [
   },
   {
     "id": "GOC-034",
-    "source": "GoCustom",
     "n": 34,
     "title": "Bundle: 6 x Drummer Unisex Hoodie with Free Logo",
     "qty": 6,
@@ -2041,7 +1968,6 @@ export const deals = [
   },
   {
     "id": "GOC-035",
-    "source": "GoCustom",
     "n": 35,
     "title": "Bundle: 6 x Portwest DX4 Hi-Vis Zip Polo Shirts with Free Logo",
     "qty": 6,
@@ -2073,7 +1999,6 @@ export const deals = [
   },
   {
     "id": "GOC-036",
-    "source": "GoCustom",
     "n": 36,
     "title": "Bundle: 6 x Portwest Women's Hi-Vis Polo Shirts with Free Logo",
     "qty": 6,
@@ -2103,7 +2028,6 @@ export const deals = [
   },
   {
     "id": "GOC-037",
-    "source": "GoCustom",
     "n": 37,
     "title": "Bundle: 6 x Portwest WX3 Eco Stretch Holster Trousers with Free Logo",
     "qty": 6,
@@ -2132,7 +2056,6 @@ export const deals = [
   },
   {
     "id": "GOC-038",
-    "source": "GoCustom",
     "n": 38,
     "title": "Bundle: 6 x Portwest WX3 Work Shorts with Free Logo",
     "qty": 6,
@@ -2155,7 +2078,6 @@ export const deals = [
   },
   {
     "id": "GOC-039",
-    "source": "GoCustom",
     "n": 39,
     "title": "Bundle: Uneek 5 Worker Pack with Free Logo",
     "qty": 40,
@@ -2188,7 +2110,6 @@ export const deals = [
   },
   {
     "id": "GOC-040",
-    "source": "GoCustom",
     "n": 40,
     "title": "Bundle: Uneek Single Worker Pack with Free Logo",
     "qty": 8,
@@ -2221,7 +2142,6 @@ export const deals = [
   },
   {
     "id": "GOC-041",
-    "source": "GoCustom",
     "n": 41,
     "title": "Cold Weather Bundle with Free Logo",
     "qty": 2,
@@ -2253,7 +2173,6 @@ export const deals = [
   },
   {
     "id": "GOC-042",
-    "source": "GoCustom",
     "n": 42,
     "title": "Bundle: 100 Anthem Organic T-Shirts with Free Printing",
     "qty": 100,
@@ -2284,7 +2203,6 @@ export const deals = [
   },
   {
     "id": "GOC-043",
-    "source": "GoCustom",
     "n": 43,
     "title": "Bundle: 100 Hi-Vis Vests with Free Logo",
     "qty": 100,
@@ -2317,7 +2235,6 @@ export const deals = [
   },
   {
     "id": "GOC-044",
-    "source": "GoCustom",
     "n": 44,
     "title": "Bundle: 1000 x Fruit of the Loom Original T-Shirts with Free Printing",
     "qty": 1000,
@@ -2346,7 +2263,6 @@ export const deals = [
   },
   {
     "id": "GOC-045",
-    "source": "GoCustom",
     "n": 45,
     "title": "Bundle: 12 Classic Full Zip Fleece Jackets with Free Logo",
     "qty": 12,
@@ -2374,7 +2290,6 @@ export const deals = [
   },
   {
     "id": "GOC-046",
-    "source": "GoCustom",
     "n": 46,
     "title": "Bundle: 12 Classic Hoodies with Free Logo",
     "qty": 12,
@@ -2403,7 +2318,6 @@ export const deals = [
   },
   {
     "id": "GOC-047",
-    "source": "GoCustom",
     "n": 47,
     "title": "Bundle: 12 Classic Polo Shirts with Free Logo",
     "qty": 12,
@@ -2432,7 +2346,6 @@ export const deals = [
   },
   {
     "id": "GOC-048",
-    "source": "GoCustom",
     "n": 48,
     "title": "Bundle: 12 Classic Softshell Jackets with Free Logo",
     "qty": 12,
@@ -2461,7 +2374,6 @@ export const deals = [
   },
   {
     "id": "GOC-049",
-    "source": "GoCustom",
     "n": 49,
     "title": "Bundle: 12 Classic Sweatshirts with Free Logo",
     "qty": 12,
@@ -2491,7 +2403,6 @@ export const deals = [
   },
   {
     "id": "GOC-050",
-    "source": "GoCustom",
     "n": 50,
     "title": "Bundle: 12 ProRTX 2-Layer Softshell Gilets with Free Logo",
     "qty": 12,
@@ -2520,7 +2431,6 @@ export const deals = [
   },
   {
     "id": "GOC-051",
-    "source": "GoCustom",
     "n": 51,
     "title": "Bundle: 12 Regatta Professional Waterproof Jackets with Free Logo",
     "qty": 12,
@@ -2551,7 +2461,6 @@ export const deals = [
   },
   {
     "id": "GOC-052",
-    "source": "GoCustom",
     "n": 52,
     "title": "Bundle: 12 Regatta Thor III Fleeces with Free Logo",
     "qty": 12,
@@ -2580,7 +2489,6 @@ export const deals = [
   },
   {
     "id": "GOC-053",
-    "source": "GoCustom",
     "n": 53,
     "title": "Bundle: 16 x Organic Cuffed Beanie with FREE Logo",
     "qty": 16,
@@ -2603,7 +2511,6 @@ export const deals = [
   },
   {
     "id": "GOC-054",
-    "source": "GoCustom",
     "n": 54,
     "title": "Bundle: 24 Anthem Organic T-Shirts with Free Printing",
     "qty": 24,
@@ -2634,7 +2541,6 @@ export const deals = [
   },
   {
     "id": "GOC-055",
-    "source": "GoCustom",
     "n": 55,
     "title": "Bundle: 24 Classic Full Zip Fleece Jackets with Free Logo",
     "qty": 24,
@@ -2662,7 +2568,6 @@ export const deals = [
   },
   {
     "id": "GOC-056",
-    "source": "GoCustom",
     "n": 56,
     "title": "Bundle: 24 Classic Hoodies with Free Logo",
     "qty": 24,
@@ -2691,7 +2596,6 @@ export const deals = [
   },
   {
     "id": "GOC-057",
-    "source": "GoCustom",
     "n": 57,
     "title": "Bundle: 24 Classic Polo Shirts with Free Logo",
     "qty": 24,
@@ -2720,7 +2624,6 @@ export const deals = [
   },
   {
     "id": "GOC-058",
-    "source": "GoCustom",
     "n": 58,
     "title": "Bundle: 24 Classic Softshell Jackets with Free Logo",
     "qty": 24,
@@ -2749,7 +2652,6 @@ export const deals = [
   },
   {
     "id": "GOC-059",
-    "source": "GoCustom",
     "n": 59,
     "title": "Bundle: 24 Classic Sweatshirts with Free Logo",
     "qty": 24,
@@ -2779,7 +2681,6 @@ export const deals = [
   },
   {
     "id": "GOC-060",
-    "source": "GoCustom",
     "n": 60,
     "title": "Bundle: 24 Hi-Vis Vests with Free Logo",
     "qty": 24,
@@ -2812,7 +2713,6 @@ export const deals = [
   },
   {
     "id": "GOC-061",
-    "source": "GoCustom",
     "n": 61,
     "title": "Bundle: 24 ProRTX 2-Layer Softshell Gilets with Free Logo",
     "qty": 24,
@@ -2841,7 +2741,6 @@ export const deals = [
   },
   {
     "id": "GOC-062",
-    "source": "GoCustom",
     "n": 62,
     "title": "Bundle: 24 Regatta Professional Waterproof Jackets with Free Logo",
     "qty": 24,
@@ -2872,7 +2771,6 @@ export const deals = [
   },
   {
     "id": "GOC-063",
-    "source": "GoCustom",
     "n": 63,
     "title": "Bundle: 24 Regatta Thor III Fleeces with Free Logo",
     "qty": 24,
@@ -2901,7 +2799,6 @@ export const deals = [
   },
   {
     "id": "GOC-064",
-    "source": "GoCustom",
     "n": 64,
     "title": "Bundle: 24 Stanley/Stella Organic T-Shirts with Free Printing",
     "qty": 24,
@@ -2932,7 +2829,6 @@ export const deals = [
   },
   {
     "id": "GOC-065",
-    "source": "GoCustom",
     "n": 65,
     "title": "Bundle: 24 x 100% Organic Cotton Aprons with FREE Logo",
     "qty": 24,
@@ -2961,7 +2857,6 @@ export const deals = [
   },
   {
     "id": "GOC-066",
-    "source": "GoCustom",
     "n": 66,
     "title": "Bundle: 24 x Canvas Pocket Aprons with FREE Logo",
     "qty": 24,
@@ -2986,7 +2881,6 @@ export const deals = [
   },
   {
     "id": "GOC-067",
-    "source": "GoCustom",
     "n": 67,
     "title": "Bundle: 24 x Cuffed Beanie with FREE Logo",
     "qty": 24,
@@ -3015,7 +2909,6 @@ export const deals = [
   },
   {
     "id": "GOC-068",
-    "source": "GoCustom",
     "n": 68,
     "title": "Bundle: 24 x Pom Pom Beanies with FREE Logo",
     "qty": 24,
@@ -3044,7 +2937,6 @@ export const deals = [
   },
   {
     "id": "GOC-069",
-    "source": "GoCustom",
     "n": 69,
     "title": "Bundle: 4 x Hi-Vis Bomber Jackets with FREE Logo",
     "qty": 4,
@@ -3078,7 +2970,6 @@ export const deals = [
   },
   {
     "id": "GOC-070",
-    "source": "GoCustom",
     "n": 70,
     "title": "Bundle: 4 x Hi-Vis Trousers with FREE Logo",
     "qty": 4,
@@ -3112,7 +3003,6 @@ export const deals = [
   },
   {
     "id": "GOC-071",
-    "source": "GoCustom",
     "n": 71,
     "title": "Bundle: 48 x 100% Organic Cotton Aprons with FREE Logo",
     "qty": 48,
@@ -3141,7 +3031,6 @@ export const deals = [
   },
   {
     "id": "GOC-072",
-    "source": "GoCustom",
     "n": 72,
     "title": "Bundle: 48 x Canvas Pocket Aprons with FREE Logo",
     "qty": 48,
@@ -3166,7 +3055,6 @@ export const deals = [
   },
   {
     "id": "GOC-073",
-    "source": "GoCustom",
     "n": 73,
     "title": "Bundle: 50 Anthem Organic T-Shirts with Free Printing",
     "qty": 50,
@@ -3197,7 +3085,6 @@ export const deals = [
   },
   {
     "id": "GOC-074",
-    "source": "GoCustom",
     "n": 74,
     "title": "Bundle: 50 Classic Hoodies with Free Logo",
     "qty": 50,
@@ -3226,7 +3113,6 @@ export const deals = [
   },
   {
     "id": "GOC-075",
-    "source": "GoCustom",
     "n": 75,
     "title": "Bundle: 50 Classic Polo Shirts with Free Logo",
     "qty": 50,
@@ -3255,7 +3141,6 @@ export const deals = [
   },
   {
     "id": "GOC-076",
-    "source": "GoCustom",
     "n": 76,
     "title": "Bundle: 50 Classic Softshell Jackets with Free Logo",
     "qty": 50,
@@ -3284,7 +3169,6 @@ export const deals = [
   },
   {
     "id": "GOC-077",
-    "source": "GoCustom",
     "n": 77,
     "title": "Bundle: 50 Classic Sweatshirts with Free Logo",
     "qty": 50,
@@ -3314,7 +3198,6 @@ export const deals = [
   },
   {
     "id": "GOC-078",
-    "source": "GoCustom",
     "n": 78,
     "title": "Bundle: 50 Hi-Vis Vests with Free Logo",
     "qty": 50,
@@ -3347,7 +3230,6 @@ export const deals = [
   },
   {
     "id": "GOC-079",
-    "source": "GoCustom",
     "n": 79,
     "title": "Bundle: 50 Stanley/Stella Organic T-Shirts with Free Printing",
     "qty": 50,
@@ -3378,7 +3260,6 @@ export const deals = [
   },
   {
     "id": "GOC-080",
-    "source": "GoCustom",
     "n": 80,
     "title": "Bundle: 6 Classic Full Zip Fleece Jackets with Free Logo",
     "qty": 6,
@@ -3406,7 +3287,6 @@ export const deals = [
   },
   {
     "id": "GOC-081",
-    "source": "GoCustom",
     "n": 81,
     "title": "Bundle: 6 Classic Hoodies with Free Logo",
     "qty": 6,
@@ -3435,7 +3315,6 @@ export const deals = [
   },
   {
     "id": "GOC-082",
-    "source": "GoCustom",
     "n": 82,
     "title": "Bundle: 6 Classic Softshell Jackets with Free Logo",
     "qty": 6,
@@ -3464,7 +3343,6 @@ export const deals = [
   },
   {
     "id": "GOC-083",
-    "source": "GoCustom",
     "n": 83,
     "title": "Bundle: 6 Classic Sweatshirts with Free Logo",
     "qty": 6,
@@ -3494,7 +3372,6 @@ export const deals = [
   },
   {
     "id": "GOC-084",
-    "source": "GoCustom",
     "n": 84,
     "title": "Bundle: 6 ProRTX 2-Layer Softshell Gilets with Free Logo",
     "qty": 6,
@@ -3523,7 +3400,6 @@ export const deals = [
   },
   {
     "id": "GOC-085",
-    "source": "GoCustom",
     "n": 85,
     "title": "Bundle: 6 Regatta Professional Waterproof Jackets with Free Logo",
     "qty": 6,
@@ -3554,7 +3430,6 @@ export const deals = [
   },
   {
     "id": "GOC-086",
-    "source": "GoCustom",
     "n": 86,
     "title": "Bundle: 6 Regatta Thor III Fleeces with Free Logo",
     "qty": 6,
@@ -3583,7 +3458,6 @@ export const deals = [
   },
   {
     "id": "GOC-087",
-    "source": "GoCustom",
     "n": 87,
     "title": "Hi-Vis 5 Worker Bundle with Free Logo",
     "qty": 10,
@@ -3618,7 +3492,6 @@ export const deals = [
   },
   {
     "id": "GOC-088",
-    "source": "GoCustom",
     "n": 88,
     "title": "Hi-Vis Worker Bundle with Free Logo",
     "qty": 2,
@@ -3653,7 +3526,6 @@ export const deals = [
   },
   {
     "id": "GOC-089",
-    "source": "GoCustom",
     "n": 89,
     "title": "Men's Onna-Stretch Scrubs Bundle",
     "qty": 2,
@@ -3686,7 +3558,6 @@ export const deals = [
   },
   {
     "id": "GOC-090",
-    "source": "GoCustom",
     "n": 90,
     "title": "Outdoor Worker Bundle with Free Logo",
     "qty": 7,
@@ -3723,7 +3594,6 @@ export const deals = [
   },
   {
     "id": "GOC-091",
-    "source": "GoCustom",
     "n": 91,
     "title": "Bundle: Perfect Pair Bundle + Free Logo",
     "qty": 7,
@@ -3755,7 +3625,6 @@ export const deals = [
   },
   {
     "id": "GOC-092",
-    "source": "GoCustom",
     "n": 92,
     "title": "Women's 5 Worker Bundle with Free Logos",
     "qty": 40,
@@ -3788,7 +3657,6 @@ export const deals = [
   },
   {
     "id": "GOC-093",
-    "source": "GoCustom",
     "n": 93,
     "title": "Women's Onna-Stretch Scrubs Bundle",
     "qty": 2,
@@ -3823,7 +3691,6 @@ export const deals = [
   },
   {
     "id": "GOC-094",
-    "source": "GoCustom",
     "n": 94,
     "title": "Women's Worker Bundle with Free Logos",
     "qty": 8,
@@ -3858,7 +3725,6 @@ export const deals = [
   },
   {
     "id": "CLO-001",
-    "source": "Clothes2Order",
     "n": 1,
     "title": "20 x Fruit of the Loom Iconic 195 T-Shirts (printed)",
     "qty": 20,
@@ -3885,7 +3751,6 @@ export const deals = [
   },
   {
     "id": "CLO-002",
-    "source": "Clothes2Order",
     "n": 2,
     "title": "Russell Embroidered Set: Full Zip Fleece + Pique Polo + Authentic Hoodie",
     "qty": 3,
@@ -3914,7 +3779,6 @@ export const deals = [
   },
   {
     "id": "JRS-001",
-    "source": "JRS",
     "n": 1,
     "title": "8x Embroidered Beanie Hats Bundle Deal",
     "qty": 8,
@@ -3941,7 +3805,6 @@ export const deals = [
   },
   {
     "id": "JRS-002",
-    "source": "JRS",
     "n": 2,
     "title": "8x Embroidered/Printed Caps Bundle Deal with Free Company/Club Logo",
     "qty": 8,
@@ -3968,7 +3831,6 @@ export const deals = [
   },
   {
     "id": "JRS-003",
-    "source": "JRS",
     "n": 3,
     "title": "8x Beechfield Embroidered/Printed Trucker Caps Bundle with Company Logo",
     "qty": 8,
@@ -3995,7 +3857,6 @@ export const deals = [
   },
   {
     "id": "JRS-004",
-    "source": "JRS",
     "n": 4,
     "title": "16x Embroidered Beanie Hats Bundle Deal",
     "qty": 16,
@@ -4022,7 +3883,6 @@ export const deals = [
   },
   {
     "id": "JRS-005",
-    "source": "JRS",
     "n": 5,
     "title": "16x Embroidered/Printed Caps Bundle Deal with Free Company/Club Logo",
     "qty": 16,
@@ -4049,7 +3909,6 @@ export const deals = [
   },
   {
     "id": "JRS-006",
-    "source": "JRS",
     "n": 6,
     "title": "24x Embroidered Beanie Hats Bundle Deal",
     "qty": 24,
@@ -4076,7 +3935,6 @@ export const deals = [
   },
   {
     "id": "JRS-007",
-    "source": "JRS",
     "n": 7,
     "title": "24x Embroidered/Printed Caps Bundle Deal with Free Company/Club Logo",
     "qty": 24,
@@ -4103,7 +3961,6 @@ export const deals = [
   },
   {
     "id": "JRS-008",
-    "source": "JRS",
     "n": 8,
     "title": "50x Embroidered Beanie Hats Bundle Deal",
     "qty": 50,
@@ -4130,7 +3987,6 @@ export const deals = [
   },
   {
     "id": "JRS-009",
-    "source": "JRS",
     "n": 9,
     "title": "50x Embroidered/Printed Caps Bundle Deal with Free Company/Club Logo",
     "qty": 50,
@@ -4157,7 +4013,6 @@ export const deals = [
   },
   {
     "id": "JRS-010",
-    "source": "JRS",
     "n": 10,
     "title": "100x Embroidered Beanie Hats Bundle Deal",
     "qty": 100,
@@ -4184,7 +4039,6 @@ export const deals = [
   },
   {
     "id": "JRS-011",
-    "source": "JRS",
     "n": 11,
     "title": "100x Embroidered/Printed Caps Bundle Deal with Free Company/Club Logo",
     "qty": 100,
@@ -4211,7 +4065,6 @@ export const deals = [
   },
   {
     "id": "JRS-012",
-    "source": "JRS",
     "n": 12,
     "title": "250x Embroidered Beanie Hats Bundle Deal",
     "qty": 250,
@@ -4238,7 +4091,6 @@ export const deals = [
   },
   {
     "id": "JRS-013",
-    "source": "JRS",
     "n": 13,
     "title": "8x Embroidered Regatta Fleece Jackets Bundle Deal - Free Company Logo",
     "qty": 8,
@@ -4266,7 +4118,6 @@ export const deals = [
   },
   {
     "id": "JRS-014",
-    "source": "JRS",
     "n": 14,
     "title": "32 Item Embroidered/Printed Hi-Vis Workwear Bundle - Supertouch Polos, T-Shirts, Hoodies & Bodywarmers",
     "qty": 32,
@@ -4301,7 +4152,6 @@ export const deals = [
   },
   {
     "id": "JRS-015",
-    "source": "JRS",
     "n": 15,
     "title": "16x Embroidered Regatta Fleece Jackets Bundle Deal - Free Company Logo",
     "qty": 16,
@@ -4329,7 +4179,6 @@ export const deals = [
   },
   {
     "id": "JRS-016",
-    "source": "JRS",
     "n": 16,
     "title": "24x Embroidered Regatta Fleece Jackets Bundle Deal - Free Company Logo",
     "qty": 24,
@@ -4357,7 +4206,6 @@ export const deals = [
   },
   {
     "id": "JRS-017",
-    "source": "JRS",
     "n": 17,
     "title": "6 Item Kickstarter Hi-Vis Printed Workwear Bundle",
     "qty": 6,
@@ -4388,7 +4236,6 @@ export const deals = [
   },
   {
     "id": "JRS-018",
-    "source": "JRS",
     "n": 18,
     "title": "8 Item Long Ranger Hi-Vis Printed Workwear Bundle",
     "qty": 8,
@@ -4419,7 +4266,6 @@ export const deals = [
   },
   {
     "id": "JRS-019",
-    "source": "JRS",
     "n": 19,
     "title": "16 Item Hi-Vis Printed Workwear Bundle",
     "qty": 16,
@@ -4450,7 +4296,6 @@ export const deals = [
   },
   {
     "id": "JRS-020",
-    "source": "JRS",
     "n": 20,
     "title": "24 Item Hi-Vis Printed Workwear Bundle",
     "qty": 24,
@@ -4481,7 +4326,6 @@ export const deals = [
   },
   {
     "id": "JRS-021",
-    "source": "JRS",
     "n": 21,
     "title": "36 Item Hi-Vis Printed Workwear Bundle",
     "qty": 36,
@@ -4512,7 +4356,6 @@ export const deals = [
   },
   {
     "id": "JRS-022",
-    "source": "JRS",
     "n": 22,
     "title": "48 Item Hi-Vis Printed Workwear Bundle",
     "qty": 48,
@@ -4543,7 +4386,6 @@ export const deals = [
   },
   {
     "id": "JRS-023",
-    "source": "JRS",
     "n": 23,
     "title": "60 Item Hi-Vis Printed Workwear Bundle",
     "qty": 60,
@@ -4574,7 +4416,6 @@ export const deals = [
   },
   {
     "id": "JRS-024",
-    "source": "JRS",
     "n": 24,
     "title": "90 Item Hi-Vis Printed Workwear Bundle",
     "qty": 90,
@@ -4605,7 +4446,6 @@ export const deals = [
   },
   {
     "id": "JRS-025",
-    "source": "JRS",
     "n": 25,
     "title": "8 Item Embroidered/Printed Hi-Vis Workwear Bundle - Supertouch Polos, T-Shirts, Hoodies & Bodywarmer",
     "qty": 8,
@@ -4640,7 +4480,6 @@ export const deals = [
   },
   {
     "id": "JRS-026",
-    "source": "JRS",
     "n": 26,
     "title": "8 Item Premium Embroidered/Printed Leo Workwear Hi-Vis Bundle Deal",
     "qty": 8,
@@ -4671,7 +4510,6 @@ export const deals = [
   },
   {
     "id": "JRS-027",
-    "source": "JRS",
     "n": 27,
     "title": "16 Item Embroidered/Printed Hi-Vis Workwear Bundle - Supertouch Polos, T-Shirts, Hoodies & Bodywarmers",
     "qty": 16,
@@ -4706,7 +4544,6 @@ export const deals = [
   },
   {
     "id": "JRS-028",
-    "source": "JRS",
     "n": 28,
     "title": "24 Item Embroidered/Printed Hi-Vis Workwear Bundle - Supertouch Polos, T-Shirts, Hoodies & Bodywarmers",
     "qty": 24,
@@ -4741,7 +4578,6 @@ export const deals = [
   },
   {
     "id": "JRS-029",
-    "source": "JRS",
     "n": 29,
     "title": "25x Short Sleeve Printed Hi-Vis Vest Bundle",
     "qty": 25,
@@ -4772,7 +4608,6 @@ export const deals = [
   },
   {
     "id": "JRS-030",
-    "source": "JRS",
     "n": 30,
     "title": "50x Short Sleeve Printed Hi-Vis Vest Bundle",
     "qty": 50,
@@ -4803,7 +4638,6 @@ export const deals = [
   },
   {
     "id": "JRS-031",
-    "source": "JRS",
     "n": 31,
     "title": "100x Short Sleeve Printed Hi-Vis Vest Bundle",
     "qty": 100,
@@ -4834,7 +4668,6 @@ export const deals = [
   },
   {
     "id": "JRS-032",
-    "source": "JRS",
     "n": 32,
     "title": "25x Long Sleeve Printed Hi-Vis Vest Bundle",
     "qty": 25,
@@ -4865,7 +4698,6 @@ export const deals = [
   },
   {
     "id": "JRS-033",
-    "source": "JRS",
     "n": 33,
     "title": "50x Long Sleeve Printed Hi-Vis Vest Bundle",
     "qty": 50,
@@ -4896,7 +4728,6 @@ export const deals = [
   },
   {
     "id": "JRS-034",
-    "source": "JRS",
     "n": 34,
     "title": "100x Long Sleeve Printed Hi-Vis Vest Bundle",
     "qty": 100,
@@ -4927,7 +4758,6 @@ export const deals = [
   },
   {
     "id": "JRS-035",
-    "source": "JRS",
     "n": 35,
     "title": "Leo Workwear Hi-Vis Sweatshirt & Trousers Combo Bundle",
     "qty": 1,
@@ -4961,7 +4791,6 @@ export const deals = [
   },
   {
     "id": "JRS-036",
-    "source": "JRS",
     "n": 36,
     "title": "Leo Workwear Hi-Vis Workwear Bundle With Buckbootz BBZ8000 Wellies",
     "qty": 8000,
@@ -4992,7 +4821,6 @@ export const deals = [
   },
   {
     "id": "JRS-037",
-    "source": "JRS",
     "n": 37,
     "title": "Portwest Hi-Vis Jacket, Bib & Brace Combo Bundle Deal",
     "qty": 1,
@@ -5024,7 +4852,6 @@ export const deals = [
   },
   {
     "id": "JRS-038",
-    "source": "JRS",
     "n": 38,
     "title": "8x Embroidered/Printed Leo Workwear Hi-Vis T-Shirt/Polo Shirt Bundle Deal",
     "qty": 8,
@@ -5057,7 +4884,6 @@ export const deals = [
   },
   {
     "id": "JRS-039",
-    "source": "JRS",
     "n": 39,
     "title": "10x Printed Workwear Portwest Hi-Vis T-Shirts Bundle",
     "qty": 10,
@@ -5089,7 +4915,6 @@ export const deals = [
   },
   {
     "id": "JRS-040",
-    "source": "JRS",
     "n": 40,
     "title": "8x Portwest Embroidered/Printed Hi-Vis Hoodies Bundle Deal",
     "qty": 8,
@@ -5121,7 +4946,6 @@ export const deals = [
   },
   {
     "id": "JRS-041",
-    "source": "JRS",
     "n": 41,
     "title": "4x Embroidered Workwear Hi-Vis Polo Shirts Bundle",
     "qty": 4,
@@ -5153,7 +4977,6 @@ export const deals = [
   },
   {
     "id": "JRS-042",
-    "source": "JRS",
     "n": 42,
     "title": "9 Item Embroidered/Printed Portwest PW3 Premium Hi-Vis Bundle Deal",
     "qty": 9,
@@ -5184,7 +5007,6 @@ export const deals = [
   },
   {
     "id": "JRS-043",
-    "source": "JRS",
     "n": 43,
     "title": "8x Printed Hi-Vis Bomber/Traffic Jacket Bundle",
     "qty": 8,
@@ -5216,7 +5038,6 @@ export const deals = [
   },
   {
     "id": "JRS-044",
-    "source": "JRS",
     "n": 44,
     "title": "9 Item Portwest PW3 Premium Hi-Vis Bundle Deal",
     "qty": 9,
@@ -5247,7 +5068,6 @@ export const deals = [
   },
   {
     "id": "JRS-045",
-    "source": "JRS",
     "n": 45,
     "title": "4x Embroidered Workwear Supertouch Hi-Vis Hoodies Bundle",
     "qty": 4,
@@ -5279,7 +5099,6 @@ export const deals = [
   },
   {
     "id": "JRS-046",
-    "source": "JRS",
     "n": 46,
     "title": "24x Portwest Embroidered/Printed Hi-Vis Hoodies Bundle Deal",
     "qty": 24,
@@ -5311,7 +5130,6 @@ export const deals = [
   },
   {
     "id": "JRS-047",
-    "source": "JRS",
     "n": 47,
     "title": "16x Portwest Embroidered/Printed Hi-Vis Hoodies Bundle Deal",
     "qty": 16,
@@ -5343,7 +5161,6 @@ export const deals = [
   },
   {
     "id": "JRS-048",
-    "source": "JRS",
     "n": 48,
     "title": "25x Printed Hi-Vis Bomber/Traffic Jacket Bundle",
     "qty": 25,
@@ -5375,7 +5192,6 @@ export const deals = [
   },
   {
     "id": "JRS-049",
-    "source": "JRS",
     "n": 49,
     "title": "50x Printed Hi-Vis Bomber/Traffic Jacket Bundle",
     "qty": 50,
@@ -5407,7 +5223,6 @@ export const deals = [
   },
   {
     "id": "JRS-050",
-    "source": "JRS",
     "n": 50,
     "title": "100x Printed Hi-Vis Bomber/Traffic Jacket Bundle",
     "qty": 100,
@@ -5439,7 +5254,6 @@ export const deals = [
   },
   {
     "id": "JRS-051",
-    "source": "JRS",
     "n": 51,
     "title": "2x Embroidered Workwear Leo Workwear Hi-Vis Bodywarmers Bundle",
     "qty": 2,
@@ -5471,7 +5285,6 @@ export const deals = [
   },
   {
     "id": "JRS-052",
-    "source": "JRS",
     "n": 52,
     "title": "25x Printed Workwear Supertouch Hi-Vis Two-Tone Polo Shirts Bundle",
     "qty": 25,
@@ -5503,7 +5316,6 @@ export const deals = [
   },
   {
     "id": "JRS-053",
-    "source": "JRS",
     "n": 53,
     "title": "8 Personalised Embroidered Work T-Shirts with Free Logo",
     "qty": 8,
@@ -5530,7 +5342,6 @@ export const deals = [
   },
   {
     "id": "JRS-054",
-    "source": "JRS",
     "n": 54,
     "title": "8 Personalised Embroidered/Printed Hoodies with Free Logo",
     "qty": 8,
@@ -5557,7 +5368,6 @@ export const deals = [
   },
   {
     "id": "JRS-055",
-    "source": "JRS",
     "n": 55,
     "title": "16x Personalised Embroidered Hoodies with Free Logo",
     "qty": 16,
@@ -5584,7 +5394,6 @@ export const deals = [
   },
   {
     "id": "JRS-056",
-    "source": "JRS",
     "n": 56,
     "title": "24x Personalised Embroidered Hoodies with Free Logo",
     "qty": 24,
@@ -5611,7 +5420,6 @@ export const deals = [
   },
   {
     "id": "JRS-057",
-    "source": "JRS",
     "n": 57,
     "title": "50x Personalised Embroidered Hoodies with Free Logo",
     "qty": 50,
@@ -5638,7 +5446,6 @@ export const deals = [
   },
   {
     "id": "JRS-058",
-    "source": "JRS",
     "n": 58,
     "title": "8x Printed Leo Workwear Tapeley Sweatshirts",
     "qty": 8,
@@ -5666,7 +5473,6 @@ export const deals = [
   },
   {
     "id": "JRS-059",
-    "source": "JRS",
     "n": 59,
     "title": "Portwest DX4 Best Summer Shorts, T-Shirt, & Hoodie Workwear Bundle",
     "qty": 4,
@@ -5695,7 +5501,6 @@ export const deals = [
   },
   {
     "id": "JRS-060",
-    "source": "JRS",
     "n": 60,
     "title": "8x Printed Leo Workwear Goodleigh Hoodies",
     "qty": 8,
@@ -5722,7 +5527,6 @@ export const deals = [
   },
   {
     "id": "JRS-061",
-    "source": "JRS",
     "n": 61,
     "title": "4 Item Regatta Dover Jacket Bundle Deal",
     "qty": 4,
@@ -5749,7 +5553,6 @@ export const deals = [
   },
   {
     "id": "JRS-062",
-    "source": "JRS",
     "n": 62,
     "title": "8 Item Regatta Dover Jacket Bundle Deal",
     "qty": 8,
@@ -5776,7 +5579,6 @@ export const deals = [
   },
   {
     "id": "JRS-063",
-    "source": "JRS",
     "n": 63,
     "title": "16 Item Regatta Dover Jacket Bundle Deal",
     "qty": 16,
@@ -5803,7 +5605,6 @@ export const deals = [
   },
   {
     "id": "JRS-064",
-    "source": "JRS",
     "n": 64,
     "title": "24 Item Regatta Dover Jacket Bundle Deal",
     "qty": 24,
@@ -5830,7 +5631,6 @@ export const deals = [
   },
   {
     "id": "JRS-065",
-    "source": "JRS",
     "n": 65,
     "title": "32 Item Regatta Dover Jacket Bundle Deal",
     "qty": 32,
@@ -5857,7 +5657,6 @@ export const deals = [
   },
   {
     "id": "JRS-066",
-    "source": "JRS",
     "n": 66,
     "title": "8x Embroidered Waterproof Softshell Jackets Bundle Deal",
     "qty": 8,
@@ -5886,7 +5685,6 @@ export const deals = [
   },
   {
     "id": "JRS-067",
-    "source": "JRS",
     "n": 67,
     "title": "16x Embroidered Waterpoof Softshell Jackets Bundle Deal",
     "qty": 16,
@@ -5913,7 +5711,6 @@ export const deals = [
   },
   {
     "id": "JRS-068",
-    "source": "JRS",
     "n": 68,
     "title": "24x Embroidered Waterpoof Softshell Jackets Bundle Deal",
     "qty": 24,
@@ -5940,7 +5737,6 @@ export const deals = [
   },
   {
     "id": "JRS-069",
-    "source": "JRS",
     "n": 69,
     "title": "24 Item Embroidered/Printed Workwear Bundle Deal (Hoodies, Polo, Jackets & Gilet)",
     "qty": 24,
@@ -5969,7 +5765,6 @@ export const deals = [
   },
   {
     "id": "JRS-070",
-    "source": "JRS",
     "n": 70,
     "title": "36 Item Embroidered/Printed Workwear Bundle Deal (Hoodies, Polo, Jackets & Gilet)",
     "qty": 36,
@@ -5998,7 +5793,6 @@ export const deals = [
   },
   {
     "id": "JRS-071",
-    "source": "JRS",
     "n": 71,
     "title": "48 Item Embroidered/Printed Workwear Bundle Deal (Hoodies, Polo, Jackets & Gilet)",
     "qty": 48,
@@ -6027,7 +5821,6 @@ export const deals = [
   },
   {
     "id": "JRS-072",
-    "source": "JRS",
     "n": 72,
     "title": "90 Item Embroidered/Printed Workwear Bundle Deal (Hoodies, Polo, Jackets & Gilet)",
     "qty": 90,
@@ -6056,7 +5849,6 @@ export const deals = [
   },
   {
     "id": "JRS-073",
-    "source": "JRS",
     "n": 73,
     "title": "24 Item Embroidered/Printed Workwear Bundle Deal",
     "qty": 24,
@@ -6083,7 +5875,6 @@ export const deals = [
   },
   {
     "id": "JRS-074",
-    "source": "JRS",
     "n": 74,
     "title": "36 Item Embroidered/Printed Workwear Bundle Deal",
     "qty": 36,
@@ -6110,7 +5901,6 @@ export const deals = [
   },
   {
     "id": "JRS-075",
-    "source": "JRS",
     "n": 75,
     "title": "48 Item Embroidered/Printed Workwear Bundle Deal",
     "qty": 48,
@@ -6137,7 +5927,6 @@ export const deals = [
   },
   {
     "id": "JRS-076",
-    "source": "JRS",
     "n": 76,
     "title": "90 Item Embroidered/Printed Workwear Bundle Deal",
     "qty": 90,
@@ -6164,7 +5953,6 @@ export const deals = [
   },
   {
     "id": "JRS-077",
-    "source": "JRS",
     "n": 77,
     "title": "6 Item Kickstarter Embroidered Workwear Bundle with Free Logo",
     "qty": 6,
@@ -6191,7 +5979,6 @@ export const deals = [
   },
   {
     "id": "JRS-078",
-    "source": "JRS",
     "n": 78,
     "title": "8 Item Lone Ranger Embroidered/Printed Workwear Bundle with Free Logo",
     "qty": 8,
@@ -6218,7 +6005,6 @@ export const deals = [
   },
   {
     "id": "JRS-079",
-    "source": "JRS",
     "n": 79,
     "title": "16 Item Embroidered/Printed Workwear Bundle - Perfect For 2 People",
     "qty": 16,
@@ -6245,7 +6031,6 @@ export const deals = [
   },
   {
     "id": "JRS-080",
-    "source": "JRS",
     "n": 80,
     "title": "60 Piece Mix & Match - Embroidered/Printed Workwear Bundle with Free Company Logo",
     "qty": 60,
@@ -6272,7 +6057,6 @@ export const deals = [
   },
   {
     "id": "JRS-081",
-    "source": "JRS",
     "n": 81,
     "title": "6 Item Embroidered/Printed Workwear Bundle Deal",
     "qty": 6,
@@ -6299,7 +6083,6 @@ export const deals = [
   },
   {
     "id": "JRS-082",
-    "source": "JRS",
     "n": 82,
     "title": "8 Item Embroidered/Printed Workwear Bundle Deal",
     "qty": 8,
@@ -6326,7 +6109,6 @@ export const deals = [
   },
   {
     "id": "JRS-083",
-    "source": "JRS",
     "n": 83,
     "title": "16 Item Embroidered/Printed Workwear Bundle Deal",
     "qty": 16,
@@ -6353,7 +6135,6 @@ export const deals = [
   },
   {
     "id": "JRS-084",
-    "source": "JRS",
     "n": 84,
     "title": "60 Item Embroidered/Printed Workwear Bundle Deal",
     "qty": 60,
@@ -6380,7 +6161,6 @@ export const deals = [
   },
   {
     "id": "JRS-085",
-    "source": "JRS",
     "n": 85,
     "title": "6 Item Kickstarter Two Tone Workwear Bundle with Free Logo",
     "qty": 6,
@@ -6407,7 +6187,6 @@ export const deals = [
   },
   {
     "id": "JRS-086",
-    "source": "JRS",
     "n": 86,
     "title": "8 Item Long Ranger Two Tone Workwear Bundle with Free Logo",
     "qty": 8,
@@ -6434,7 +6213,6 @@ export const deals = [
   },
   {
     "id": "JRS-087",
-    "source": "JRS",
     "n": 87,
     "title": "16 Item Two Tone Workwear Bundle with Free Logo (Perfect for a Team of 2)",
     "qty": 16,
@@ -6461,7 +6239,6 @@ export const deals = [
   },
   {
     "id": "JRS-088",
-    "source": "JRS",
     "n": 88,
     "title": "24 Item Two Tone Workwear Bundle with Free Logo (Perfect for a Team of 3)",
     "qty": 24,
@@ -6488,7 +6265,6 @@ export const deals = [
   },
   {
     "id": "JRS-089",
-    "source": "JRS",
     "n": 89,
     "title": "48 Item Two Tone Workwear Bundle with Free Logo (Perfect for a Team of 8)",
     "qty": 48,
@@ -6515,7 +6291,6 @@ export const deals = [
   },
   {
     "id": "JRS-090",
-    "source": "JRS",
     "n": 90,
     "title": "60 Item Two Tone Workwear Bundle with Free Logo (Perfect for a Team of 10)",
     "qty": 60,
@@ -6542,7 +6317,6 @@ export const deals = [
   },
   {
     "id": "JRS-091",
-    "source": "JRS",
     "n": 91,
     "title": "90 Item Two Tone Workwear Bundle with Free Logo (Perfect for a Team of 15)",
     "qty": 90,
@@ -6569,7 +6343,6 @@ export const deals = [
   },
   {
     "id": "JRS-092",
-    "source": "JRS",
     "n": 92,
     "title": "36 Item Two Tone Workwear Bundle with Free Logo (Perfect for a Team of 6)",
     "qty": 36,
@@ -6596,7 +6369,6 @@ export const deals = [
   },
   {
     "id": "JRS-093",
-    "source": "JRS",
     "n": 93,
     "title": "8 Item Russell Premium Quality Embroidered Workwear Bundle with Free Logo",
     "qty": 8,
@@ -6623,7 +6395,6 @@ export const deals = [
   },
   {
     "id": "JRS-094",
-    "source": "JRS",
     "n": 94,
     "title": "16 Item Russell Premium Quality Embroidered Workwear Bundle with Free Logo",
     "qty": 16,
@@ -6650,7 +6421,6 @@ export const deals = [
   },
   {
     "id": "JRS-095",
-    "source": "JRS",
     "n": 95,
     "title": "8 Piece Mix & Match - Embroidered/Printed Workwear Bundle with Free Company Logo",
     "qty": 8,
@@ -6677,7 +6447,6 @@ export const deals = [
   },
   {
     "id": "JRS-096",
-    "source": "JRS",
     "n": 96,
     "title": "Portwest 7 Item Mix & Match - Printed DX4 Bundle Deal with Free Company Logo",
     "qty": 7,
@@ -6704,7 +6473,6 @@ export const deals = [
   },
   {
     "id": "JRS-097",
-    "source": "JRS",
     "n": 97,
     "title": "6 Item Kickstarter Premium Embroidered Two-Tone Workwear Bundle Deal",
     "qty": 6,
@@ -6731,7 +6499,6 @@ export const deals = [
   },
   {
     "id": "JRS-098",
-    "source": "JRS",
     "n": 98,
     "title": "8 Item Lone Ranger Premium Two-Tone Embroidered Workwear Bundle Deal",
     "qty": 8,
@@ -6758,7 +6525,6 @@ export const deals = [
   },
   {
     "id": "JRS-099",
-    "source": "JRS",
     "n": 99,
     "title": "16 Item Premium Two-Tone Embroidered Workwear Bundle Deal",
     "qty": 16,
@@ -6785,7 +6551,6 @@ export const deals = [
   },
   {
     "id": "JRS-100",
-    "source": "JRS",
     "n": 100,
     "title": "24 Item Premium Two-Tone Embroidered Workwear Bundle Deal",
     "qty": 24,
@@ -6812,7 +6577,6 @@ export const deals = [
   },
   {
     "id": "JRS-101",
-    "source": "JRS",
     "n": 101,
     "title": "36 Item Premium Two-Tone Embroidered Workwear Bundle Deal",
     "qty": 36,
@@ -6839,7 +6603,6 @@ export const deals = [
   },
   {
     "id": "JRS-102",
-    "source": "JRS",
     "n": 102,
     "title": "48 Item Premium Two-Tone Embroidered Workwear Bundle Deal",
     "qty": 48,
@@ -6866,7 +6629,6 @@ export const deals = [
   },
   {
     "id": "JRS-103",
-    "source": "JRS",
     "n": 103,
     "title": "60 Item Premium Two-Tone Embroidered Workwear Bundle Deal",
     "qty": 60,
@@ -6893,7 +6655,6 @@ export const deals = [
   },
   {
     "id": "JRS-104",
-    "source": "JRS",
     "n": 104,
     "title": "90 Item Premium Two-Tone Embroidered Workwear Bundle Deal",
     "qty": 90,
@@ -6920,7 +6681,6 @@ export const deals = [
   },
   {
     "id": "JRS-105",
-    "source": "JRS",
     "n": 105,
     "title": "6 Item Summer Kickstarter Workwear Bundle Deal",
     "qty": 6,
@@ -6947,7 +6707,6 @@ export const deals = [
   },
   {
     "id": "JRS-106",
-    "source": "JRS",
     "n": 106,
     "title": "16 Item Personalised Workwear Bundle Deal",
     "qty": 16,
@@ -6978,7 +6737,6 @@ export const deals = [
   },
   {
     "id": "JRS-107",
-    "source": "JRS",
     "n": 107,
     "title": "24 Item Personalised Workwear Bundle Deal",
     "qty": 24,
@@ -7009,7 +6767,6 @@ export const deals = [
   },
   {
     "id": "JRS-108",
-    "source": "JRS",
     "n": 108,
     "title": "36 Item Personalised Workwear Bundle Deal",
     "qty": 36,
@@ -7040,7 +6797,6 @@ export const deals = [
   },
   {
     "id": "JRS-109",
-    "source": "JRS",
     "n": 109,
     "title": "48 Item Personalised Workwear Bundle Deal",
     "qty": 48,
@@ -7071,7 +6827,6 @@ export const deals = [
   },
   {
     "id": "JRS-110",
-    "source": "JRS",
     "n": 110,
     "title": "60 Item Personalised Workwear Bundle Deal",
     "qty": 60,
@@ -7102,7 +6857,6 @@ export const deals = [
   },
   {
     "id": "JRS-111",
-    "source": "JRS",
     "n": 111,
     "title": "90 Item Personalised Workwear Bundle Deal",
     "qty": 90,
@@ -7133,7 +6887,6 @@ export const deals = [
   },
   {
     "id": "JRS-112",
-    "source": "JRS",
     "n": 112,
     "title": "8 Item Lone Ranger Workwear Bundle Deal",
     "qty": 8,
@@ -7160,7 +6913,6 @@ export const deals = [
   },
   {
     "id": "JRS-113",
-    "source": "JRS",
     "n": 113,
     "title": "8x Personalised Embroidered Work Polo Shirts with Free Logo",
     "qty": 8,
@@ -7187,7 +6939,6 @@ export const deals = [
   },
   {
     "id": "JRS-114",
-    "source": "JRS",
     "n": 114,
     "title": "16x Personalised Embroidered Work Polo Shirts with Free Logo",
     "qty": 16,
@@ -7214,7 +6965,6 @@ export const deals = [
   },
   {
     "id": "JRS-115",
-    "source": "JRS",
     "n": 115,
     "title": "24x Personalised Embroidered Work Polo Shirts with Free Logo",
     "qty": 24,
@@ -7241,7 +6991,6 @@ export const deals = [
   },
   {
     "id": "JRS-116",
-    "source": "JRS",
     "n": 116,
     "title": "50x Personalised Embroidered Work Polo Shirts with Free Logo",
     "qty": 50,
@@ -7268,7 +7017,6 @@ export const deals = [
   },
   {
     "id": "JRS-117",
-    "source": "JRS",
     "n": 117,
     "title": "16 Personalised Embroidered Work T-Shirts with Free Logo",
     "qty": 16,
@@ -7295,7 +7043,6 @@ export const deals = [
   },
   {
     "id": "JRS-118",
-    "source": "JRS",
     "n": 118,
     "title": "24 Personalised Embroidered Work T-Shirts with Free Logo",
     "qty": 24,
@@ -7322,7 +7069,6 @@ export const deals = [
   },
   {
     "id": "JRS-119",
-    "source": "JRS",
     "n": 119,
     "title": "50 Personalised Embroidered Work T-Shirts with Free Logo",
     "qty": 50,
@@ -7349,7 +7095,6 @@ export const deals = [
   },
   {
     "id": "JRS-120",
-    "source": "JRS",
     "n": 120,
     "title": "100 Personalised Embroidered Work T-Shirts",
     "qty": 100,

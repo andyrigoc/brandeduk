@@ -3,7 +3,7 @@ import {
   newDraft, choiceValid, quotas, allocated, variantsValid, setChoice, setAllocation,
   acceptedFile, logoValid, readyToAdd
 } from './catalogue.js';
-import { deals } from './deals.js?v=20261113-ourprice';
+import { deals } from './deals.js?v=20261113-nosource';
 
 const icons = {
   bag: '<path d="M5 8h14l1 13H4L5 8Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/>',
@@ -59,7 +59,7 @@ const FILTER_GROUPS = [
   {key: 'sector', title: 'Sector', labels: {safety: 'Safety', hospitality: 'Hospitality', healthcare: 'Healthcare', education: 'Education', corporate: 'Corporate', sport: 'Sport', cleaning: 'Cleaning', logistics: 'Logistics', construction: 'Construction'}},
   {key: 'gender', title: 'Gender', labels: {female: "Women's", male: "Men's"}},
   {key: 'feature', title: 'Feature', labels: {'high-visibility': 'High visibility', waterproof: 'Waterproof', recycled: 'Recycled / organic'}},
-  {key: 'status', title: 'Deal status', labels: {ready: 'Ready to sell', 'not-viable': 'Not viable', pending: 'Garment not confirmed', mixed: 'Mixed kit, parts not confirmed'}}
+  {key: 'status', title: 'Deal status'}
 ];
 const selectedFilters = Object.fromEntries(FILTER_GROUPS.map(group => [group.key, new Set()]));
 const optionSearch = {};
@@ -74,7 +74,6 @@ function asBundle(deal) {
   return {
     id: deal.id,
     title: deal.title.replace(/^Bundle:\s*/i, ''),
-    tag: deal.source,
     price: deal.price,
     methods: printOnly ? ['Print'] : ['Print', 'Embroidery'],
     delivery: /consegna gratis/.test(deal.title) && !/>\s*£/.test(deal.title),
@@ -96,7 +95,7 @@ function findOffer(id) {
 
 function dealMatchesQuery(deal) {
   if (!resultQuery) return true;
-  const haystack = [deal.title, deal.source, ...(deal.codes || []), ...(deal.brand || [])].join(' ').toLowerCase();
+  const haystack = [deal.title, ...(deal.codes || []), ...(deal.brand || [])].join(' ').toLowerCase();
   return haystack.includes(resultQuery);
 }
 
@@ -157,27 +156,18 @@ function renderShop() {
     const bundle = asBundle(deal);
     const items = Object.entries(bundle.fixed);
     const build = canBuild(deal);
-    const reason = deal.status === 'not-viable'
-      ? 'Not viable: under £2.75 left per garment for the logo'
-      : deal.status === 'pending'
-        ? 'Garment code is not confirmed on the official price list'
-        : deal.status === 'mixed'
-          ? 'Mixed kit: the garment list is not confirmed'
-          : deal.substitute
-            ? 'Listed garment is a substitute, not the competitor product'
-            : deal.discountCode
-              ? 'Discount code, not a fixed bundle'
-              : build ? '' : 'Priced, but the garment colours are not in the builder yet';
+    const composition = items.length
+      ? items.map(([code, qty]) => `${qty} ${products[code] ? products[code].label.toLowerCase() : code}`).join(' · ')
+      : (deal.codes || []).join(', ');
     return `<article class="bundle-card${build ? '' : ' is-blocked'}">
       <div class="card-art art-${bundle.art}">
         <span class="quantity-tag">${deal.qty || pieceCount(bundle)} items</span>
         <div class="product-visual products-${Math.min(items.length, 4) || 1}">${items.map(([code]) => products[code] ? thumb(code) : `<span class="code-chip">${escape(code)}</span>`).join('')}</div>
       </div>
       <div class="card-body">
-        <p class="card-category">${escape(deal.source)} · ${escape(optionLabel(FILTER_GROUPS[5], deal.status))}</p>
         <h3>${escape(bundle.title)}</h3>
-        <p class="composition">${items.length ? items.map(([code, qty]) => `${qty} ${products[code] ? products[code].label.toLowerCase() : code}`).join(' · ') : escape((deal.codes || []).join(', ') || 'Garments not confirmed')}</p>
-        ${reason ? `<p class="deal-note">${escape(reason)}</p>` : `<p class="inclusion">${icon('tick')} ${isInclusion(bundle)}</p>`}
+        ${composition ? `<p class="composition">${escape(composition)}</p>` : ''}
+        ${build ? `<p class="inclusion">${icon('tick')} ${isInclusion(bundle)}</p>` : ''}
         <div class="card-footer">
           <div class="card-price">${deal.price ? price(deal.price) : ''}</div>
           <button type="button" class="button primary" data-action="open" data-id="${deal.id}" ${build ? '' : 'disabled'}>${build ? `Build bundle ${icon('right')}` : 'Not available'}</button>

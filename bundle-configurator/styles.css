@@ -60,7 +60,7 @@ ul, ol { list-style: none; padding: 0; }
 .hero-action { margin-top: 18px; }
 .hero .hero-action { background: #2151c2; border-color: #5478d4; min-height: 42px; }
 .hero .hero-action:hover { background: #3161d5; }
-.hero-photo { height: clamp(130px, 44vw, 220px); margin-top: -12px; background: linear-gradient(180deg,#15213d 0%,#15213d00 31%), url("./assets/workwear.webp") center 54% / cover no-repeat; }
+.hero-photo { height: auto; aspect-ratio: 1024 / 682; margin-top: -12px; background: linear-gradient(180deg,#15213d 0%,#15213d00 12%), url("./assets/workwear-professionals.jpg?v=20261113-people") center center / cover no-repeat; }
 
 .catalogue { padding-top: 34px; scroll-margin-top: 16px; }
 .section-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 15px; }
@@ -306,7 +306,7 @@ textarea { margin-top: 5px; padding: 8px; resize: vertical; min-height: 70px; fo
   .hero { grid-template-columns: 48% 52%; }
   .hero-copy { padding: 34px 28px; }
   .hero h1 { font-size: clamp(2.3rem,6.9vw,4.9rem); }
-  .hero-photo { margin: 0 0 0 -26px; height: auto; background-image: linear-gradient(90deg,#15213d,#15213d00 28%), url("./assets/workwear.webp"); }
+  .hero-photo { aspect-ratio: auto; margin: 0 0 0 -26px; height: auto; background-image: linear-gradient(90deg,#15213d,#15213d00 28%), url("./assets/workwear-professionals.jpg?v=20261113-people"); }
   .catalogue-grid, .demo-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .section-heading { align-items: center; }
   .vat-tag { padding: 6px 9px; font-size: .73rem; }
