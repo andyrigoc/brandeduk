@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <script>location.replace('/bundle-configurator/' + location.search + location.hash);</script>
     <!-- Google Consent Mode v2 defaults (must stay before the Google tag) -->
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -287,34 +288,6 @@
   <script src="footer-dev/pc-footer.js?v=20261020-noclose" defer></script>
   <script src="/brandedukv15-child/assets/js/account.js?v=20261112-bundleauth"></script>
   <script src="/brandedukv15-child/assets/js/account-panel.js?v=20261112-bundleauth"></script>
-  <script>
-    (function () {
-      function signedIn() {
-        try {
-          if (window.BrandedAccountPanel && typeof window.BrandedAccountPanel.isSignedIn === 'function') {
-            return !!window.BrandedAccountPanel.isSignedIn();
-          }
-          if (window.BrandedAccount && typeof window.BrandedAccount.token === 'function') {
-            return !!window.BrandedAccount.token();
-          }
-          return !!(localStorage.getItem('authToken') || localStorage.getItem('coAuthToken'));
-        } catch (e) {
-          return false;
-        }
-      }
-      if (signedIn()) return;
-      try {
-        var url = new URL(window.location.href);
-        url.searchParams.delete('token');
-        url.searchParams.delete('error');
-        localStorage.setItem('authReturnTo', url.toString());
-      } catch (e) {}
-      var profile = (window.BrandedAccount && typeof window.BrandedAccount.pageHref === 'function')
-        ? window.BrandedAccount.pageHref('profile')
-        : ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? '/profile.html' : '/profile');
-      window.location.replace(profile);
-    })();
-  </script>
 </head>
 <body class="mobile-chrome mobile-chrome--nav bundle-page">
     <header class="site-header"></header>
@@ -541,7 +514,7 @@
     <script src="/brandedukv15-child/assets/js/storage/quote-storage.js?v=20261109-bundle"></script>
     <script src="/brandedukv15-child/assets/js/bundles/bundle-config.js?v=20261112-bundleline"></script>
     <script src="/brandedukv15-child/assets/js/bundles/bundle-discovery.js?v=20261112-backbtn"></script>
-    <script src="/brandedukv15-child/assets/js/bundles/bundle-builder.js?v=20261112-flowbtns"></script>
+    <script src="/brandedukv15-child/assets/js/bundles/bundle-builder.js?v=20261113-nologin"></script>
     <script src="/mobile/js/mobile.js?v=20261112-landing"></script>
     <script src="/mobile/js/header-menu.js?v=20261018-drawer"></script>
   <div data-pc-footer></div>

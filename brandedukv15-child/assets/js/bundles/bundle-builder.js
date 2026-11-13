@@ -1376,22 +1376,7 @@
     };
   }
 
-  function sessionSignedIn() {
-    try {
-      if (window.BrandedAccountPanel && typeof window.BrandedAccountPanel.isSignedIn === 'function') {
-        return !!window.BrandedAccountPanel.isSignedIn();
-      }
-      if (window.BrandedAccount && typeof window.BrandedAccount.token === 'function') {
-        return !!window.BrandedAccount.token();
-      }
-      return !!(localStorage.getItem('authToken') || localStorage.getItem('coAuthToken'));
-    } catch (error) {
-      return false;
-    }
-  }
-
   function mount() {
-    if (!sessionSignedIn()) return;
     root = document.getElementById('bundleBuilder');
     if (!root) return;
     bind();

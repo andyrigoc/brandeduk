@@ -79,7 +79,7 @@ function initMobileNavigation() {
 
     if (account) {
         const bundles = document.createElement('a');
-        bundles.href = '/bundles.html?force=mobile';
+        bundles.href = '/bundle-configurator/?force=mobile';
         bundles.className = 'nav-item nav-item--limited-bundles';
         bundles.setAttribute('aria-label', 'Limited Bundles');
 
@@ -94,7 +94,7 @@ function initMobileNavigation() {
         label.className = 'nav-item-label';
         label.textContent = 'Bundles';
         bundles.append(icon, label);
-        if (/\/bundles(?:\.html)?$/i.test(window.location.pathname)) {
+        if (/\/bundles(?:\.html)?$/i.test(window.location.pathname) || /\/bundle-configurator(?:\/|$)/i.test(window.location.pathname)) {
             bundles.classList.add('active');
             bundles.setAttribute('aria-current', 'page');
         }
