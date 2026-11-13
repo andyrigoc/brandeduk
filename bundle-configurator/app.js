@@ -117,42 +117,115 @@ function optionLabel(group, value) {
   return group.labels?.[value] || value;
 }
 
-const BUNDLE_CATEGORIES = {
-  all: { label: 'All' },
-  tshirts: { label: 'T-Shirts', types: ['t-shirts'] },
-  polo: { label: 'Polo Shirts', types: ['polos'] },
-  hoodies: { label: 'Hoodies & Sweatshirts', types: ['hoodies', 'sweatshirts'] },
-  jackets: { label: 'Jackets & Softshell', types: ['jackets'] },
-  hivis: { label: 'Hi-Vis', types: ['safety-vests'], feature: 'high-visibility' },
-  ppe: { label: 'PPE & Safety Wear', sector: 'safety' },
-  trousers: { label: 'Work Trousers', types: ['trousers'] },
-  fleeces: { label: 'Fleeces', types: ['fleece'] },
-  bags: { label: 'Bags', types: ['bags'] },
-  caps: { label: 'Caps', types: ['headwear'] },
-  beanies: { label: 'Headwear / Accessories', types: ['headwear'] },
-  aprons: { label: 'Work & Uniforms', types: ['aprons', 'workwear'] },
-  sustainable: { label: 'Sustainable / Recycled & Organic', feature: 'recycled' }
-};
-let activeCategory = 'all';
+// Search filters. Industry uses the stored sector tag. Team size is how many
+// people the fixed garment lines already cover (their greatest common divisor),
+// and falls back to piece count when a deal has no fixed lines. It never
+// rewrites those quantities. Purpose is not stored, so it is inferred from
+// that kit size and the product types. Budget uses the real offer price.
+const appliedBundleFilters = {category: '', team: '', purpose: '', budget: ''};
+let announceBundleFilters = false;
 
-function dealMatchesCategory(deal) {
-  const category = BUNDLE_CATEGORIES[activeCategory];
-  if (!category || activeCategory === 'all') return true;
+function gcd(left, right) {
+  let a = Math.abs(left);
+  let b = Math.abs(right);
+  while (b) {
+    const next = a % b;
+    a = b;
+    b = next;
+  }
+  return a;
+}
+
+function kitPeople(deal) {
+  const quantities = Object.values(deal.fixed || {}).map(Number).filter(count => count > 0);
+  if (quantities.length) return quantities.reduce((total, count) => gcd(total, count));
+  return Number(deal.qty) || 0;
+}
+
+function categoryMatches(deal, category) {
+  if (!category) return true;
+  return facetValues(deal, 'sector').includes(category);
+}
+
+function teamMatches(deal, team) {
+  if (!team) return true;
+  const people = kitPeople(deal);
+  if (!people) return false;
+  if (team === '50+') return people >= 50;
+  return people === Number(team);
+}
+
+function purposeMatches(deal, purpose) {
+  if (!purpose) return true;
+  const people = kitPeople(deal);
   const types = facetValues(deal, 'productType');
-  if (category.types && types.some(type => category.types.includes(type))) return true;
-  if (category.feature && facetValues(deal, 'feature').includes(category.feature)) return true;
-  if (category.sector && facetValues(deal, 'sector').includes(category.sector)) return true;
+  const lines = Object.values(deal.fixed || {}).filter(count => Number(count) > 0).length;
+  if (purpose === 'full-team') return people >= 8;
+  if (purpose === 'new-starter') return people >= 1 && people <= 3;
+  if (purpose === 'replacements') return types.length === 1;
+  if (purpose === 'complete-kits') return lines >= 2;
   return false;
+}
+
+function budgetMatches(deal, band) {
+  if (!band) return true;
+  if (!deal.price) return false;
+  const pounds = deal.price / 100;
+  if (band === 'under-100') return pounds < 100;
+  if (band === '100-250') return pounds >= 100 && pounds <= 250;
+  if (band === '250-500') return pounds >= 250 && pounds <= 500;
+  if (band === '500-1000') return pounds >= 500 && pounds <= 1000;
+  if (band === '1000-plus') return pounds >= 1000;
+  return false;
+}
+
+function dealMatchesBundleFilters(deal) {
+  return categoryMatches(deal, appliedBundleFilters.category)
+    && teamMatches(deal, appliedBundleFilters.team)
+    && purposeMatches(deal, appliedBundleFilters.purpose)
+    && budgetMatches(deal, appliedBundleFilters.budget);
+}
+
+function filterChoiceLabel(id) {
+  const field = $(id);
+  if (!field || !field.value) return '';
+  return field.options[field.selectedIndex]?.textContent.trim() || '';
+}
+
+function renderFilterSummary(count) {
+  const line = $('bundle-result-line');
+  if (!line) return;
+  const choices = [
+    filterChoiceLabel('bundle-filter-category'),
+    filterChoiceLabel('bundle-filter-team'),
+    filterChoiceLabel('bundle-filter-purpose'),
+    filterChoiceLabel('bundle-filter-budget')
+  ].filter(Boolean);
+  const summary = `${pluralBundles(count)}${choices.length ? ` · ${choices.map(escape).join(' · ')}` : ''}`;
+  line.innerHTML = choices.length
+    ? `${summary} <button type="button" data-clear-bundle-filters>Clear filters</button>`
+    : summary;
+}
+
+function emptyFilterMessage() {
+  const category = filterChoiceLabel('bundle-filter-category');
+  if (appliedBundleFilters.category && !deals.some(deal => categoryMatches(deal, appliedBundleFilters.category))) {
+    return `No bundles are tagged for ${category}.`;
+  }
+  if (appliedBundleFilters.team && !appliedBundleFilters.category && !appliedBundleFilters.purpose && !appliedBundleFilters.budget) {
+    return `No bundles have a fixed composition for ${filterChoiceLabel('bundle-filter-team')}.`;
+  }
+  return 'No bundles match these filters.';
 }
 
 function renderShop() {
   deals.forEach(deal => offerById.set(deal.id, deal));
-  const shown = deals.filter(dealMatchesCategory);
-  const count = $('bundle-count');
-  if (count) count.textContent = `(${shown.length})`;
-  const label = $('activeCatLabel');
-  if (label) label.textContent = BUNDLE_CATEGORIES[activeCategory].label;
-  $('catalogue-grid').innerHTML = shown.map(deal => {
+  const shown = deals.filter(dealMatchesBundleFilters);
+  renderFilterSummary(shown.length);
+  if (announceBundleFilters && announcement) announcement.textContent = pluralBundles(shown.length);
+  const demoSection = document.querySelector('.demos');
+  if (demoSection) demoSection.hidden = Object.values(appliedBundleFilters).some(Boolean);
+  $('catalogue-grid').innerHTML = shown.length ? shown.map(deal => {
     const bundle = asBundle(deal);
     const items = Object.entries(bundle.fixed);
     const build = canBuild(deal);
@@ -174,7 +247,7 @@ function renderShop() {
         </div>
       </div>
     </article>`;
-  }).join('');
+  }).join('') : `<p class="bundle-empty">${escape(emptyFilterMessage())}</p>`;
 
   $('demo-grid').innerHTML = demos.map(bundle => `<article class="demo-card">
     <span class="demo-icon">${icon(bundle.group.type === 'exclusive' ? 'cap' : 'layers')}</span>
@@ -674,24 +747,95 @@ scroll.addEventListener('drop', event => {
   upload.classList.remove('dragging');
   void chooseArtwork(event.dataTransfer.files);
 });
-document.addEventListener('click', event => {
-  const menuButton = event.target.closest('#categoryHamburgerBtn');
-  if (menuButton) {
-    const dropdown = $('categoriesDropdown');
-    const open = !dropdown.classList.contains('open');
-    dropdown.classList.toggle('open', open);
-    menuButton.classList.toggle('open', open);
-    menuButton.setAttribute('aria-expanded', open ? 'true' : 'false');
-    return;
-  }
-  const card = event.target.closest('.category-filter-card');
-  if (!card) return;
-  activeCategory = card.dataset.category;
-  document.querySelectorAll('.category-filter-card').forEach(item => item.classList.toggle('active', item === card));
-  $('categoriesDropdown').classList.remove('open');
-  $('categoryHamburgerBtn').classList.remove('open');
-  $('categoryHamburgerBtn').setAttribute('aria-expanded', 'false');
+const bundleFilterSheet = $('bundleFilterSheet');
+const bundleFiltersNav = $('bundleFiltersNav');
+
+function syncBundleFilterForm() {
+  $('bundle-filter-category').value = appliedBundleFilters.category;
+  $('bundle-filter-team').value = appliedBundleFilters.team;
+  $('bundle-filter-purpose').value = appliedBundleFilters.purpose;
+  $('bundle-filter-budget').value = appliedBundleFilters.budget;
+}
+
+function readBundleFilterForm() {
+  appliedBundleFilters.category = $('bundle-filter-category').value;
+  appliedBundleFilters.team = $('bundle-filter-team').value;
+  appliedBundleFilters.purpose = $('bundle-filter-purpose').value;
+  appliedBundleFilters.budget = $('bundle-filter-budget').value;
+}
+
+function bundleFiltersOpen() {
+  return bundleFilterSheet && !bundleFilterSheet.hidden;
+}
+
+function openBundleFilters() {
+  if (!bundleFilterSheet || bundleFiltersOpen()) return;
+  syncBundleFilterForm();
+  bundleFilterSheet.hidden = false;
+  bundleFiltersNav?.setAttribute('aria-expanded', 'true');
+  document.body.classList.add('bundle-filters-open');
+  $('bundle-filter-category')?.focus();
+}
+
+function closeBundleFilters(restore = true) {
+  if (!bundleFilterSheet || !bundleFiltersOpen()) return;
+  if (restore) syncBundleFilterForm();
+  bundleFilterSheet.hidden = true;
+  bundleFiltersNav?.setAttribute('aria-expanded', 'false');
+  document.body.classList.remove('bundle-filters-open');
+  if (restore) bundleFiltersNav?.focus();
+}
+
+function applyBundleFilters() {
+  readBundleFilterForm();
+  announceBundleFilters = true;
   renderShop();
+  closeBundleFilters(false);
+  $('bundles')?.scrollIntoView({behavior: 'smooth', block: 'start'});
+}
+
+function clearBundleFilters() {
+  appliedBundleFilters.category = '';
+  appliedBundleFilters.team = '';
+  appliedBundleFilters.purpose = '';
+  appliedBundleFilters.budget = '';
+  syncBundleFilterForm();
+  announceBundleFilters = true;
+  renderShop();
+}
+
+bundleFiltersNav?.addEventListener('click', () => {
+  if (bundleFiltersOpen()) closeBundleFilters();
+  else openBundleFilters();
+});
+$('bundleFilterForm')?.addEventListener('submit', event => {
+  event.preventDefault();
+  applyBundleFilters();
+});
+bundleFilterSheet?.addEventListener('click', event => {
+  if (event.target.closest('[data-bundle-filter-close]')) closeBundleFilters();
+});
+bundleFilterSheet?.addEventListener('keydown', event => {
+  if (event.key !== 'Tab' || !bundleFiltersOpen()) return;
+  const items = [...bundleFilterSheet.querySelectorAll('button, select')].filter(item => item.tabIndex !== -1 && !item.disabled);
+  const first = items[0];
+  const last = items[items.length - 1];
+  if (!first || !last) return;
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    first.focus();
+  }
+});
+$('bundle-result-line')?.addEventListener('click', event => {
+  if (event.target.closest('[data-clear-bundle-filters]')) clearBundleFilters();
+});
+document.addEventListener('keydown', event => {
+  if (event.key !== 'Escape' || !bundleFiltersOpen()) return;
+  event.preventDefault();
+  closeBundleFilters();
 });
 renderShop();
 void refreshBasket();
