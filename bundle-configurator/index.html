@@ -8,14 +8,16 @@
   <meta name="description" content="Configure Branded UK workwear bundles with your team’s colours, sizes and logo.">
   <title>Workwear Bundles | Branded UK</title>
   <link rel="icon" href="./assets/branded-logo.webp" type="image/webp">
-  <link rel="stylesheet" href="./styles.css?v=20261114-active-chips">
+  <link rel="stylesheet" href="./styles.css?v=20261114-itemspill">
   <link rel="stylesheet" href="/mobile/css/mobile-chrome-base.css?v=20261113-bundles" media="(max-width: 699px)">
   <link rel="stylesheet" href="/mobile/css/header-v2.css?v=20261113-bundles">
   <link rel="stylesheet" href="/mobile/css/search-suggestions.css?v=20261020a">
   <link rel="stylesheet" href="/mobile/css/bottom-nav.css?v=20261113-bundles">
   <link rel="stylesheet" href="/mobile/css/chat-nav-icon.css?v=20261020b">
+  <link rel="stylesheet" href="/mobile/css/bundles-flip.css?v=20261114-noblur" media="(max-width: 699px)">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <script type="module" src="./app.js?v=20261114-radial-rings"></script>
+  <script src="/brandedukv15-child/assets/js/api-config.js?v=20261114-blackthumbs"></script>
+  <script type="module" src="./app.js?v=20261114-noblur"></script>
 </head>
 <body>
   <div class="header-with-promo mobile-chrome-header">
@@ -87,11 +89,22 @@
       <div class="section-heading">
         <div>
           <h2 id="catalogue-title">Shop the bundles</h2>
-          <p>Every bundle shows our final price, ex VAT.</p>
+          <p>Every bundle shows our final price, <span class="vat-suffix">ex VAT</span>.</p>
         </div>
-        <span class="vat-tag">Prices ex VAT</span>
+        <span class="vat-tag">Prices <span class="vat-suffix">ex VAT</span></span>
       </div>
       <div class="bundle-result-line" id="bundle-result-line"></div>
+      <div class="bundle-sort-row" id="bundleSortRow">
+        <label class="bundle-sort-chip" for="bundleSort">
+          <span class="bundle-sort-chip__label">Order by</span>
+          <select id="bundleSort" class="bundle-sort-select" aria-label="Order bundles by">
+            <option value="default">Featured</option>
+            <option value="team">Team quantity</option>
+            <option value="cost">Cost</option>
+            <option value="revenue">Revenue</option>
+          </select>
+        </label>
+      </div>
       <div class="catalogue-grid" id="catalogue-grid"></div>
     </section>
     <section class="demos" id="choice-demos" aria-labelledby="demo-title">
@@ -404,5 +417,6 @@
   <script src="/mobile/js/mobile.js?v=20261113-bundles"></script>
   <script src="/mobile/js/header-menu.js?v=20261018-drawer"></script>
   <script src="/mobile/js/bottom-nav.js?v=20261016-newbar"></script>
+  <script src="/mobile/js/bundles-flip.js?v=20261114-noblur"></script>
 </body>
 </html>

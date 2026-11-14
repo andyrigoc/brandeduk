@@ -30,7 +30,15 @@ const nextLabels = ['Continue to groups', 'Choose colours & sizes', 'Continue to
 const escape = value => String(value).replace(/[&<>"']/g, character => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
 })[character]);
-const price = pence => `<strong>${formatPrice(pence)}</strong> <small>ex VAT</small>`;
+const catalogueVatOn = () => (typeof window.isVatOn === 'function' ? window.isVatOn() : localStorage.getItem('brandeduk-vat-mode') === 'on');
+const catalogueVatLabel = () => (typeof window.vatSuffix === 'function' ? window.vatSuffix() : (catalogueVatOn() ? 'inc VAT' : 'ex VAT'));
+const catalogueMoney = pounds => (typeof window.formatCurrency === 'function'
+  ? window.formatCurrency(pounds)
+  : new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(catalogueVatOn() ? pounds * 1.2 : pounds));
+const price = pence => {
+  const pounds = (Number(pence) || 0) / 100;
+  return `<strong data-base-price="${pounds}">${catalogueMoney(pounds)}</strong> <small class="vat-suffix">${catalogueVatLabel()}</small>`;
+};
 const title = (heading, copy) => `<div class="step-heading"><h3 tabindex="-1">${heading}</h3>${copy ? `<p>${copy}</p>` : ''}</div>`;
 const thumb = (code, cls = '') => code === 'BC025'
   ? `<span class="cap-thumb ${cls}">${icon('cap')}</span>`
@@ -38,6 +46,88 @@ const thumb = (code, cls = '') => code === 'BC025'
 const isInclusion = bundle => bundle.methods.length > 1 ? 'One logo included' : `${bundle.methods[0] === 'Print' ? 'Printing' : 'Embroidery'} included`;
 const pluralBundles = n => `${n} ${n === 1 ? 'bundle' : 'bundles'}`;
 const announcement = $('announcement');
+
+/** Black catalogue thumbs for closed flip cards — one image per SKU, never composites. */
+const blackImageByCode = new Map(); // code -> url | null
+const blackImagePending = new Map();
+const blackImageSkipped = new Set();
+const brandedApiBase = () => {
+  const base = typeof window.resolveBrandedApiBase === 'function'
+    ? window.resolveBrandedApiBase()
+    : (window.API_BASE_URL || 'https://api.brandeduk.com');
+  return String(base || 'https://api.brandeduk.com').replace(/\/+$/, '');
+};
+const slugifyColourName = value => String(value || '')
+  .trim()
+  .toLowerCase()
+  .replace(/&/g, ' and ')
+  .replace(/[^a-z0-9\s-]/g, '')
+  .replace(/\s+/g, '-')
+  .replace(/-+/g, '-')
+  .replace(/^-|-$/g, '');
+const pickExactBlackImage = product => {
+  const colours = Array.isArray(product?.colors) ? product.colors : [];
+  const black = colours.find(colour => slugifyColourName(colour?.name) === 'black');
+  if (!black) return null;
+  return black.main || black.thumb || black.image || black.image_url || null;
+};
+const bundleSkuCodes = deal => {
+  const fixed = Object.keys(deal?.fixed || {});
+  if (fixed.length) return fixed;
+  return Array.isArray(deal?.codes) ? deal.codes.slice() : [];
+};
+async function fetchBlackImageForCode(code) {
+  const key = String(code || '').trim().toUpperCase();
+  if (!key) return null;
+  if (blackImageByCode.has(key)) return blackImageByCode.get(key);
+  if (blackImagePending.has(key)) return blackImagePending.get(key);
+  const job = (async () => {
+    try {
+      const response = await fetch(`${brandedApiBase()}/api/products/${encodeURIComponent(key)}`);
+      if (!response.ok) {
+        blackImageByCode.set(key, null);
+        blackImageSkipped.add(key);
+        return null;
+      }
+      const product = await response.json();
+      const url = pickExactBlackImage(product);
+      blackImageByCode.set(key, url || null);
+      if (!url) blackImageSkipped.add(key);
+      return url || null;
+    } catch (err) {
+      blackImageByCode.set(key, null);
+      blackImageSkipped.add(key);
+      return null;
+    } finally {
+      blackImagePending.delete(key);
+    }
+  })();
+  blackImagePending.set(key, job);
+  return job;
+}
+function closedSkuThumbsHtml(deal) {
+  const codes = bundleSkuCodes(deal);
+  const figures = codes.map(code => {
+    const url = blackImageByCode.get(String(code).toUpperCase());
+    if (!url) return '';
+    return `<figure class="card__sku-thumb"><img src="${escape(url)}" alt="" width="72" height="72" loading="lazy" decoding="async"><figcaption>${escape(code)}</figcaption></figure>`;
+  }).filter(Boolean);
+  return figures.length ? `<div class="card__face__thumbs" data-sku-thumbs="1">${figures.join('')}</div>` : '';
+}
+async function hydrateBlackThumbs() {
+  const codes = [...new Set(deals.flatMap(deal => bundleSkuCodes(deal).map(code => String(code).toUpperCase())))];
+  const chunk = 8;
+  for (let i = 0; i < codes.length; i += chunk) {
+    await Promise.all(codes.slice(i, i + chunk).map(code => fetchBlackImageForCode(code)));
+  }
+  window.__bfBlackThumbStats = {
+    codes: codes.length,
+    withBlack: codes.filter(code => blackImageByCode.get(code)).length,
+    skipped: [...blackImageSkipped]
+  };
+  renderShop();
+  refreshCatalogueVatLabels();
+}
 
 let draft;
 let lines = [];
@@ -448,42 +538,166 @@ function emptyFilterMessage() {
   return 'No bundles match these filters.';
 }
 
+let catalogueSort = 'default';
+
+function accentTheme(deal, index) {
+  if (hasSector(deal, 'construction') || hasFeature(deal, 'high-visibility') || hasType(deal, 'safety-vests')) return 'construction';
+  if (hasSector(deal, 'hospitality') || hasType(deal, 'aprons')) return 'hospitality';
+  if (hasSector(deal, 'cleaning')) return 'cleaning';
+  if (hasSector(deal, 'logistics') || hasType(deal, 'jackets')) return 'logistics';
+  return ['construction', 'hospitality', 'cleaning', 'logistics'][index % 4];
+}
+
+function sortCatalogue(list) {
+  const sorted = list.slice();
+  if (catalogueSort === 'team') sorted.sort((a, b) => kitPeople(b) - kitPeople(a) || (Number(b.qty) || 0) - (Number(a.qty) || 0));
+  else if (catalogueSort === 'cost') sorted.sort((a, b) => (Number(a.price) || 0) - (Number(b.price) || 0));
+  else if (catalogueSort === 'revenue') sorted.sort((a, b) => (Number(b.price) || 0) - (Number(a.price) || 0));
+  return sorted;
+}
+
+function flipCardMarkup(deal, index) {
+  const bundle = asBundle(deal);
+  const items = Object.entries(bundle.fixed);
+  const build = canBuild(deal);
+  const qty = deal.qty || pieceCount(bundle) || 0;
+  const team = kitPeople(deal) || qty;
+  const theme = accentTheme(deal, index);
+  const shortTitle = bundle.title.length > 42 ? `${bundle.title.slice(0, 40)}…` : bundle.title;
+  const closedThumbs = closedSkuThumbsHtml(deal);
+  const openThumbs = codes => {
+    const figs = (codes || []).map(code => {
+      const url = blackImageByCode.get(String(code).toUpperCase());
+      if (!url) return '';
+      return `<img src="${escape(url)}" alt="" width="48" height="48" loading="lazy" decoding="async">`;
+    }).filter(Boolean).join('');
+    return figs ? `<div class="card__stats-panel__thumbs">${figs}</div>` : '';
+  };
+  const skuCodes = bundleSkuCodes(deal);
+  const includedInline = items.length
+    ? items.map(([code, n]) => {
+        const label = products[code] ? products[code].label : code;
+        const blackUrl = blackImageByCode.get(String(code).toUpperCase());
+        const img = blackUrl ? `<img src="${escape(blackUrl)}" alt="">` : '';
+        return `<li>${img}<span>${escape(label)} × ${n}</span></li>`;
+      }).join('')
+    : `<li><span>${escape((deal.codes || []).join(', ') || 'See bundle details')}</span></li>`;
+  const ctaLabel = build ? 'Build Your Bundle' : 'Not available';
+  const ctaDisabled = build ? '' : 'disabled';
+
+  return `<section class="card theme-${theme}${build ? '' : ' is-blocked'}" data-bundle-id="${escape(deal.id)}" data-can-build="${build ? '1' : '0'}" aria-expanded="false">
+    <div class="card__map">
+      <div class="card__map__inner">
+        <p class="card__map__title">${escape(bundle.title)}</p>
+        <p class="card__map__meta">${deal.price ? price(deal.price) : ''} · Team of ${team} · ${qty} items</p>
+        <ul class="card__map__list">${includedInline}</ul>
+      </div>
+    </div>
+    <section class="card__part card__part-1">
+      <div class="card__part__inner">
+        <div class="card__header__close-btn" role="button" tabindex="0" aria-label="Close bundle details">&times;</div>
+        <header class="card__header">
+          <span class="card__header__id">${escape(bundle.title)}</span>
+          <span class="card__header__price">${deal.price ? price(deal.price) : ''}</span>
+        </header>
+        <div class="card__stats-panel">
+          ${openThumbs(skuCodes)}
+          <div>
+            <p class="card__text__heading">Team</p>
+            <p class="card__text__middle">Team of ${team}</p>
+            <p class="card__text__heading" style="margin-top:6px">Items</p>
+            <p class="card__text__middle">${qty} items</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="card__part card__part-2">
+      <div class="card__part__side m--back">
+        <div class="card__part__inner card__face">
+          <div class="card__face__colored-side" aria-hidden="true"></div>
+          <div class="card__face__meta">
+            <h3 class="card__face__price">${deal.price ? price(deal.price) : ''}</h3>
+            <span class="card__face__team">Team of ${team}</span>
+            <span class="card__face__items">${qty} items</span>
+          </div>
+          <div class="card__face__preview">
+            ${closedThumbs}
+            <div class="card__face__title-row">
+              <h3 class="card__face__title">${escape(shortTitle)}</h3>
+              <span class="card__face__chev" aria-hidden="true">›</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card__part__side m--front">
+        <div class="card__sender">
+          <h4 class="card__sender__heading">What's included</h4>
+          <p class="card__sender__name">${escape(bundle.title)}</p>
+          <ul class="card__included-inline">${includedInline}</ul>
+        </div>
+        <div class="card__from-to">
+          <div class="card__from-to__inner">
+            <div class="card__text card__text--left">
+              <p class="card__text__heading">Team</p>
+              <p class="card__text__middle">Team of ${team}</p>
+            </div>
+            <div class="card__text card__text--right">
+              <p class="card__text__heading">Items</p>
+              <p class="card__text__middle">${qty} items</p>
+            </div>
+          </div>
+        </div>
+        <section class="card__part card__part-3">
+          <div class="card__part__side m--back"></div>
+          <div class="card__part__side m--front">
+            <div class="card__timings">
+              <div class="card__timings__inner">
+                <div class="card__text card__text--left">
+                  <p class="card__text__heading">Bundle price</p>
+                  <p class="card__text__middle">${deal.price ? price(deal.price) : ''}</p>
+                </div>
+                <div class="card__text card__text--right">
+                  <p class="card__text__heading">Logo</p>
+                  <p class="card__text__middle">Included</p>
+                </div>
+              </div>
+            </div>
+            <div class="card__timer" aria-hidden="true"></div>
+            <section class="card__part card__part-4">
+              <div class="card__part__side m--back"></div>
+              <div class="card__part__side m--front">
+                <button type="button" class="card__request-btn" data-id="${escape(deal.id)}" ${ctaDisabled}>
+                  <span class="card__request-btn__text-1">${ctaLabel}</span>
+                  <span class="card__request-btn__text-2">Start</span>
+                </button>
+                <p class="card__counter">${qty} garments · Team of ${team}</p>
+              </div>
+            </section>
+          </div>
+        </section>
+      </div>
+    </section>
+  </section>`;
+}
+
 function renderShop() {
   deals.forEach(deal => offerById.set(deal.id, deal));
-  const shown = deals.filter(deal => dealMatchesBundleFilters(deal));
+  const shown = sortCatalogue(deals.filter(deal => dealMatchesBundleFilters(deal)));
   renderFilterSummary(shown.length);
   if (announceBundleFilters && announcement) announcement.textContent = pluralBundles(shown.length);
   const demoSection = document.querySelector('.demos');
   if (demoSection) demoSection.hidden = chosenRadialFilters().length > 0;
-  $('catalogue-grid').innerHTML = shown.length ? shown.map(deal => {
-    const bundle = asBundle(deal);
-    const items = Object.entries(bundle.fixed);
-    const build = canBuild(deal);
-    const composition = items.length
-      ? items.map(([code, qty]) => `${qty} ${products[code] ? products[code].label.toLowerCase() : code}`).join(' · ')
-      : (deal.codes || []).join(', ');
-    return `<article class="bundle-card${build ? '' : ' is-blocked'}">
-      <div class="card-art art-${bundle.art}">
-        <span class="quantity-tag">${deal.qty || pieceCount(bundle)} items</span>
-        <div class="product-visual products-${Math.min(items.length, 4) || 1}">${items.map(([code]) => products[code] ? thumb(code) : `<span class="code-chip">${escape(code)}</span>`).join('')}</div>
-      </div>
-      <div class="card-body">
-        <h3>${escape(bundle.title)}</h3>
-        ${composition ? `<p class="composition">${escape(composition)}</p>` : ''}
-        ${build ? `<p class="inclusion">${icon('tick')} ${isInclusion(bundle)}</p>` : ''}
-        <div class="card-footer">
-          <div class="card-price">${deal.price ? price(deal.price) : ''}</div>
-          <button type="button" class="button primary bundle-view" data-action="open" data-id="${deal.id}" ${build ? '' : 'disabled'}>${build ? `View Bundle ${icon('right')}` : 'Not available'}</button>
-        </div>
-      </div>
-    </article>`;
-  }).join('') : `<p class="bundle-empty">${escape(emptyFilterMessage())}</p>`;
+  $('catalogue-grid').innerHTML = shown.length
+    ? shown.map((deal, index) => flipCardMarkup(deal, index)).join('')
+    : `<p class="bundle-empty">${escape(emptyFilterMessage())}</p>`;
 
   $('demo-grid').innerHTML = demos.map(bundle => `<article class="demo-card">
     <span class="demo-icon">${icon(bundle.group.type === 'exclusive' ? 'cap' : 'layers')}</span>
     <div><p class="card-category">${bundle.tag}</p><h3>${bundle.title}</h3></div>
     <button type="button" class="button secondary" data-action="open" data-id="${bundle.id}" aria-label="Try ${bundle.title}">Try demo ${icon('right')}</button>
   </article>`).join('');
+
+  if (window.BundlesFlip?.refresh) window.BundlesFlip.refresh();
 }
 
 function openBuilder(bundle, source, saved) {
@@ -1377,5 +1591,32 @@ document.addEventListener('keydown', event => {
     toggleRadial(false);
   }
 });
+$('bundleSort')?.addEventListener('change', event => {
+  catalogueSort = event.target.value || 'default';
+  renderShop();
+});
+
+function refreshCatalogueVatLabels() {
+  document.querySelectorAll('.vat-suffix').forEach(el => {
+    el.textContent = catalogueVatLabel();
+  });
+  document.querySelectorAll('[data-base-price]').forEach(el => {
+    const pounds = parseFloat(el.dataset.basePrice);
+    if (!Number.isFinite(pounds)) return;
+    el.textContent = catalogueMoney(pounds);
+  });
+}
+
+window.addEventListener('vatToggleChanged', refreshCatalogueVatLabels);
+
+window.BrandedOpenBundle = (id, source) => {
+  const offer = findOffer(id) || findBundle(id);
+  if (!offer) return false;
+  openBuilder(offer, source || undefined);
+  return true;
+};
+
 renderShop();
+refreshCatalogueVatLabels();
+void hydrateBlackThumbs();
 void refreshBasket();
