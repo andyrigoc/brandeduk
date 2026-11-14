@@ -8,14 +8,14 @@
   <meta name="description" content="Configure Branded UK workwear bundles with your team’s colours, sizes and logo.">
   <title>Workwear Bundles | Branded UK</title>
   <link rel="icon" href="./assets/branded-logo.webp" type="image/webp">
-  <link rel="stylesheet" href="./styles.css?v=20261113-radial-close5">
+  <link rel="stylesheet" href="./styles.css?v=20261114-active-chips">
   <link rel="stylesheet" href="/mobile/css/mobile-chrome-base.css?v=20261113-bundles" media="(max-width: 699px)">
   <link rel="stylesheet" href="/mobile/css/header-v2.css?v=20261113-bundles">
   <link rel="stylesheet" href="/mobile/css/search-suggestions.css?v=20261020a">
   <link rel="stylesheet" href="/mobile/css/bottom-nav.css?v=20261113-bundles">
   <link rel="stylesheet" href="/mobile/css/chat-nav-icon.css?v=20261020b">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <script type="module" src="./app.js?v=20261113-radial-close4"></script>
+  <script type="module" src="./app.js?v=20261114-radial-rings"></script>
 </head>
 <body>
   <div class="header-with-promo mobile-chrome-header">
@@ -91,7 +91,7 @@
         </div>
         <span class="vat-tag">Prices ex VAT</span>
       </div>
-      <p class="bundle-result-line" id="bundle-result-line"></p>
+      <div class="bundle-result-line" id="bundle-result-line"></div>
       <div class="catalogue-grid" id="catalogue-grid"></div>
     </section>
     <section class="demos" id="choice-demos" aria-labelledby="demo-title">
@@ -335,18 +335,32 @@
   </div>
   <div class="bundle-radial-dim" id="bundleRadialDim" aria-hidden="true"></div>
   <div class="bundle-radial-sheet-back" id="bundleRadialSheetBack" aria-hidden="true"></div>
-  <section class="bundle-radial-sheet" id="bundleRadialSheet" role="dialog" aria-modal="true" aria-labelledby="bundleRadialSheetTitle" aria-hidden="true">
-    <div class="bundle-radial-handle"></div>
+  <section class="bundle-radial-sheet" id="bundleRadialSheet" role="dialog" aria-modal="true" aria-labelledby="bundleRadialSheetTitle" aria-describedby="bundleRadialSheetDesc" aria-hidden="true">
     <div class="bundle-radial-sheet-head">
-      <h2 id="bundleRadialSheetTitle">Choose filter</h2>
+      <span class="bundle-radial-sheet-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="4" y1="6" x2="20" y2="6"></line>
+          <line x1="4" y1="12" x2="20" y2="12"></line>
+          <line x1="4" y1="18" x2="20" y2="18"></line>
+          <circle cx="8" cy="6" r="2.15" fill="currentColor" stroke="none"></circle>
+          <circle cx="15" cy="12" r="2.15" fill="currentColor" stroke="none"></circle>
+          <circle cx="10" cy="18" r="2.15" fill="currentColor" stroke="none"></circle>
+        </svg>
+      </span>
+      <div class="bundle-radial-sheet-copy">
+        <h2 id="bundleRadialSheetTitle">Filter Bundles</h2>
+        <p class="bundle-radial-sheet-desc" id="bundleRadialSheetDesc">Choose one or more options to find the right bundle.</p>
+      </div>
       <button class="bundle-radial-close" type="button" id="bundleRadialClose" aria-label="Close filter">&times;</button>
     </div>
-    <p class="bundle-radial-sheet-desc" id="bundleRadialSheetDesc"></p>
-    <div class="bundle-radial-options" id="bundleRadialOptions"></div>
-    <p class="bundle-radial-status" id="bundleRadialStatus"></p>
+    <div class="bundle-filter-match" id="bundleFilterMatch"></div>
+    <div class="bundle-radial-sheet-body" id="bundleRadialSheetBody"></div>
     <div class="bundle-radial-sheet-foot">
-      <button class="bundle-radial-secondary" id="bundleRadialClear" type="button">Clear</button>
-      <button class="bundle-radial-primary" id="bundleRadialApply" type="button">Show Bundles</button>
+      <button class="bundle-radial-clear" id="bundleRadialClear" type="button">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V5h6v2"/><path d="M8 7l1 13h6l1-13"/><path d="M10 11v6M14 11v6"/></svg>
+        Clear filters
+      </button>
+      <button class="bundle-radial-primary" id="bundleRadialApply" type="button">Apply filters</button>
     </div>
   </section>
   <div class="bundle-radial-anchor" id="bundleRadialAnchor">

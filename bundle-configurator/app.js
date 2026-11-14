@@ -117,40 +117,82 @@ function optionLabel(group, value) {
   return group.labels?.[value] || value;
 }
 
-// Search filters from the radial demo. Industry uses the stored sector tag.
-// Team size is how many people the fixed garment lines already cover (their
-// greatest common divisor), and falls back to piece count when a deal has no
-// fixed lines. It never rewrites those quantities. Purpose, season, clothing
-// and branding are not all stored, so they are read from the sector, product
-// type, feature, title and piece count that already exist. Budget uses the
-// real offer price.
-const INDUSTRY_SECTOR = {
-  Construction: 'construction',
-  Cleaning: 'cleaning',
-  Hospitality: 'hospitality',
-  Corporate: 'corporate',
-  'Sport & Fitness': 'sport',
-  Education: 'education',
-  Warehouse: 'logistics',
-  Healthcare: 'healthcare',
-  'Film & Media': 'film'
+// Radial filter windows. Team size is how many people the fixed garment lines
+// already cover (their greatest common divisor), falling back to piece count.
+// It never rewrites those quantities. Budget per person is the stored offer
+// price divided by that people count. Industry, season and branding are only
+// partly stored, so unmatched choices use the closest sector, product type,
+// feature or title that already exists.
+const optIcon = (cls, body) => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${body}</svg>`;
+const SEASON_ICONS = {
+  Spring: optIcon('season-spring', '<path d="M12 20.5V11"/><path d="M12 13.2c-2.7-.7-4.6-2.8-5.2-6.2 3.2.6 5.2 2.6 5.2 6.2z"/><path d="M12 11.2c2.4-.4 4.4-2.2 5.2-5.4-2.8.5-4.6 2.4-5.2 5.4z"/>'),
+  Summer: optIcon('season-summer', '<circle cx="12" cy="12" r="3.1" fill="currentColor" stroke="none"/><path d="M12 3.2v2.3M12 18.5v2.3M3.2 12h2.3M18.5 12h2.3M5.8 5.8l1.6 1.6M16.6 16.6l1.6 1.6M18.2 5.8l-1.6 1.6M7.4 16.6 5.8 18.2"/>'),
+  Autumn: optIcon('season-autumn', '<path d="M12 20.5c.2-4.2 2.2-6.2 2.2-9.2a4.6 4.6 0 0 0-4.8-4.4c.4 3.6 1.5 5.6 2.6 7.4"/><path d="M12 13.4c2.2-.1 3.8-1.2 5.2-3"/>'),
+  Winter: optIcon('season-winter', '<path d="M12 3.2v17.6M12 12 5.4 7.6M12 12l6.6-4.4M12 12 5.4 16.4M12 12l6.6 4.4M5.4 7.6 7.1 6.4M5.4 7.6l.6 2M18.6 7.6 16.9 6.4M18.6 7.6l-.6 2M5.4 16.4l.6-2M5.4 16.4 7.1 17.6M18.6 16.4l-.6-2M18.6 16.4 16.9 17.6"/>')
+};
+const CLOTHING_ICONS = {
+  'T-Shirts': optIcon('', '<path d="M8.2 6.4 4.6 8.6 6.2 11.4 8.2 10.4V18h7.6v-7.6l2 .1 1.6-2.8-3.6-2.2"/><path d="M9.6 6.5c.5 1.3 1.2 2 2.4 2s1.9-.7 2.4-2"/>'),
+  Polos: optIcon('', '<path d="M8.2 6.4 4.6 8.6 6.2 11.4 8.2 10.4V18h7.6v-7.6l2 .1 1.6-2.8-3.6-2.2"/><path d="M10 6.4c.3 1.6.9 2.5 2 2.5s1.7-.9 2-2.5"/><path d="M12 8.9v3.2"/>'),
+  Hoodies: optIcon('', '<path d="M8 8.2 5 10.2v2.6h2.1V19h9.8v-6.2H19v-2.6l-3-2"/><path d="M9.1 8.2c.2-2 1.4-3.2 2.9-3.2s2.7 1.2 2.9 3.2c-.7 1.3-1.6 1.9-2.9 1.9s-2.2-.6-2.9-1.9z"/>'),
+  Sweats: optIcon('', '<path d="M8.2 6.6 4.8 8.8 6.4 11.4 8.2 10.6V18h7.6v-7.4l1.8.8 1.6-2.6-3.4-2.2"/><path d="M9.8 6.6c.4 1.2 1.1 1.8 2.2 1.8s1.8-.6 2.2-1.8"/><path d="M10 18v-2.4h4V18"/>'),
+  Jackets: optIcon('', '<path d="M8.2 6.4 4.6 8.7 6.3 11.6 8.2 10.6V18h7.6v-7.4l1.9 1 1.7-2.9L15.8 6.4"/><path d="M12 7.6v10.4"/><path d="M10.1 6.5c.4 1.2 1 1.8 1.9 1.8s1.5-.6 1.9-1.8"/>'),
+  Workwear: optIcon('', '<path d="M8 5.2h8l.8 2.6V19H7.2V7.8L8 5.2z"/><path d="M9.2 8h5.6"/><path d="M8 12.2h8M8 15.2h8"/>')
 };
 const radialIcon = file => `<img src="./assets/filters/${file}.png?v=20261113-filters" alt="" width="72" height="72" decoding="async">`;
+const stagePound = new Intl.NumberFormat('en-GB', {style: 'currency', currency: 'GBP', minimumFractionDigits: 0, maximumFractionDigits: 0});
+
+function shownBundlePounds() {
+  return deals.map(deal => deal.price).filter(price => price > 0).map(price => price / 100);
+}
+
+function roundStagePounds(value, increment, direction) {
+  const scaled = value / increment;
+  const nudged = direction < 0 ? scaled + 1e-9 : direction > 0 ? scaled - 1e-9 : scaled;
+  const stepped = direction < 0 ? Math.floor(nudged) : direction > 0 ? Math.ceil(nudged) : Math.round(nudged);
+  return stepped * increment;
+}
+
+function budgetStageEdges(prices) {
+  const lowPrice = Math.min(...prices);
+  const highPrice = Math.max(...prices);
+  const span = highPrice - lowPrice;
+  const increment = span >= 1000 ? 10 : span >= 200 ? 5 : 1;
+  const edges = Array.from({length: 7}, (_, index) => {
+    const raw = lowPrice + (span * index) / 6;
+    const direction = index === 0 ? -1 : index === 6 ? 1 : 0;
+    return roundStagePounds(raw, increment, direction);
+  });
+  edges[0] = Math.min(edges[0], roundStagePounds(lowPrice, increment, -1));
+  edges[6] = Math.max(edges[6], roundStagePounds(highPrice, increment, 1));
+  for (let index = 1; index < edges.length; index += 1) {
+    if (edges[index] <= edges[index - 1]) edges[index] = edges[index - 1] + increment;
+  }
+  while (edges[6] < highPrice) edges[6] += increment;
+  return edges;
+}
+
+const budgetEdges = budgetStageEdges(shownBundlePounds());
+const BUDGET_STAGES = budgetEdges.slice(0, -1).map((low, index) => {
+  const high = budgetEdges[index + 1];
+  return {low, high, label: `${stagePound.format(low)}–${stagePound.format(high)}`};
+});
 const radialCatalog = [
-  {id: 'industry', title: 'Industry', icon: radialIcon('industry'), prompt: 'Which industry are you in?', values: ['Construction', 'Cleaning', 'Hospitality', 'Corporate', 'Sport & Fitness', 'Education', 'Warehouse', 'Healthcare', 'Film & Media', 'Other']},
-  {id: 'team', title: 'Team Size', icon: radialIcon('team-size'), prompt: 'How many people are you buying for?', values: ['1', '2', '3', '5', '8', '10', '15', '20', '25', '30', '50+']},
-  {id: 'budget', title: 'Budget', icon: radialIcon('budget'), prompt: 'Budget for the complete order', values: ['Any budget', 'Under £100', '£100–£250', '£250–£500', '£500–£1,000', '£1,000+']},
-  {id: 'clothing', title: 'Clothing', icon: radialIcon('clothing'), prompt: 'Which clothing type?', values: ['T-Shirts', 'Polo Shirts', 'Hoodies', 'Sweatshirts', 'Hi-Vis', 'Softshells', 'Jackets', 'Fleece', 'Caps', 'Beanies', 'Mixed Workwear']},
-  {id: 'purpose', title: 'Purpose', icon: radialIcon('purpose'), prompt: 'What do you need uniforms for?', values: ['Full Team Uniforms', 'New Starter Kits', 'Uniform Replacements', 'Complete Workwear Kits', 'Staff Uniform Refresh', 'Events & Promotions']},
-  {id: 'quantity', title: 'Quantity', icon: radialIcon('quantity'), prompt: 'How many garments are required?', values: ['1–10 items', '11–20 items', '21–50 items', '51–100 items', '100+ items']},
-  {id: 'season', title: 'Season', icon: radialIcon('season'), prompt: 'Which season are you buying for?', values: ['Summer', 'Winter', 'All-Weather', 'Year-Round']},
-  {id: 'branding', title: 'Branding', icon: radialIcon('branding'), prompt: 'Choose branding method', values: ['Printing', 'Embroidery', 'Mixed Branding', 'Any Method']}
+  {id: 'industry', title: 'Industry', iconFile: 'industry', icon: radialIcon('industry'), prompt: 'What industry are you in?', layout: 'checks', multi: true, values: ['Construction', 'Cleaning', 'Hospitality', 'Corporate / Office', 'Education / Leavers', 'Sport & Fitness']},
+  {id: 'team', title: 'Team Size', iconFile: 'team-size', icon: radialIcon('team-size'), prompt: 'How many people are you buying for?', layout: 'grid3', values: ['1–2', '3–5', '6–10', '11–20', '21–30', '31–50', '51–100', '100+']},
+  {id: 'budget', title: 'Budget', iconFile: 'budget', icon: radialIcon('budget'), prompt: 'What is your budget?', layout: 'stack', values: BUDGET_STAGES.map(stage => stage.label)},
+  {id: 'clothing', title: 'Clothing', iconFile: 'clothing', icon: radialIcon('clothing'), prompt: 'What type of clothing do you need?', layout: 'grid3', icons: CLOTHING_ICONS, values: ['T-Shirts', 'Polos', 'Hoodies', 'Sweats', 'Jackets', 'Workwear']},
+  {id: 'purpose', title: 'Purpose', iconFile: 'purpose', icon: radialIcon('purpose'), prompt: 'What is the main purpose?', layout: 'radios', values: ['Staff Uniforms', 'New Starter Kits', 'Team / Event', 'Promotional / Branding', 'Workwear / PPE', 'Corporate / Office']},
+  {id: 'quantity', title: 'Quantity', iconFile: 'quantity', icon: radialIcon('quantity'), prompt: 'How many items in total?', layout: 'grid2', values: ['Up to 10', '11–25', '26–50', '51–100', '101–250', '250+']},
+  {id: 'season', title: 'Season', iconFile: 'season', icon: radialIcon('season'), prompt: 'When will the uniforms be used?', layout: 'grid2', icons: SEASON_ICONS, values: ['Spring', 'Summer', 'Autumn', 'Winter']},
+  {id: 'branding', title: 'Branding', iconFile: 'branding', icon: radialIcon('branding'), prompt: 'How do you want to brand them?', layout: 'stack', values: ['Embroidery', 'Printing (DTF / DTG)', 'Both (Embroidery & Print)', 'No Branding (Plain)']}
 ];
-const appliedBundleFilters = Object.fromEntries(radialCatalog.map(item => [item.id, '']));
+const appliedBundleFilters = Object.fromEntries(radialCatalog.map(item => [item.id, item.multi ? [] : '']));
 let announceBundleFilters = false;
 let radialOpen = false;
 let radialCurrent = null;
-let radialDraft = null;
+let sheetDraft = null;
+let sheetFocusId = null;
+let otherFiltersOpen = false;
 
 function gcd(left, right) {
   let a = Math.abs(left);
@@ -169,162 +211,250 @@ function kitPeople(deal) {
   return Number(deal.qty) || 0;
 }
 
+function hasType(deal, ...types) {
+  const found = new Set(facetValues(deal, 'productType'));
+  return types.some(type => found.has(type));
+}
+
+function hasFeature(deal, feature) {
+  return facetValues(deal, 'feature').includes(feature);
+}
+
+function hasSector(deal, sector) {
+  return facetValues(deal, 'sector').includes(sector);
+}
+
 function industryMatches(deal, value) {
   if (!value) return true;
-  const sectors = facetValues(deal, 'sector');
-  if (value === 'Other') {
-    const named = new Set(Object.values(INDUSTRY_SECTOR));
-    return sectors.some(sector => sector && !named.has(sector));
-  }
-  const sector = INDUSTRY_SECTOR[value];
-  return Boolean(sector) && sectors.includes(sector);
+  // Only safety and healthcare are stored as sectors. The other labels use the
+  // nearest product type or feature. Cleaning and Sport & Fitness have neither.
+  if (value === 'Construction') return hasSector(deal, 'safety') || hasFeature(deal, 'high-visibility') || hasType(deal, 'safety-vests');
+  if (value === 'Hospitality') return hasType(deal, 'aprons');
+  if (value === 'Corporate / Office') return hasType(deal, 'polos') && !hasType(deal, 'safety-vests') && !hasFeature(deal, 'high-visibility');
+  if (value === 'Education / Leavers') return hasType(deal, 'hoodies');
+  if (value === 'Cleaning' || value === 'Sport & Fitness') return false;
+  return false;
 }
+
+const TEAM_RANGES = {
+  '1–2': [1, 2],
+  '3–5': [3, 5],
+  '6–10': [6, 10],
+  '11–20': [11, 20],
+  '21–30': [21, 30],
+  '31–50': [31, 50],
+  '51–100': [51, 100],
+  '100+': [101, Infinity]
+};
 
 function teamMatches(deal, team) {
   if (!team) return true;
   const people = kitPeople(deal);
-  if (!people) return false;
-  if (team === '50+') return people >= 50;
-  return people === Number(team);
+  const range = TEAM_RANGES[team];
+  if (!people || !range) return false;
+  return people >= range[0] && people <= range[1];
 }
 
 function budgetMatches(deal, band) {
-  if (!band || band === 'Any budget') return true;
-  if (!deal.price) return false;
-  const pounds = deal.price / 100;
-  if (band === 'Under £100') return pounds < 100;
-  if (band === '£100–£250') return pounds >= 100 && pounds <= 250;
-  if (band === '£250–£500') return pounds >= 250 && pounds <= 500;
-  if (band === '£500–£1,000') return pounds >= 500 && pounds <= 1000;
-  if (band === '£1,000+') return pounds >= 1000;
-  return false;
+  if (!band) return true;
+  const stage = BUDGET_STAGES.find(entry => entry.label === band);
+  if (!stage || !deal.price) return false;
+  const last = stage === BUDGET_STAGES[BUDGET_STAGES.length - 1];
+  const lowPence = stage.low * 100;
+  const highPence = stage.high * 100;
+  return last
+    ? deal.price >= lowPence && deal.price <= highPence
+    : deal.price >= lowPence && deal.price < highPence;
 }
 
 function clothingMatches(deal, value) {
   if (!value) return true;
-  const types = facetValues(deal, 'productType');
-  const title = deal.title || '';
-  if (value === 'T-Shirts') return types.includes('t-shirts');
-  if (value === 'Polo Shirts') return types.includes('polos');
-  if (value === 'Hoodies') return types.includes('hoodies');
-  if (value === 'Sweatshirts') return types.includes('sweatshirts');
-  if (value === 'Hi-Vis') return types.includes('safety-vests') || facetValues(deal, 'feature').includes('high-visibility');
-  if (value === 'Softshells') return /softshell/i.test(title);
-  if (value === 'Jackets') return types.includes('jackets');
-  if (value === 'Fleece') return types.includes('fleece');
-  if (value === 'Caps') return types.includes('headwear') && /cap|snapback|trucker|baseball/i.test(title) && !/beanie/i.test(title);
-  if (value === 'Beanies') return /beanie/i.test(title);
-  if (value === 'Mixed Workwear') return types.includes('workwear') || types.length > 1;
+  if (value === 'T-Shirts') return hasType(deal, 't-shirts');
+  if (value === 'Polos') return hasType(deal, 'polos');
+  if (value === 'Hoodies') return hasType(deal, 'hoodies');
+  if (value === 'Sweats') return hasType(deal, 'sweatshirts');
+  if (value === 'Jackets') return hasType(deal, 'jackets', 'fleece');
+  if (value === 'Workwear') return hasType(deal, 'workwear', 'safety-vests', 'trousers');
   return false;
 }
 
 function purposeMatches(deal, purpose) {
   if (!purpose) return true;
   const people = kitPeople(deal);
-  const types = facetValues(deal, 'productType');
-  const lines = Object.values(deal.fixed || {}).filter(count => Number(count) > 0).length;
-  if (purpose === 'Full Team Uniforms') return people >= 8;
-  if (purpose === 'New Starter Kits') return people >= 1 && people <= 3;
-  if (purpose === 'Uniform Replacements') return types.length === 1;
-  if (purpose === 'Complete Workwear Kits') return lines >= 2;
-  if (purpose === 'Staff Uniform Refresh') return types.length === 1 && people >= 8;
-  if (purpose === 'Events & Promotions') return types.includes('t-shirts') || types.includes('polos');
+  const title = deal.title || '';
+  if (purpose === 'Staff Uniforms') return people >= 3 && hasType(deal, 'polos', 't-shirts', 'workwear', 'hoodies', 'sweatshirts', 'jackets', 'safety-vests');
+  if (purpose === 'New Starter Kits') return /starter/i.test(title) || (people >= 1 && people <= 2);
+  if (purpose === 'Team / Event') return /event/i.test(title) || people >= 11;
+  if (purpose === 'Promotional / Branding') return /print/i.test(title) || hasType(deal, 't-shirts');
+  if (purpose === 'Workwear / PPE') return hasType(deal, 'workwear', 'safety-vests', 'trousers') || hasFeature(deal, 'high-visibility') || /ppe|hi-vis/i.test(title);
+  if (purpose === 'Corporate / Office') return hasType(deal, 'polos') && !hasType(deal, 'safety-vests') && !hasFeature(deal, 'high-visibility');
   return false;
 }
+
+const QTY_RANGES = {
+  'Up to 10': [1, 10],
+  '11–25': [11, 25],
+  '26–50': [26, 50],
+  '51–100': [51, 100],
+  '101–250': [101, 250],
+  '250+': [251, Infinity]
+};
 
 function quantityMatches(deal, band) {
   if (!band) return true;
   const qty = Number(deal.qty) || 0;
-  if (band === '1–10 items') return qty >= 1 && qty <= 10;
-  if (band === '11–20 items') return qty >= 11 && qty <= 20;
-  if (band === '21–50 items') return qty >= 21 && qty <= 50;
-  if (band === '51–100 items') return qty >= 51 && qty <= 100;
-  if (band === '100+ items') return qty > 100;
-  return false;
+  const range = QTY_RANGES[band];
+  if (!range) return false;
+  return qty >= range[0] && qty <= range[1];
 }
 
 function seasonMatches(deal, season) {
   if (!season) return true;
-  const types = facetValues(deal, 'productType');
-  const features = facetValues(deal, 'feature');
   const title = deal.title || '';
-  const summer = types.includes('t-shirts') || types.includes('polos') || /summer/i.test(title);
-  const winter = types.includes('fleece') || types.includes('hoodies') || types.includes('sweatshirts') || types.includes('jackets') || /beanie/i.test(title);
-  const allWeather = features.includes('waterproof') || features.includes('high-visibility') || types.includes('safety-vests') || /waterproof|hi-vis|softshell/i.test(title);
-  if (season === 'Summer') return summer;
-  if (season === 'Winter') return winter;
-  if (season === 'All-Weather') return allWeather;
-  if (season === 'Year-Round') return types.includes('workwear') || (summer && winter);
+  if (season === 'Summer') return hasType(deal, 't-shirts', 'polos') || /summer/i.test(title);
+  if (season === 'Winter') return hasType(deal, 'fleece', 'hoodies', 'sweatshirts', 'jackets') || /beanie/i.test(title);
+  if (season === 'Spring') return hasType(deal, 'polos', 'sweatshirts');
+  if (season === 'Autumn') return hasType(deal, 'jackets', 'fleece', 'hoodies');
   return false;
 }
 
 function brandingMatches(deal, value) {
-  if (!value || value === 'Any Method') return true;
+  if (!value) return true;
   const title = deal.title || '';
-  const print = /print/i.test(title);
+  const print = /print|dtf|dtg/i.test(title);
   const embroidery = /embroider|stitch/i.test(title);
-  if (value === 'Printing') return print;
   if (value === 'Embroidery') return embroidery;
-  if (value === 'Mixed Branding') return print && embroidery;
+  if (value === 'Printing (DTF / DTG)') return print;
+  if (value === 'Both (Embroidery & Print)') return print && embroidery;
+  if (value === 'No Branding (Plain)') return !print && !embroidery && !/logo/i.test(title);
   return false;
 }
 
-function radialMatches(deal, id, value) {
-  if (id === 'industry') return industryMatches(deal, value);
-  if (id === 'team') return teamMatches(deal, value);
-  if (id === 'budget') return budgetMatches(deal, value);
-  if (id === 'clothing') return clothingMatches(deal, value);
-  if (id === 'purpose') return purposeMatches(deal, value);
-  if (id === 'quantity') return quantityMatches(deal, value);
-  if (id === 'season') return seasonMatches(deal, value);
-  if (id === 'branding') return brandingMatches(deal, value);
+function radialMatches(deal, item, filters = appliedBundleFilters) {
+  const value = filters[item.id] ?? (item.multi ? [] : '');
+  if (item.multi) {
+    if (!value.length) return true;
+    return value.some(choice => industryMatches(deal, choice));
+  }
+  if (item.id === 'team') return teamMatches(deal, value);
+  if (item.id === 'budget') return budgetMatches(deal, value);
+  if (item.id === 'clothing') return clothingMatches(deal, value);
+  if (item.id === 'purpose') return purposeMatches(deal, value);
+  if (item.id === 'quantity') return quantityMatches(deal, value);
+  if (item.id === 'season') return seasonMatches(deal, value);
+  if (item.id === 'branding') return brandingMatches(deal, value);
   return true;
 }
 
-function dealMatchesBundleFilters(deal) {
-  return radialCatalog.every(item => radialMatches(deal, item.id, appliedBundleFilters[item.id]));
+function dealMatchesBundleFilters(deal, filters) {
+  const source = filters && typeof filters === 'object' ? filters : appliedBundleFilters;
+  return radialCatalog.every(item => radialMatches(deal, item, source));
+}
+
+function matchCount(filters = appliedBundleFilters) {
+  return deals.filter(deal => dealMatchesBundleFilters(deal, filters)).length;
+}
+
+function cloneBundleFilters(source = appliedBundleFilters) {
+  return Object.fromEntries(radialCatalog.map(item => [
+    item.id,
+    item.multi ? [...(source[item.id] || [])] : (source[item.id] || '')
+  ]));
+}
+
+function filterIsSet(item, filters) {
+  const value = filters[item.id];
+  return item.multi ? value.length > 0 : Boolean(value);
+}
+
+function choiceList(item, filters) {
+  const value = filters[item.id];
+  return item.multi ? value : (value ? [value] : []);
+}
+
+function activeFilterCount(filters) {
+  return radialCatalog.reduce((total, item) => total + choiceList(item, filters).length, 0);
+}
+
+function chipLabel(item, value) {
+  return item.id === 'team' ? `${value} People` : value;
+}
+
+function removeFilterValue(filters, id, value) {
+  const item = radialCatalog.find(entry => entry.id === id);
+  if (!item || !filters) return;
+  if (item.multi) filters[id] = filters[id].filter(entry => entry !== value);
+  else if (filters[id] === value) filters[id] = '';
 }
 
 function chosenRadialFilters() {
-  return radialCatalog.filter(item => appliedBundleFilters[item.id]);
+  return radialCatalog.filter(item => {
+    const value = appliedBundleFilters[item.id];
+    return item.multi ? value.length > 0 : Boolean(value);
+  });
 }
+
+function choiceText(item) {
+  const value = appliedBundleFilters[item.id];
+  return item.multi ? value.join(', ') : value;
+}
+
+const trashIcon = `<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V5h6v2"/><path d="M8 7l1 13h6l1-13"/><path d="M10 11v6M14 11v6"/></svg>`;
 
 function renderFilterSummary(count) {
   const line = $('bundle-result-line');
   if (!line) return;
-  const choices = chosenRadialFilters().map(item => `${item.title}: ${appliedBundleFilters[item.id]}`);
-  const summary = `${pluralBundles(count)}${choices.length ? ` · ${choices.map(escape).join(' · ')}` : ''}`;
-  line.innerHTML = choices.length
-    ? `${summary} <button type="button" data-clear-bundle-filters>Clear filters</button>`
-    : summary;
+  const choices = chosenRadialFilters();
+  const activeCount = activeFilterCount(appliedBundleFilters);
   const badge = $('bundleFilterCount');
   if (badge) {
-    badge.hidden = choices.length === 0;
-    badge.textContent = String(choices.length);
+    badge.hidden = activeCount === 0;
+    badge.textContent = String(activeCount);
   }
+  syncRadialButton();
+  if (!choices.length) {
+    line.className = 'bundle-result-line';
+    line.textContent = pluralBundles(count);
+    return;
+  }
+  const summary = `${pluralBundles(count)} · ${choices.map(item => `${item.title}: ${choiceText(item)}`).join(' · ')}`;
+  const chips = choices.flatMap(item => choiceList(item, appliedBundleFilters).map(value => `
+    <button type="button" class="bundle-active-chip" data-remove-filter="${item.id}" data-filter-value="${escape(value)}">
+      <img src="./assets/filters/${item.iconFile}.png?v=20261113-filters" alt="" width="22" height="22">
+      <span>${escape(chipLabel(item, value))}</span>
+      <span class="chip-x" aria-hidden="true">&times;</span>
+      <span class="sr-only">Remove ${escape(chipLabel(item, value))}</span>
+    </button>`)).join('');
+  line.className = 'bundle-result-line is-filtered';
+  line.innerHTML = `
+    <p class="bundle-filter-kicker">${escape(summary)}</p>
+    <div class="bundle-active-row">
+      <span class="bundle-active-label">Active filters:</span>
+      <div class="bundle-active-chips">${chips}</div>
+    </div>
+    <div class="bundle-filter-actions">
+      <button type="button" class="bundle-clear-link" data-clear-bundle-filters>${trashIcon} Clear filters</button>
+      <span class="bundle-found-pill">${escape(pluralBundles(count))} found</span>
+    </div>`;
 }
 
 function emptyFilterMessage() {
   const industry = appliedBundleFilters.industry;
-  if (industry && !deals.some(deal => industryMatches(deal, industry))) {
-    return `No bundles are tagged for ${industry}.`;
-  }
-  const chosen = chosenRadialFilters();
-  if (chosen.length === 1 && chosen[0].id === 'team') {
-    const team = appliedBundleFilters.team;
-    const people = team === '1' ? '1 person' : `${team} people`;
-    return `No bundles have a fixed composition for ${people}.`;
+  if (industry.length && !deals.some(deal => industry.some(value => industryMatches(deal, value)))) {
+    return industry.length === 1
+      ? `No bundles are tagged for ${industry[0]}.`
+      : 'No bundles are tagged for those industries.';
   }
   return 'No bundles match these filters.';
 }
 
 function renderShop() {
   deals.forEach(deal => offerById.set(deal.id, deal));
-  const shown = deals.filter(dealMatchesBundleFilters);
+  const shown = deals.filter(deal => dealMatchesBundleFilters(deal));
   renderFilterSummary(shown.length);
   if (announceBundleFilters && announcement) announcement.textContent = pluralBundles(shown.length);
   const demoSection = document.querySelector('.demos');
-  if (demoSection) demoSection.hidden = Object.values(appliedBundleFilters).some(Boolean);
+  if (demoSection) demoSection.hidden = chosenRadialFilters().length > 0;
   $('catalogue-grid').innerHTML = shown.length ? shown.map(deal => {
     const bundle = asBundle(deal);
     const items = Object.entries(bundle.fixed);
@@ -343,7 +473,7 @@ function renderShop() {
         ${build ? `<p class="inclusion">${icon('tick')} ${isInclusion(bundle)}</p>` : ''}
         <div class="card-footer">
           <div class="card-price">${deal.price ? price(deal.price) : ''}</div>
-          <button type="button" class="button primary" data-action="open" data-id="${deal.id}" ${build ? '' : 'disabled'}>${build ? `Build bundle ${icon('right')}` : 'Not available'}</button>
+          <button type="button" class="button primary bundle-view" data-action="open" data-id="${deal.id}" ${build ? '' : 'disabled'}>${build ? `View Bundle ${icon('right')}` : 'Not available'}</button>
         </div>
       </div>
     </article>`;
@@ -858,14 +988,22 @@ let radialHideTimer = 0;
 let radialMotionStop = () => {};
 
 function radialButtonLabel() {
-  const count = chosenRadialFilters().length;
+  const count = activeFilterCount(appliedBundleFilters);
   const action = radialOpen ? 'Close bundle filters' : 'Open bundle filters';
   return count ? `${action}, ${count} selected` : action;
+}
+
+function syncRadialPicks() {
+  bundleRadial?.querySelectorAll('.bundle-radial-item').forEach(button => {
+    const item = radialCatalog.find(entry => entry.id === button.dataset.filterId);
+    button.classList.toggle('is-picked', Boolean(item && filterIsSet(item, appliedBundleFilters)));
+  });
 }
 
 function syncRadialButton() {
   bundleFiltersNav?.setAttribute('aria-expanded', String(radialOpen));
   bundleFiltersNav?.setAttribute('aria-label', radialButtonLabel());
+  syncRadialPicks();
 }
 
 function placeRadialHub() {
@@ -1006,23 +1144,81 @@ function toggleRadial(force) {
   syncRadialButton();
 }
 
-function renderRadialChoices() {
-  const options = $('bundleRadialOptions');
-  if (!options || !radialCurrent) return;
-  options.replaceChildren();
-  radialCurrent.values.forEach(value => {
-    const button = document.createElement('button');
-    const selected = radialDraft === value;
-    button.type = 'button';
-    button.className = `bundle-radial-option${selected ? ' selected' : ''}`;
-    button.textContent = value;
-    button.setAttribute('aria-pressed', String(selected));
-    button.addEventListener('click', () => {
-      radialDraft = value;
-      renderRadialChoices();
-    });
-    options.append(button);
-  });
+function valueSelected(filters, item, value) {
+  return item.multi ? filters[item.id].includes(value) : filters[item.id] === value;
+}
+
+function toggleDraftValue(id, value) {
+  const item = radialCatalog.find(entry => entry.id === id);
+  if (!item || !sheetDraft) return;
+  if (item.multi) {
+    const on = new Set(sheetDraft[id]);
+    if (on.has(value)) on.delete(value);
+    else on.add(value);
+    sheetDraft[id] = item.values.filter(entry => on.has(entry));
+  } else {
+    sheetDraft[id] = sheetDraft[id] === value ? '' : value;
+  }
+}
+
+function sectionMarkup(item, filters) {
+  const chips = item.values.map(value => {
+    const on = valueSelected(filters, item, value);
+    return `<button type="button" class="bundle-radial-option${on ? ' selected' : ''}" data-filter-choice="${item.id}" data-filter-value="${escape(value)}" aria-pressed="${on}">${on ? '<span class="opt-tick" aria-hidden="true">✓</span>' : ''}${escape(value)}</button>`;
+  }).join('');
+  return `<section class="bundle-filter-section">
+    <div class="bundle-filter-section-head">
+      <img src="./assets/filters/${item.iconFile}.png?v=20261113-filters" alt="" width="42" height="42">
+      <div class="bundle-filter-section-copy">
+        <h3>${escape(item.title)}</h3>
+        <p>${escape(item.prompt)}</p>
+      </div>
+      ${filterIsSet(item, filters) ? '<span class="bundle-filter-selected">Selected <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg></span>' : ''}
+    </div>
+    <div class="bundle-radial-options${item.id === 'budget' ? ' bundle-radial-options--budget' : ''}" role="group" aria-label="${escape(item.title)}">${chips}</div>
+  </section>`;
+}
+
+function renderFilterSheet() {
+  if (!sheetDraft) return;
+  const count = matchCount(sheetDraft);
+  const focus = radialCatalog.find(item => item.id === sheetFocusId) || radialCatalog[0];
+  const others = radialCatalog.filter(item => item.id !== focus.id);
+  const picks = radialCatalog.flatMap(item => choiceList(item, sheetDraft).map(value => ({item, value})));
+  const match = $('bundleFilterMatch');
+  if (match) {
+    match.innerHTML = `
+      <div class="bundle-filter-match-copy">
+        <strong>${escape(pluralBundles(count))}</strong>
+        <span>matching your filters</span>
+      </div>
+      ${picks.length ? `<div class="bundle-filter-match-chips">${picks.map(({item, value}) => `
+        <button type="button" class="bundle-sheet-chip" data-draft-remove="${item.id}" data-filter-value="${escape(value)}">
+          <img src="./assets/filters/${item.iconFile}.png?v=20261113-filters" alt="" width="18" height="18">
+          <span>${escape(value)}</span>
+          <span class="chip-x" aria-hidden="true">&times;</span>
+          <span class="sr-only">Remove ${escape(value)}</span>
+        </button>`).join('')}</div>` : ''}`;
+  }
+  const apply = $('bundleRadialApply');
+  if (apply) apply.textContent = `Apply filters (${count}) →`;
+  const body = $('bundleRadialSheetBody');
+  if (!body) return;
+  const scrollTop = body.scrollTop;
+  const layers = '<svg class="bundle-other-layers" viewBox="0 0 24 24" width="28" height="28" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5"/><path d="m3 16 9 5 9-5"/></svg>';
+  const chevron = '<svg class="bundle-other-chevron" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>';
+  body.innerHTML = `
+    ${sectionMarkup(focus, sheetDraft)}
+    <button type="button" class="bundle-other-filters" id="bundleOtherFilters" aria-expanded="${otherFiltersOpen}">
+      ${layers}
+      <span class="bundle-other-copy">
+        <strong>Other Filters</strong>
+        <span>${escape(others.map(item => item.title).join(', '))}</span>
+      </span>
+      ${chevron}
+    </button>
+    ${otherFiltersOpen ? `<div class="bundle-other-groups">${others.map(item => sectionMarkup(item, sheetDraft)).join('')}</div>` : ''}`;
+  body.scrollTop = scrollTop;
 }
 
 function radialSheetOpen() {
@@ -1031,19 +1227,20 @@ function radialSheetOpen() {
 
 function openRadialSheet(item) {
   toggleRadial(false);
+  bundleRadialDim?.classList.remove('show');
+  bundleRadialDim?.setAttribute('aria-hidden', 'true');
   radialCurrent = item;
-  radialDraft = appliedBundleFilters[item.id] || null;
-  $('bundleRadialSheetTitle').textContent = item.title;
-  $('bundleRadialSheetDesc').textContent = item.prompt;
-  $('bundleRadialStatus').textContent = '';
-  renderRadialChoices();
+  sheetFocusId = item.id;
+  sheetDraft = cloneBundleFilters();
+  otherFiltersOpen = false;
   bundleRadialSheetBack?.classList.add('show');
   bundleRadialSheet?.classList.add('show');
   bundleRadialSheetBack?.setAttribute('aria-hidden', 'false');
   bundleRadialSheet?.setAttribute('aria-hidden', 'false');
   if (bundleRadialSheet) bundleRadialSheet.inert = false;
   document.body.classList.add('bundle-radial-sheet-open');
-  $('bundleRadialOptions')?.querySelector('button')?.focus();
+  renderFilterSheet();
+  $('bundleRadialSheetBody')?.querySelector('.bundle-radial-option')?.focus({preventScroll: true});
 }
 
 function closeRadialSheet(restore = true) {
@@ -1055,32 +1252,36 @@ function closeRadialSheet(restore = true) {
   if (bundleRadialSheet) bundleRadialSheet.inert = true;
   document.body.classList.remove('bundle-radial-sheet-open');
   radialCurrent = null;
+  sheetDraft = null;
+  sheetFocusId = null;
+  otherFiltersOpen = false;
+  if (!radialOpen && bundleRadialAnchor?.classList.contains('is-open')) {
+    bundleRadialDim?.classList.add('show');
+    bundleRadialDim?.setAttribute('aria-hidden', 'false');
+  }
   if (restore) bundleFiltersNav?.focus();
 }
 
 function applyRadialFilter() {
-  if (radialDraft && radialCurrent) appliedBundleFilters[radialCurrent.id] = radialDraft;
+  if (!sheetDraft) return;
+  radialCatalog.forEach(item => {
+    appliedBundleFilters[item.id] = item.multi ? [...sheetDraft[item.id]] : (sheetDraft[item.id] || '');
+  });
   announceBundleFilters = true;
   renderShop();
   closeRadialSheet(false);
   $('bundles')?.scrollIntoView({behavior: 'smooth', block: 'start'});
 }
 
-function clearRadialFilter() {
-  if (!radialCurrent) return;
-  delete appliedBundleFilters[radialCurrent.id];
-  appliedBundleFilters[radialCurrent.id] = '';
-  radialDraft = null;
-  renderRadialChoices();
-  $('bundleRadialStatus').textContent = 'Filter cleared';
-  announceBundleFilters = true;
-  renderShop();
+function clearSheetDraft() {
+  if (!sheetDraft) return;
+  radialCatalog.forEach(item => { sheetDraft[item.id] = item.multi ? [] : ''; });
+  renderFilterSheet();
 }
 
 function clearBundleFilters() {
-  radialCatalog.forEach(item => { appliedBundleFilters[item.id] = ''; });
-  radialDraft = null;
-  if (radialCurrent) renderRadialChoices();
+  radialCatalog.forEach(item => { appliedBundleFilters[item.id] = item.multi ? [] : ''; });
+  if (sheetDraft) clearSheetDraft();
   announceBundleFilters = true;
   renderShop();
 }
@@ -1091,6 +1292,7 @@ radialCatalog.forEach(item => {
   const label = document.createElement('span');
   button.type = 'button';
   button.className = 'bundle-radial-item';
+  button.dataset.filterId = item.id;
   glyph.className = 'glyph';
   glyph.setAttribute('aria-hidden', 'true');
   glyph.innerHTML = item.icon;
@@ -1121,8 +1323,26 @@ bundleRadialHub?.addEventListener('click', () => {
 bundleRadialDim?.addEventListener('click', () => toggleRadial(false));
 $('bundleRadialClose')?.addEventListener('click', () => closeRadialSheet());
 bundleRadialSheetBack?.addEventListener('click', () => closeRadialSheet());
-$('bundleRadialClear')?.addEventListener('click', clearRadialFilter);
 $('bundleRadialApply')?.addEventListener('click', applyRadialFilter);
+$('bundleRadialClear')?.addEventListener('click', clearSheetDraft);
+bundleRadialSheet?.addEventListener('click', event => {
+  const choice = event.target.closest('[data-filter-choice]');
+  if (choice && sheetDraft) {
+    toggleDraftValue(choice.dataset.filterChoice, choice.dataset.filterValue);
+    renderFilterSheet();
+    return;
+  }
+  const remove = event.target.closest('[data-draft-remove]');
+  if (remove && sheetDraft) {
+    removeFilterValue(sheetDraft, remove.dataset.draftRemove, remove.dataset.filterValue);
+    renderFilterSheet();
+    return;
+  }
+  if (event.target.closest('#bundleOtherFilters')) {
+    otherFiltersOpen = !otherFiltersOpen;
+    renderFilterSheet();
+  }
+});
 bundleRadialSheet?.addEventListener('keydown', event => {
   if (event.key !== 'Tab' || !radialSheetOpen()) return;
   const items = [...bundleRadialSheet.querySelectorAll('button')].filter(item => !item.disabled);
@@ -1138,6 +1358,13 @@ bundleRadialSheet?.addEventListener('keydown', event => {
   }
 });
 $('bundle-result-line')?.addEventListener('click', event => {
+  const remove = event.target.closest('[data-remove-filter]');
+  if (remove) {
+    removeFilterValue(appliedBundleFilters, remove.dataset.removeFilter, remove.dataset.filterValue);
+    announceBundleFilters = true;
+    renderShop();
+    return;
+  }
   if (event.target.closest('[data-clear-bundle-filters]')) clearBundleFilters();
 });
 document.addEventListener('keydown', event => {
