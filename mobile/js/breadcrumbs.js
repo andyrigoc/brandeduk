@@ -119,6 +119,28 @@
             }
             return '';
         }
+        var sectors = collectParams('sector');
+        var safetyTypeCrumbs = {
+            'hi-vis': 'Hi-Vis Clothing',
+            'hivis': 'Hi-Vis Clothing',
+            'safety-vests': 'Hi-Vis Vests',
+            'vests': 'Hi-Vis Vests',
+            't-shirts': 'Hi-Vis T-Shirts',
+            'tshirts': 'Hi-Vis T-Shirts',
+            'tees': 'Hi-Vis T-Shirts',
+            'polos': 'Hi-Vis Polo Shirts',
+            'polo': 'Hi-Vis Polo Shirts',
+            'jackets': 'Hi-Vis Jackets',
+            'hoodies': 'Hi-Vis Hoodies',
+            'sweatshirts': 'Hi-Vis Sweatshirts',
+            'gilets': 'Hi-Vis Gilets',
+            'gilets-&-body-warmers': 'Hi-Vis Gilets',
+            'gilets-body-warmers': 'Hi-Vis Gilets',
+            'trousers': 'Hi-Vis Trousers'
+        };
+        if (types.length === 1 && sectors.indexOf('safety') !== -1 && safetyTypeCrumbs[types[0]]) {
+            return safetyTypeCrumbs[types[0]];
+        }
         var key = types.slice().sort().join('|');
         if (COMBINED_TYPE_CRUMBS[key]) return COMBINED_TYPE_CRUMBS[key];
         if (types.length === 1) return PRODUCT_TYPE_CRUMBS[types[0]] || prettyCategory(types[0]);

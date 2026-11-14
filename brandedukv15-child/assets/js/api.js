@@ -800,6 +800,76 @@ const BrandedAPI = (function () {
             return getHiVisCatalogue(params, fetchOptions);
         }
 
+        const categoryType = options.category ? mapCategoryToProductType(options.category) : null;
+        const categorySlug = String(options.category || '').trim().toLowerCase().replace(/[\s_]+/g, '-');
+        const isHiVisCategory = !params.q && !options.productType &&
+            (['hi-vis', 'hivis', 'hi-viz', 'hiviz', 'safety-vests'].includes(categorySlug) ||
+                String(categoryType || '').trim().toLowerCase() === 'hi vis');
+        if (isHiVisCategory) {
+            const baseParams = Object.assign({}, params);
+            const selectedTypes = Array.isArray(baseParams['productType[]']) ? baseParams['productType[]'] : [];
+            delete baseParams.productType;
+            delete baseParams['productType[]'];
+
+            const fetchAllPages = async (queryParams) => {
+                const firstPage = await apiRequest('/api/products', Object.assign({}, queryParams, {
+                    page: 1,
+                    limit: MAX_LIMIT
+                }), fetchOptions);
+                const totalPages = Math.ceil(Number(firstPage.total || 0) / MAX_LIMIT);
+                const remainingPages = [];
+                for (let page = 2; page <= totalPages; page++) {
+                    remainingPages.push(apiRequest('/api/products', Object.assign({}, queryParams, {
+                        page,
+                        limit: MAX_LIMIT
+                    }), fetchOptions));
+                }
+                const rest = await Promise.all(remainingPages);
+                return {
+                    items: (firstPage.items || []).concat(...rest.map((result) => result.items || [])),
+                    priceRange: firstPage.priceRange
+                };
+            };
+
+            const [namedResult, typedResult] = await Promise.all([
+                fetchAllPages(Object.assign({}, baseParams, { q: 'hi-vis' })),
+                fetchAllPages(Object.assign({}, baseParams, { productType: 'Hi Vis' }))
+            ]);
+            const namedProducts = namedResult.items;
+            const typedProducts = typedResult.items;
+            const seenCodes = new Set();
+            let allItems = namedProducts.concat(typedProducts).map(transformProduct).filter((product) => {
+                const code = String(product.code || '').trim().toUpperCase();
+                if (!code) return true;
+                if (seenCodes.has(code)) return false;
+                seenCodes.add(code);
+                return true;
+            });
+
+            if (selectedTypes.length) {
+                const allowedTypes = new Set(selectedTypes.map((value) => normalizeProductTypeForApi(value).toLowerCase()));
+                allItems = allItems.filter((product) =>
+                    allowedTypes.has(normalizeProductTypeForApi(product.productType).toLowerCase())
+                );
+            }
+
+            const priceRanges = [namedResult.priceRange, typedResult.priceRange].filter(Boolean);
+            const page = params.page || 1;
+            const limit = params.limit || DEFAULT_LIMIT;
+            const rangeValues = priceRanges.flatMap((range) => [Number(range.min), Number(range.max)])
+                .filter((value) => Number.isFinite(value));
+
+            return {
+                items: allItems.slice((page - 1) * limit, page * limit),
+                page,
+                limit,
+                total: allItems.length,
+                priceRange: rangeValues.length
+                    ? { min: Math.min(...rangeValues), max: Math.max(...rangeValues) }
+                    : { min: 0, max: 200 }
+            };
+        }
+
         const response = await apiRequest('/api/products', params, fetchOptions);
 
         let allItems = (response.items || []).map(transformProduct);
