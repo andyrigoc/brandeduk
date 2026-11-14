@@ -50,6 +50,8 @@
     margin: 0 -4px;
     background: var(--bf-page);
     border-radius: 16px;
+    /* Growing card margins must not auto-adjust scroll (that yanked cards under the header). */
+    overflow-anchor: none;
   }
 
   /*
@@ -101,9 +103,16 @@
 
   /* Do NOT dim/blur/fade sibling cards while opening or closing — all stay full brightness. */
 
+  /* Keep open cards under the fixed mobile header (header-v2 uses z-index: 2 on
+     .mobile-header--v2; stacking above that paints the yellow bar over the logo). */
+  body:has(.catalogue) .mobile-header--v2 {
+    z-index: 200;
+  }
+
   .catalogue .card.active {
-    z-index: 30;
+    z-index: 20;
     transition: margin 0.4s; /* $cardAnimStep1 * 0.8 */
+    overflow-anchor: none;
   }
 
   .catalogue .card.flip-step1 {

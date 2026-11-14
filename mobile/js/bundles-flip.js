@@ -1,4 +1,5 @@
-/* ORIGINAL delivery-card flip + scroll + req-active second open. */
+/* Delivery-card flip: scroll once under the sticky header, THEN four-phase rotateX.
+   No concurrent scroll during the roll (that caused the open/close tremble). */
 (function () {
   'use strict';
   if (window.__brandedBundlesFlipLoaded) return;
@@ -12,10 +13,12 @@
   var reqStep2 = 800;
   var reqClosingStep1 = 500;
   var reqClosingStep2 = 500;
+  var preScrollMs = 280;
   var activeCard = null;
   var pressedCard = null;
   var openScrollTopVal = null;
   var openScrollEl = null;
+  var scrollAnimToken = 0;
 
   function grid() {
     return document.getElementById('catalogue-grid');
@@ -57,33 +60,89 @@
     scrollEl.scrollTop = value;
   }
 
-  /* Same math as: cardTop = $card.position().top; scrollTopVal = cardTop - 30
-     adapted for window or an overflow scroller. */
-  function computeScrollTopVal(card, scrollEl) {
-    var cardRect = card.getBoundingClientRect();
-    if (isWindowScroller(scrollEl)) {
-      return getScrollTop(scrollEl) + cardRect.top - 30;
+  function getHeaderBottom() {
+    var selectors = [
+      '.header-with-promo',
+      '.mobile-header--v2',
+      '.mobile-header',
+      '.mh-search',
+      '.mh-search-control'
+    ];
+    var bottom = 0;
+    for (var i = 0; i < selectors.length; i++) {
+      var el = document.querySelector(selectors[i]);
+      if (!el) continue;
+      bottom = Math.max(bottom, el.getBoundingClientRect().bottom);
     }
-    var scrollerRect = scrollEl.getBoundingClientRect();
-    return getScrollTop(scrollEl) + cardRect.top - scrollerRect.top - 30;
+    return bottom;
   }
 
-  function animateScrollTop(scrollEl, to, duration) {
+  function getChromeInsets() {
+    var nav = document.querySelector('.bottom-nav');
+    var topPad = 16;
+    var bottomPad = 12;
+    var top = Math.ceil(getHeaderBottom()) + topPad;
+    var bottom = bottomPad;
+    if (nav) {
+      bottom = Math.ceil(window.innerHeight - nav.getBoundingClientRect().top) + bottomPad;
+    }
+    return { top: Math.max(topPad, top), bottom: Math.max(bottomPad, bottom) };
+  }
+
+  /* Place card top just under the sticky header (never under logo/search). */
+  function computeScrollTopVal(card, scrollEl) {
+    var insets = getChromeInsets();
+    var cardRect = card.getBoundingClientRect();
+    if (isWindowScroller(scrollEl)) {
+      return Math.max(0, getScrollTop(scrollEl) + cardRect.top - insets.top);
+    }
+    var scrollerRect = scrollEl.getBoundingClientRect();
+    var padTop = Math.max(8, insets.top - scrollerRect.top);
+    return Math.max(0, getScrollTop(scrollEl) + cardRect.top - scrollerRect.top - padTop);
+  }
+
+  function animateScrollTop(scrollEl, to, duration, onDone) {
+    var token = ++scrollAnimToken;
     var from = getScrollTop(scrollEl);
     var target = Math.max(0, to);
-    if (Math.abs(from - target) < 1 || duration <= 0) {
+    var settled = false;
+    var doneFired = false;
+    function finish() {
+      if (token !== scrollAnimToken || doneFired) return;
+      doneFired = true;
+      settled = true;
       setScrollTop(scrollEl, target);
+      if (typeof onDone === 'function') onDone();
+    }
+    if (Math.abs(from - target) < 1 || duration <= 0) {
+      finish();
       return;
     }
     var start = performance.now();
-    function frame(now) {
+    function apply(now) {
+      if (token !== scrollAnimToken || settled) return;
       var t = Math.min(1, (now - start) / duration);
-      /* jQuery default swing */
       var eased = 0.5 - Math.cos(t * Math.PI) / 2;
       setScrollTop(scrollEl, from + (target - from) * eased);
-      if (t < 1) window.requestAnimationFrame(frame);
+      if (t >= 1) finish();
     }
-    window.requestAnimationFrame(frame);
+    function rafTick(now) {
+      apply(now);
+      if (!settled && token === scrollAnimToken) window.requestAnimationFrame(rafTick);
+    }
+    window.requestAnimationFrame(rafTick);
+    var iv = window.setInterval(function () {
+      if (token !== scrollAnimToken) {
+        window.clearInterval(iv);
+        return;
+      }
+      apply(performance.now());
+      if (settled) window.clearInterval(iv);
+    }, 32);
+    window.setTimeout(function () {
+      window.clearInterval(iv);
+      finish();
+    }, duration + 40);
   }
 
   function clearPress(card) {
@@ -119,30 +178,14 @@
     card.setAttribute('aria-expanded', 'false');
   }
 
-  /* Exact original open: flip-step1 + animate scroll to cardTop-30, then step2/step3 with same scroll target */
-  function openCard(card) {
-    if (!isMobile() || animating || !card || card.classList.contains('active')) return;
-    if (activeCard && activeCard !== card) closeCard(activeCard, true);
-    clearPress(card);
-    animating = true;
-    activeCard = card;
-    var g = grid();
-    if (g) g.classList.add('is-opening');
-
-    var scrollEl = getScrollParent(card);
-    openScrollEl = scrollEl;
-    openScrollTopVal = computeScrollTopVal(card, scrollEl);
-
+  function startFlipSequence(card) {
     card.classList.add('flip-step1', 'active');
     card.setAttribute('aria-expanded', 'true');
-    animateScrollTop(scrollEl, openScrollTopVal, step1);
 
     window.setTimeout(function () {
-      animateScrollTop(scrollEl, openScrollTopVal, step2);
       card.classList.add('flip-step2');
 
       window.setTimeout(function () {
-        animateScrollTop(scrollEl, openScrollTopVal, step3);
         card.classList.add('flip-step3');
 
         window.setTimeout(function () {
@@ -152,10 +195,45 @@
     }, step1 * 0.65);
   }
 
-  /* Exact original close of flip (when not in req-active) */
+  /* Scroll ONCE under the header, THEN the four-phase roll (no scroll during flip). */
+  function openCard(card) {
+    if (!isMobile() || animating || !card || card.classList.contains('active')) return;
+    if (activeCard && activeCard !== card) closeCard(activeCard, true);
+    clearPress(card);
+    animating = true;
+    activeCard = card;
+    var g = grid();
+    if (g) g.classList.add('is-opening');
+
+    openScrollEl = getScrollParent(card);
+    card.style.overflowAnchor = 'none';
+    if (g) g.style.overflowAnchor = 'none';
+    document.documentElement.style.overflowAnchor = 'none';
+
+    /* Recompute after a forced layout so the pin uses the live card position. */
+    void card.offsetTop;
+    openScrollTopVal = computeScrollTopVal(card, openScrollEl);
+    /* Instant snap under the header, THEN the four-phase roll (no scroll during flip). */
+    setScrollTop(openScrollEl, openScrollTopVal);
+    void card.offsetTop;
+    openScrollTopVal = computeScrollTopVal(card, openScrollEl);
+    setScrollTop(openScrollEl, openScrollTopVal);
+    startFlipSequence(card);
+  }
+
+  /* Close roll without mid-animation scroll fights; final snap keeps card under header. */
   function closeFlip(card) {
     animating = true;
     clearPress(card);
+    var scrollEl = openScrollEl || getScrollParent(card);
+    var scrollTopVal =
+      openScrollTopVal != null ? openScrollTopVal : computeScrollTopVal(card, scrollEl);
+    openScrollEl = scrollEl;
+    openScrollTopVal = scrollTopVal;
+    /* Freeze scroll position for the whole close — do not re-animate each step. */
+    setScrollTop(scrollEl, scrollTopVal);
+    scrollAnimToken += 1;
+
     card.classList.remove('flip-step3', 'active');
     card.setAttribute('aria-expanded', 'false');
 
@@ -166,10 +244,16 @@
         card.classList.remove('flip-step1');
 
         window.setTimeout(function () {
+          /* Closed card is the topmost fully visible row, just under the header. */
+          openScrollTopVal = computeScrollTopVal(card, scrollEl);
+          setScrollTop(scrollEl, openScrollTopVal);
+          card.style.overflowAnchor = '';
+          document.documentElement.style.overflowAnchor = '';
           if (activeCard === card) activeCard = null;
           openScrollTopVal = null;
           openScrollEl = null;
           var g = grid();
+          if (g) g.style.overflowAnchor = '';
           if (g && !g.querySelector('.card.active, .card.flip-step1')) g.classList.remove('is-opening');
           animating = false;
         }, step1);
@@ -177,7 +261,6 @@
     }, step3 / 2);
   }
 
-  /* Exact original req-closing (full shut from second-open state) */
   function closeReq(card) {
     animating = true;
     clearPress(card);
@@ -191,6 +274,10 @@
         void card.offsetTop;
         resetCardClasses(card);
         card.classList.remove('no-transition', 'hidden-hack');
+        if (openScrollEl) {
+          openScrollTopVal = computeScrollTopVal(card, openScrollEl);
+          setScrollTop(openScrollEl, openScrollTopVal);
+        }
         if (activeCard === card) activeCard = null;
         openScrollTopVal = null;
         openScrollEl = null;
@@ -213,6 +300,7 @@
     }
 
     if (instant) {
+      scrollAnimToken += 1;
       resetCardClasses(card);
       if (activeCard === card) activeCard = null;
       openScrollTopVal = null;
@@ -230,7 +318,6 @@
     closeFlip(card);
   }
 
-  /* Exact original request-button second open */
   function openRequest(card) {
     if (!isMobile() || animating || !card) return;
     if (!card.classList.contains('flip-step3') && !card.classList.contains('active')) return;
@@ -238,17 +325,10 @@
 
     animating = true;
     clearPress(card);
-
-    var scrollEl = openScrollEl || getScrollParent(card);
-    var scrollTopVal =
-      openScrollTopVal != null ? openScrollTopVal : computeScrollTopVal(card, scrollEl);
-
     card.classList.add('req-active1', 'map-active');
 
     window.setTimeout(function () {
       card.classList.add('req-active2');
-      animateScrollTop(scrollEl, scrollTopVal, reqStep2);
-
       window.setTimeout(function () {
         animating = false;
       }, reqStep2);
@@ -266,7 +346,6 @@
     document.dispatchEvent(
       new CustomEvent('branded:build-bundle', { detail: { id: id, source: btn } })
     );
-    /* Fallback: synthesize data-action open for app.js */
     if (btn) {
       btn.setAttribute('data-action', 'open');
       btn.click();
@@ -298,7 +377,6 @@
       event.stopPropagation();
       if (requestBtn.disabled) return;
 
-      /* When already in second-open: Start opens the builder (product), matching text-2 role */
       if (reqCard.classList.contains('req-active1')) {
         if (reqCard.classList.contains('req-active2') && !animating) {
           openBuilderFromCard(reqCard);
@@ -307,7 +385,6 @@
         return;
       }
 
-      /* First tap on yellow button → req-active1 then req-active2 */
       openRequest(reqCard);
       return;
     }
@@ -360,6 +437,7 @@
       animating = false;
       openScrollTopVal = null;
       openScrollEl = null;
+      scrollAnimToken += 1;
       var g = grid();
       if (g) g.classList.remove('is-opening');
     },
@@ -370,6 +448,7 @@
       openCard(card);
     },
     getScrollParent: getScrollParent,
-    computeScrollTopVal: computeScrollTopVal
+    computeScrollTopVal: computeScrollTopVal,
+    getChromeInsets: getChromeInsets
   };
 })();
