@@ -216,7 +216,7 @@
     </script>
     <!-- Mobile-First CSS -->
     <link rel="stylesheet" href="mobile/css/mobile.css?v=20261112-signinorange">
-    <link rel="stylesheet" href="mobile/css/bottom-nav.css?v=20261112-bundles">
+    <link rel="stylesheet" href="mobile/css/bottom-nav.css?v=20261115-arrive">
     <link rel="stylesheet" href="mobile/css/header-v2.css?v=20261112-avatar125">
     <link rel="stylesheet" href="mobile/hero/hero.css?v=20261017-smooth">
     <link rel="stylesheet" href="mobile/css/popup-contact.css?v=20261003-consent">
@@ -2047,34 +2047,28 @@
     </nav>
 
     <!-- Bottom Navigation -->
-    <nav class="bottom-nav bottom-nav--v2" aria-label="Main navigation">
-        <a href="/index-mobile.html?force=mobile" class="nav-item" data-home-nav aria-label="Home" aria-current="page">
-            <img class="nav-home-icon" src="/brandedukv15-child/assets/images/ui/home-nav.png?v=20261112-home" alt="" width="34" height="34">
-            <span class="nav-item-label">Home</span>
+    <nav class="bottom-nav bottom-nav--v2 buk-nav nav dark" data-active="home" aria-label="Main navigation">
+        <span class="indicator" aria-hidden="true"></span>
+        <a href="/index-mobile.html?force=mobile" class="nav-item active" data-home-nav data-section="home" aria-label="Home" aria-current="page">
+            <span class="nav-icon"><svg viewBox="0 0 52 52" aria-hidden="true"><path d="M10 24v20h11V32h10v12h11V24"/><path class="accent" d="m5 25 21-18 21 18M36 14V8h6v11"/></svg></span>
+            <span class="nav-label">Home</span>
         </a>
-        <a href="/mobile/shop-categories-mobile.html?force=mobile" class="nav-item">
-            <img class="nav-shop-icon" src="/brandedukv15-child/assets/images/ui/shop-storefront.png?v=20261112-shop" alt="" width="34" height="34">
-            <span class="nav-item-label">Shop</span>
+        <a href="/mobile/shop-categories-mobile.html?force=mobile" class="nav-item" data-section="shop">
+            <span class="nav-icon"><svg viewBox="0 0 52 52" aria-hidden="true"><path d="M10 25v20h32V25M15 45V31h12v14M32 31h6v7h-6z"/><path fill="#ff7a00" d="M10 9H16.4L13.4 24q0 5-4.2 5t-4.2-5Z"/><path fill="#ffffff" d="M16.4 9H22.8L21.8 24q0 5-4.2 5t-4.2-5Z"/><path fill="#ff7a00" d="M22.8 9H29.2L30.2 24q0 5-4.2 5t-4.2-5Z"/><path fill="#ffffff" d="M29.2 9H35.6L38.6 24q0 5-4.2 5t-4.2-5Z"/><path fill="#ff7a00" d="M35.6 9H42L47 24q0 5-4.2 5t-4.2-5Z"/></svg></span>
+            <span class="nav-label">Shop</span>
         </a>
-        <button type="button" class="nav-item nav-item--customise" id="customiseNavBtn" data-start-sheet-trigger aria-haspopup="dialog" aria-expanded="false" aria-controls="startSheet">
-            <span class="nav-customise-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">
-                    <path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/>
-                </svg>
-            </span>
-            <span class="nav-item-label">Customise</span>
+        <button type="button" class="nav-item" id="customiseNavBtn" data-nav-action data-start-sheet-trigger aria-haspopup="dialog" aria-expanded="false" aria-controls="startSheet">
+            <span class="nav-icon"><svg viewBox="0 0 52 52" aria-hidden="true"><path d="m17 9-10 5-4 10 9 4 3-6v23h22V22l3 6 9-4-4-10-10-5a9 9 0 0 1-18 0Z"/><path class="accent sparkle sparkle-chest" d="M21 29h10M26 24v10"/><path class="accent sparkle sparkle-shoulder" d="m39 5 1.5 4.5L45 11l-4.5 1.5L39 17l-1.5-4.5L33 11l4.5-1.5Z"/><path class="sparkle sparkle-hem" d="m34 35 1 3 3 1-3 1-1 3-1-3-3-1 3-1Z"/></svg></span>
+            <span class="nav-label">Customise</span>
         </button>
-        <a href="#" class="nav-item" id="accountNavBtn">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                <circle cx="12" cy="7" r="4"/>
-            </svg>
-            <span class="nav-item-label">Account</span>
+        <a href="/bundle-configurator/?force=mobile" class="nav-item" data-section="bundles" aria-label="Limited Bundles">
+            <span class="nav-icon" data-bundle><svg class="bundle-three" viewBox="0 0 104 108" aria-hidden="true"><g stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path class="surface-fill" d="M13 17 5 21 1 30l8 5 5-6v30h19V29l4 6 7-5-5-9-8-4c-4 5-13 5-18 0Z"/><path d="M14 17c2 9 14 9 17 0"/><path fill="currentColor" d="m42 9 8-2 6 9 6-9 9 2-3 14c0 5 1 9 5 12v27H39V35c4-3 5-7 5-12Z"/><path class="bundle-detail" d="m43 12 7-2 6 12 7-12 6 2M56 22v34M44 15c2 10 1 15-3 19M68 15c-2 10-1 15 3 19"/><path class="bundle-band" d="M41 41h30v5H41z"/><path fill="currentColor" d="M79 13h17l3 48H88l-2-25-3 25H73Z"/><path class="bundle-band" d="M79 16h16v3H79z"/></g><g stroke-width="2" stroke-linejoin="round"><path class="orange-fill" d="m12 57 39 11 38-11v30l-38 18-39-18Z"/><path d="M51 68v37"/><path class="orange-fill" d="m12 48 39 12-5 13L3 59Zm77 0L51 60l5 13 42-14Z"/></g></svg></span>
+            <span class="nav-label">Bundles</span>
         </a>
-        <a href="https://wa.me/447447348564" class="nav-item" target="_blank" rel="noopener" data-open-whatsapp aria-label="Chat">
-            <span class="chat-nav-icon" aria-hidden="true"><span class="chat-nav-bubble"><span class="chat-nav-dot"></span><span class="chat-nav-dot"></span><span class="chat-nav-dot"></span></span></span>
-            <span class="nav-item-label">Chat</span>
-        </a>
+        <button type="button" class="nav-item" data-open-whatsapp data-nav-action aria-label="Chat">
+            <span class="nav-icon"><svg viewBox="0 0 52 52" aria-hidden="true"><path class="orange-fill" d="M28 23h12a8 8 0 0 1 8 8v6a7 7 0 0 1-5 7l1 6-8-6h-8a8 8 0 0 1-8-8v-5a8 8 0 0 1 8-8Z"/><path class="surface-fill" d="M12 6h22a8 8 0 0 1 8 8v12a8 8 0 0 1-8 8H19l-9 8 1-8a8 8 0 0 1-7-8V14a8 8 0 0 1 8-8Z"/><circle class="chat-dot dot-1" cx="15" cy="20" r="1.8" fill="currentColor" stroke="none"/><circle class="chat-dot dot-2" cx="23" cy="20" r="1.8" fill="currentColor" stroke="none"/><circle class="chat-dot dot-3" cx="31" cy="20" r="1.8" fill="currentColor" stroke="none"/></svg></span>
+            <span class="nav-label">Chat</span>
+        </button>
     </nav>
 
     <!-- Account Panel Overlay -->
@@ -2650,11 +2644,11 @@
     </div>
 
     <script src="brandedukv15-child/assets/js/cart.js?v=20260417"></script>
-    <script src="mobile/js/mobile.js?v=20261112-bundlespage"></script>
+    <script src="mobile/js/mobile.js?v=20261115-arrive"></script>
     <!-- customize.js only needed on customize pages, not homepage -->
     <script src="mobile/hero/hero.js?v=20261017-nopause"></script>
     <script src="mobile/js/popup-contact.js?v=20261003-consent"></script>
-    <script src="mobile/js/bottom-nav.js?v=20261016-newbar"></script>
+    <script src="mobile/js/bottom-nav.js?v=20261115-arrive"></script>
     <script src="mobile/js/header-menu.js?v=20261018-drawer"></script>
     <script src="mobile/js/faq.js?v=20260102"></script>
     <!-- Desktop Header JS -->

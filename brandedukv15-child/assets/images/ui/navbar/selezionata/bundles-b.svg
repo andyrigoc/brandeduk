@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="bundle-three" viewBox="0 0 104 108" aria-hidden="true"><style>svg{color:#ffffff;fill:none;stroke:#ffffff;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}.accent{stroke:#ff7a00}.orange-fill{fill:#ff7a00}.surface-fill{fill:#1a6582}.bundle-detail{fill:none;stroke:#1a6582;stroke-width:2.2}.bundle-band{fill:#1a6582;stroke:none}</style><g stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+<path class="surface-fill" d="M13 17 5 21 1 30l8 5 5-6v30h19V29l4 6 7-5-5-9-8-4c-4 5-13 5-18 0Z"/><path d="M14 17c2 9 14 9 17 0"/>
+<path fill="currentColor" d="m42 9 8-2 6 9 6-9 9 2-3 14c0 5 1 9 5 12v27H39V35c4-3 5-7 5-12Z"/>
+<path class="bundle-detail" d="m43 12 7-2 6 12 7-12 6 2M56 22v34M44 15c2 10 1 15-3 19M68 15c-2 10-1 15 3 19"/>
+<path class="bundle-band" d="M41 41h30v5H41z"/>
+<path fill="currentColor" d="M79 13h17l3 48H88l-2-25-3 25H73Z"/><path class="bundle-band" d="M79 16h16v3H79z"/>
+</g><g stroke-width="2" stroke-linejoin="round"><path class="orange-fill" d="m12 57 39 11 38-11v30l-38 18-39-18Z"/><path d="M51 68v37"/><path class="orange-fill" d="m12 48 39 12-5 13L3 59Zm77 0L51 60l5 13 42-14Z"/></g></svg>

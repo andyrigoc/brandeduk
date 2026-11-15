@@ -1633,9 +1633,14 @@ if (bundleRadial) bundleRadial.inert = true;
 if (bundleRadialAnchor) bundleRadialAnchor.inert = true;
 if (bundleRadialSheet) bundleRadialSheet.inert = true;
 
-bundleFiltersNav?.addEventListener('click', () => {
+function openBundleFiltersFromBar() {
   if (radialSheetOpen()) closeRadialSheet(false);
   toggleRadial();
+}
+bundleFiltersNav?.addEventListener('buk-open-filters', openBundleFiltersFromBar);
+bundleFiltersNav?.addEventListener('click', () => {
+  if (bundleFiltersNav.closest('nav.bottom-nav.nav')) return;
+  openBundleFiltersFromBar();
 });
 bundleRadialHub?.addEventListener('click', () => {
   toggleRadial(false);

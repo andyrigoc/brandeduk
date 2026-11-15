@@ -2,11 +2,14 @@
 
 document.addEventListener('DOMContentLoaded', function() {
     const mobileNavigation = window.matchMedia('(max-width: 699px)');
+    ensureBukNavCss();
+    upgradeAllBukNavs();
     if (mobileNavigation.matches) initMobileNavigation();
     mobileNavigation.addEventListener('change', (event) => {
         if (event.matches) {
             initMobileNavigation();
             initBottomNav();
+            mountBukNavIndicators();
         }
     });
     initVatToggle();
@@ -20,47 +23,8 @@ document.addEventListener('DOMContentLoaded', function() {
     syncMobileAccountAvatar();
     initBrandsMarqueeLogos();
     initStickyBarFooterPush();
-    applyShopNavIcon();
-    applyHomeNavIcon();
+    mountBukNavIndicators();
 });
-
-function applyHomeNavIcon() {
-    const nav = document.querySelector('.bottom-nav');
-    if (!nav) return;
-    const home = nav.querySelector('[data-home-nav]') || Array.from(nav.querySelectorAll('a.nav-item')).find((item) => {
-        const label = item.querySelector('.nav-item-label');
-        return (label ? label.textContent : item.textContent).trim() === 'Home';
-    });
-    if (!home || home.querySelector('.nav-home-icon')) return;
-    const icon = document.createElement('img');
-    icon.className = 'nav-home-icon';
-    icon.src = '/brandedukv15-child/assets/images/ui/home-nav.png?v=20261112-home';
-    icon.alt = '';
-    icon.width = 34;
-    icon.height = 34;
-    const svg = home.querySelector('svg');
-    if (svg) svg.replaceWith(icon);
-    else home.insertBefore(icon, home.querySelector('.nav-item-label'));
-}
-
-function applyShopNavIcon() {
-    const nav = document.querySelector('.bottom-nav');
-    if (!nav) return;
-    const shop = Array.from(nav.querySelectorAll('a.nav-item')).find((item) => {
-        const label = item.querySelector('.nav-item-label');
-        return (label ? label.textContent : item.textContent).trim() === 'Shop';
-    });
-    if (!shop || shop.querySelector('.nav-shop-icon')) return;
-    const icon = document.createElement('img');
-    icon.className = 'nav-shop-icon';
-    icon.src = '/brandedukv15-child/assets/images/ui/shop-storefront.png?v=20261112-shop';
-    icon.alt = '';
-    icon.width = 34;
-    icon.height = 34;
-    const svg = shop.querySelector('svg');
-    if (svg) svg.replaceWith(icon);
-    else shop.insertBefore(icon, shop.querySelector('.nav-item-label'));
-}
 
 function initMobileNavigation() {
     const actions = document.querySelector('.mobile-header--v2 .mh-actions');
@@ -77,32 +41,12 @@ function initMobileNavigation() {
         return item.id === 'accountNavBtn' || item.textContent.trim() === 'Account';
     });
 
-    if (account) {
-        const bundles = document.createElement('a');
-        bundles.href = '/bundle-configurator/?force=mobile';
-        bundles.className = 'nav-item nav-item--limited-bundles';
-        bundles.setAttribute('aria-label', 'Limited Bundles');
-
-        const icon = document.createElement('img');
-        icon.className = 'nav-limited-bundles-icon';
-        icon.src = '/brandedukv15-child/assets/images/ui/limited-bundles-nav.png?v=20261112-bundles';
-        icon.alt = '';
-        icon.width = 34;
-        icon.height = 34;
-
-        const label = document.createElement('span');
-        label.className = 'nav-item-label';
-        label.textContent = 'Bundles';
-        bundles.append(icon, label);
-        if (/\/bundles(?:\.html)?$/i.test(window.location.pathname) || /\/bundle-configurator(?:\/|$)/i.test(window.location.pathname)) {
-            bundles.classList.add('active');
-            bundles.setAttribute('aria-current', 'page');
-        }
-        account.replaceWith(bundles);
-
-        const accountLabel = account.querySelector('.nav-item-label');
+    if (account && account.closest('nav.bottom-nav')) {
+        const accountLabel = account.querySelector('.nav-item-label, .nav-label');
         if (accountLabel) accountLabel.remove();
-    } else {
+        account.remove();
+    }
+    if (!account) {
         account = document.createElement('a');
         account.className = 'nav-item';
         account.href = '/profile.html';
@@ -721,9 +665,429 @@ function initCategories() {
 
 // ============================================
 // BOTTOM NAVIGATION
+// Branded-UK-Navbar-V2 dark bar (body.dark): midnight bar, light icons,
+// white circle. CSS variables live on .nav.dark. Do not follow
+// prefers-color-scheme. Chat and Filters open panels and do not move the
+// circle. Customise uses V2 selectItem, so the circle moves onto it.
 // ============================================
+
+const BUK_NAV_CSS = '/mobile/css/bottom-nav.css?v=20261115-arrive';
+
+const BUK_ICONS = {
+    home: '<svg viewBox="0 0 52 52" aria-hidden="true"><path d="M10 24v20h11V32h10v12h11V24"/><path class="accent" d="m5 25 21-18 21 18M36 14V8h6v11"/></svg>',
+    shop: '<svg viewBox="0 0 52 52" aria-hidden="true"><path d="M10 25v20h32V25M15 45V31h12v14M32 31h6v7h-6z"/><path fill="#ff7a00" d="M10 9H16.4L13.4 24q0 5-4.2 5t-4.2-5Z"/><path fill="#ffffff" d="M16.4 9H22.8L21.8 24q0 5-4.2 5t-4.2-5Z"/><path fill="#ff7a00" d="M22.8 9H29.2L30.2 24q0 5-4.2 5t-4.2-5Z"/><path fill="#ffffff" d="M29.2 9H35.6L38.6 24q0 5-4.2 5t-4.2-5Z"/><path fill="#ff7a00" d="M35.6 9H42L47 24q0 5-4.2 5t-4.2-5Z"/></svg>',
+    customise: '<svg viewBox="0 0 52 52" aria-hidden="true"><path d="m17 9-10 5-4 10 9 4 3-6v23h22V22l3 6 9-4-4-10-10-5a9 9 0 0 1-18 0Z"/><path class="accent sparkle sparkle-chest" d="M21 29h10M26 24v10"/><path class="accent sparkle sparkle-shoulder" d="m39 5 1.5 4.5L45 11l-4.5 1.5L39 17l-1.5-4.5L33 11l4.5-1.5Z"/><path class="sparkle sparkle-hem" d="m34 35 1 3 3 1-3 1-1 3-1-3-3-1 3-1Z"/></svg>',
+    filters: '<svg viewBox="0 0 52 52" aria-hidden="true"><path d="M12 6v40M26 6v40M40 6v40"/><rect class="orange-fill filter-level level-one" x="7" y="14" width="10" height="8" rx="3"/><rect class="surface-fill filter-level level-two" x="21" y="30" width="10" height="8" rx="3"/><rect class="orange-fill filter-level level-three" x="35" y="10" width="10" height="8" rx="3"/></svg>',
+    chat: '<svg viewBox="0 0 52 52" aria-hidden="true"><path class="orange-fill" d="M28 23h12a8 8 0 0 1 8 8v6a7 7 0 0 1-5 7l1 6-8-6h-8a8 8 0 0 1-8-8v-5a8 8 0 0 1 8-8Z"/><path class="surface-fill" d="M12 6h22a8 8 0 0 1 8 8v12a8 8 0 0 1-8 8H19l-9 8 1-8a8 8 0 0 1-7-8V14a8 8 0 0 1 8-8Z"/><circle class="chat-dot dot-1" cx="15" cy="20" r="1.8" fill="currentColor" stroke="none"/><circle class="chat-dot dot-2" cx="23" cy="20" r="1.8" fill="currentColor" stroke="none"/><circle class="chat-dot dot-3" cx="31" cy="20" r="1.8" fill="currentColor" stroke="none"/></svg>',
+    /* Bundles B is the icon the source bar shows in the slot (pointed base, centre line). */
+    bundles: '<svg class="bundle-three" viewBox="0 0 104 108" aria-hidden="true"><g stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path class="surface-fill" d="M13 17 5 21 1 30l8 5 5-6v30h19V29l4 6 7-5-5-9-8-4c-4 5-13 5-18 0Z"/><path d="M14 17c2 9 14 9 17 0"/><path fill="currentColor" d="m42 9 8-2 6 9 6-9 9 2-3 14c0 5 1 9 5 12v27H39V35c4-3 5-7 5-12Z"/><path class="bundle-detail" d="m43 12 7-2 6 12 7-12 6 2M56 22v34M44 15c2 10 1 15-3 19M68 15c-2 10-1 15 3 19"/><path class="bundle-band" d="M41 41h30v5H41z"/><path fill="currentColor" d="M79 13h17l3 48H88l-2-25-3 25H73Z"/><path class="bundle-band" d="M79 16h16v3H79z"/></g><g stroke-width="2" stroke-linejoin="round"><path class="orange-fill" d="m12 57 39 11 38-11v30l-38 18-39-18Z"/><path d="M51 68v37"/><path class="orange-fill" d="m12 48 39 12-5 13L3 59Zm77 0L51 60l5 13 42-14Z"/></g></svg>'
+};
+
+function ensureBukNavCss() {
+    const links = document.querySelectorAll('link[rel="stylesheet"]');
+    for (let i = 0; i < links.length; i += 1) {
+        if ((links[i].getAttribute('href') || '').indexOf('bottom-nav.css?v=20261115-arrive') !== -1) return;
+    }
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = BUK_NAV_CSS;
+    document.head.appendChild(link);
+}
+
+function bukLabel(item) {
+    if (!item) return '';
+    const label = item.querySelector('.nav-label, .nav-item-label');
+    return (label ? label.textContent : '').replace(/\s+/g, ' ').trim().toLowerCase();
+}
+
+function findBukSlot(nav, names) {
+    const wanted = names.map((name) => name.toLowerCase());
+    return Array.from(nav.querySelectorAll(':scope > a, :scope > button')).find((item) => wanted.indexOf(bukLabel(item)) !== -1) || null;
+}
+
+function currentBukSection() {
+    const path = (window.location.pathname || '/').replace(/\\/g, '/').toLowerCase();
+    const file = path.split('/').filter(Boolean).pop() || '';
+    if (path.indexOf('/bundle-configurator') !== -1 || file === 'bundles.html' || file === 'bundles') return 'bundles';
+    if (file.indexOf('shop-categories-mobile') !== -1 || file.indexOf('shop-mobile') !== -1 || file === 'shop.html' || file === 'shop') return 'shop';
+    if (file === 'index-mobile.html' || file === 'home-mobile.html' || file === 'index.html' || file === '') return 'home';
+    return '';
+}
+
+function bukIcon(name) {
+    const span = document.createElement('span');
+    span.className = 'nav-icon';
+    if (name === 'bundles') span.setAttribute('data-bundle', '');
+    span.innerHTML = BUK_ICONS[name] || '';
+    return span;
+}
+
+function bukText(text) {
+    const span = document.createElement('span');
+    span.className = 'nav-label';
+    span.textContent = text;
+    return span;
+}
+
+function readBukCentre(nav) {
+    const filters = nav.querySelector('#bundleFiltersNav, #filtersNavBtn')
+        || findBukSlot(nav, ['filter', 'filters']);
+    if (filters) {
+        return {
+            kind: 'filters',
+            id: filters.id || 'filtersNavBtn',
+            ariaLabel: filters.getAttribute('aria-label') || 'Filters',
+            haspopup: filters.getAttribute('aria-haspopup') || '',
+            controls: filters.getAttribute('aria-controls') || '',
+            expanded: filters.getAttribute('aria-expanded') || 'false'
+        };
+    }
+    const custom = nav.querySelector('#customiseNavBtn, [data-start-sheet-trigger]');
+    if (custom || !/bundle-configurator/i.test(window.location.pathname)) {
+        return {
+            kind: 'customise',
+            id: (custom && custom.id) || 'customiseNavBtn',
+            controls: (custom && custom.getAttribute('aria-controls')) || 'startSheet',
+            expanded: (custom && custom.getAttribute('aria-expanded')) || 'false'
+        };
+    }
+    return {
+        kind: 'filters',
+        id: 'bundleFiltersNav',
+        ariaLabel: 'Open bundle filters',
+        haspopup: 'dialog',
+        controls: 'bundleRadial',
+        expanded: 'false'
+    };
+}
+
+function makeBukCentre(spec, countNode) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'nav-item';
+    button.setAttribute('data-nav-action', '');
+    button.id = spec.id;
+    const icon = bukIcon(spec.kind === 'filters' ? 'filters' : 'customise');
+    if (spec.id === 'bundleFiltersNav') icon.classList.add('nav-customise-icon');
+    if (spec.kind === 'customise') {
+        button.setAttribute('data-start-sheet-trigger', '');
+        button.setAttribute('aria-haspopup', 'dialog');
+        button.setAttribute('aria-expanded', spec.expanded || 'false');
+        button.setAttribute('aria-controls', spec.controls || 'startSheet');
+    } else {
+        button.setAttribute('aria-label', spec.ariaLabel || 'Filters');
+        if (spec.haspopup) button.setAttribute('aria-haspopup', spec.haspopup);
+        if (spec.controls) button.setAttribute('aria-controls', spec.controls);
+        button.setAttribute('aria-expanded', spec.expanded || 'false');
+    }
+    button.append(icon, bukText(spec.kind === 'filters' ? 'Filters' : 'Customise'));
+    if (countNode) button.append(countNode);
+    return button;
+}
+
+function makeBukLink(href, section, label, iconName, extra) {
+    const link = document.createElement('a');
+    link.className = 'nav-item';
+    link.href = href;
+    if (section) link.dataset.section = section;
+    if (section === 'home') link.setAttribute('data-home-nav', '');
+    if (section === 'bundles') link.setAttribute('aria-label', 'Limited Bundles');
+    if (extra) {
+        if (extra.target) link.target = extra.target;
+        if (extra.rel) link.rel = extra.rel;
+    }
+    link.append(bukIcon(iconName), bukText(label));
+    return link;
+}
+
+/* Chat opens the in-page support panel (whatsapp.js openPopup / window.openBrandedChat).
+   It must not be a wa.me link: pages that do not load that script would otherwise leave the site. */
+function makeBukChat() {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'nav-item';
+    button.setAttribute('data-open-whatsapp', '');
+    button.setAttribute('data-nav-action', '');
+    button.setAttribute('aria-label', 'Chat');
+    button.append(bukIcon('chat'), bukText('Chat'));
+    return button;
+}
+
+function ensureBrandedChat() {
+    if (typeof window.openBrandedChat === 'function') return Promise.resolve();
+    if (!document.querySelector('link[href*="whatsapp.css"]')) {
+        const css = document.createElement('link');
+        css.rel = 'stylesheet';
+        css.href = '/mobile/css/whatsapp.css?v=20261020-noclose';
+        document.head.appendChild(css);
+    }
+    const existing = document.querySelector('script[src*="whatsapp.js"]');
+    if (existing && typeof window.openBrandedChat === 'function') return Promise.resolve();
+    return new Promise((resolve) => {
+        const script = document.createElement('script');
+        script.src = '/mobile/js/whatsapp.js?v=20261027-no-attach';
+        script.onload = () => resolve();
+        script.onerror = () => resolve();
+        document.body.appendChild(script);
+    });
+}
+
+function syncBukActive(nav) {
+    const section = currentBukSection();
+    if (section) nav.dataset.active = section;
+    else delete nav.dataset.active;
+    nav.querySelectorAll(':scope > .nav-item').forEach((item) => {
+        const selected = !item.hasAttribute('data-nav-action') && item.dataset.section === section && section !== '';
+        item.classList.toggle('active', selected);
+        if (selected) item.setAttribute('aria-current', 'page');
+        else item.removeAttribute('aria-current');
+    });
+}
+
+function upgradeBukNav(nav) {
+    if (!nav) return;
+    nav.classList.add('bottom-nav', 'bottom-nav--v2', 'buk-nav', 'nav', 'dark');
+    nav.style.removeProperty('--page');
+    const built = nav.classList.contains('buk-nav') && nav.querySelector(':scope > .indicator') && nav.querySelector('[data-section]');
+    if (built) {
+        nav.querySelectorAll(':scope > .mobile-nav__indicator').forEach((node) => node.remove());
+        syncBukActive(nav);
+        return;
+    }
+
+    const homeNode = nav.querySelector('[data-home-nav]') || findBukSlot(nav, ['home']);
+    const shopNode = findBukSlot(nav, ['shop']);
+    const bundlesNode = findBukSlot(nav, ['bundles']);
+    const centre = readBukCentre(nav);
+    const count = nav.querySelector('#bundleFilterCount');
+    if (count) count.remove();
+
+    const homeHref = (homeNode && homeNode.getAttribute('href')) || '/index-mobile.html?force=mobile';
+    const shopHref = (shopNode && shopNode.getAttribute('href')) || '/mobile/shop-categories-mobile.html?force=mobile';
+    const bundlesHref = (bundlesNode && bundlesNode.getAttribute('href')) || '/bundle-configurator/?force=mobile';
+
+    nav.classList.add('bottom-nav', 'bottom-nav--v2', 'buk-nav', 'nav', 'dark');
+    nav.classList.remove('mobile-nav');
+    nav.style.removeProperty('--indicator-x');
+    while (nav.firstChild) nav.removeChild(nav.firstChild);
+
+    const indicator = document.createElement('span');
+    indicator.className = 'indicator';
+    indicator.setAttribute('aria-hidden', 'true');
+    nav.append(
+        indicator,
+        makeBukLink(homeHref, 'home', 'Home', 'home'),
+        makeBukLink(shopHref, 'shop', 'Shop', 'shop'),
+        makeBukCentre(centre, centre.kind === 'filters' ? count : null),
+        makeBukLink(bundlesHref, 'bundles', 'Bundles', 'bundles'),
+        makeBukChat()
+    );
+    if (count && centre.kind !== 'filters' && !count.parentNode) {
+        const filters = nav.querySelector('#bundleFiltersNav, #filtersNavBtn');
+        if (filters) filters.append(count);
+    }
+    syncBukActive(nav);
+}
+
+function upgradeAllBukNavs() {
+    document.querySelectorAll('nav.bottom-nav').forEach(upgradeBukNav);
+}
+
+function initBukNav(nav) {
+    if (!nav) return null;
+    const indicator = nav.querySelector(':scope > .indicator');
+    if (!indicator) return null;
+    nav.style.removeProperty('--page');
+    const items = [...nav.querySelectorAll(':scope > .nav-item')];
+    let activeItem = items.find((item) => item.classList.contains('active') && !item.hasAttribute('data-nav-action')) || null;
+    let frame;
+
+    function readXDuration() {
+        const style = getComputedStyle(nav);
+        const props = style.transitionProperty.split(',').map((part) => part.trim());
+        const durations = style.transitionDuration.split(',').map((part) => part.trim());
+        const index = props.indexOf('--x');
+        const raw = (index >= 0 ? durations[index] : durations[durations.length - 1]) || '0s';
+        if (raw.endsWith('ms')) return parseFloat(raw) || 0;
+        if (raw.endsWith('s')) return (parseFloat(raw) || 0) * 1000;
+        return 0;
+    }
+
+    let slideUntil = 0;
+
+    function positionIndicator(instant) {
+        if (!activeItem || nav.getBoundingClientRect().width === 0) return;
+        const svg = activeItem.querySelector('.nav-icon svg');
+        if (!svg) return;
+        const width = indicator.offsetWidth || indicator.getBoundingClientRect().width;
+        if (!width) {
+            frame = requestAnimationFrame(() => positionIndicator(instant));
+            return;
+        }
+        if (instant) {
+            cancelAnimationFrame(frame);
+            nav.classList.add('instant');
+        } else {
+            nav.classList.remove('instant');
+        }
+        indicator.getBoundingClientRect();
+        const svgRect = svg.getBoundingClientRect();
+        const svgCenter = svgRect.left + svgRect.width / 2;
+        const currentX = parseFloat(getComputedStyle(nav).getPropertyValue('--x')) || 0;
+        const originLeft = indicator.getBoundingClientRect().left - currentX;
+        const x = svgCenter - width / 2 - originLeft;
+        if (!instant) slideUntil = performance.now() + readXDuration();
+        nav.style.setProperty('--x', x + 'px');
+        nav.classList.add('ready');
+        if (instant) {
+            indicator.getBoundingClientRect();
+            frame = requestAnimationFrame(() => nav.classList.remove('instant'));
+        }
+    }
+
+    const resizeObserver = new ResizeObserver(() => {
+        if (performance.now() < slideUntil) return;
+        positionIndicator(true);
+    });
+    resizeObserver.observe(nav);
+    if (activeItem) positionIndicator(true);
+
+    function showOnItem(item, animate) {
+        activeItem = item;
+        items.forEach((candidate) => {
+            const selected = candidate === item;
+            candidate.classList.toggle('active', selected);
+            if (!selected) candidate.removeAttribute('aria-current');
+        });
+        positionIndicator(!animate);
+    }
+
+    let arriveToken = 0;
+
+    function whenArrived(startX, callback) {
+        const token = ++arriveToken;
+        const target = parseFloat(nav.style.getPropertyValue('--x')) || 0;
+        if (Math.abs(target - startX) < 0.5) {
+            callback();
+            return;
+        }
+        let finished = false;
+        const finish = () => {
+            nav.removeEventListener('transitionend', onEnd);
+            window.clearTimeout(timer);
+            if (finished || token !== arriveToken) return;
+            finished = true;
+            callback();
+        };
+        const onEnd = (event) => {
+            if (event.target !== nav || event.propertyName !== '--x') return;
+            finish();
+        };
+        nav.addEventListener('transitionend', onEnd);
+        const timer = window.setTimeout(finish, readXDuration() + 60);
+    }
+
+    // Capture runs before the item's own click handler, so the panel or the
+    // next page cannot open until the circle has finished travelling.
+    nav.addEventListener('click', (event) => {
+        const item = event.target.closest('.nav-item');
+        if (!item || !nav.contains(item)) return;
+        const isLink = item.tagName === 'A' && item.getAttribute('href');
+        if (isLink && (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0)) return;
+        if (isLink && item.target && item.target !== '_self') return;
+
+        const opensLater = isLink
+            || item.hasAttribute('data-open-whatsapp')
+            || item.hasAttribute('data-start-sheet-trigger')
+            || item.id === 'customiseNavBtn'
+            || item.id === 'filtersNavBtn'
+            || item.id === 'bundleFiltersNav';
+        if (!opensLater) {
+            showOnItem(item, true);
+            return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+        const already = item.classList.contains('active');
+        const startX = parseFloat(getComputedStyle(nav).getPropertyValue('--x')) || 0;
+        const arrive = (action) => {
+            if (already) {
+                action();
+                return;
+            }
+            showOnItem(item, true);
+            whenArrived(startX, action);
+        };
+
+        if (isLink) {
+            const href = item.href;
+            arrive(() => window.location.assign(href));
+            return;
+        }
+        if (item.hasAttribute('data-start-sheet-trigger') || item.id === 'customiseNavBtn') {
+            const sheet = document.getElementById('startSheet');
+            if (already && sheet && !sheet.hidden && typeof window.__brandedCloseStartSheet === 'function') {
+                window.__brandedCloseStartSheet(true);
+                return;
+            }
+            arrive(() => {
+                if (typeof window.__brandedOpenStartSheet === 'function') window.__brandedOpenStartSheet(item);
+            });
+            return;
+        }
+        if (item.hasAttribute('data-open-whatsapp')) {
+            arrive(() => {
+                ensureBrandedChat().then(() => {
+                    if (typeof window.openBrandedChat === 'function') window.openBrandedChat();
+                });
+            });
+            return;
+        }
+        arrive(() => item.dispatchEvent(new CustomEvent('buk-open-filters')));
+    }, true);
+
+    return {
+        setActive(item) {
+            if (!items.includes(item) || item.hasAttribute('data-nav-action')) return;
+            activeItem = item;
+            items.forEach((candidate) => {
+                const selected = candidate === item;
+                candidate.classList.toggle('active', selected);
+                if (selected) candidate.setAttribute('aria-current', 'page');
+                else candidate.removeAttribute('aria-current');
+            });
+            if (item.dataset.section) nav.dataset.active = item.dataset.section;
+            positionIndicator(false);
+        },
+        destroy() {
+            resizeObserver.disconnect();
+            cancelAnimationFrame(frame);
+        }
+    };
+}
+
+function mountBukNavIndicators() {
+    if (!window.__bukNavVisibilityBound) {
+        window.__bukNavVisibilityBound = true;
+        document.addEventListener('visibilitychange', () => {
+            const state = document.hidden ? 'paused' : 'running';
+            document.querySelectorAll('.buk-nav .chat-dot, .buk-nav .filter-level, .buk-nav .sparkle').forEach((el) => {
+                el.style.animationPlayState = state;
+            });
+        });
+    }
+    let primary = null;
+    document.querySelectorAll('nav.bottom-nav.buk-nav').forEach((nav) => {
+        if (nav.__bukNav && typeof nav.__bukNav.destroy === 'function') nav.__bukNav.destroy();
+        nav.__bukNav = initBukNav(nav);
+        if (!primary && nav.__bukNav) primary = nav.__bukNav;
+    });
+    window.mobileNav = primary;
+}
+
 function initBottomNav() {
-    const navItems = document.querySelectorAll('.bottom-nav .nav-item');
+    const navItems = document.querySelectorAll('.bottom-nav:not(.buk-nav) .nav-item');
     const currentPage = window.location.pathname.split('/').pop() || 'home-mobile.html';
 
     navItems.forEach(item => {
@@ -1414,11 +1778,13 @@ function initFiltersDropup() {
     
     if (!filtersBtn || !filtersDropup) return;
     
-    // Open filters
+    // Open filters. The bottom bar slides first, then dispatches buk-open-filters.
     filtersBtn.addEventListener('click', function(e) {
         e.preventDefault();
+        if (filtersBtn.closest('nav.bottom-nav.nav')) return;
         openFilters();
     });
+    filtersBtn.addEventListener('buk-open-filters', openFilters);
     
     // Close filters
     if (filtersClose) {

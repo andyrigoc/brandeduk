@@ -74,12 +74,15 @@
     });
   }
 
-  // Leaves the bar itself uncovered: the sheet ends where the bar begins.
+  // 16px of circle above the bar, 2px orange ring, 10px gap.
+  var CIRCLE_CLEARANCE = 28;
+
+  // Leaves the bar and the raised circle uncovered.
   function positionAboveBar() {
     var bar = activeTrigger && activeTrigger.closest('nav');
-    var offset = FALLBACK_BAR_HEIGHT;
+    var offset = FALLBACK_BAR_HEIGHT + CIRCLE_CLEARANCE;
     if (bar) {
-      offset = Math.max(0, Math.round(window.innerHeight - bar.getBoundingClientRect().top));
+      offset = Math.max(0, Math.round(window.innerHeight - bar.getBoundingClientRect().top)) + CIRCLE_CLEARANCE;
     }
     sheet.style.setProperty('--start-sheet-bottom', offset + 'px');
   }
@@ -162,6 +165,9 @@
   window.addEventListener('pageshow', function (event) {
     if (event.persisted) close(false);
   });
+
+  window.__brandedOpenStartSheet = open;
+  window.__brandedCloseStartSheet = close;
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', buildSheet);

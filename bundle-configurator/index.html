@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="/mobile/css/mobile-chrome-base.css?v=20261113-bundles" media="(max-width: 699px)">
   <link rel="stylesheet" href="/mobile/css/header-v2.css?v=20261113-bundles">
   <link rel="stylesheet" href="/mobile/css/search-suggestions.css?v=20261020a">
-  <link rel="stylesheet" href="/mobile/css/bottom-nav.css?v=20261113-bundles">
+  <link rel="stylesheet" href="/mobile/css/bottom-nav.css?v=20261115-arrive">
   <link rel="stylesheet" href="/mobile/css/chat-nav-icon.css?v=20261020b">
   <link rel="stylesheet" href="/mobile/css/bundles-flip.css?v=20261114-scrollthenflip4" media="(max-width: 699px)">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -373,41 +373,33 @@
       <span class="bundle-radial-bars" aria-hidden="true"><span></span><span></span><span></span></span>
     </button>
   </div>
-  <nav class="bottom-nav bottom-nav--v2" aria-label="Main navigation">
-    <a href="/index-mobile.html?force=mobile" class="nav-item" data-home-nav>
-      <img class="nav-home-icon" src="/brandedukv15-child/assets/images/ui/home-nav.png?v=20261112-home" alt="" width="34" height="34">
-      <span class="nav-item-label">Home</span>
+  <nav class="bottom-nav bottom-nav--v2 buk-nav nav dark" data-active="bundles" aria-label="Main navigation">
+    <span class="indicator" aria-hidden="true"></span>
+    <a href="/index-mobile.html?force=mobile" class="nav-item" data-home-nav data-section="home">
+      <span class="nav-icon"><svg viewBox="0 0 52 52" aria-hidden="true"><path d="M10 24v20h11V32h10v12h11V24"/><path class="accent" d="m5 25 21-18 21 18M36 14V8h6v11"/></svg></span>
+      <span class="nav-label">Home</span>
     </a>
-    <a href="/mobile/shop-categories-mobile.html?force=mobile" class="nav-item">
-      <img class="nav-shop-icon" src="/brandedukv15-child/assets/images/ui/shop-storefront.png?v=20261112-shop" alt="" width="34" height="34">
-      <span class="nav-item-label">Shop</span>
+    <a href="/mobile/shop-categories-mobile.html?force=mobile" class="nav-item" data-section="shop">
+      <span class="nav-icon"><svg viewBox="0 0 52 52" aria-hidden="true"><path d="M10 25v20h32V25M15 45V31h12v14M32 31h6v7h-6z"/><path fill="#ff7a00" d="M10 9H16.4L13.4 24q0 5-4.2 5t-4.2-5Z"/><path fill="#ffffff" d="M16.4 9H22.8L21.8 24q0 5-4.2 5t-4.2-5Z"/><path fill="#ff7a00" d="M22.8 9H29.2L30.2 24q0 5-4.2 5t-4.2-5Z"/><path fill="#ffffff" d="M29.2 9H35.6L38.6 24q0 5-4.2 5t-4.2-5Z"/><path fill="#ff7a00" d="M35.6 9H42L47 24q0 5-4.2 5t-4.2-5Z"/></svg></span>
+      <span class="nav-label">Shop</span>
     </a>
-    <button type="button" class="nav-item nav-item--customise" id="bundleFiltersNav" aria-haspopup="dialog" aria-expanded="false" aria-controls="bundleRadial" aria-label="Open bundle filters">
-      <span class="nav-customise-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false" aria-hidden="true">
-          <line x1="6" y1="21" x2="6" y2="3"></line>
-          <line x1="12" y1="21" x2="12" y2="3"></line>
-          <line x1="18" y1="21" x2="18" y2="3"></line>
-          <circle class="bundle-filters-knob" cx="6" cy="8" r="2.15" fill="#fff" stroke="none"></circle>
-          <circle class="bundle-filters-knob bundle-filters-knob--mid" cx="12" cy="14" r="2.15" fill="#fff" stroke="none"></circle>
-          <circle class="bundle-filters-knob bundle-filters-knob--late" cx="18" cy="10" r="2.15" fill="#fff" stroke="none"></circle>
-        </svg>
-        <span class="bundle-fab-count" id="bundleFilterCount" hidden>0</span>
-      </span>
-      <span class="nav-item-label">Filters</span>
+    <button type="button" class="nav-item" id="bundleFiltersNav" data-nav-action aria-haspopup="dialog" aria-expanded="false" aria-controls="bundleRadial" aria-label="Open bundle filters">
+      <span class="nav-icon nav-customise-icon"><svg viewBox="0 0 52 52" aria-hidden="true"><path d="M12 6v40M26 6v40M40 6v40"/><rect class="orange-fill filter-level level-one" x="7" y="14" width="10" height="8" rx="3"/><rect class="surface-fill filter-level level-two" x="21" y="30" width="10" height="8" rx="3"/><rect class="orange-fill filter-level level-three" x="35" y="10" width="10" height="8" rx="3"/></svg></span>
+      <span class="nav-label">Filters</span>
+      <span class="bundle-fab-count" id="bundleFilterCount" hidden>0</span>
     </button>
-    <a href="/bundle-configurator/" class="nav-item nav-item--limited-bundles" aria-current="page" aria-label="Limited Bundles">
-      <img class="nav-limited-bundles-icon" src="/brandedukv15-child/assets/images/ui/limited-bundles-nav.png?v=20261112-bundles" alt="" width="34" height="34">
-      <span class="nav-item-label">Bundles</span>
+    <a href="/bundle-configurator/" class="nav-item active" data-section="bundles" aria-current="page" aria-label="Limited Bundles">
+      <span class="nav-icon" data-bundle><svg class="bundle-three" viewBox="0 0 104 108" aria-hidden="true"><g stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path class="surface-fill" d="M13 17 5 21 1 30l8 5 5-6v30h19V29l4 6 7-5-5-9-8-4c-4 5-13 5-18 0Z"/><path d="M14 17c2 9 14 9 17 0"/><path fill="currentColor" d="m42 9 8-2 6 9 6-9 9 2-3 14c0 5 1 9 5 12v27H39V35c4-3 5-7 5-12Z"/><path class="bundle-detail" d="m43 12 7-2 6 12 7-12 6 2M56 22v34M44 15c2 10 1 15-3 19M68 15c-2 10-1 15 3 19"/><path class="bundle-band" d="M41 41h30v5H41z"/><path fill="currentColor" d="M79 13h17l3 48H88l-2-25-3 25H73Z"/><path class="bundle-band" d="M79 16h16v3H79z"/></g><g stroke-width="2" stroke-linejoin="round"><path class="orange-fill" d="m12 57 39 11 38-11v30l-38 18-39-18Z"/><path d="M51 68v37"/><path class="orange-fill" d="m12 48 39 12-5 13L3 59Zm77 0L51 60l5 13 42-14Z"/></g></svg></span>
+      <span class="nav-label">Bundles</span>
     </a>
-    <a href="https://wa.me/447447348564" class="nav-item" target="_blank" rel="noopener" data-open-whatsapp aria-label="Chat">
-      <span class="chat-nav-icon" aria-hidden="true"><span class="chat-nav-bubble"><span class="chat-nav-dot"></span><span class="chat-nav-dot"></span><span class="chat-nav-dot"></span></span></span>
-      <span class="nav-item-label">Chat</span>
-    </a>
+    <button type="button" class="nav-item" data-open-whatsapp data-nav-action aria-label="Chat">
+      <span class="nav-icon"><svg viewBox="0 0 52 52" aria-hidden="true"><path class="orange-fill" d="M28 23h12a8 8 0 0 1 8 8v6a7 7 0 0 1-5 7l1 6-8-6h-8a8 8 0 0 1-8-8v-5a8 8 0 0 1 8-8Z"/><path class="surface-fill" d="M12 6h22a8 8 0 0 1 8 8v12a8 8 0 0 1-8 8H19l-9 8 1-8a8 8 0 0 1-7-8V14a8 8 0 0 1 8-8Z"/><circle class="chat-dot dot-1" cx="15" cy="20" r="1.8" fill="currentColor" stroke="none"/><circle class="chat-dot dot-2" cx="23" cy="20" r="1.8" fill="currentColor" stroke="none"/><circle class="chat-dot dot-3" cx="31" cy="20" r="1.8" fill="currentColor" stroke="none"/></svg></span>
+      <span class="nav-label">Chat</span>
+    </button>
   </nav>
-  <script src="/mobile/js/mobile.js?v=20261113-bundles"></script>
+  <script src="/mobile/js/mobile.js?v=20261115-arrive"></script>
   <script src="/mobile/js/header-menu.js?v=20261018-drawer"></script>
-  <script src="/mobile/js/bottom-nav.js?v=20261016-newbar"></script>
+  <script src="/mobile/js/bottom-nav.js?v=20261115-arrive"></script>
   <script src="/mobile/js/bundles-flip.js?v=20261114-scrollthenflip4"></script>
 </body>
 </html>
