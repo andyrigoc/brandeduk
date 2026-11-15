@@ -551,7 +551,7 @@ function emptyFilterMessage() {
   return 'No bundles match these filters.';
 }
 
-let catalogueSort = 'default';
+let catalogueSort = 'cost';
 
 function accentTheme(deal, index) {
   if (hasSector(deal, 'construction') || hasFeature(deal, 'high-visibility') || hasType(deal, 'safety-vests')) return 'construction';
@@ -1319,6 +1319,36 @@ function syncRadialPicks() {
     const item = radialCatalog.find(entry => entry.id === button.dataset.filterId);
     button.classList.toggle('is-picked', Boolean(item && filterIsSet(item, appliedBundleFilters)));
   });
+  syncHorizontalFilterChips();
+}
+
+function syncHorizontalFilterChips() {
+  const row = $('bundleFilterRow');
+  if (!row) return;
+  row.querySelectorAll('[data-filter-id]').forEach(button => {
+    const item = radialCatalog.find(entry => entry.id === button.dataset.filterId);
+    const picked = Boolean(item && filterIsSet(item, appliedBundleFilters));
+    button.classList.toggle('is-picked', picked);
+    button.setAttribute('aria-pressed', String(picked));
+  });
+}
+
+function mountHorizontalFilterChips() {
+  const row = $('bundleFilterRow');
+  if (!row || row.dataset.ready === '1') return;
+  row.dataset.ready = '1';
+  radialCatalog.forEach(item => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'bundle-filter-chip';
+    button.dataset.filterId = item.id;
+    button.setAttribute('aria-pressed', 'false');
+    button.setAttribute('aria-label', `Filter by ${item.title}`);
+    button.innerHTML = `${item.icon}<span>${item.title}</span>`;
+    button.addEventListener('click', () => openRadialSheet(item));
+    row.append(button);
+  });
+  syncHorizontalFilterChips();
 }
 
 function syncRadialButton() {
@@ -1330,10 +1360,15 @@ function syncRadialButton() {
 function placeRadialHub() {
   const nav = bundleFiltersNav?.closest('.bottom-nav');
   if (!nav || !bundleRadialAnchor || !bundleFiltersNav) return;
-  const navRect = nav.getBoundingClientRect();
-  const btnRect = bundleFiltersNav.getBoundingClientRect();
+  const anchor = window.__bukFilterAnchor;
+  const navRect = anchor
+    ? { top: anchor.navTop, left: 0, width: window.innerWidth, height: 82, bottom: anchor.navTop + 82 }
+    : nav.getBoundingClientRect();
+  const btnRect = anchor
+    ? { left: anchor.left, top: anchor.top, width: anchor.width, height: anchor.height }
+    : bundleFiltersNav.getBoundingClientRect();
   const icon = bundleFiltersNav.querySelector('.nav-customise-icon');
-  const iconRect = icon ? icon.getBoundingClientRect() : btnRect;
+  const iconRect = anchor ? btnRect : (icon ? icon.getBoundingClientRect() : btnRect);
   const header = document.querySelector('.mobile-header');
   const headerBottom = header ? Math.max(0, header.getBoundingClientRect().bottom) : 0;
   const gutter = 14;
@@ -1638,6 +1673,10 @@ function openBundleFiltersFromBar() {
   toggleRadial();
 }
 bundleFiltersNav?.addEventListener('buk-open-filters', openBundleFiltersFromBar);
+document.addEventListener('buk-close-filters', () => {
+  if (radialSheetOpen()) closeRadialSheet(false);
+  toggleRadial(false);
+});
 bundleFiltersNav?.addEventListener('click', () => {
   if (bundleFiltersNav.closest('nav.bottom-nav.nav')) return;
   openBundleFiltersFromBar();
@@ -1703,10 +1742,24 @@ document.addEventListener('keydown', event => {
     toggleRadial(false);
   }
 });
-$('bundleSort')?.addEventListener('change', event => {
-  catalogueSort = event.target.value || 'default';
-  renderShop();
-});
+mountHorizontalFilterChips();
+
+const bundleSortSelect = $('bundleSort');
+if (bundleSortSelect) {
+  bundleSortSelect.value = catalogueSort;
+  bundleSortSelect.addEventListener('change', event => {
+    const value = event.target.value || 'cost';
+    if (value.startsWith('filter:')) {
+      const filterId = value.slice(7);
+      const item = radialCatalog.find(entry => entry.id === filterId);
+      bundleSortSelect.value = catalogueSort;
+      if (item) openRadialSheet(item);
+      return;
+    }
+    catalogueSort = value;
+    renderShop();
+  });
+}
 
 function refreshCatalogueVatLabels() {
   document.querySelectorAll('.vat-suffix').forEach(el => {

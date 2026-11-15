@@ -118,8 +118,7 @@ ul, ol { list-style: none; padding: 0; }
 .bundle-filter-select select { width: 100%; min-height: 48px; padding: 0 40px 0 14px; border: 1.5px solid #d5dbe8; border-radius: 12px; background: #fff; color: var(--ink); font-weight: 650; appearance: none; }
 .bundle-filter-apply { width: 100%; min-height: 50px; margin-top: 4px; border: 0; border-radius: 12px; background: var(--navy); color: #fff; font-size: 1rem; font-weight: 760; }
 .bundle-filter-apply:hover { background: #1d2854; }
-#bundleFiltersNav:active .nav-customise-icon { transform: scale(0.93); box-shadow: 0 1px 4px rgba(15, 23, 42, .25); }
-#bundleFiltersNav .nav-customise-icon { position: relative; z-index: 2; overflow: visible; }
+#bundleFiltersNav .nav-customise-icon { overflow: visible; }
 @keyframes bundle-filters-knob-slide {
   0%, 100% { translate: 0 2px; }
   50% { translate: 0 -2px; }
@@ -162,6 +161,7 @@ body.bundle-filters-open { overflow: hidden; }
 .filters-apply-btn { width: 100%; min-height: 44px; border: 0; border-radius: 9px; background: linear-gradient(135deg, rgba(39,52,105,.9), rgba(88,28,135,.9)); color: #fff; font-weight: 750; }
 body.filters-open { overflow: hidden; }
 .catalogue-grid { display: grid; gap: 15px; }
+.bundle-filter-row { display: none; }
 .bundle-sort-row { display: flex; align-items: center; gap: 8px; margin: 0 0 14px; }
 .bundle-sort-chip { display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 4px 6px 4px 12px; border: 1px solid #c5d0dc; border-radius: 999px; background: #d0dae6; color: #14213b; font-size: .86rem; font-weight: 750; }
 .bundle-sort-select { min-height: 30px; padding: 4px 10px; border: 1px solid #b7c2d0; border-radius: 999px; background: #fff; color: #14213b; font: inherit; font-weight: 750; }
@@ -423,7 +423,7 @@ textarea { margin-top: 5px; padding: 8px; resize: vertical; min-height: 70px; fo
   align-items: stretch;
   justify-content: space-around;
 }
-body { padding-bottom: calc(72px + env(safe-area-inset-bottom)); }
+body { padding-bottom: calc(82px + env(safe-area-inset-bottom)); }
 .bottom-nav .nav-item {
   flex: 1 1 0;
   display: flex;
@@ -441,11 +441,16 @@ body { padding-bottom: calc(72px + env(safe-area-inset-bottom)); }
   line-height: 1.1;
 }
 .bottom-nav .nav-home-icon,
-.bottom-nav .nav-shop-icon,
-.bottom-nav .nav-limited-bundles-icon {
+.bottom-nav .nav-shop-icon {
   display: block;
   width: 32px;
   height: 32px;
+  object-fit: contain;
+}
+.bottom-nav .nav-limited-bundles-icon {
+  display: block;
+  width: 28px;
+  height: 28px;
   object-fit: contain;
 }
 .bottom-nav .nav-item[aria-current="page"] { color: #ff7100; }

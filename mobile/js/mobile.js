@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initBrandsMarqueeLogos();
     initStickyBarFooterPush();
     mountBukNavIndicators();
+    mountSharedZSpeed();
 });
 
 function initMobileNavigation() {
@@ -671,7 +672,7 @@ function initCategories() {
 // circle. Customise uses V2 selectItem, so the circle moves onto it.
 // ============================================
 
-const BUK_NAV_CSS = '/mobile/css/bottom-nav.css?v=20261115-arrive';
+const BUK_NAV_CSS = '/mobile/css/bottom-nav.css?v=20261115-zfive';
 
 const BUK_ICONS = {
     home: '<svg viewBox="0 0 52 52" aria-hidden="true"><path d="M10 24v20h11V32h10v12h11V24"/><path class="accent" d="m5 25 21-18 21 18M36 14V8h6v11"/></svg>',
@@ -686,7 +687,7 @@ const BUK_ICONS = {
 function ensureBukNavCss() {
     const links = document.querySelectorAll('link[rel="stylesheet"]');
     for (let i = 0; i < links.length; i += 1) {
-        if ((links[i].getAttribute('href') || '').indexOf('bottom-nav.css?v=20261115-arrive') !== -1) return;
+        if ((links[i].getAttribute('href') || '').indexOf('bottom-nav.css?v=20261115-zfive') !== -1) return;
     }
     const link = document.createElement('link');
     link.rel = 'stylesheet';
@@ -852,6 +853,7 @@ function upgradeBukNav(nav) {
     if (built) {
         nav.querySelectorAll(':scope > .mobile-nav__indicator').forEach((node) => node.remove());
         syncBukActive(nav);
+        mountCentreFaces(nav);
         return;
     }
 
@@ -887,11 +889,449 @@ function upgradeBukNav(nav) {
         if (filters) filters.append(count);
     }
     syncBukActive(nav);
+    mountCentreFaces(nav);
 }
 
 function upgradeAllBukNavs() {
     document.querySelectorAll('nav.bottom-nav').forEach(upgradeBukNav);
 }
+
+const BUK_Z_EASE = 'cubic-bezier(0.4, 0, 0.2, 1)';
+const BUK_Z_SPEED_KEY = 'buk-z-speed';
+const BUK_Z_BACK_KEY = 'buk-z-back';
+
+function pageKeyFromUrl(url) {
+    let path = '';
+    try {
+        path = new URL(url, window.location.href).pathname.toLowerCase();
+    } catch (error) {
+        return '';
+    }
+    if (path.indexOf('bundle-configurator') !== -1) return 'bundles';
+    if (path.indexOf('shop-categories-mobile') !== -1) return 'shop';
+    if (path.indexOf('index-mobile') !== -1 || path.indexOf('home-mobile') !== -1 || path === '/' || path === '') return 'home';
+    return '';
+}
+
+function sharedZDuration() {
+    const raw = sessionStorage.getItem(BUK_Z_SPEED_KEY);
+    if (raw === '300' || raw === '500' || raw === '850' || raw === '900' || raw === '1200') return Number(raw);
+    return 900;
+}
+
+const BUK_Z_SPEEDS = [
+    ['300', 'Normale: 300 ms'],
+    ['500', '500 ms'],
+    ['850', '850 ms'],
+    ['900', '900 ms'],
+    ['1200', 'Slow motion: 1.200 ms']
+];
+const CENTRE_SWAP_MS = 320;
+
+function centreFace(kind) {
+    const face = document.createElement('span');
+    face.className = 'nav-centre-face';
+    face.dataset.centre = kind;
+    const icon = bukIcon(kind === 'filters' ? 'filters' : 'customise');
+    if (kind === 'filters') icon.classList.add('nav-customise-icon');
+    face.append(icon, bukText(kind === 'filters' ? 'Filters' : 'Customise'));
+    return face;
+}
+
+function applyCentreIdentity(button, kind) {
+    button.dataset.centre = kind;
+    button.querySelectorAll('.nav-centre-face').forEach((face) => {
+        face.setAttribute('aria-hidden', face.dataset.centre === kind ? 'false' : 'true');
+    });
+    const locked = button.dataset.centreLock === 'filters';
+    if (!locked && kind === 'customise') {
+        button.id = 'customiseNavBtn';
+        button.setAttribute('data-start-sheet-trigger', '');
+        button.setAttribute('aria-controls', 'startSheet');
+        button.removeAttribute('aria-label');
+    } else if (!locked) {
+        button.id = 'bundleFiltersNav';
+        button.removeAttribute('data-start-sheet-trigger');
+        button.setAttribute('aria-label', 'Filters');
+        button.setAttribute('aria-controls', 'bundleRadial');
+    }
+    button.setAttribute('aria-haspopup', 'dialog');
+    if (!button.getAttribute('aria-expanded')) button.setAttribute('aria-expanded', 'false');
+}
+
+function swapCentre(nav, kind) {
+    const button = nav && nav.querySelector(':scope > .nav-centre');
+    if (!button) return;
+    const incoming = button.querySelector('.nav-centre-face[data-centre="' + kind + '"]');
+    const outgoing = button.querySelector('.nav-centre-face.is-current');
+    if (!incoming || !outgoing || button.dataset.centre === kind) {
+        applyCentreIdentity(button, kind);
+        return;
+    }
+    incoming.classList.remove('is-current', 'is-leaving');
+    incoming.classList.add('is-below');
+    incoming.getBoundingClientRect();
+    outgoing.classList.remove('is-current');
+    outgoing.classList.add('is-leaving');
+    incoming.classList.remove('is-below');
+    incoming.classList.add('is-current');
+    applyCentreIdentity(button, kind);
+}
+
+function mountCentreFaces(nav) {
+    const button = nav.querySelector(':scope > #customiseNavBtn, :scope > #bundleFiltersNav, :scope > #filtersNavBtn');
+    if (!button || button.querySelector('.nav-centre-face')) return;
+    const kind = button.id === 'customiseNavBtn' ? 'customise' : 'filters';
+    if (button.id === 'bundleFiltersNav') button.dataset.centreLock = 'filters';
+    button.classList.add('nav-centre', 'nav-centre--instant');
+    const current = document.createElement('span');
+    current.className = 'nav-centre-face is-current';
+    current.dataset.centre = kind;
+    while (button.firstChild) current.appendChild(button.firstChild);
+    const otherKind = kind === 'filters' ? 'customise' : 'filters';
+    const other = centreFace(otherKind);
+    if (kind === 'filters' && window.top === window.self) {
+        current.classList.remove('is-current');
+        other.classList.add('is-current');
+        button.append(other, current);
+        applyCentreIdentity(button, 'customise');
+        window.requestAnimationFrame(() => {
+            button.classList.remove('nav-centre--instant');
+            window.requestAnimationFrame(() => swapCentre(nav, 'filters'));
+        });
+        return;
+    }
+    if (kind === 'customise') button.append(current, other);
+    else button.append(other, current);
+    applyCentreIdentity(button, kind);
+    window.requestAnimationFrame(() => button.classList.remove('nav-centre--instant'));
+}
+
+function speedBarComplete(bar) {
+    const buttons = bar.querySelectorAll('button');
+    if (buttons.length !== BUK_Z_SPEEDS.length) return false;
+    return BUK_Z_SPEEDS.every((mode, index) => {
+        return buttons[index].dataset.ms === mode[0] && buttons[index].textContent === mode[1];
+    });
+}
+
+let bukSpeedParking = false;
+
+function parkSpeedControl() {
+    if (window.top !== window.self || bukSpeedParking) return null;
+    bukSpeedParking = true;
+    try {
+        let bar = document.getElementById('buk-z-speed');
+        if (bar && !speedBarComplete(bar)) {
+            bar.remove();
+            bar = null;
+        }
+        if (!bar) {
+            const stored = sessionStorage.getItem(BUK_Z_SPEED_KEY);
+            const known = BUK_Z_SPEEDS.some((mode) => mode[0] === stored);
+            if (sessionStorage.getItem('buk-z-speed-gen') !== '900' || !known) {
+                sessionStorage.setItem(BUK_Z_SPEED_KEY, '900');
+                sessionStorage.setItem('buk-z-speed-gen', '900');
+            }
+            bar = document.createElement('div');
+            bar.id = 'buk-z-speed';
+            bar.setAttribute('role', 'group');
+            bar.setAttribute('aria-label', 'Page transition speed');
+            const current = sessionStorage.getItem(BUK_Z_SPEED_KEY) === '900'
+                || BUK_Z_SPEEDS.some((mode) => mode[0] === sessionStorage.getItem(BUK_Z_SPEED_KEY))
+                ? sessionStorage.getItem(BUK_Z_SPEED_KEY)
+                : '900';
+            BUK_Z_SPEEDS.forEach((mode) => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.dataset.ms = mode[0];
+                button.textContent = mode[1];
+                button.setAttribute('aria-pressed', mode[0] === current ? 'true' : 'false');
+                button.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    sessionStorage.setItem(BUK_Z_SPEED_KEY, mode[0]);
+                    bar.querySelectorAll('button').forEach((other) => {
+                        other.setAttribute('aria-pressed', other === button ? 'true' : 'false');
+                    });
+                });
+                bar.appendChild(button);
+            });
+        }
+        const locked = {
+            position: 'fixed',
+            'z-index': '8000',
+            left: '8px',
+            bottom: '128px',
+            display: 'flex',
+            'flex-direction': 'column',
+            'flex-wrap': 'nowrap',
+            gap: '4px',
+            height: 'auto',
+            'max-height': 'none',
+            overflow: 'visible',
+            'pointer-events': 'auto',
+            opacity: '1',
+            visibility: 'visible',
+            transform: 'none',
+            margin: '0'
+        };
+        Object.keys(locked).forEach((key) => bar.style.setProperty(key, locked[key], 'important'));
+        if (bar.parentNode !== document.documentElement) document.documentElement.appendChild(bar);
+        return bar;
+    } finally {
+        bukSpeedParking = false;
+    }
+}
+
+function mountSharedZSpeed() {
+    if (window.top !== window.self) return;
+    parkSpeedControl();
+    if (window.__bukSpeedObserver) return;
+    window.__bukSpeedObserver = new MutationObserver(() => {
+        const bar = document.getElementById('buk-z-speed');
+        if (!bar || bar.parentNode !== document.documentElement) parkSpeedControl();
+    });
+    window.__bukSpeedObserver.observe(document.documentElement, { childList: true });
+}
+
+function ensureZRoot() {
+    let root = document.getElementById('buk-z-root');
+    if (root) return root;
+    root = document.createElement('div');
+    root.id = 'buk-z-root';
+    root.className = 'buk-z-root';
+    const skip = (node) => {
+        if (!node || node.nodeType !== 1) return false;
+        return node.matches('nav.bottom-nav, #buk-z-speed, .buk-z-frame, .wa-popup, .start-sheet');
+    };
+    const children = Array.from(document.body.childNodes);
+    children.forEach((node) => {
+        if (skip(node)) return;
+        root.appendChild(node);
+    });
+    document.body.insertBefore(root, document.body.firstChild);
+    return root;
+}
+
+const bukZWarm = new Map();
+let bukZPlaying = false;
+let bukZCurrent = null;
+let bukZPrevious = null;
+
+function currentPageKey() {
+    if (bukZCurrent && bukZCurrent.key) return bukZCurrent.key;
+    return pageKeyFromUrl(window.location.href);
+}
+
+function closeChatPanel() {
+    if (typeof window.closeBrandedChat === 'function') {
+        window.closeBrandedChat();
+        return;
+    }
+    const popup = document.getElementById('waPopup');
+    if (!popup) return;
+    popup.classList.remove('is-active', 'is-minimized');
+    popup.setAttribute('aria-hidden', 'true');
+}
+
+function dismissOtherBarSurfaces(item) {
+    const isChat = item.hasAttribute('data-open-whatsapp');
+    const isCustomise = item.hasAttribute('data-start-sheet-trigger') || item.id === 'customiseNavBtn';
+    const isFilters = item.id === 'filtersNavBtn' || item.id === 'bundleFiltersNav';
+    if (!isChat) closeChatPanel();
+    if (!isCustomise && typeof window.__brandedCloseStartSheet === 'function') {
+        window.__brandedCloseStartSheet(false);
+    }
+    if (!isFilters) {
+        if (typeof window.__brandedCloseFilters === 'function') window.__brandedCloseFilters();
+        document.dispatchEvent(new CustomEvent('buk-close-filters'));
+    }
+}
+
+function hideEmbeddedNav(frame) {
+    try {
+        const doc = frame.contentDocument;
+        if (!doc || !doc.head) return;
+        const style = doc.createElement('style');
+        style.textContent = 'nav.bottom-nav{display:none!important}';
+        doc.head.appendChild(style);
+    } catch (error) {
+        /* same-origin only */
+    }
+}
+
+function warmSharedZ(href) {
+    const key = pageKeyFromUrl(href);
+    if (!key || bukZWarm.has(href)) return;
+    if ((bukZPrevious && bukZPrevious.key === key) || (bukZCurrent && bukZCurrent.key === key)) return;
+    const frame = document.createElement('iframe');
+    frame.className = 'buk-z-frame';
+    frame.setAttribute('aria-hidden', 'true');
+    frame.style.opacity = '0';
+    frame.style.pointerEvents = 'none';
+    frame.style.zIndex = '1';
+    const ready = new Promise((resolve, reject) => {
+        let settled = false;
+        const finish = () => {
+            if (settled) return;
+            try {
+                const doc = frame.contentDocument;
+                if (!doc || (doc.readyState !== 'interactive' && doc.readyState !== 'complete')) return;
+            } catch (error) {
+                return;
+            }
+            settled = true;
+            window.clearTimeout(timer);
+            window.clearInterval(poll);
+            hideEmbeddedNav(frame);
+            window.requestAnimationFrame(() => window.requestAnimationFrame(() => resolve(frame)));
+        };
+        const timer = window.setTimeout(() => {
+            if (settled) return;
+            settled = true;
+            window.clearInterval(poll);
+            reject(new Error('slow'));
+        }, 12000);
+        const poll = window.setInterval(finish, 40);
+        frame.addEventListener('load', finish);
+        frame.addEventListener('error', () => {
+            if (settled) return;
+            settled = true;
+            window.clearTimeout(timer);
+            window.clearInterval(poll);
+            reject(new Error('load'));
+        });
+    });
+    frame.src = href;
+    document.body.appendChild(frame);
+    parkSpeedControl();
+    bukZWarm.set(href, { key, url: href, el: frame, kind: 'frame', ready });
+}
+
+function pinRoot(el) {
+    if (!el || el.classList.contains('buk-z-frame')) return;
+    el.classList.add('buk-z-fixed');
+}
+
+function playLayer(el, name, ms, zIndex) {
+    el.style.visibility = 'visible';
+    el.style.pointerEvents = 'none';
+    el.style.zIndex = String(zIndex);
+    el.style.transformOrigin = 'center center';
+    el.style.animation = 'none';
+    el.getBoundingClientRect();
+    el.style.animation = name + ' ' + ms + 'ms ' + BUK_Z_EASE + ' forwards';
+}
+
+function settleLayer(el, visible) {
+    el.style.animation = 'none';
+    el.style.transform = 'none';
+    el.style.opacity = visible ? '1' : '0';
+    el.style.pointerEvents = visible ? 'auto' : 'none';
+    el.style.visibility = visible ? 'visible' : 'hidden';
+    el.style.zIndex = visible ? '2' : '1';
+    if (el.classList.contains('buk-z-frame')) {
+        el.setAttribute('aria-hidden', visible ? 'false' : 'true');
+    } else if (visible) {
+        el.classList.remove('buk-z-fixed');
+    }
+}
+
+async function playSharedZ(href, pop) {
+    const key = pageKeyFromUrl(href);
+    if (!key) {
+        window.location.assign(href);
+        return;
+    }
+    if (bukZPlaying) return;
+    bukZPlaying = true;
+    const hostNav = document.querySelector('nav.bottom-nav.buk-nav');
+    if (hostNav) swapCentre(hostNav, key === 'bundles' ? 'filters' : 'customise');
+    parkSpeedControl();
+    const fromKey = pageKeyFromUrl(window.location.href) || (bukZCurrent && bukZCurrent.key) || 'home';
+    const reverse = key === sessionStorage.getItem(BUK_Z_BACK_KEY);
+    const ms = sharedZDuration();
+    try {
+        if (!bukZCurrent) {
+            bukZCurrent = { key: fromKey, url: window.location.href, el: ensureZRoot(), kind: 'root' };
+        }
+        let incoming = null;
+        if (bukZPrevious && bukZPrevious.key === key) incoming = bukZPrevious;
+        if (!incoming) {
+            warmSharedZ(href);
+            const warmed = bukZWarm.get(href);
+            incoming = { key, url: href, el: await warmed.ready, kind: 'frame' };
+            bukZWarm.delete(href);
+        }
+        const outgoing = bukZCurrent;
+        if (outgoing.el === incoming.el) {
+            bukZPlaying = false;
+            return;
+        }
+        pinRoot(outgoing.el);
+        pinRoot(incoming.el);
+        sessionStorage.setItem(BUK_Z_BACK_KEY, outgoing.key);
+        playLayer(outgoing.el, reverse ? 'bukZOutRev' : 'bukZOutFwd', ms, reverse ? 2 : 4);
+        playLayer(incoming.el, reverse ? 'bukZInRev' : 'bukZInFwd', ms, reverse ? 4 : 2);
+        await new Promise((resolve) => {
+            let settled = false;
+            const finish = () => {
+                if (settled) return;
+                settled = true;
+                outgoing.el.removeEventListener('animationend', onEnd);
+                incoming.el.removeEventListener('animationend', onEnd);
+                resolve();
+            };
+            let left = 2;
+            const onEnd = (event) => {
+                if (event.target !== outgoing.el && event.target !== incoming.el) return;
+                left -= 1;
+                if (left <= 0) finish();
+            };
+            outgoing.el.addEventListener('animationend', onEnd);
+            incoming.el.addEventListener('animationend', onEnd);
+            const started = performance.now();
+            const watch = () => {
+                if (settled) return;
+                const anims = outgoing.el.getAnimations().concat(incoming.el.getAnimations());
+                const held = anims.some((anim) => anim.playState === 'running' || anim.playState === 'paused');
+                if (held && performance.now() - started < ms + 8000) {
+                    window.setTimeout(watch, 80);
+                    return;
+                }
+                finish();
+            };
+            window.setTimeout(watch, ms + 80);
+        });
+        settleLayer(outgoing.el, false);
+        settleLayer(incoming.el, true);
+        if (bukZPrevious && bukZPrevious !== outgoing && bukZPrevious !== incoming && bukZPrevious.kind === 'frame') {
+            bukZPrevious.el.remove();
+        }
+        bukZPrevious = outgoing;
+        bukZCurrent = incoming;
+        parkSpeedControl();
+        if (!pop) history.pushState({ bukZ: key }, '', href);
+        try {
+            if (incoming.kind === 'frame' && incoming.el.contentDocument && incoming.el.contentDocument.title) {
+                document.title = incoming.el.contentDocument.title;
+            }
+        } catch (error) {
+            /* title is optional */
+        }
+    } catch (error) {
+        window.location.assign(href);
+    } finally {
+        bukZPlaying = false;
+    }
+}
+
+window.addEventListener('popstate', () => {
+    const key = pageKeyFromUrl(window.location.href);
+    if (!key || bukZPlaying || !bukZCurrent) return;
+    playSharedZ(window.location.href, true);
+});
 
 function initBukNav(nav) {
     if (!nav) return null;
@@ -917,7 +1357,8 @@ function initBukNav(nav) {
 
     function positionIndicator(instant) {
         if (!activeItem || nav.getBoundingClientRect().width === 0) return;
-        const svg = activeItem.querySelector('.nav-icon svg');
+        const svg = activeItem.querySelector('.nav-centre-face.is-current .nav-icon svg')
+            || activeItem.querySelector('.nav-icon svg');
         if (!svg) return;
         const width = indicator.offsetWidth || indicator.getBoundingClientRect().width;
         if (!width) {
@@ -984,7 +1425,15 @@ function initBukNav(nav) {
             finish();
         };
         nav.addEventListener('transitionend', onEnd);
-        const timer = window.setTimeout(finish, readXDuration() + 60);
+        const started = performance.now();
+        const timer = window.setTimeout(function check() {
+            const slide = nav.getAnimations().find((anim) => anim.transitionProperty === '--x');
+            if (slide && (slide.playState === 'running' || slide.playState === 'paused') && performance.now() - started < 8000) {
+                window.setTimeout(check, 50);
+                return;
+            }
+            finish();
+        }, readXDuration() + 60);
     }
 
     // Capture runs before the item's own click handler, so the panel or the
@@ -995,6 +1444,7 @@ function initBukNav(nav) {
         const isLink = item.tagName === 'A' && item.getAttribute('href');
         if (isLink && (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0)) return;
         if (isLink && item.target && item.target !== '_self') return;
+        dismissOtherBarSurfaces(item);
 
         const opensLater = isLink
             || item.hasAttribute('data-open-whatsapp')
@@ -1009,6 +1459,10 @@ function initBukNav(nav) {
 
         event.preventDefault();
         event.stopPropagation();
+        const destKey = isLink ? pageKeyFromUrl(item.href) : '';
+        if (destKey === 'bundles') swapCentre(nav, 'filters');
+        else if (destKey) swapCentre(nav, 'customise');
+        if (destKey && destKey !== currentPageKey()) warmSharedZ(item.href);
         const already = item.classList.contains('active');
         const startX = parseFloat(getComputedStyle(nav).getPropertyValue('--x')) || 0;
         const arrive = (action) => {
@@ -1022,7 +1476,10 @@ function initBukNav(nav) {
 
         if (isLink) {
             const href = item.href;
-            arrive(() => window.location.assign(href));
+            arrive(() => {
+                if (destKey && destKey === currentPageKey()) return;
+                playSharedZ(href);
+            });
             return;
         }
         if (item.hasAttribute('data-start-sheet-trigger') || item.id === 'customiseNavBtn') {
@@ -1044,7 +1501,28 @@ function initBukNav(nav) {
             });
             return;
         }
-        arrive(() => item.dispatchEvent(new CustomEvent('buk-open-filters')));
+        arrive(() => {
+            const frame = document.querySelector('iframe.buk-z-frame[aria-hidden="false"]');
+            const inner = frame && frame.contentDocument && (
+                frame.contentDocument.getElementById('bundleFiltersNav')
+                || frame.contentDocument.getElementById('filtersNavBtn')
+            );
+            if (inner && frame.contentWindow) {
+                const icon = item.querySelector('.nav-centre-face.is-current .nav-icon') || item;
+                const box = icon.getBoundingClientRect();
+                const navBox = nav.getBoundingClientRect();
+                frame.contentWindow.__bukFilterAnchor = {
+                    left: box.left,
+                    top: box.top,
+                    width: box.width,
+                    height: box.height,
+                    navTop: navBox.top
+                };
+                inner.dispatchEvent(new CustomEvent('buk-open-filters'));
+                return;
+            }
+            item.dispatchEvent(new CustomEvent('buk-open-filters'));
+        });
     }, true);
 
     return {
@@ -1976,6 +2454,7 @@ function initFiltersDropup() {
             window.location.href = getCanonicalShopUrl('filtered=true');
         }
     }
+    window.__brandedCloseFilters = closeFilters;
 }
 
 // ============================================

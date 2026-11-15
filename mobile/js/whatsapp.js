@@ -1159,5 +1159,6 @@
     bindCrispMessageHooks();
     forceHideCrispUi();
     window.openBrandedChat = openPopup;
+    window.closeBrandedChat = closePopup;
     window.openBrandedCrispChat = openCrispChat;
 })();

@@ -185,8 +185,8 @@ body:has(.mobile-header--v2) {
 
     .bottom-nav .nav-limited-bundles-icon {
         display: block;
-        width: 34px;
-        height: 34px;
+        width: 28px;
+        height: 28px;
         object-fit: contain;
     }
 }
