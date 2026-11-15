@@ -1376,13 +1376,27 @@ function initBukNav(nav) {
         if (item.id === 'bundleFiltersNav') {
             const radial = document.getElementById('bundleRadial');
             const fanOpen = radial && (radial.classList.contains('show') || radial.classList.contains('is-opening') || radial.classList.contains('is-armed') || radial.classList.contains('is-returning'));
+            const openFan = (force) => {
+                if (typeof window.__bukOpenBundleFilters === 'function') {
+                    window.__bukOpenBundleFilters(force);
+                    return;
+                }
+                item.dispatchEvent(new CustomEvent('buk-open-filters', { bubbles: true }));
+            };
             if (fanOpen) {
-                item.dispatchEvent(new CustomEvent('buk-open-filters'));
+                openFan(false);
                 restoreBundles();
                 return;
             }
             showOnItem(item, true);
-            whenArrived(startX, () => item.dispatchEvent(new CustomEvent('buk-open-filters')));
+            let opened = false;
+            const openOnce = () => {
+                if (opened) return;
+                opened = true;
+                openFan(true);
+            };
+            whenArrived(startX, openOnce);
+            window.setTimeout(openOnce, 560);
             return;
         }
         const arrive = (action) => {

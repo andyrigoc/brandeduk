@@ -1826,10 +1826,13 @@ if (bundleRadial) bundleRadial.inert = true;
 if (bundleRadialAnchor) bundleRadialAnchor.inert = true;
 if (bundleRadialSheet) bundleRadialSheet.inert = true;
 
-function openBundleFiltersFromBar() {
+function openBundleFiltersFromBar(force) {
   if (radialSheetOpen()) closeRadialSheet(false);
-  toggleRadial();
+  if (force === true) toggleRadial(true);
+  else if (force === false) toggleRadial(false);
+  else toggleRadial();
 }
+window.__bukOpenBundleFilters = openBundleFiltersFromBar;
 bundleFiltersNav?.addEventListener('buk-open-filters', openBundleFiltersFromBar);
 document.addEventListener('buk-close-filters', () => {
   if (radialSheetOpen()) closeRadialSheet(false);
