@@ -659,46 +659,6 @@ body .bundle-radial-sheet {
 .bottom-nav.nav .nav-centre--instant .nav-centre-face {
     transition: none;
 }
-
-#buk-z-speed {
-    position: fixed;
-    z-index: 8000;
-    left: 8px;
-    bottom: 128px;
-    display: flex !important;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    gap: 4px;
-    height: auto !important;
-    max-height: none !important;
-    overflow: visible !important;
-}
-#buk-z-speed button,
-#buk-z-speed button:nth-child(n) {
-    display: block !important;
-    height: auto !important;
-    max-height: none !important;
-    overflow: visible !important;
-    flex: none;
-    margin: 0;
-    padding: 4px 8px;
-    white-space: nowrap;
-    border: 1px solid rgba(11, 45, 58, 0.35);
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.92);
-    color: #0b2d3a;
-    font: 500 11px/1.2 system-ui, -apple-system, "Segoe UI", sans-serif;
-    cursor: pointer;
-}
-#buk-z-speed button[aria-pressed="true"] {
-    background: #0b2d3a;
-    color: #fff;
-}
-#buk-z-speed.is-parked {
-    visibility: hidden !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-}
 .buk-z-root,
 .buk-z-frame {
     transform-origin: center center;
