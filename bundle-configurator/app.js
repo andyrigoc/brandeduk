@@ -1440,8 +1440,12 @@ function clearFanOfBar() {
     const labelBottom = label ? label.getBoundingClientRect().bottom : box.bottom;
     lowest = Math.max(lowest, box.bottom, labelBottom);
   });
-  bundleRadial.classList.remove('buk-radial-measure');
-  if (!hadShow) bundleRadial.classList.remove('show');
+  bundleRadial.classList.remove('buk-radial-measure', 'show');
+  if (!hadShow) {
+    bundleRadial.classList.add('buk-radial-measure');
+    void bundleRadial.offsetWidth;
+    bundleRadial.classList.remove('buk-radial-measure');
+  }
   if (Number.isFinite(lowest) && lowest > limit + 0.5) {
     const current = parseFloat(bundleRadialAnchor.style.top) || 0;
     bundleRadialAnchor.style.top = `${current - (lowest - limit)}px`;
@@ -1512,16 +1516,19 @@ function toggleRadial(force) {
     if (bundleRadialAnchor) bundleRadialAnchor.inert = false;
     const hubAlreadyCentered = bundleRadialAnchor?.classList.contains('show');
     bukPingSpeed();
-    if (hubAlreadyCentered) bundleRadial?.classList.add('show');
-    else {
+    bundleRadial?.classList.remove('show', 'is-returning', 'is-tucked');
+    bundleRadial?.classList.add('is-armed');
+    if (bundleRadial) void bundleRadial.offsetWidth;
+    requestAnimationFrame(() => {
+      if (!radialOpen || !bundleRadial) return;
+      bundleRadial.classList.remove('is-armed');
+      void bundleRadial.offsetWidth;
       requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          if (!radialOpen) return;
-          bundleRadial?.classList.add('show');
-          bundleRadialAnchor?.classList.add('show');
-        });
+        if (!radialOpen) return;
+        bundleRadial.classList.add('show');
+        if (!hubAlreadyCentered) bundleRadialAnchor?.classList.add('show');
       });
-    }
+    });
     bukPingSpeed();
   } else if (bundleRadial?.classList.contains('show')) {
     bundleRadial?.classList.add('is-returning');

@@ -671,7 +671,7 @@ function initCategories() {
 // circle. Customise uses V2 selectItem, so the circle moves onto it.
 // ============================================
 
-const BUK_NAV_CSS = '/mobile/css/bottom-nav.css?v=20261115-z500';
+const BUK_NAV_CSS = '/mobile/css/bottom-nav.css?v=20261115-fanbright2';
 
 const BUK_ICONS = {
     home: '<svg viewBox="0 0 52 52" aria-hidden="true"><path d="M10 24v20h11V32h10v12h11V24"/><path class="accent" d="m5 25 21-18 21 18M36 14V8h6v11"/></svg>',
@@ -686,7 +686,7 @@ const BUK_ICONS = {
 function ensureBukNavCss() {
     const links = document.querySelectorAll('link[rel="stylesheet"]');
     for (let i = 0; i < links.length; i += 1) {
-        if ((links[i].getAttribute('href') || '').indexOf('bottom-nav.css?v=20261115-z500') !== -1) return;
+        if ((links[i].getAttribute('href') || '').indexOf('bottom-nav.css?v=20261115-fanbright2') !== -1) return;
     }
     const link = document.createElement('link');
     link.rel = 'stylesheet';
@@ -1001,7 +1001,7 @@ function ensureZRoot() {
     root.className = 'buk-z-root';
     const skip = (node) => {
         if (!node || node.nodeType !== 1) return false;
-        return node.matches('nav.bottom-nav, #buk-z-speed, .buk-z-frame, .wa-popup, .start-sheet');
+        return node.matches('nav.bottom-nav, .buk-z-frame, .wa-popup, .start-sheet');
     };
     const children = Array.from(document.body.childNodes);
     children.forEach((node) => {
@@ -1359,9 +1359,10 @@ function initBukNav(nav) {
         else if (destKey) swapCentre(nav, 'customise');
         if (destKey && destKey !== currentPageKey()) warmSharedZ(item.href);
         const already = item.classList.contains('active');
+        const bundleFiltersOnly = item.id === 'bundleFiltersNav';
         const startX = parseFloat(getComputedStyle(nav).getPropertyValue('--x')) || 0;
         const arrive = (action) => {
-            if (already) {
+            if (already || bundleFiltersOnly) {
                 action();
                 return;
             }

@@ -488,11 +488,12 @@ body.dialog-open { padding-bottom: 0; }
   transition: opacity .25s;
 }
 .bundle-radial-dim.show {
-  opacity: 1;
+  opacity: 0;
   pointer-events: auto;
-  background: rgba(22, 58, 132, .5);
-  -webkit-backdrop-filter: blur(5px);
-  backdrop-filter: blur(5px);
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  filter: none;
 }
 .bundle-radial-anchor {
   --radial-plate: 70px;
@@ -582,7 +583,7 @@ body.dialog-open { padding-bottom: 0; }
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
   opacity: 0;
   pointer-events: none;
-  transform: translate(0, 0) scale(1);
+  transform: translate(0, 0) scale(0.46);
   transition-property: transform, opacity;
   transition-duration: 0.4s, 0.08s;
   transition-timing-function: ease-in, linear;
@@ -610,6 +611,12 @@ body.dialog-open { padding-bottom: 0; }
   letter-spacing: 0.01em;
   white-space: nowrap;
   transform: translateX(-50%);
+}
+.bundle-radial.is-armed .bundle-radial-item {
+  opacity: 1;
+  pointer-events: none;
+  transform: translate(0, 0) scale(0.46);
+  transition: none !important;
 }
 .bundle-radial.buk-radial-measure .bundle-radial-item {
   transition: none !important;
