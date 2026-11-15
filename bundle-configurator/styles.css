@@ -653,7 +653,7 @@ body.dialog-open { padding-bottom: 0; }
 }
 .bundle-radial-sheet-back {
   position: fixed;
-  z-index: 155;
+  z-index: 1090;
   inset: 0;
   background: rgba(20, 33, 59, .46);
   opacity: 0;
@@ -663,9 +663,9 @@ body.dialog-open { padding-bottom: 0; }
 .bundle-radial-sheet-back.show { opacity: 1; pointer-events: auto; }
 .bundle-radial-sheet {
   position: fixed;
-  z-index: 180;
+  z-index: 1100;
   left: 50%;
-  bottom: calc(78px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(96px + env(safe-area-inset-bottom, 0px));
   display: flex;
   flex-direction: column;
   width: min(420px, calc(100% - 20px));

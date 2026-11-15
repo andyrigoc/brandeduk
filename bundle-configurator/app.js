@@ -1358,7 +1358,7 @@ function syncRadialButton() {
 }
 
 function placeRadialHub() {
-  const nav = bundleFiltersNav?.closest('.bottom-nav');
+  const nav = bundleFiltersNav?.closest('#branded-nav, .bottom-nav');
   if (!nav || !bundleRadialAnchor || !bundleFiltersNav) return;
   const anchor = window.__bukFilterAnchor;
   const navRect = anchor
@@ -1367,8 +1367,9 @@ function placeRadialHub() {
   const btnRect = anchor
     ? { left: anchor.left, top: anchor.top, width: anchor.width, height: anchor.height }
     : bundleFiltersNav.getBoundingClientRect();
-  const icon = bundleFiltersNav.querySelector('.nav-customise-icon');
-  const iconRect = anchor ? btnRect : (icon ? icon.getBoundingClientRect() : btnRect);
+  const disk = bundleFiltersNav.querySelector('.context-disc');
+  const icon = bundleFiltersNav.querySelector('.nav-customise-icon, .icon');
+  const iconRect = anchor ? btnRect : ((disk || icon) ? (disk || icon).getBoundingClientRect() : btnRect);
   const header = document.querySelector('.mobile-header');
   const headerBottom = header ? Math.max(0, header.getBoundingClientRect().bottom) : 0;
   const gutter = 14;
@@ -1394,7 +1395,7 @@ function placeRadialHub() {
   const bottomExtent = side + labelDrop;
   const minX = gutter + side;
   const maxX = window.innerWidth - gutter - side;
-  const centerX = Math.min(Math.max(btnRect.left + btnRect.width / 2, minX), maxX);
+  const centerX = Math.min(Math.max(iconRect.left + iconRect.width / 2, minX), maxX);
   let centerY = bottomLimit - bottomExtent;
   if (centerY - side < topLimit) centerY = (topLimit + side + bottomLimit - bottomExtent) / 2;
   bundleRadialAnchor.style.left = `${centerX}px`;
@@ -1846,7 +1847,7 @@ document.addEventListener('buk-close-filters', () => {
   toggleRadial(false);
 });
 bundleFiltersNav?.addEventListener('click', () => {
-  if (bundleFiltersNav.closest('nav.bottom-nav.nav')) return;
+  if (bundleFiltersNav.closest('#branded-nav, nav.bottom-nav.nav')) return;
   openBundleFiltersFromBar();
 });
 bundleRadialHub?.addEventListener('click', () => {

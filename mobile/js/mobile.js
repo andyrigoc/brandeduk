@@ -1,6 +1,7 @@
 /* Mobile JavaScript - BrandedUK */
 
 document.addEventListener('DOMContentLoaded', function() {
+    bootBrandedNav();
     startCustomiseRise();
     const mobileNavigation = window.matchMedia('(max-width: 699px)');
     ensureBukNavCss();
@@ -672,12 +673,12 @@ function initCategories() {
 // circle. Customise uses V2 selectItem, so the circle moves onto it.
 // ============================================
 
-const BUK_NAV_CSS = '/mobile/css/bottom-nav.css?v=20261115-quick';
+const BUK_NAV_CSS = '/mobile/css/bottom-nav.css?v=20261115-corretta2';
 
 const BUK_ICONS = {
     home: '<svg viewBox="0 0 52 52" aria-hidden="true"><path d="M10 24v20h11V32h10v12h11V24"/><path class="accent" d="m5 25 21-18 21 18M36 14V8h6v11"/></svg>',
-    shop: '<svg viewBox="0 0 52 52" aria-hidden="true"><path d="M10 25v20h32V25M15 45V31h12v14M32 31h6v7h-6z"/><path fill="#ff7a00" d="M10 9H16.4L13.4 24q0 5-4.2 5t-4.2-5Z"/><path fill="#ffffff" d="M16.4 9H22.8L21.8 24q0 5-4.2 5t-4.2-5Z"/><path fill="#ff7a00" d="M22.8 9H29.2L30.2 24q0 5-4.2 5t-4.2-5Z"/><path fill="#ffffff" d="M29.2 9H35.6L38.6 24q0 5-4.2 5t-4.2-5Z"/><path fill="#ff7a00" d="M35.6 9H42L47 24q0 5-4.2 5t-4.2-5Z"/></svg>',
-    customise: '<svg viewBox="0 0 52 52" aria-hidden="true"><path d="m17 9-10 5-4 10 9 4 3-6v23h22V22l3 6 9-4-4-10-10-5a9 9 0 0 1-18 0Z"/><path class="accent sparkle sparkle-chest" d="M21 29h10M26 24v10"/><path class="accent sparkle sparkle-shoulder" d="m39 5 1.5 4.5L45 11l-4.5 1.5L39 17l-1.5-4.5L33 11l4.5-1.5Z"/><path class="sparkle sparkle-hem" d="m34 35 1 3 3 1-3 1-1 3-1-3-3-1 3-1Z"/></svg>',
+    shop: '<svg viewBox="0 0 52 52" aria-hidden="true"><path d="M10 25v20h32V25M15 45V31h12v14M32 31h6v7h-6z"/><path fill="#ff7a00" d="M10 9h6.4l-3 15q0 5-4.2 5T5 24Z"/><path fill="#ffffff" d="M16.4 9h6.4l-1 15q0 5-4.2 5t-4.2-5Z"/><path fill="#ff7a00" d="M22.8 9h6.4l1 15q0 5-4.2 5t-4.2-5Z"/><path fill="#ffffff" d="M29.2 9h6.4l3 15q0 5-4.2 5t-4.2-5Z"/><path fill="#ff7a00" d="M35.6 9H42l5 15q0 5-4.2 5t-4.2-5Z"/></svg>',
+    customise: '<svg viewBox="0 0 52 52" aria-hidden="true"><path d="m17 9-10 5-4 10 9 4 3-6v23h22V22l3 6 9-4-4-10-10-5a9 9 0 0 1-18 0Z"/><path class="accent sparkle sparkle-chest" d="M21 29h10M26 24v10"/><path class="accent sparkle sparkle-shoulder" d="m39 5 1.5 4.5L45 11l-4.5 1.5L39 17l-1.5-4.5L33 11l4.5-1.5Z"/></svg>',
     filters: '<svg viewBox="0 0 52 52" aria-hidden="true"><path d="M12 6v40M26 6v40M40 6v40"/><rect class="orange-fill filter-level level-one" x="7" y="14" width="10" height="8" rx="3"/><rect class="surface-fill filter-level level-two" x="21" y="30" width="10" height="8" rx="3"/><rect class="orange-fill filter-level level-three" x="35" y="10" width="10" height="8" rx="3"/></svg>',
     chat: '<svg viewBox="0 0 52 52" aria-hidden="true"><path class="orange-fill" d="M28 23h12a8 8 0 0 1 8 8v6a7 7 0 0 1-5 7l1 6-8-6h-8a8 8 0 0 1-8-8v-5a8 8 0 0 1 8-8Z"/><path class="surface-fill" d="M12 6h22a8 8 0 0 1 8 8v12a8 8 0 0 1-8 8H19l-9 8 1-8a8 8 0 0 1-7-8V14a8 8 0 0 1 8-8Z"/><circle class="chat-dot dot-1" cx="15" cy="20" r="1.8" fill="currentColor" stroke="none"/><circle class="chat-dot dot-2" cx="23" cy="20" r="1.8" fill="currentColor" stroke="none"/><circle class="chat-dot dot-3" cx="31" cy="20" r="1.8" fill="currentColor" stroke="none"/></svg>',
     /* Bundles B is the icon the source bar shows in the slot (pointed base, centre line). */
@@ -786,6 +787,76 @@ function makeBukCentre(spec, countNode) {
     return button;
 }
 
+function makeBukSwap(countNode) {
+    const slot = document.createElement('div');
+    slot.className = 'nav-slot nav-slot-swap';
+    const customise = document.createElement('button');
+    customise.type = 'button';
+    customise.id = 'customiseNavBtn';
+    customise.className = 'nav-item swap-button customise-button';
+    customise.setAttribute('data-nav-action', '');
+    customise.setAttribute('data-start-sheet-trigger', '');
+    customise.setAttribute('aria-haspopup', 'dialog');
+    customise.setAttribute('aria-expanded', 'false');
+    customise.setAttribute('aria-controls', 'startSheet');
+    customise.append(bukIcon('customise'), bukText('Customise'));
+    const filters = document.createElement('button');
+    filters.type = 'button';
+    filters.id = 'bundleFiltersNav';
+    filters.className = 'nav-item swap-button filters-button';
+    filters.setAttribute('data-nav-action', '');
+    filters.setAttribute('aria-label', 'Open bundle filters');
+    filters.setAttribute('aria-haspopup', 'dialog');
+    filters.setAttribute('aria-expanded', 'false');
+    filters.setAttribute('aria-controls', 'bundleRadial');
+    filters.setAttribute('aria-hidden', 'true');
+    filters.tabIndex = -1;
+    filters.disabled = true;
+    const icon = bukIcon('filters');
+    icon.classList.add('nav-customise-icon');
+    filters.append(icon, bukText('Filters'));
+    if (countNode) filters.append(countNode);
+    slot.append(customise, filters);
+    return slot;
+}
+
+function setBundlesContext(nav, on) {
+    if (!nav) return;
+    nav.classList.toggle('is-bundles', on);
+    const customise = nav.querySelector('.customise-button');
+    const filters = nav.querySelector('.filters-button');
+    if (customise) {
+        customise.disabled = !!on;
+        customise.tabIndex = on ? -1 : 0;
+        if (on) customise.setAttribute('aria-hidden', 'true');
+        else customise.removeAttribute('aria-hidden');
+    }
+    if (filters) {
+        filters.disabled = !on;
+        filters.tabIndex = on ? 0 : -1;
+        filters.classList.toggle('is-context-active', on);
+        if (on) filters.removeAttribute('aria-hidden');
+        else filters.setAttribute('aria-hidden', 'true');
+    }
+}
+
+const NAV_SWAP_MS = 540;
+let swapUntil = 0;
+
+function armSwap() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        swapUntil = 0;
+        return;
+    }
+    swapUntil = performance.now() + NAV_SWAP_MS;
+}
+
+function whenSettled(callback) {
+    const wait = swapUntil - performance.now();
+    if (wait > 16) window.setTimeout(callback, wait);
+    else callback();
+}
+
 function makeBukLink(href, section, label, iconName, extra) {
     const link = document.createElement('a');
     link.className = 'nav-item';
@@ -819,7 +890,7 @@ function ensureBrandedChat() {
     if (!document.querySelector('link[href*="whatsapp.css"]')) {
         const css = document.createElement('link');
         css.rel = 'stylesheet';
-        css.href = '/mobile/css/whatsapp.css?v=20261020-noclose';
+        css.href = '/mobile/css/whatsapp.css?v=20261115-corretta';
         document.head.appendChild(css);
     }
     const existing = document.querySelector('script[src*="whatsapp.js"]');
@@ -837,7 +908,7 @@ function syncBukActive(nav) {
     const section = currentBukSection();
     if (section) nav.dataset.active = section;
     else delete nav.dataset.active;
-    nav.querySelectorAll(':scope > .nav-item').forEach((item) => {
+    nav.querySelectorAll('.nav-item').forEach((item) => {
         const selected = !item.hasAttribute('data-nav-action') && item.dataset.section === section && section !== '';
         item.classList.toggle('active', selected);
         if (selected) item.setAttribute('aria-current', 'page');
@@ -880,7 +951,7 @@ function upgradeBukNav(nav) {
         indicator,
         makeBukLink(homeHref, 'home', 'Home', 'home'),
         makeBukLink(shopHref, 'shop', 'Shop', 'shop'),
-        makeBukCentre(centre, centre.kind === 'filters' ? count : null),
+        makeBukSwap(count),
         makeBukLink(bundlesHref, 'bundles', 'Bundles', 'bundles'),
         makeBukChat()
     );
@@ -966,6 +1037,17 @@ function swapCentre(nav, kind) {
 }
 
 function mountCentreFaces(nav) {
+    if (nav.querySelector('.nav-slot-swap')) {
+        if (currentPageKey() === 'bundles' && !nav.classList.contains('is-bundles')) {
+            window.requestAnimationFrame(() => window.requestAnimationFrame(() => {
+                nav.classList.remove('is-positioning', 'instant');
+                setBundlesContext(nav, true);
+            }));
+        } else if (nav.classList.contains('is-bundles')) {
+            setBundlesContext(nav, true);
+        }
+        return;
+    }
     const button = nav.querySelector(':scope > #customiseNavBtn, :scope > #bundleFiltersNav, :scope > #filtersNavBtn');
     if (!button || button.querySelector('.nav-centre-face')) return;
     const kind = button.id === 'customiseNavBtn' ? 'customise' : 'filters';
@@ -1198,6 +1280,7 @@ function startCustomiseRise() {
 
 function syncFiltersCircle(nav) {
     if (!nav) return;
+    return;
     const button = nav.querySelector(':scope > #bundleFiltersNav, :scope > #customiseNavBtn, :scope > #filtersNavBtn');
     const face = button && button.querySelector('.nav-centre-face.is-current[data-centre="filters"]');
     const show = !!(button && (face || (button.id === 'bundleFiltersNav' && !button.querySelector('.nav-centre-face'))));
@@ -1431,7 +1514,7 @@ function initBukNav(nav) {
     const indicator = nav.querySelector(':scope > .indicator');
     if (!indicator) return null;
     nav.style.removeProperty('--page');
-    const items = [...nav.querySelectorAll(':scope > .nav-item')];
+    const items = [...nav.querySelectorAll('.nav-item')];
     let activeItem = items.find((item) => item.classList.contains('active') && !item.hasAttribute('data-nav-action')) || null;
     let frame;
 
@@ -1460,24 +1543,21 @@ function initBukNav(nav) {
         }
         if (instant) {
             cancelAnimationFrame(frame);
-            nav.classList.add('instant');
+            nav.classList.add('instant', 'is-positioning');
         } else {
-            nav.classList.remove('instant');
+            nav.classList.remove('instant', 'is-positioning');
         }
         indicator.getBoundingClientRect();
-        const svgRect = svg.getBoundingClientRect();
-        const svgCenter = svgRect.left + svgRect.width / 2;
+        const buttonRect = activeItem.getBoundingClientRect();
         const currentX = parseFloat(getComputedStyle(nav).getPropertyValue('--x')) || 0;
         const originLeft = indicator.getBoundingClientRect().left - currentX;
-        const x = svgCenter - width / 2 - originLeft;
+        const x = buttonRect.left + buttonRect.width / 2 - width / 2 - originLeft;
         if (!instant) slideUntil = performance.now() + readXDuration();
         nav.style.setProperty('--x', x + 'px');
-        fillCircleIcon(indicator, activeItem);
-        syncFiltersCircle(nav);
-        nav.classList.add('ready', 'icons-live');
+        nav.classList.add('ready', 'is-ready');
         if (instant) {
             indicator.getBoundingClientRect();
-            frame = requestAnimationFrame(() => nav.classList.remove('instant'));
+            frame = requestAnimationFrame(() => nav.classList.remove('instant', 'is-positioning'));
         }
     }
 
@@ -1571,12 +1651,11 @@ function initBukNav(nav) {
             return;
         }
         if (destKey === 'bundles' && currentPageKey() !== 'bundles') {
-            lowerCurrentCentre(nav);
-            whenTravelDone(centreButton(nav) && centreButton(nav).querySelector('.nav-centre-face.is-leaving'), () => raiseFiltersCircle(nav));
-        } else if (nav.classList.contains('has-filters-circle')) {
-            dropFiltersThenCustomise(nav);
-        } else if (destKey) {
-            swapCentre(nav, 'customise');
+            setBundlesContext(nav, true);
+            armSwap();
+        } else if (nav.classList.contains('is-bundles') && destKey !== 'bundles') {
+            setBundlesContext(nav, false);
+            armSwap();
         }
         syncFiltersCircle(nav);
         const already = item.classList.contains('active');
@@ -1587,7 +1666,7 @@ function initBukNav(nav) {
                 return;
             }
             showOnItem(item, true);
-            whenArrived(startX, action);
+            whenArrived(startX, () => whenSettled(action));
         };
 
         if (isLink) {
@@ -3000,3 +3079,192 @@ function initAccountPanel() {
         }
     }
 }
+
+function bootBrandedNav() {
+    const nav = document.getElementById('branded-nav');
+    if (!nav || nav.dataset.brandedInit === '1') return;
+    nav.dataset.brandedInit = '1';
+    const surface = nav.querySelector('.nav-surface');
+    const mask = nav.querySelector('mask');
+    const shape = nav.querySelector('.nav-shape');
+    const buttons = [...nav.querySelectorAll('[data-page]')];
+    const customise = nav.querySelector('.customise');
+    const filters = nav.querySelector('.filters');
+    const swapSlot = nav.querySelector('.swap-slot');
+    let active = 'home';
+    let frame;
+    let shown = pageKeyFromUrl(window.location.href) || '';
+    let routeToken = 0;
+
+    function startInstant() {
+        cancelAnimationFrame(frame);
+        nav.classList.add('instant');
+    }
+    function endInstant() {
+        nav.getBoundingClientRect();
+        frame = requestAnimationFrame(() => nav.classList.remove('instant'));
+    }
+    function geometry(instant) {
+        const bounds = nav.getBoundingClientRect();
+        if (!bounds.width || !surface || !mask || !shape || !swapSlot) return;
+        if (instant) startInstant();
+        const w = bounds.width;
+        const h = bounds.height;
+        surface.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+        mask.setAttribute('width', String(w));
+        mask.setAttribute('height', String(h));
+        shape.setAttribute('d', 'M20 0 H' + (w - 20) + ' Q' + w + ' 0 ' + w + ' 20 V' + h + ' H0 V20 Q0 0 20 0Z');
+        const target = buttons.find((b) => b.dataset.page === active);
+        const slotBox = swapSlot.getBoundingClientRect();
+        nav.style.setProperty('--filter-x', (slotBox.left - bounds.left + slotBox.width / 2) + 'px');
+        if (target) {
+            const r = target.getBoundingClientRect();
+            nav.style.setProperty('--active-x', (r.left - bounds.left + r.width / 2) + 'px');
+        }
+        nav.classList.add('ready');
+        if (instant) endInstant();
+    }
+    function available(button, yes) {
+        if (!button) return;
+        button.disabled = !yes;
+        button.tabIndex = yes ? 0 : -1;
+        if (yes) button.removeAttribute('aria-hidden');
+        else button.setAttribute('aria-hidden', 'true');
+    }
+    function selectPage(page, options) {
+        const opts = options || {};
+        const instant = !!opts.instant;
+        const emit = opts.emit !== false;
+        const next = buttons.find((b) => b.dataset.page === page);
+        if (!next) return;
+        if (instant) startInstant();
+        active = page;
+        const bundles = page === 'bundles';
+        const focus = document.activeElement;
+        if ((bundles && focus === customise) || (!bundles && focus === filters)) {
+            next.disabled = false;
+            next.removeAttribute('aria-hidden');
+            try { next.focus({ preventScroll: true }); } catch (error) { /* ignore */ }
+        }
+        buttons.forEach((b) => {
+            const chosen = b === next;
+            b.classList.toggle('is-active', chosen);
+            if (chosen) b.setAttribute('aria-current', 'page');
+            else b.removeAttribute('aria-current');
+        });
+        nav.classList.toggle('is-bundles', bundles);
+        available(customise, !bundles);
+        available(filters, bundles);
+        geometry(false);
+        if (instant) endInstant();
+        if (emit) window.dispatchEvent(new CustomEvent('branded:navigate', { detail: { page: page } }));
+    }
+    function playBundlesEntrance() {
+        active = 'bundles';
+        buttons.forEach((b) => {
+            const chosen = b.dataset.page === 'bundles';
+            b.classList.toggle('is-active', chosen);
+            if (chosen) b.setAttribute('aria-current', 'page');
+            else b.removeAttribute('aria-current');
+        });
+        nav.classList.remove('is-bundles');
+        available(customise, true);
+        available(filters, false);
+        geometry(true);
+        window.requestAnimationFrame(() => window.requestAnimationFrame(() => {
+            if (active !== 'bundles') return;
+            nav.classList.add('is-bundles');
+            available(customise, false);
+            available(filters, true);
+        }));
+    }
+    buttons.forEach((b) => b.addEventListener('click', () => selectPage(b.dataset.page)));
+    if (filters) {
+        filters.addEventListener('click', () => {
+            if (active === 'bundles') {
+                window.dispatchEvent(new CustomEvent('branded:filters', { detail: { page: 'bundles' } }));
+            }
+        });
+    }
+    const observer = new ResizeObserver(() => geometry(true));
+    observer.observe(nav);
+    let swapFlag = '';
+    try { swapFlag = sessionStorage.getItem('buk-bar-swap') || ''; } catch (error) { swapFlag = ''; }
+    const here = pageKeyFromUrl(window.location.href);
+    if (here === 'bundles' && swapFlag !== 'bundles') playBundlesEntrance();
+    else if (here) {
+        if (swapFlag === 'bundles') {
+            try { sessionStorage.removeItem('buk-bar-swap'); } catch (error) { /* ignore */ }
+        }
+        selectPage(here, { instant: true, emit: false });
+    } else geometry(true);
+    window.brandedNav = { selectPage: selectPage };
+
+    function dismissExcept(next) {
+        if (next !== 'chat' && typeof window.closeBrandedChat === 'function') window.closeBrandedChat();
+        if (next !== 'customise' && typeof window.__brandedCloseStartSheet === 'function') window.__brandedCloseStartSheet(false);
+        if (next !== 'filters') {
+            const radial = document.getElementById('bundleRadial');
+            if (radial && (radial.classList.contains('show') || radial.classList.contains('is-opening')) && typeof window.__bukOpenBundleFilters === 'function') {
+                window.__bukOpenBundleFilters(false);
+            }
+        }
+    }
+    function go(page) {
+        if (page === 'customise') {
+            if (typeof window.__brandedOpenStartSheet === 'function') window.__brandedOpenStartSheet(customise);
+            return;
+        }
+        if (page === 'chat') {
+            ensureBrandedChat().then(() => {
+                if (typeof window.openBrandedChat === 'function') window.openBrandedChat();
+            });
+            return;
+        }
+        const hrefs = {
+            home: '/index-mobile.html?force=mobile',
+            shop: '/mobile/shop-categories-mobile.html?force=mobile',
+            bundles: '/bundle-configurator/?force=mobile'
+        };
+        if (!hrefs[page]) return;
+        if (page === 'bundles') {
+            try { sessionStorage.setItem('buk-bar-swap', 'bundles'); } catch (error) { /* ignore */ }
+        }
+        loadBarPage(hrefs[page]);
+    }
+    window.addEventListener('branded:navigate', (event) => {
+        const next = event.detail && event.detail.page;
+        if (!next) return;
+        const from = shown;
+        shown = next;
+        if (next === 'customise' && from === 'customise') {
+            const sheet = document.getElementById('startSheet');
+            if (sheet && !sheet.hidden && typeof window.__brandedCloseStartSheet === 'function') {
+                window.__brandedCloseStartSheet(true);
+                return;
+            }
+        }
+        if (next === 'chat' && from === 'chat') {
+            const popup = document.getElementById('waPopup');
+            if (popup && popup.classList.contains('is-active') && typeof window.closeBrandedChat === 'function') {
+                window.closeBrandedChat();
+                return;
+            }
+        }
+        dismissExcept(next);
+        const swap = (from === 'bundles') !== (next === 'bundles');
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const wait = reduce ? 0 : (swap ? 540 : 440);
+        const token = ++routeToken;
+        window.setTimeout(() => {
+            if (token !== routeToken) return;
+            go(next);
+        }, wait);
+    });
+    window.addEventListener('branded:filters', () => {
+        dismissExcept('filters');
+        if (typeof window.__bukOpenBundleFilters === 'function') window.__bukOpenBundleFilters();
+    });
+}
+
+bootBrandedNav();

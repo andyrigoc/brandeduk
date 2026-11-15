@@ -31,7 +31,12 @@ body:has(.bottom-nav.buk-nav) {
 @property --filters-y {
     syntax: "<length>";
     inherits: true;
-    initial-value: 129px;
+    initial-value: 41px;
+}
+@property --filters-hole {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 0px;
 }
 .bottom-nav.nav {
     --petrol: #1a6582;
@@ -51,11 +56,17 @@ body:has(.bottom-nav.buk-nav) {
     margin-left: auto;
     margin-right: auto;
     bottom: 0;
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     width: min(100%, 520px);
     height: calc(82px + env(safe-area-inset-bottom, 0px));
     box-sizing: border-box;
-    padding: 0 5px env(safe-area-inset-bottom, 0px);
+    padding: 0 6px env(safe-area-inset-bottom, 0px);
+    --duration: 440ms;
+    --icon: var(--ink);
+    --label: var(--muted);
+    --disc: var(--circle);
+    --disc-icon: var(--on-circle);
     background: transparent;
     border: 0;
     border-radius: 20px 20px 0 0;
@@ -68,7 +79,11 @@ body:has(.bottom-nav.buk-nav) {
     color: var(--ink);
     font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
     visibility: visible;
-    transition: background .25s, --x 510ms var(--ease);
+    transition:
+        background 220ms ease,
+        --x var(--duration) var(--ease),
+        --filters-y var(--duration) var(--ease),
+        --filters-hole 0s linear var(--duration);
 }
 .bottom-nav.nav.instant {
     transition: none;
@@ -77,74 +92,89 @@ body:has(.bottom-nav.buk-nav) {
     content: "";
     position: absolute;
     z-index: 0;
-    left: -5px;
-    right: -5px;
+    left: -6px;
+    right: -6px;
     top: 0;
     bottom: calc(env(safe-area-inset-bottom, 0px) * -1);
     background: var(--bar);
     border-radius: 20px 20px 0 0;
-    box-shadow: 0 -6px 30px #0b2d3a12;
+    box-shadow: 0 -6px 30px rgb(11 45 58 / 10%);
     pointer-events: none;
-    /* ::before starts 5px left of the indicator's left:0, so the hole
-       center is --x + half the 50px circle + that 5px. Radius 29px is the
-       25px disk, the 2px orange ring, and a 2px transparent gap. */
-    -webkit-mask-image: radial-gradient(circle at calc(var(--x) + 30px) 9px, transparent 29px, #fff 29px);
-    mask-image: radial-gradient(circle at calc(var(--x) + 30px) 9px, transparent 29px, #fff 29px);
+    /* ::before starts 6px left of the indicator's left:0. The 62px disc's
+       centre is --x + 31, so the hole is --x + 37. Radius 31 is the 25px
+       disc plus a 6px transparent gap. The orange ring sits outside it. */
+    -webkit-mask-image: radial-gradient(circle at calc(var(--x) + 37px) 9px, transparent 31px, #fff 31.5px);
+    mask-image: radial-gradient(circle at calc(var(--x) + 37px) 9px, transparent 31px, #fff 31.5px);
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
     -webkit-mask-mode: alpha;
     mask-mode: alpha;
 }
-.bottom-nav.nav.has-filters-circle {
-    --filters-y: 129px;
-    animation: buk-hole-up 200ms cubic-bezier(0.4, 0, 0.2, 1) both;
+.bottom-nav.nav {
+    --filters-y: 41px;
+    --filters-hole: 0px;
 }
-html.buk-filters-settled .bottom-nav.nav.has-filters-circle {
+.bottom-nav.nav.is-bundles {
     --filters-y: 9px;
-    animation: none;
+    --filters-hole: 31px;
+    transition:
+        background 220ms ease,
+        --x var(--duration) var(--ease),
+        --filters-y var(--duration) var(--ease) 100ms,
+        --filters-hole 0s linear 100ms;
 }
-.bottom-nav.nav.has-filters-circle.filters-leave,
-html.buk-filters-settled .bottom-nav.nav.has-filters-circle.filters-leave {
-    animation: buk-hole-down 180ms cubic-bezier(0.4, 0, 0.2, 1) both;
+.bottom-nav.nav.is-positioning {
+    transition: background 220ms ease;
 }
-.bottom-nav.nav.has-filters-circle::before {
+html.buk-filters-settled .bottom-nav.nav.is-bundles {
+    --filters-y: 9px;
+    --filters-hole: 31px;
+}
+.bottom-nav.nav.is-bundles::before,
+.bottom-nav.nav.is-bundles.is-positioning::before {
     -webkit-mask-image:
-        radial-gradient(circle at calc(var(--x) + 30px) 9px, transparent 29px, #000 29.5px),
-        radial-gradient(circle at 50% var(--filters-y) , transparent 29px, #000 29.5px);
+        radial-gradient(circle at calc(var(--x) + 37px) 9px, transparent 31px, #000 31.5px),
+        radial-gradient(circle at 50% var(--filters-y), transparent var(--filters-hole), #000 calc(var(--filters-hole) + 0.5px));
     mask-image:
-        radial-gradient(circle at calc(var(--x) + 30px) 9px, transparent 29px, #000 29.5px),
-        radial-gradient(circle at 50% var(--filters-y), transparent 29px, #000 29.5px);
+        radial-gradient(circle at calc(var(--x) + 37px) 9px, transparent 31px, #000 31.5px),
+        radial-gradient(circle at 50% var(--filters-y), transparent var(--filters-hole), #000 calc(var(--filters-hole) + 0.5px));
     -webkit-mask-composite: source-in;
     mask-composite: intersect;
 }
 .bottom-nav.nav.dark {
     --bar: #0b2d3a;
     --ink: #fff;
+    --icon: #fff;
+    --label: #c1d1d9;
     --circle: #fff;
+    --disc: #fff;
     --on-circle: #1a6582;
+    --disc-icon: #1a6582;
     --muted: #c1d1d9;
 }
 .bottom-nav.nav .indicator {
     position: absolute;
     pointer-events: none;
     left: 0;
-    top: -16px;
-    z-index: 1;
-    width: 50px;
-    height: 50px;
+    top: -22px;
+    z-index: 0;
+    width: 62px;
+    height: 62px;
     box-sizing: border-box;
-    border: 0;
+    border: 6px solid transparent;
     border-radius: 50%;
-    background: var(--circle);
+    background: var(--disc);
+    background-clip: padding-box;
     transform: translate3d(var(--x, 0px), 0, 0);
     transition: background .25s;
     visibility: hidden;
     box-shadow: 0 0 0 2px var(--orange);
 }
-.bottom-nav.nav.ready .indicator { visibility: visible; }
-.bottom-nav.nav[data-active="bundles"]:not(.icons-live) > .indicator {
+.bottom-nav.nav.ready .indicator,
+.bottom-nav.nav.is-ready .indicator { visibility: visible; }
+.bottom-nav.nav[data-active="bundles"]:not(.is-ready):not(.ready) > .indicator {
     visibility: visible;
-    left: calc(70% - 25px);
+    left: calc(70% - 31px);
     transform: none;
 }
 .bottom-nav.nav .indicator-icon {
@@ -167,49 +197,80 @@ html.buk-filters-settled .bottom-nav.nav.has-filters-circle.filters-leave {
     overflow: visible;
 }
 .bottom-nav.nav .indicator-icon .bundle-three { width: 39px; height: 42px; }
-.bottom-nav.nav .indicator-filters {
+.bottom-nav.nav .nav-slot-swap {
+    position: relative;
+    z-index: 1;
+    height: 82px;
+    min-width: 0;
+}
+.bottom-nav.nav .nav-slot-swap > .nav-item {
     position: absolute;
-    z-index: 2;
+    inset: 0;
+    width: 100%;
+    height: 82px;
+}
+.bottom-nav.nav .swap-button {
+    transition: transform var(--duration) var(--ease), opacity 260ms ease;
+}
+.bottom-nav.nav .customise-button {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+    transition-delay: 100ms;
+}
+.bottom-nav.nav .filters-button {
+    transform: translateY(32px);
+    opacity: 0;
+    pointer-events: none;
+    transition-delay: 0ms;
+}
+.bottom-nav.nav.is-bundles .customise-button {
+    transform: translateY(32px);
+    opacity: 0;
+    pointer-events: none;
+    transition-delay: 0ms;
+}
+.bottom-nav.nav.is-bundles .filters-button {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+    transition-delay: 100ms;
+}
+.bottom-nav.nav .filters-button::before {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    top: -22px;
     left: 50%;
-    top: -16px;
-    display: none;
-    width: 50px;
-    height: 50px;
-    margin: 0;
+    width: 62px;
+    height: 62px;
+    box-sizing: border-box;
+    border: 6px solid transparent;
     border-radius: 50%;
-    background: var(--circle);
+    background: var(--disc);
+    background-clip: padding-box;
     box-shadow: 0 0 0 2px var(--orange);
     transform: translateX(-50%);
     pointer-events: none;
+    transition: background 220ms ease;
 }
-.bottom-nav.nav.has-filters-circle .indicator-filters { display: block; }
-.bottom-nav.nav.has-filters-circle .centre-rise {
-    display: block;
-    position: absolute;
-    left: 0;
-    right: 0;
+.bottom-nav.nav .filters-button .nav-icon,
+.bottom-nav.nav .filters-button.is-context-active .nav-icon {
+    z-index: 1;
     top: 0;
-    height: 100%;
-    transform: translateY(120px);
-    animation: buk-filters-up 200ms cubic-bezier(0.4, 0, 0.2, 1) both;
+    width: 50px;
+    height: 50px;
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
+    color: var(--disc-icon);
+    --surface: var(--disc);
+    transform: translate(-50%, -16px);
 }
-html.buk-filters-settled .bottom-nav.nav.has-filters-circle .centre-rise {
-    animation: none;
-    transform: translateY(0);
-}
-.bottom-nav.nav.has-filters-circle.filters-leave .centre-rise,
-html.buk-filters-settled .bottom-nav.nav.has-filters-circle.filters-leave .centre-rise {
-    animation: buk-filters-down 180ms cubic-bezier(0.4, 0, 0.2, 1) both;
-}
-.bottom-nav.nav.has-filters-circle #bundleFiltersNav > .centre-rise > .nav-icon,
-.bottom-nav.nav.has-filters-circle #bundleFiltersNav .centre-rise > .nav-icon {
-    visibility: hidden;
-}
-.bottom-nav.nav.icons-live > .nav-item.active > .nav-icon,
-.bottom-nav.nav.icons-live > .nav-item.active .nav-centre-face.is-current > .nav-icon,
-.bottom-nav.nav.icons-live.has-filters-circle > .nav-item.has-slot-circle > .nav-icon,
-.bottom-nav.nav.icons-live.has-filters-circle > .nav-item.has-slot-circle .nav-centre-face.is-current > .nav-icon {
-    visibility: hidden;
+.bottom-nav.nav .filters-button .nav-label,
+.bottom-nav.nav .filters-button.is-context-active .nav-label {
+    z-index: 1;
+    color: var(--icon);
 }
 .bottom-nav.nav .nav-centre-face:not(.is-current):not(.is-leaving) {
     visibility: hidden;
@@ -263,9 +324,10 @@ html.buk-filters-settled .bottom-nav.nav.has-filters-circle.filters-leave .centr
     border-radius: 0;
     background: none;
     box-shadow: none;
+    z-index: 1;
     color: inherit;
     --surface: var(--bar);
-    transition: transform 340ms var(--ease), color .2s;
+    transition: transform var(--duration) var(--ease), color 220ms ease;
 }
 .bottom-nav.nav .nav-icon svg {
     width: 31px;
@@ -280,31 +342,32 @@ html.buk-filters-settled .bottom-nav.nav.has-filters-circle.filters-leave .centr
 }
 .bottom-nav.nav .nav-item.active .nav-icon {
     transform: translate(-50%, -16px);
-    color: var(--on-circle);
-    --surface: var(--circle);
+    color: var(--disc-icon);
+    --surface: var(--disc);
 }
 .bottom-nav.nav .nav-label {
     position: absolute;
     left: 0;
     right: 0;
-    bottom: 16px;
+    bottom: 15px;
     max-width: none;
     overflow: visible;
-    font-size: 10px;
-    color: var(--muted);
+    font-size: 11px;
+    color: var(--label);
     font-weight: 500;
     line-height: 1.1;
     text-overflow: clip;
     white-space: nowrap;
 }
-.bottom-nav.nav .active .nav-label { color: var(--ink); font-weight: 500; }
+.bottom-nav.nav .active .nav-label,
+.bottom-nav.nav .is-page-active .nav-label { color: var(--icon); font-weight: 500; }
 .bottom-nav.nav .accent { stroke: var(--orange); }
 .bottom-nav.nav .orange-fill { fill: var(--orange); }
 .bottom-nav.nav .surface-fill { fill: var(--surface); }
 .bottom-nav.nav .bundle-detail { fill: none; stroke: var(--surface); stroke-width: 2.2; }
 .bottom-nav.nav .bundle-band { fill: var(--surface); stroke: none; }
 .bottom-nav.nav .nav-icon .bundle-three { width: 39px; height: 42px; }
-.bottom-nav.nav .nav-item.active [data-bundle] { transform: translate(-50%, -20px); }
+.bottom-nav.nav .nav-item.active [data-bundle] { transform: translate(-50%, -16px); }
 .bottom-nav.nav .chat-dot { animation: chat-wave 1.25s ease-in-out infinite; }
 .bottom-nav.nav .dot-2 { animation-delay: -1.10s; }
 .bottom-nav.nav .dot-3 { animation-delay: -.95s; }
@@ -319,17 +382,23 @@ html.buk-filters-settled .bottom-nav.nav.has-filters-circle.filters-leave .centr
 .bottom-nav.nav .sparkle { transform-box: fill-box; transform-origin: center; animation: soft-shine 2.6s ease-in-out infinite; animation-delay: -.3s; }
 .bottom-nav.nav .sparkle-chest { animation-delay: -1.1s; }
 .bottom-nav.nav .sparkle-hem { animation-delay: -1.9s; }
-@keyframes soft-shine { 0%, 100% { opacity: .5; transform: scale(.85); filter: none; } 50% { opacity: 1; transform: scale(1.13); filter: drop-shadow(0 0 1px #ffb35c); } }
+@keyframes soft-shine { 0%, 100% { opacity: .5; transform: scale(.85); } 50% { opacity: 1; transform: scale(1.13); } }
 .bottom-nav.nav.motion-paused .chat-dot,
 .bottom-nav.nav.motion-paused .filter-level,
 .bottom-nav.nav.motion-paused .sparkle { animation: none; }
 @media (prefers-reduced-motion: reduce) {
+    .bottom-nav.nav,
+    .bottom-nav.nav .swap-button,
+    .bottom-nav.nav .filters-button::before,
+    .bottom-nav.nav .indicator,
+    .bottom-nav.nav .nav-icon,
+    .bottom-nav.nav .nav-label,
     .bottom-nav.nav .chat-dot,
     .bottom-nav.nav .filter-level,
-    .bottom-nav.nav .sparkle { animation: none !important; }
-    .bottom-nav.nav,
-    .bottom-nav.nav .indicator,
-    .bottom-nav.nav .nav-icon { transition: none !important; }
+    .bottom-nav.nav .sparkle {
+        animation: none !important;
+        transition: none !important;
+    }
 }
 
 .bottom-nav.buk-nav.ready > .indicator {
@@ -385,17 +454,17 @@ html.buk-filters-settled .bottom-nav.nav.has-filters-circle.filters-leave .centr
     color: var(--ink);
     --surface: var(--bar);
     transform: translate(-50%, 0);
-    transition: transform 340ms var(--ease), color .2s;
+    transition: transform var(--duration) var(--ease), color 220ms ease;
 }
 
 .bottom-nav.buk-nav > .nav-item.active .nav-icon {
-    color: var(--on-circle);
-    --surface: var(--circle);
+    color: var(--disc-icon);
+    --surface: var(--disc);
     transform: translate(-50%, -16px);
 }
 
 .bottom-nav.buk-nav > .nav-item.active > .nav-icon[data-bundle] {
-    transform: translate(-50%, -20px);
+    transform: translate(-50%, -16px);
 }
 
 .bottom-nav.buk-nav .nav-icon svg {
@@ -818,3 +887,58 @@ html.buk-rise-customise.buk-customise-risen .bottom-nav.nav .nav-centre-face.is-
     to { transform: scale(1); opacity: 1; }
 }
 
+
+/* Corrected bar. Values copied from Branded-UK-Barra-Corretta.html. */
+/* Bare navigation component. The page behind the gap is genuinely visible. */
+body{margin:0;min-height:100svh;background:#fff}
+#branded-nav{--bar:#0b2d3a;--petrol:#1a6582;--orange:#ff7a00;--duration:440ms;--ease:cubic-bezier(.22,.75,.2,1);--active-x:0px;--filter-x:0px;position:fixed;z-index:1000;left:50%;bottom:0;transform:translateX(-50%);display:grid;grid-template-columns:repeat(5,minmax(0,1fr));width:min(100%,520px);height:calc(82px + env(safe-area-inset-bottom,0px));padding:0 6px env(safe-area-inset-bottom,0px);background:transparent;isolation:isolate;overflow:visible;font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+#branded-nav,#branded-nav *{box-sizing:border-box}
+#branded-nav .nav-surface{position:absolute;z-index:0;inset:0;width:100%;height:100%;pointer-events:none}
+/* Curves are cuts in the bar, not coloured pseudo-elements. */
+#branded-nav .hole-main{transform:translateX(var(--active-x));transition:transform var(--duration) var(--ease)}
+#branded-nav .hole-filter{opacity:0;transform:translate(var(--filter-x),32px);transition:transform var(--duration) var(--ease),opacity 260ms ease;transition-delay:0ms}
+#branded-nav.is-bundles .hole-filter{opacity:1;transform:translate(var(--filter-x),0);transition-delay:100ms}
+/* Disk outer radius 26px; circular cut radius 30px = 4px transparent gap. */
+#branded-nav .indicator{position:absolute;z-index:1;left:0;top:-20px;width:52px;height:52px;border:2px solid var(--orange);border-radius:50%;background:#fff;transform:translate3d(calc(var(--active-x) - 26px),0,0);transition:transform var(--duration) var(--ease);pointer-events:none;visibility:hidden}
+#branded-nav.ready .indicator{visibility:visible}
+#branded-nav .slot{position:relative;z-index:2;height:82px;min-width:0}
+#branded-nav .nav-button{position:absolute;inset:0;width:100%;height:82px;padding:0;border:0;background:none;color:#fff;font:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+#branded-nav .nav-button:disabled{cursor:default}
+#branded-nav .nav-button:focus-visible{outline:2px solid var(--orange);outline-offset:-4px;border-radius:10px}
+#branded-nav .icon{--surface:var(--bar);position:absolute;z-index:1;left:50%;top:0;width:52px;height:52px;display:grid;place-items:center;color:#fff;transform:translate(-50%,0);transition:transform var(--duration) var(--ease),color 220ms ease}
+#branded-nav .icon svg{width:31px;height:31px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;overflow:visible}
+#branded-nav .icon .bundle-three{width:39px;height:42px}
+#branded-nav .label{position:absolute;z-index:1;left:0;right:0;bottom:15px;text-align:center;font-size:11px;line-height:1.2;font-weight:500;color:#c1d1d9}
+#branded-nav .is-active .icon{--surface:#fff;color:var(--petrol);transform:translate(-50%,-20px)}
+#branded-nav .is-active .label{color:#fff}
+#branded-nav .accent{stroke:var(--orange)}
+#branded-nav .orange-fill{fill:var(--orange)}
+#branded-nav .surface-fill{fill:var(--surface)}
+#branded-nav .bundle-detail{fill:none;stroke:var(--surface);stroke-width:2.2}
+#branded-nav .bundle-band{fill:var(--surface);stroke:none}
+#branded-nav .swap{transition:transform var(--duration) var(--ease),opacity 260ms ease}
+#branded-nav .customise{opacity:1;transform:translateY(0);pointer-events:auto;transition-delay:100ms}
+#branded-nav .filters{opacity:0;transform:translateY(32px);pointer-events:none;transition-delay:0ms}
+#branded-nav.is-bundles .customise{opacity:0;transform:translateY(32px);pointer-events:none;transition-delay:0ms}
+#branded-nav.is-bundles .filters{opacity:1;transform:translateY(0);pointer-events:auto;transition-delay:100ms}
+#branded-nav .context-disc{position:absolute;z-index:0;left:50%;top:-20px;width:52px;height:52px;border:2px solid var(--orange);border-radius:50%;background:#fff;transform:translateX(-50%);pointer-events:none}
+#branded-nav .filters .icon{--surface:#fff;color:var(--petrol);transform:translate(-50%,-20px)}
+#branded-nav .filters .label{color:#fff}
+#branded-nav .chat-dot{animation:chat-wave 1.25s ease-in-out infinite}#branded-nav .dot-2{animation-delay:-1.1s}#branded-nav .dot-3{animation-delay:-.95s}
+@keyframes chat-wave{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-4px)}}
+#branded-nav .filter-level{animation-duration:3.4s;animation-timing-function:ease-in-out;animation-iteration-count:infinite}
+#branded-nav .level-one{animation-name:level-down;animation-delay:-.5s}#branded-nav .level-two{animation-name:level-up;animation-delay:-1.2s}#branded-nav .level-three{animation-name:level-far;animation-delay:-2s}
+@keyframes level-down{0%,100%{transform:translateY(0)}50%{transform:translateY(12px)}}
+@keyframes level-up{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}
+@keyframes level-far{0%,100%{transform:translateY(0)}50%{transform:translateY(18px)}}
+#branded-nav .sparkle{transform-box:fill-box;transform-origin:center;animation:shine 2.6s ease-in-out infinite}#branded-nav .sparkle-chest{animation-delay:-1.1s}#branded-nav .sparkle-shoulder{animation-delay:-.3s}#branded-nav .sparkle-hem{animation-delay:-1.9s}
+@keyframes shine{0%,100%{opacity:.5;transform:scale(.85)}50%{opacity:1;transform:scale(1.13)}}
+#branded-nav.instant *{transition:none!important}
+@media(prefers-reduced-motion:reduce){#branded-nav *{animation:none!important;transition:none!important}}
+
+body:has(#branded-nav){--bottom-nav-height:82px}
+
+#branded-nav .bundle-apron{position:absolute;left:50%;top:50%;width:39px;height:36px;transform:translate(-50%,-50%);transition:opacity 220ms ease;pointer-events:none}
+#branded-nav .bundle-apron-pos{opacity:0}
+#branded-nav .is-active .bundle-apron-neg{opacity:0}
+#branded-nav .is-active .bundle-apron-pos{opacity:1}
