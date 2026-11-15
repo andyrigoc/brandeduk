@@ -1431,6 +1431,7 @@ function clearFanOfBar() {
   const circleTop = indicatorBox && indicatorBox.height ? indicatorBox.top - 2 : nav.getBoundingClientRect().top - 18;
   const limit = circleTop - 12;
   const hadShow = bundleRadial.classList.contains('show');
+  bundleRadial.style.visibility = 'hidden';
   bundleRadial.classList.add('show', 'buk-radial-measure');
   let lowest = -Infinity;
   bundleRadial.querySelectorAll('.bundle-radial-item').forEach((item) => {
@@ -1442,14 +1443,95 @@ function clearFanOfBar() {
   });
   bundleRadial.classList.remove('buk-radial-measure', 'show');
   if (!hadShow) {
-    bundleRadial.classList.add('buk-radial-measure');
+    bundleRadial.classList.add('is-armed');
     void bundleRadial.offsetWidth;
-    bundleRadial.classList.remove('buk-radial-measure');
+    bundleRadial.classList.remove('is-armed');
   }
+  bundleRadial.style.visibility = '';
   if (Number.isFinite(lowest) && lowest > limit + 0.5) {
     const current = parseFloat(bundleRadialAnchor.style.top) || 0;
     bundleRadialAnchor.style.top = `${current - (lowest - limit)}px`;
   }
+}
+
+function stopRadialItemMotion() {
+  bundleRadial?.querySelectorAll('.bundle-radial-item').forEach((item) => {
+    item.getAnimations().forEach((anim) => anim.cancel());
+    item.style.transform = '';
+  });
+}
+
+function radialOpenTargets() {
+  const style = getComputedStyle(bundleRadialAnchor);
+  const plate = parseFloat(style.getPropertyValue('--radial-plate')) || 70;
+  const reach = (parseFloat(style.getPropertyValue('--radial-reach')) || 1.82) * plate;
+  const diag = (parseFloat(style.getPropertyValue('--radial-diag')) || (1.82 / Math.SQRT2)) * plate;
+  return [
+    `translate(0px, ${(-reach).toFixed(2)}px) scale(1)`,
+    `translate(${diag.toFixed(2)}px, ${(-diag).toFixed(2)}px) scale(1)`,
+    `translate(${reach.toFixed(2)}px, 0px) scale(1)`,
+    `translate(${diag.toFixed(2)}px, ${diag.toFixed(2)}px) scale(1)`,
+    `translate(0px, ${reach.toFixed(2)}px) scale(1)`,
+    `translate(${(-diag).toFixed(2)}px, ${diag.toFixed(2)}px) scale(1)`,
+    `translate(${(-reach).toFixed(2)}px, 0px) scale(1)`,
+    `translate(${(-diag).toFixed(2)}px, ${(-diag).toFixed(2)}px) scale(1)`
+  ];
+}
+
+function playRadialOpen(hubAlreadyCentered) {
+  if (!bundleRadial) return;
+  stopRadialItemMotion();
+  bundleRadial.classList.remove('show', 'is-returning', 'is-tucked', 'is-opening', 'is-armed');
+  const release = () => {
+    if (!radialOpen || !bundleRadial) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const items = [...bundleRadial.querySelectorAll('.bundle-radial-item')];
+    const ends = radialOpenTargets();
+    bundleRadial.classList.remove('show', 'is-returning', 'is-tucked');
+    bundleRadial.classList.add('is-armed');
+    void bundleRadial.offsetWidth;
+    bundleRadial.classList.remove('is-armed');
+    bundleRadial.classList.add('is-opening');
+    if (reduce) {
+      bundleRadial.classList.add('show');
+      bundleRadial.classList.remove('is-opening');
+      return;
+    }
+    let pending = items.length;
+    items.forEach((item, index) => {
+      const anim = item.animate(
+        [
+          { transform: 'translate3d(0px, 0px, 0px) scale(0.46)' },
+          { transform: (ends[index] || ends[0]).replace('translate(', 'translate3d(').replace(') scale', ', 0px) scale') }
+        ],
+        {
+          duration: 420,
+          delay: index * 90,
+          easing: 'cubic-bezier(0.16, 0.84, 0.32, 1)',
+          fill: 'forwards'
+        }
+      );
+      const done = () => {
+        pending -= 1;
+        if (pending > 0 || !radialOpen || !bundleRadial) return;
+        bundleRadial.classList.add('show');
+        bundleRadial.classList.remove('is-opening');
+        items.forEach((entry) => {
+          entry.getAnimations().forEach((running) => running.cancel());
+        });
+      };
+      anim.onfinish = done;
+      anim.oncancel = () => {
+        pending -= 1;
+      };
+    });
+  };
+  if (hubAlreadyCentered) {
+    release();
+    return;
+  }
+  bundleRadialAnchor?.classList.add('show');
+  radialMotionStop = whenRadialSettles(bundleRadialHub, 'transform', 480, release);
 }
 
 function cancelRadialMotion() {
@@ -1482,12 +1564,58 @@ function finishRadialClose() {
   if (radialOpen) return;
   bundleRadialDim?.classList.remove('show');
   bundleRadialDim?.setAttribute('aria-hidden', 'true');
-  bundleRadial?.classList.remove('is-returning');
-  bundleRadial?.classList.remove('is-tucked');
+  bundleRadial?.classList.remove('is-returning', 'is-tucked', 'is-opening', 'is-armed');
+  stopRadialItemMotion();
   bundleRadialAnchor?.classList.remove('is-dropping');
   bundleRadialAnchor?.classList.remove('is-open');
   if (bundleRadialAnchor) bundleRadialAnchor.inert = true;
-  bukPingSpeed();
+  document.dispatchEvent(new CustomEvent('buk-fan-closed'));
+}
+
+function playRadialClose() {
+  const items = [...(bundleRadial?.querySelectorAll('.bundle-radial-item') || [])];
+  const froms = items.map((item) => getComputedStyle(item).transform);
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  bundleRadial?.classList.add('is-returning');
+  bundleRadial?.classList.remove('show', 'is-opening', 'is-armed');
+  bundleRadial?.setAttribute('aria-hidden', 'true');
+  if (bundleRadial) bundleRadial.inert = true;
+  const done = () => {
+    if (radialOpen || !bundleRadial) return;
+    items.forEach((item) => {
+      item.getAnimations().forEach((anim) => anim.cancel());
+      item.style.transform = '';
+    });
+    bundleRadial.classList.add('is-tucked');
+    bundleRadial.classList.remove('is-returning');
+    dropHubBehindFilters();
+  };
+  if (!items.length || reduce) {
+    done();
+    return;
+  }
+  const running = [];
+  items.forEach((item, index) => {
+    const from = froms[index];
+    item.getAnimations().forEach((anim) => anim.cancel());
+    const anim = item.animate(
+      [
+        { transform: from && from !== 'none' ? from : 'translate3d(0px, 0px, 0px) scale(0.46)' },
+        { transform: 'translate3d(0px, 0px, 0px) scale(0.46)' }
+      ],
+      {
+        duration: 400,
+        delay: (items.length - 1 - index) * 100,
+        easing: 'ease-in',
+        fill: 'both'
+      }
+    );
+    running.push(anim);
+    if (index === 0) anim.onfinish = () => done();
+  });
+  radialMotionStop = () => {
+    running.forEach((anim) => anim.cancel());
+  };
 }
 
 function dropHubBehindFilters() {
@@ -1516,33 +1644,10 @@ function toggleRadial(force) {
     if (bundleRadialAnchor) bundleRadialAnchor.inert = false;
     const hubAlreadyCentered = bundleRadialAnchor?.classList.contains('show');
     bukPingSpeed();
-    bundleRadial?.classList.remove('show', 'is-returning', 'is-tucked');
-    bundleRadial?.classList.add('is-armed');
-    if (bundleRadial) void bundleRadial.offsetWidth;
-    requestAnimationFrame(() => {
-      if (!radialOpen || !bundleRadial) return;
-      bundleRadial.classList.remove('is-armed');
-      void bundleRadial.offsetWidth;
-      requestAnimationFrame(() => {
-        if (!radialOpen) return;
-        bundleRadial.classList.add('show');
-        if (!hubAlreadyCentered) bundleRadialAnchor?.classList.add('show');
-      });
-    });
+    playRadialOpen(hubAlreadyCentered);
     bukPingSpeed();
-  } else if (bundleRadial?.classList.contains('show')) {
-    bundleRadial?.classList.add('is-returning');
-    bundleRadial?.classList.remove('show');
-    bundleRadial?.setAttribute('aria-hidden', 'true');
-    if (bundleRadial) bundleRadial.inert = true;
-    const lastCircle = bundleRadial?.querySelector('.bundle-radial-item');
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    radialMotionStop = whenRadialSettles(lastCircle, 'transform', reduce ? 80 : 1600, () => {
-      if (radialOpen) return;
-      bundleRadial?.classList.add('is-tucked');
-      bundleRadial?.classList.remove('is-returning');
-      dropHubBehindFilters();
-    });
+  } else if (bundleRadial?.classList.contains('show') || bundleRadial?.classList.contains('is-opening')) {
+    playRadialClose();
   } else if (bundleRadialAnchor?.classList.contains('show') || bundleRadialAnchor?.classList.contains('is-dropping')) {
     dropHubBehindFilters();
   } else {

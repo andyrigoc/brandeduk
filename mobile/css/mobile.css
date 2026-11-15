@@ -10974,9 +10974,9 @@ a.continue-shopping {
     bottom: 0;
     width: 80%;
     max-width: 400px;
-    background: rgba(255, 255, 255, 0.60);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: #fff;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     border-radius: 0 16px 16px 0;
     box-shadow: 4px 0 30px rgba(0, 0, 0, 0.15);
     z-index: 1000;

@@ -1359,10 +1359,34 @@ function initBukNav(nav) {
         else if (destKey) swapCentre(nav, 'customise');
         if (destKey && destKey !== currentPageKey()) warmSharedZ(item.href);
         const already = item.classList.contains('active');
-        const bundleFiltersOnly = item.id === 'bundleFiltersNav';
         const startX = parseFloat(getComputedStyle(nav).getPropertyValue('--x')) || 0;
+        const bundlesItem = items.find((candidate) => candidate.dataset.section === 'bundles');
+        const restoreBundles = () => {
+            if (!bundlesItem) return;
+            showOnItem(bundlesItem, true);
+            bundlesItem.setAttribute('aria-current', 'page');
+        };
+        if (!nav.__bukFanRestore) {
+            nav.__bukFanRestore = true;
+            document.addEventListener('buk-fan-closed', () => {
+                if (!nav.isConnected) return;
+                restoreBundles();
+            });
+        }
+        if (item.id === 'bundleFiltersNav') {
+            const radial = document.getElementById('bundleRadial');
+            const fanOpen = radial && (radial.classList.contains('show') || radial.classList.contains('is-opening') || radial.classList.contains('is-armed') || radial.classList.contains('is-returning'));
+            if (fanOpen) {
+                item.dispatchEvent(new CustomEvent('buk-open-filters'));
+                restoreBundles();
+                return;
+            }
+            showOnItem(item, true);
+            whenArrived(startX, () => item.dispatchEvent(new CustomEvent('buk-open-filters')));
+            return;
+        }
         const arrive = (action) => {
-            if (already || bundleFiltersOnly) {
+            if (already) {
                 action();
                 return;
             }
