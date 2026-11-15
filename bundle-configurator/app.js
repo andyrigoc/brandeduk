@@ -1570,6 +1570,13 @@ function finishRadialClose() {
   bundleRadialAnchor?.classList.remove('is-open');
   if (bundleRadialAnchor) bundleRadialAnchor.inert = true;
   document.dispatchEvent(new CustomEvent('buk-fan-closed'));
+  try {
+    if (window.parent && window.parent !== window) {
+      window.parent.document.dispatchEvent(new CustomEvent('buk-fan-closed'));
+    }
+  } catch (error) {
+    /* the parent bar restores its own circle */
+  }
 }
 
 function playRadialClose() {

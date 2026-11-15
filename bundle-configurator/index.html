@@ -12,12 +12,12 @@
   <link rel="stylesheet" href="/mobile/css/mobile-chrome-base.css?v=20261113-bundles" media="(max-width: 699px)">
   <link rel="stylesheet" href="/mobile/css/header-v2.css?v=20261115-carton">
   <link rel="stylesheet" href="/mobile/css/search-suggestions.css?v=20261020a">
-  <link rel="stylesheet" href="/mobile/css/bottom-nav.css?v=20261115-fanopen">
+  <link rel="stylesheet" href="/mobile/css/bottom-nav.css?v=20261115-rise">
   <link rel="stylesheet" href="/mobile/css/chat-nav-icon.css?v=20261020b">
   <link rel="stylesheet" href="/mobile/css/bundles-flip.css?v=20261115-filterrow8" media="(max-width: 699px)">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="/brandedukv15-child/assets/js/api-config.js?v=20261114-blackthumbs"></script>
-  <script type="module" src="./app.js?v=20261115-fanback"></script>
+  <script type="module" src="./app.js?v=20261115-fanhost"></script>
 </head>
 <body>
   <div class="header-with-promo mobile-chrome-header">
@@ -390,7 +390,7 @@
       <span class="bundle-radial-bars" aria-hidden="true"><span></span><span></span><span></span></span>
     </button>
   </div>
-  <nav class="bottom-nav bottom-nav--v2 buk-nav nav dark" data-active="bundles" aria-label="Main navigation">
+  <nav class="bottom-nav bottom-nav--v2 buk-nav nav dark has-filters-circle" data-active="bundles" aria-label="Main navigation">
     <span class="indicator" aria-hidden="true"></span>
     <a href="/index-mobile.html?force=mobile" class="nav-item" data-home-nav data-section="home">
       <span class="nav-icon"><svg viewBox="0 0 52 52" aria-hidden="true"><path d="M10 24v20h11V32h10v12h11V24"/><path class="accent" d="m5 25 21-18 21 18M36 14V8h6v11"/></svg></span>
@@ -401,9 +401,12 @@
       <span class="nav-label">Shop</span>
     </a>
     <button type="button" class="nav-item" id="bundleFiltersNav" data-nav-action aria-haspopup="dialog" aria-expanded="false" aria-controls="bundleRadial" aria-label="Open bundle filters">
-      <span class="nav-icon nav-customise-icon"><svg viewBox="0 0 52 52" aria-hidden="true"><path d="M12 6v40M26 6v40M40 6v40"/><rect class="orange-fill filter-level level-one" x="7" y="14" width="10" height="8" rx="3"/><rect class="surface-fill filter-level level-two" x="21" y="30" width="10" height="8" rx="3"/><rect class="orange-fill filter-level level-three" x="35" y="10" width="10" height="8" rx="3"/></svg></span>
-      <span class="nav-label">Filters</span>
-      <span class="bundle-fab-count" id="bundleFilterCount" hidden>0</span>
+      <span class="centre-rise">
+        <span class="indicator-filters" aria-hidden="true"><span class="indicator-icon"><svg viewBox="0 0 52 52" aria-hidden="true"><path d="M12 6v40M26 6v40M40 6v40"/><rect class="orange-fill filter-level level-one" x="7" y="14" width="10" height="8" rx="3"/><rect class="surface-fill filter-level level-two" x="21" y="30" width="10" height="8" rx="3"/><rect class="orange-fill filter-level level-three" x="35" y="10" width="10" height="8" rx="3"/></svg></span></span>
+        <span class="nav-icon nav-customise-icon"><svg viewBox="0 0 52 52" aria-hidden="true"><path d="M12 6v40M26 6v40M40 6v40"/><rect class="orange-fill filter-level level-one" x="7" y="14" width="10" height="8" rx="3"/><rect class="surface-fill filter-level level-two" x="21" y="30" width="10" height="8" rx="3"/><rect class="orange-fill filter-level level-three" x="35" y="10" width="10" height="8" rx="3"/></svg></span>
+        <span class="nav-label">Filters</span>
+        <span class="bundle-fab-count" id="bundleFilterCount" hidden>0</span>
+      </span>
     </button>
     <a href="/bundle-configurator/" class="nav-item active" data-section="bundles" aria-current="page" aria-label="Limited Bundles">
       <span class="nav-icon" data-bundle><svg class="bundle-three" viewBox="0 0 104 108" aria-hidden="true"><g stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path class="surface-fill" d="M13 17 5 21 1 30l8 5 5-6v30h19V29l4 6 7-5-5-9-8-4c-4 5-13 5-18 0Z"/><path d="M14 17c2 9 14 9 17 0"/><path fill="currentColor" d="m42 9 8-2 6 9 6-9 9 2-3 14c0 5 1 9 5 12v27H39V35c4-3 5-7 5-12Z"/><path class="bundle-detail" d="m43 12 7-2 6 12 7-12 6 2M56 22v34M44 15c2 10 1 15-3 19M68 15c-2 10-1 15 3 19"/><path class="bundle-band" d="M41 41h30v5H41z"/><path fill="currentColor" d="M79 13h17l3 48H88l-2-25-3 25H73Z"/><path class="bundle-band" d="M79 16h16v3H79z"/></g><g stroke-width="2" stroke-linejoin="round"><path class="orange-fill" d="m12 57 39 11 38-11v30l-38 18-39-18Z"/><path d="M51 68v37"/><path class="orange-fill" d="m12 48 39 12-5 13L3 59Zm77 0L51 60l5 13 42-14Z"/></g></svg></span>
@@ -414,7 +417,7 @@
       <span class="nav-label">Chat</span>
     </button>
   </nav>
-  <script src="/mobile/js/mobile.js?v=20261115-fanback"></script>
+  <script src="/mobile/js/mobile.js?v=20261115-rise2"></script>
   <script src="/mobile/js/header-menu.js?v=20261018-drawer"></script>
   <script src="/mobile/js/bottom-nav.js?v=20261115-fangap2"></script>
   <script src="/mobile/js/bundles-flip.js?v=20261114-scrollthenflip4"></script>

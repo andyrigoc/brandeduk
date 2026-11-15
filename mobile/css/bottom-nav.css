@@ -90,6 +90,16 @@ body:has(.bottom-nav.buk-nav) {
     -webkit-mask-mode: alpha;
     mask-mode: alpha;
 }
+.bottom-nav.nav.has-filters-circle.filters-risen::before {
+    -webkit-mask-image:
+        radial-gradient(circle at calc(var(--x) + 30px) 9px, transparent 29px, #000 29.5px),
+        radial-gradient(circle at calc(50% - 5px) 9px, transparent 29px, #000 29.5px);
+    mask-image:
+        radial-gradient(circle at calc(var(--x) + 30px) 9px, transparent 29px, #000 29.5px),
+        radial-gradient(circle at calc(50% - 5px) 9px, transparent 29px, #000 29.5px);
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+}
 .bottom-nav.nav.dark {
     --bar: #0b2d3a;
     --ink: #fff;
@@ -115,6 +125,71 @@ body:has(.bottom-nav.buk-nav) {
     box-shadow: 0 0 0 2px var(--orange);
 }
 .bottom-nav.nav.ready .indicator { visibility: visible; }
+.bottom-nav.nav[data-active="bundles"]:not(.icons-live) > .indicator {
+    visibility: visible;
+    left: calc(70% - 25px);
+    transform: none;
+}
+.bottom-nav.nav .indicator-icon {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: var(--on-circle);
+    --surface: var(--circle);
+    pointer-events: none;
+}
+.bottom-nav.nav .indicator-icon svg {
+    width: 31px;
+    height: 31px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    overflow: visible;
+}
+.bottom-nav.nav .indicator-icon .bundle-three { width: 39px; height: 42px; }
+.bottom-nav.nav .indicator-filters {
+    position: absolute;
+    z-index: 2;
+    left: 50%;
+    top: -16px;
+    display: none;
+    width: 50px;
+    height: 50px;
+    margin: 0;
+    border-radius: 50%;
+    background: var(--circle);
+    box-shadow: 0 0 0 2px var(--orange);
+    transform: translateX(-50%);
+    pointer-events: none;
+}
+.bottom-nav.nav.has-filters-circle .indicator-filters { display: block; }
+.bottom-nav.nav.has-filters-circle .centre-rise {
+    display: block;
+    height: 100%;
+    transform: translateY(120px);
+}
+.bottom-nav.nav.has-filters-circle.filters-armed .centre-rise {
+    transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.bottom-nav.nav.has-filters-circle.filters-risen .centre-rise {
+    transform: translateY(0);
+}
+.bottom-nav.nav.has-filters-circle #bundleFiltersNav > .centre-rise > .nav-icon,
+.bottom-nav.nav.has-filters-circle #bundleFiltersNav .centre-rise > .nav-icon {
+    visibility: hidden;
+}
+.bottom-nav.nav.icons-live > .nav-item.active > .nav-icon,
+.bottom-nav.nav.icons-live > .nav-item.active .nav-centre-face.is-current > .nav-icon,
+.bottom-nav.nav.icons-live.has-filters-circle > .nav-item.has-slot-circle > .nav-icon,
+.bottom-nav.nav.icons-live.has-filters-circle > .nav-item.has-slot-circle .nav-centre-face.is-current > .nav-icon {
+    visibility: hidden;
+}
+.bottom-nav.nav .nav-centre-face:not(.is-current):not(.is-leaving) {
+    visibility: hidden;
+}
 .bottom-nav.nav .indicator:before,
 .bottom-nav.nav .indicator:after {
     content: none;
@@ -637,17 +712,22 @@ body .bundle-radial-sheet {
     position: absolute;
     inset: 0;
     transform: translateY(100%);
-    transition: transform 320ms cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 .bottom-nav.nav .nav-centre-face.is-current {
     transform: translateY(0);
 }
-/* Bundles: Filters rises from below. Customise's exit keeps the 320ms rule above. */
-.bottom-nav.nav .nav-centre-face[data-centre="filters"].is-current {
-    transition: transform 480ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-.bottom-nav.nav .nav-centre--instant .nav-centre-face[data-centre="filters"].is-current {
+html.buk-rise-customise .bottom-nav.nav #customiseNavBtn > .nav-icon,
+html.buk-rise-customise .bottom-nav.nav #customiseNavBtn > .nav-label,
+html.buk-rise-customise:not(.buk-customise-risen) .bottom-nav.nav .nav-centre-face.is-current[data-centre="customise"] {
+    transform: translateY(110px);
     transition: none;
+}
+html.buk-rise-customise.buk-customise-armed .bottom-nav.nav .nav-centre-face.is-current[data-centre="customise"] {
+    transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+html.buk-rise-customise.buk-customise-risen .bottom-nav.nav .nav-centre-face.is-current[data-centre="customise"] {
+    transform: translateY(0);
 }
 .bottom-nav.nav .nav-centre-face.is-leaving {
     transform: translateY(110%);
@@ -693,6 +773,62 @@ body .bundle-radial-sheet {
     to { transform: scale(0.92); opacity: 0; }
 }
 @keyframes bukZInRev {
+    from { transform: scale(1.08); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* Real navigations. The bar keeps its name so it stays put while the page
+   scales. 500ms matches BUK_Z_MS. Browsers without this just load the page. */
+@view-transition {
+    navigation: auto;
+}
+.bottom-nav.nav {
+    view-transition-name: buk-bottom-nav;
+}
+::view-transition-group(buk-bottom-nav) {
+    animation: none;
+    z-index: 1000;
+}
+::view-transition-old(buk-bottom-nav) {
+    display: none;
+}
+::view-transition-new(buk-bottom-nav) {
+    animation: none;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+    transform-origin: center center;
+    animation-duration: 500ms;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    animation-fill-mode: both;
+}
+::view-transition-old(root) {
+    animation-name: bukVtOutFwd;
+}
+::view-transition-new(root) {
+    animation-name: bukVtInFwd;
+}
+:active-view-transition-type(back) ::view-transition-old(root),
+:active-view-transition-type(backwards) ::view-transition-old(root) {
+    animation-name: bukVtOutRev;
+}
+:active-view-transition-type(back) ::view-transition-new(root),
+:active-view-transition-type(backwards) ::view-transition-new(root) {
+    animation-name: bukVtInRev;
+}
+@keyframes bukVtOutFwd {
+    from { transform: scale(1); opacity: 1; }
+    to { transform: scale(1.08); opacity: 0; }
+}
+@keyframes bukVtInFwd {
+    from { transform: scale(0.92); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+@keyframes bukVtOutRev {
+    from { transform: scale(1); opacity: 1; }
+    to { transform: scale(0.92); opacity: 0; }
+}
+@keyframes bukVtInRev {
     from { transform: scale(1.08); opacity: 0; }
     to { transform: scale(1); opacity: 1; }
 }
