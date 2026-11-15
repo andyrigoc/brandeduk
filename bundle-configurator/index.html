@@ -8,7 +8,7 @@
   <meta name="description" content="Configure Branded UK workwear bundles with your team’s colours, sizes and logo.">
   <title>Workwear Bundles | Branded UK</title>
   <link rel="icon" href="./assets/branded-logo.webp" type="image/webp">
-  <link rel="stylesheet" href="./styles.css?v=20261114-itemspill">
+  <link rel="stylesheet" href="./styles.css?v=20261115-bundle-api">
   <link rel="stylesheet" href="/mobile/css/mobile-chrome-base.css?v=20261113-bundles" media="(max-width: 699px)">
   <link rel="stylesheet" href="/mobile/css/header-v2.css?v=20261113-bundles">
   <link rel="stylesheet" href="/mobile/css/search-suggestions.css?v=20261020a">
@@ -17,7 +17,7 @@
   <link rel="stylesheet" href="/mobile/css/bundles-flip.css?v=20261114-scrollthenflip4" media="(max-width: 699px)">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="/brandedukv15-child/assets/js/api-config.js?v=20261114-blackthumbs"></script>
-  <script type="module" src="./app.js?v=20261114-scrollthenflip"></script>
+  <script type="module" src="./app.js?v=20261115-bundle-api"></script>
 </head>
 <body>
   <div class="header-with-promo mobile-chrome-header">
@@ -89,7 +89,7 @@
       <div class="section-heading">
         <div>
           <h2 id="catalogue-title">Shop the bundles</h2>
-          <p>Every bundle shows our final price, <span class="vat-suffix">ex VAT</span>.</p>
+          <p>Bundles marked Coming soon or Under review can’t be ordered yet.</p>
         </div>
         <span class="vat-tag">Prices <span class="vat-suffix">ex VAT</span></span>
       </div>
@@ -107,16 +107,7 @@
       </div>
       <div class="catalogue-grid" id="catalogue-grid"></div>
     </section>
-    <section class="demos" id="choice-demos" aria-labelledby="demo-title">
-      <div class="section-heading">
-        <div>
-          <h2 id="demo-title">Try a choice bundle</h2>
-          <p>These two demos are not in the 9 November price list. Their prices are examples only.</p>
-        </div>
-      </div>
-      <div class="demo-grid" id="demo-grid"></div>
-    </section>
-    <footer class="site-footer"><span>Branded UK · Private prototype</span><span>Example colour and size availability</span></footer>
+    <footer class="site-footer"><span>Branded UK</span><span>Live colour and size availability</span></footer>
   </main>
   <dialog class="drawer" id="builder" aria-labelledby="builder-title">
     <div class="drawer-frame">

@@ -813,3 +813,5 @@ body.dialog-open { padding-bottom: 0; }
 .bundle-other-filters:focus-visible,
 .bundle-sheet-chip:focus-visible { outline: 2px solid #273469; outline-offset: 2px; }
 body.bundle-radial-sheet-open { overflow: hidden; }
+.bundle-notice { margin: 0 0 14px; padding: 12px 14px; border: 1px solid #e8b4b4; border-radius: 12px; background: #fff5f5; color: #8a1f1f; font-size: .86rem; font-weight: 650; }
+.bundle-card.is-blocked .button:disabled, .card.is-blocked .card__request-btn:disabled { cursor: not-allowed; }

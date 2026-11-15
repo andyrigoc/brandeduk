@@ -1,9 +1,9 @@
 import {
-  products, bundles, demos, swatches, findBundle, formatPrice, pieceCount, sum,
+  products, registerProduct, fillOptions, sizesFor, skuKey, swatchFor, formatPrice, pieceCount, sum,
   newDraft, choiceValid, quotas, allocated, variantsValid, setChoice, setAllocation,
   acceptedFile, logoValid, readyToAdd
 } from './catalogue.js';
-import { deals } from './deals.js?v=20261113-nosource';
+import { loadBundles, loadDetail, loadAllDetails, loadComponentOptions, validateSelection, availability } from './bundle-api.js';
 
 const icons = {
   bag: '<path d="M5 8h14l1 13H4L5 8Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/>',
@@ -40,9 +40,9 @@ const price = pence => {
   return `<strong data-base-price="${pounds}">${catalogueMoney(pounds)}</strong> <small class="vat-suffix">${catalogueVatLabel()}</small>`;
 };
 const title = (heading, copy) => `<div class="step-heading"><h3 tabindex="-1">${heading}</h3>${copy ? `<p>${copy}</p>` : ''}</div>`;
-const thumb = (code, cls = '') => code === 'BC025'
-  ? `<span class="cap-thumb ${cls}">${icon('cap')}</span>`
-  : `<img class="thumb ${cls}" src="./assets/${code.toLowerCase()}.webp" alt="" width="432" height="432" decoding="async">`;
+const thumb = (code, cls = '') => products[code]?.image
+  ? `<img class="thumb ${cls}" src="${escape(products[code].image)}" alt="" width="432" height="432" loading="lazy" decoding="async" data-thumb="${escape(code)}">`
+  : `<span class="cap-thumb ${cls}">${icon('layers')}</span>`;
 const isInclusion = bundle => bundle.methods.length > 1 ? 'One logo included' : `${bundle.methods[0] === 'Print' ? 'Printing' : 'Embroidery'} included`;
 const pluralBundles = n => `${n} ${n === 1 ? 'bundle' : 'bundles'}`;
 const announcement = $('announcement');
@@ -108,12 +108,15 @@ async function fetchBlackImageForCode(code) {
 function closedSkuThumbsHtml(deal) {
   const codes = bundleSkuCodes(deal);
   const figures = codes.map(code => {
-    const url = blackImageByCode.get(String(code).toUpperCase());
+    const url = skuImage(code);
     if (!url) return '';
     return `<figure class="card__sku-thumb"><img src="${escape(url)}" alt="" width="72" height="72" loading="lazy" decoding="async"><figcaption>${escape(code)}</figcaption></figure>`;
   }).filter(Boolean);
   return figures.length ? `<div class="card__face__thumbs" data-sku-thumbs="1">${figures.join('')}</div>` : '';
 }
+// Black catalogue image if there is one, otherwise the bundle API's product image.
+const skuImage = code => blackImageByCode.get(String(code).toUpperCase()) || products[code]?.image || '';
+
 async function hydrateBlackThumbs() {
   const codes = [...new Set(deals.flatMap(deal => bundleSkuCodes(deal).map(code => String(code).toUpperCase())))];
   const chunk = 8;
@@ -156,31 +159,35 @@ const optionSearch = {};
 const openFacets = new Set();
 let resultQuery = '';
 
-const knownGarments = new Set(Object.keys(products));
+// Live bundles from the API (see bundle-api.js). `deals` is filled by init().
+let deals = [];
 const offerById = new Map();
+let listState = 'loading'; // loading | ready | error
 
 function asBundle(deal) {
-  const printOnly = /free printing/i.test(deal.title);
   return {
     id: deal.id,
-    title: deal.title.replace(/^Bundle:\s*/i, ''),
+    slug: deal.slug,
+    title: deal.title,
     price: deal.price,
-    methods: printOnly ? ['Print'] : ['Print', 'Embroidery'],
-    delivery: /consegna gratis/.test(deal.title) && !/>\s*£/.test(deal.title),
-    art: (deal.productType || []).includes('t-shirts') ? 'tee' : 'outdoor',
-    fixed: deal.fixed || {}
+    methods: deal.methods,
+    delivery: deal.delivery,
+    logoCount: deal.logoCount,
+    art: deal.productType.includes('t-shirts') ? 'tee' : 'outdoor',
+    fixed: deal.fixed,
+    components: deal.components
   };
 }
 
+// A bundle can be built only when the API says it is orderable, every
+// component is a real catalogue product and its decoration terms are known.
 function canBuild(deal) {
-  const codes = Object.keys(deal.fixed || {});
-  return deal.status === 'ready' && !deal.substitute && !deal.discountCode && codes.length > 0 && codes.every(code => knownGarments.has(code));
+  return deal.orderable && deal.buildable;
 }
 
 function findOffer(id) {
   const deal = offerById.get(id);
-  if (deal && canBuild(deal)) return asBundle(deal);
-  return findBundle(id);
+  return deal && canBuild(deal) ? asBundle(deal) : undefined;
 }
 
 function dealMatchesQuery(deal) {
@@ -242,34 +249,45 @@ function roundStagePounds(value, increment, direction) {
   return stepped * increment;
 }
 
+// Seven bands with a similar number of bundles in each (price quantiles), so one
+// very large bundle cannot stretch the scale. Edges are rounded to tidy numbers.
 function budgetStageEdges(prices) {
-  const lowPrice = Math.min(...prices);
-  const highPrice = Math.max(...prices);
-  const span = highPrice - lowPrice;
-  const increment = span >= 1000 ? 10 : span >= 200 ? 5 : 1;
-  const edges = Array.from({length: 7}, (_, index) => {
-    const raw = lowPrice + (span * index) / 6;
-    const direction = index === 0 ? -1 : index === 6 ? 1 : 0;
-    return roundStagePounds(raw, increment, direction);
-  });
-  edges[0] = Math.min(edges[0], roundStagePounds(lowPrice, increment, -1));
-  edges[6] = Math.max(edges[6], roundStagePounds(highPrice, increment, 1));
-  for (let index = 1; index < edges.length; index += 1) {
-    if (edges[index] <= edges[index - 1]) edges[index] = edges[index - 1] + increment;
+  const sorted = prices.slice().sort((x, y) => x - y);
+  const low = sorted[0];
+  const high = sorted[sorted.length - 1];
+  const tidy = value => {
+    const step = value < 100 ? 5 : value < 500 ? 10 : value < 2000 ? 50 : 100;
+    return Math.round(value / step) * step;
+  };
+  const edges = [roundStagePounds(low, low < 100 ? 5 : 10, -1)];
+  for (let index = 1; index < 6; index += 1) {
+    const raw = sorted[Math.floor((sorted.length * index) / 6)];
+    const edge = tidy(raw);
+    if (edge > edges[edges.length - 1]) edges.push(edge);
   }
-  while (edges[6] < highPrice) edges[6] += increment;
+  edges.push(roundStagePounds(high, high < 500 ? 10 : 50, 1));
   return edges;
 }
 
-const budgetEdges = budgetStageEdges(shownBundlePounds());
-const BUDGET_STAGES = budgetEdges.slice(0, -1).map((low, index) => {
-  const high = budgetEdges[index + 1];
-  return {low, high, label: `${stagePound.format(low)}–${stagePound.format(high)}`};
-});
+let BUDGET_STAGES = [];
+function rebuildBudgetStages() {
+  const prices = shownBundlePounds();
+  if (!prices.length) {
+    BUDGET_STAGES = [];
+    return;
+  }
+  const edges = budgetStageEdges(prices);
+  BUDGET_STAGES = edges.slice(0, -1).map((low, index) => {
+    const high = edges[index + 1];
+    return {low, high, label: `${stagePound.format(low)}–${stagePound.format(high)}`};
+  });
+  const item = radialCatalog.find(entry => entry.id === 'budget');
+  if (item) item.values = BUDGET_STAGES.map(stage => stage.label);
+}
 const radialCatalog = [
   {id: 'industry', title: 'Industry', iconFile: 'industry', icon: radialIcon('industry'), prompt: 'What industry are you in?', layout: 'checks', multi: true, values: ['Construction', 'Cleaning', 'Hospitality', 'Corporate / Office', 'Education / Leavers', 'Sport & Fitness']},
   {id: 'team', title: 'Team Size', iconFile: 'team-size', icon: radialIcon('team-size'), prompt: 'How many people are you buying for?', layout: 'grid3', values: ['1–2', '3–5', '6–10', '11–20', '21–30', '31–50', '51–100', '100+']},
-  {id: 'budget', title: 'Budget', iconFile: 'budget', icon: radialIcon('budget'), prompt: 'What is your budget?', layout: 'stack', values: BUDGET_STAGES.map(stage => stage.label)},
+  {id: 'budget', title: 'Budget', iconFile: 'budget', icon: radialIcon('budget'), prompt: 'What is your budget?', layout: 'stack', values: []},
   {id: 'clothing', title: 'Clothing', iconFile: 'clothing', icon: radialIcon('clothing'), prompt: 'What type of clothing do you need?', layout: 'grid3', icons: CLOTHING_ICONS, values: ['T-Shirts', 'Polos', 'Hoodies', 'Sweats', 'Jackets', 'Workwear']},
   {id: 'purpose', title: 'Purpose', iconFile: 'purpose', icon: radialIcon('purpose'), prompt: 'What is the main purpose?', layout: 'radios', values: ['Staff Uniforms', 'New Starter Kits', 'Team / Event', 'Promotional / Branding', 'Workwear / PPE', 'Corporate / Office']},
   {id: 'quantity', title: 'Quantity', iconFile: 'quantity', icon: radialIcon('quantity'), prompt: 'How many items in total?', layout: 'grid2', values: ['Up to 10', '11–25', '26–50', '51–100', '101–250', '250+']},
@@ -284,21 +302,9 @@ let sheetDraft = null;
 let sheetFocusId = null;
 let otherFiltersOpen = false;
 
-function gcd(left, right) {
-  let a = Math.abs(left);
-  let b = Math.abs(right);
-  while (b) {
-    const next = a % b;
-    a = b;
-    b = next;
-  }
-  return a;
-}
-
+// People covered by the bundle (rules in bundle-classify.js).
 function kitPeople(deal) {
-  const quantities = Object.values(deal.fixed || {}).map(Number).filter(count => count > 0);
-  if (quantities.length) return quantities.reduce((total, count) => gcd(total, count));
-  return Number(deal.qty) || 0;
+  return deal.people || Number(deal.qty) || 0;
 }
 
 function hasType(deal, ...types) {
@@ -314,16 +320,21 @@ function hasSector(deal, sector) {
   return facetValues(deal, 'sector').includes(sector);
 }
 
+// Industry comes from the bundle's real products, brands and title (rules in
+// bundle-api.js) until the API stores an industry for each bundle.
+const INDUSTRY_SECTORS = {
+  Construction: 'construction',
+  Cleaning: 'cleaning',
+  Hospitality: 'hospitality',
+  'Corporate / Office': 'corporate',
+  'Education / Leavers': 'education',
+  'Sport & Fitness': 'sport'
+};
+
 function industryMatches(deal, value) {
   if (!value) return true;
-  // Only safety and healthcare are stored as sectors. The other labels use the
-  // nearest product type or feature. Cleaning and Sport & Fitness have neither.
-  if (value === 'Construction') return hasSector(deal, 'safety') || hasFeature(deal, 'high-visibility') || hasType(deal, 'safety-vests');
-  if (value === 'Hospitality') return hasType(deal, 'aprons');
-  if (value === 'Corporate / Office') return hasType(deal, 'polos') && !hasType(deal, 'safety-vests') && !hasFeature(deal, 'high-visibility');
-  if (value === 'Education / Leavers') return hasType(deal, 'hoodies');
-  if (value === 'Cleaning' || value === 'Sport & Fitness') return false;
-  return false;
+  const sector = INDUSTRY_SECTORS[value];
+  return Boolean(sector) && hasSector(deal, sector);
 }
 
 const TEAM_RANGES = {
@@ -411,8 +422,10 @@ function seasonMatches(deal, season) {
 function brandingMatches(deal, value) {
   if (!value) return true;
   const title = deal.title || '';
-  const print = /print|dtf|dtg/i.test(title);
-  const embroidery = /embroider|stitch/i.test(title);
+  // The decoration methods stored on the bundle win; the title is the fallback.
+  const stored = deal.methods || [];
+  const print = stored.length ? stored.includes('Print') : /print|dtf|dtg/i.test(title);
+  const embroidery = stored.length ? stored.includes('Embroidery') : /embroider|stitch/i.test(title);
   if (value === 'Embroidery') return embroidery;
   if (value === 'Printing (DTF / DTG)') return print;
   if (value === 'Both (Embroidery & Print)') return print && embroidery;
@@ -567,7 +580,7 @@ function flipCardMarkup(deal, index) {
   const closedThumbs = closedSkuThumbsHtml(deal);
   const openThumbs = codes => {
     const figs = (codes || []).map(code => {
-      const url = blackImageByCode.get(String(code).toUpperCase());
+      const url = skuImage(code);
       if (!url) return '';
       return `<img src="${escape(url)}" alt="" width="48" height="48" loading="lazy" decoding="async">`;
     }).filter(Boolean).join('');
@@ -577,12 +590,12 @@ function flipCardMarkup(deal, index) {
   const includedInline = items.length
     ? items.map(([code, n]) => {
         const label = products[code] ? products[code].label : code;
-        const blackUrl = blackImageByCode.get(String(code).toUpperCase());
+        const blackUrl = skuImage(code);
         const img = blackUrl ? `<img src="${escape(blackUrl)}" alt="">` : '';
         return `<li>${img}<span>${escape(label)} × ${n}</span></li>`;
       }).join('')
     : `<li><span>${escape((deal.codes || []).join(', ') || 'See bundle details')}</span></li>`;
-  const ctaLabel = build ? 'Build Your Bundle' : 'Not available';
+  const ctaLabel = build ? 'Build Your Bundle' : availability(deal).label;
   const ctaDisabled = build ? '' : 'disabled';
 
   return `<section class="card theme-${theme}${build ? '' : ' is-blocked'}" data-bundle-id="${escape(deal.id)}" data-can-build="${build ? '1' : '0'}" aria-expanded="false">
@@ -682,26 +695,84 @@ function flipCardMarkup(deal, index) {
 
 function renderShop() {
   deals.forEach(deal => offerById.set(deal.id, deal));
+  const grid = $('catalogue-grid');
+  if (listState !== 'ready') {
+    const line = $('bundle-result-line');
+    if (line) {
+      line.className = 'bundle-result-line';
+      line.textContent = listState === 'loading' ? 'Loading bundles…' : '';
+    }
+    grid.innerHTML = listState === 'loading'
+      ? '<p class="bundle-empty" role="status">Loading the latest bundles…</p>'
+      : '<p class="bundle-empty" role="alert">We couldn\u2019t load the bundles just now. <button type="button" class="text-button" data-action="retry">Try again</button></p>';
+    return;
+  }
   const shown = sortCatalogue(deals.filter(deal => dealMatchesBundleFilters(deal)));
   renderFilterSummary(shown.length);
   if (announceBundleFilters && announcement) announcement.textContent = pluralBundles(shown.length);
-  const demoSection = document.querySelector('.demos');
-  if (demoSection) demoSection.hidden = chosenRadialFilters().length > 0;
-  $('catalogue-grid').innerHTML = shown.length
+  grid.innerHTML = shown.length
     ? shown.map((deal, index) => flipCardMarkup(deal, index)).join('')
     : `<p class="bundle-empty">${escape(emptyFilterMessage())}</p>`;
-
-  $('demo-grid').innerHTML = demos.map(bundle => `<article class="demo-card">
-    <span class="demo-icon">${icon(bundle.group.type === 'exclusive' ? 'cap' : 'layers')}</span>
-    <div><p class="card-category">${bundle.tag}</p><h3>${bundle.title}</h3></div>
-    <button type="button" class="button secondary" data-action="open" data-id="${bundle.id}" aria-label="Try ${bundle.title}">Try demo ${icon('right')}</button>
-  </article>`).join('');
 
   if (window.BundlesFlip?.refresh) window.BundlesFlip.refresh();
 }
 
-function openBuilder(bundle, source, saved) {
-  if (!bundle || builder.open) return;
+let opening = false;
+
+function showNotice(message) {
+  let note = $('bundle-notice');
+  if (!note) {
+    note = document.createElement('p');
+    note.id = 'bundle-notice';
+    note.className = 'bundle-notice';
+    note.setAttribute('role', 'alert');
+    $('bundle-result-line').after(note);
+  }
+  note.textContent = message;
+  note.hidden = !message;
+  if (message) announcement.textContent = message;
+}
+
+function registerDeal(deal) {
+  deal.components.filter(component => component.linked).forEach(registerProduct);
+}
+
+// Load a bundle's components and the live colour/size SKUs for each product.
+async function prepareBundle(deal) {
+  await loadDetail(deal);
+  registerDeal(deal);
+  await Promise.all(deal.components.filter(component => component.linked).map(async component => {
+    const product = products[component.code];
+    if (product.loaded) return;
+    fillOptions(product, await loadComponentOptions(deal, component));
+  }));
+  if (!deal.components.every(component => products[component.code]?.skus.size)) {
+    throw new Error('Some products have no live colours or sizes.');
+  }
+}
+
+async function openBuilder(bundle, source, saved) {
+  if (!bundle || builder.open || opening) return;
+  opening = true;
+  const original = source?.innerHTML;
+  if (source) {
+    source.disabled = true;
+    source.textContent = 'Loading\u2026';
+  }
+  showNotice('');
+  try {
+    await prepareBundle(offerById.get(bundle.id));
+    bundle = asBundle(offerById.get(bundle.id));
+  } catch {
+    showNotice('We couldn\u2019t load the latest colours and sizes for this bundle. Please try again.');
+    return;
+  } finally {
+    opening = false;
+    if (source) {
+      source.disabled = false;
+      source.innerHTML = original;
+    }
+  }
   trigger = source;
   draft = newDraft(bundle, saved);
   if (saved && !readyToAdd(draft)) draft.step = draft.reached = 0;
@@ -712,7 +783,7 @@ function openBuilder(bundle, source, saved) {
   fileError = '';
   builderError = '';
   $('builder-title').textContent = bundle.title;
-  $('builder-kicker').textContent = bundle.demo ? 'CHOICE DEMO' : 'BUILD YOUR BUNDLE';
+  $('builder-kicker').textContent = 'BUILD YOUR BUNDLE';
   $('builder-price').innerHTML = price(bundle.price);
   renderStep();
   builder.showModal();
@@ -785,7 +856,7 @@ function renderControls() {
 }
 
 function itemRow(code, qty) {
-  return `<li class="item-row">${thumb(code)}<div><strong>${products[code].name}</strong><small>${code}</small></div><span class="row-quantity">× ${qty}</span></li>`;
+  return `<li class="item-row">${thumb(code)}<div><strong>${escape(products[code].name)}</strong><small>${escape(code)}</small></div><span class="row-quantity">× ${qty}</span></li>`;
 }
 
 function includedMarkup() {
@@ -796,7 +867,7 @@ function includedMarkup() {
       ${group ? `<li class="item-row"><span class="cap-thumb">${icon('layers')}</span><div><strong>${group.name}</strong>
         <small>${group.codes.map(code => products[code].label).join(group.type === 'exclusive' ? ' or ' : ' and ')}</small></div><span class="row-quantity">× ${group.quantity}</span></li>` : ''}
     </ul>
-    <div class="info-panel">${icon('tick')}<div><strong>${isInclusion(bundle)}</strong><small>${bundle.methods.join(' or ')}${bundle.delivery ? ' · Free delivery' : ''}${bundle.demo ? ' · Illustrative price' : ''}</small></div></div>`;
+    <div class="info-panel">${icon('tick')}<div><strong>${isInclusion(bundle)}</strong><small>${bundle.methods.join(' or ')}${bundle.delivery ? ' · Free delivery' : ''}</small></div></div>`;
 }
 
 function groupsMarkup() {
@@ -827,22 +898,25 @@ function groupsMarkup() {
 }
 
 function colourDot(colour) {
-  return `<span class="colour-swatch" style="--swatch:${swatches[colour]}" aria-hidden="true"></span>`;
+  return `<span class="colour-swatch" style="--swatch:${swatchFor(colour)}" aria-hidden="true"></span>`;
 }
 
 function variantForm(code, required) {
   const product = products[code];
   const remaining = required - allocated(draft, code);
   const options = variantInputs[code] ?? {};
+  const colour = product.colours.includes(options.colour) ? options.colour : product.colours[0];
+  const sizes = sizesFor(product, colour);
+  const size = sizes.includes(options.size) ? options.size : sizes[0];
   const rows = draft.allocations[code] ?? [];
   return `<div class="variant-body">
     ${rows.length ? `<ul class="allocation-list" aria-label="Selected variants">${rows.map(row => `
-      <li>${colourDot(row.colour)}<span>${row.colour} · ${row.size}</span><strong>× ${row.quantity}</strong>
+      <li>${colourDot(row.colour)}<span>${escape(row.colour)} · ${escape(row.size)}</span><strong>× ${row.quantity}</strong>
         <button class="icon-button small" type="button" data-action="remove-allocation" data-code="${code}" data-colour="${row.colour}" data-size="${row.size}" aria-label="Remove ${row.colour}, ${row.size}, ${row.quantity} pieces">${icon('x')}</button></li>`).join('')}</ul>` : ''}
     ${remaining ? `<form class="allocation-form" data-code="${code}">
       <div class="variant-fields">
-        <label>Colour<select name="colour">${product.colours.map(colour => `<option ${options.colour === colour ? 'selected' : ''}>${colour}</option>`).join('')}</select></label>
-        <label>Size<select name="size">${product.sizes.map(size => `<option ${options.size === size ? 'selected' : ''}>${size}</option>`).join('')}</select></label>
+        <label>Colour<select name="colour">${product.colours.map(name => `<option ${colour === name ? 'selected' : ''}>${escape(name)}</option>`).join('')}</select></label>
+        <label>Size<select name="size">${sizes.map(name => `<option ${size === name ? 'selected' : ''}>${escape(name)}</option>`).join('')}</select></label>
         <label>Quantity<input name="quantity" type="number" min="1" max="${remaining}" step="1" inputmode="numeric" required value="1"></label>
       </div>
       <p class="inline-error" role="alert" hidden></p>
@@ -865,11 +939,11 @@ function variantsMarkup() {
       const count = allocated(draft, code);
       return `<details class="variant-card" name="products" ${active === code ? 'open' : ''}>
         <summary data-code="${code}">${thumb(code)}
-          <span class="variant-title"><strong>${products[code].name}</strong><small>${code}${count < qty ? ` · ${qty - count} remaining` : ''}</small></span>
+          <span class="variant-title"><strong>${escape(products[code].name)}</strong><small>${escape(code)}${count < qty ? ` · ${qty - count} remaining` : ''}</small></span>
           <span class="variant-counter ${count === qty ? 'finished' : ''}">${count === qty ? icon('tick') : ''}${count}/${qty}</span>
           ${icon('chevron', 'chevron')}</summary>${variantForm(code, qty)}</details>`;
     }).join('')}</div>
-    <p class="small-note">Colour and size availability is illustrative in this prototype.</p>`;
+    <p class="small-note">Colours and sizes shown are the live options for each product.</p>`;
 }
 
 function logoMarkup() {
@@ -895,8 +969,8 @@ function logoMarkup() {
 
 function selectedItems(allocations) {
   return `<ul class="item-list review-list">${Object.entries(allocations).filter(([, rows]) => rows.length).map(([code, rows]) => `
-    <li class="item-row">${thumb(code)}<div><strong>${sum(rows.map(row => row.quantity))} × ${products[code].label}</strong>
-      <small>${code}</small><ul class="review-variants">${rows.map(row => `<li>${colourDot(row.colour)} ${row.colour} · ${row.size} × ${row.quantity}</li>`).join('')}</ul>
+    <li class="item-row">${thumb(code)}<div><strong>${sum(rows.map(row => row.quantity))} × ${escape(products[code].label)}</strong>
+      <small>${escape(code)}</small><ul class="review-variants">${rows.map(row => `<li>${colourDot(row.colour)} ${escape(row.colour)} · ${escape(row.size)} × ${row.quantity}</li>`).join('')}</ul>
       </div></li>`).join('')}</ul>`;
 }
 
@@ -1018,11 +1092,17 @@ async function basketOperation(mode, operation) {
 
 async function refreshBasket() {
   try {
-    lines = (await basketOperation('readonly', store => store.getAll())).filter(line => findOffer(line.bundleId));
+    const saved = await basketOperation('readonly', store => store.getAll());
+    // Rebuild each saved bundle from the API so names, prices and images are live.
+    await Promise.all([...new Set(saved.map(line => line.bundleId))].map(id => {
+      const deal = offerById.get(id);
+      return deal ? prepareBundle(deal).catch(() => {}) : undefined;
+    }));
+    lines = saved.filter(line => findOffer(line.bundleId));
     lines.sort((a, b) => a.createdAt - b.createdAt);
     storeError = '';
   } catch {
-    storeError = 'This browser could not open the demo basket. Check that site storage is enabled.';
+    storeError = 'This browser could not open your basket. Check that site storage is enabled.';
   }
   const count = $('basket-count');
   count.textContent = String(lines.length);
@@ -1045,7 +1125,7 @@ function renderBasket() {
     const bundle = findOffer(line.bundleId);
     return `<article class="basket-line">
       <div class="basket-line-heading">
-        <div><h3>${bundle.title}</h3><p>${pieceCount(bundle)} items · ${bundle.demo ? 'Choice demo' : 'One logo included'}</p></div>
+        <div><h3>${escape(bundle.title)}</h3><p>${pieceCount(bundle)} items · ${bundle.logoCount > 1 ? `${bundle.logoCount} logos included` : 'One logo included'}</p></div>
         <div class="line-price">${price(bundle.price)}</div>
       </div>
       <div class="basket-line-actions">
@@ -1089,12 +1169,29 @@ async function addToBasket() {
     notes: draft.notes.trim()
   };
   try {
+    const check = await validateSelection(draft.bundle, {
+      components: draft.bundle.components.map(component => ({
+        componentId: component.id,
+        selections: (draft.allocations[component.code] ?? []).map(row => ({
+          skuCode: products[component.code].skus.get(skuKey(row.colour, row.size)),
+          quantity: row.quantity
+        }))
+      }))
+    });
+    if (!check.valid) {
+      builderError = check.errors.some(text => /not approved/i.test(text))
+        ? 'This bundle is no longer available to order.'
+        : 'One of the selected colours or sizes is no longer available. Please review your items.';
+      renderStep({reset: false});
+      scroll.querySelector('.inline-error')?.scrollIntoView({block: 'nearest'});
+      return;
+    }
     await basketOperation('readwrite', store => store.put(line));
     await refreshBasket();
     announcement.textContent = draft.lineId ? 'Bundle updated.' : 'Bundle added to your basket.';
     closeBuilder(true);
   } catch {
-    builderError = 'The basket could not be saved. Your configuration is still open. Please try again.';
+    builderError = 'We couldn\u2019t confirm or save this bundle. Your configuration is still open. Please try again.';
     renderStep({reset: false});
     scroll.querySelector('.inline-error')?.scrollIntoView({block: 'nearest'});
   } finally {
@@ -1116,6 +1213,7 @@ function advance() {
 
 const actions = {
   open: button => openBuilder(findOffer(button.dataset.id), button),
+  retry: () => { void init(); },
   basket: openBasket,
   'close-builder': requestClose,
   'close-basket': () => basket.close(),
@@ -1162,6 +1260,15 @@ scroll.addEventListener('submit', event => {
 scroll.addEventListener('change', event => {
   const field = event.target;
   if (field.dataset.mix) changeChoice(field.dataset.mix, Number(field.value));
+  if (field.name === 'colour' && field.form?.matches('.allocation-form')) {
+    const code = field.form.dataset.code;
+    variantInputs[code] = {colour: field.value, size: field.form.elements.size.value};
+    renderStep({reset: false});
+    scroll.querySelector(`.allocation-form[data-code="${code}"] select[name="colour"]`)?.focus({preventScroll: true});
+  }
+  if (field.name === 'size' && field.form?.matches('.allocation-form')) {
+    variantInputs[field.form.dataset.code] = {colour: field.form.elements.colour.value, size: field.value};
+  }
   if (field.id === 'logo-file' && field.files.length) void chooseArtwork(field.files);
 });
 scroll.addEventListener('input', event => {
@@ -1610,13 +1717,64 @@ function refreshCatalogueVatLabels() {
 window.addEventListener('vatToggleChanged', refreshCatalogueVatLabels);
 
 window.BrandedOpenBundle = (id, source) => {
-  const offer = findOffer(id) || findBundle(id);
+  const offer = findOffer(id);
   if (!offer) return false;
   openBuilder(offer, source || undefined);
   return true;
 };
 
-renderShop();
-refreshCatalogueVatLabels();
-void hydrateBlackThumbs();
-void refreshBasket();
+function registerAll() {
+  deals.forEach(deal => { if (deal.detail) registerDeal(deal); });
+}
+
+let renderTimer;
+function renderSoon() {
+  if (renderTimer) return;
+  renderTimer = setTimeout(() => {
+    renderTimer = undefined;
+    // Don't swap the grid under someone who is tabbing through it.
+    if (builder.open || basket.open || $('catalogue-grid').contains(document.activeElement)) { renderSoon(); return; }
+    registerAll();
+    renderShop();
+    refreshCatalogueVatLabels();
+  }, 700);
+}
+
+async function init() {
+  listState = 'loading';
+  renderShop();
+  try {
+    deals = await loadBundles();
+    listState = 'ready';
+  } catch {
+    listState = 'error';
+    renderShop();
+    return;
+  }
+  registerAll();
+  rebuildBudgetStages();
+  renderShop();
+  refreshCatalogueVatLabels();
+  void hydrateBlackThumbs();
+  void refreshBasket();
+  // Older API builds don't return contents in the list; load them slowly.
+  void loadAllDetails(deals, {onProgress: renderSoon}).then(() => {
+    clearTimeout(renderTimer);
+    renderTimer = undefined;
+    registerAll();
+    renderShop();
+    refreshCatalogueVatLabels();
+  });
+}
+
+// A broken product image falls back to a plain tile instead of a broken icon.
+document.addEventListener('error', event => {
+  const image = event.target;
+  if (image?.matches?.('img[data-thumb]')) {
+    const code = image.dataset.thumb;
+    if (products[code]) products[code].image = '';
+    image.replaceWith(Object.assign(document.createElement('span'), {className: 'cap-thumb', innerHTML: icon('layers')}));
+  }
+}, true);
+
+void init();

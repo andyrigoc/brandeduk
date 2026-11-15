@@ -1,41 +1,71 @@
-// The first five offers use the 9 Nov 2026 Branded UK deal analysis.
-// Colour and size options come from the earlier Branded UK builder prototype.
-const adultSizes = ['S', 'M', 'L', 'XL', '2XL'];
-const oneSize = ['One size'];
+// Runtime registry of the products used by the bundles that have been loaded.
+// Everything in it comes from the bundle API (see bundle-api.js): names, brands,
+// images, and the live colour x size SKUs. Nothing is hardcoded here.
+//   products[styleCode] = {name, label, brand, image, componentId, loaded,
+//                          colours: [], sizes: [], skus: Map('colour|size' -> sku)}
+export const products = {};
 
-export const products = {
-  GD005: {name: 'Gildan Heavy Cotton™ adult T-shirt', label: 'T-shirts', colours: ['Black', 'Navy', 'White', 'Sport Grey', 'Royal Blue'], sizes: adultSizes},
-  RX101: {name: 'ProRTX Pro Polo', label: 'Polos', colours: ['Navy', 'Black', 'White', 'Royal Blue', 'Charcoal'], sizes: adultSizes},
-  RG045: {name: 'Regatta Professional Dover Jacket', label: 'Jackets', colours: ['Navy', 'Black'], sizes: adultSizes},
-  RX301: {name: 'ProRTX Pro Sweatshirt', label: 'Sweatshirts', colours: ['Sport Grey', 'Navy', 'Black', 'Charcoal'], sizes: adultSizes},
-  BC045: {name: 'Beechfield Original Cuffed Beanie', label: 'Beanies', colours: ['Charcoal', 'Black', 'Navy'], sizes: oneSize},
-  YK001: {name: 'Yoko Hi-vis 2-band-and-braces waistcoat', label: 'Hi-vis vests', colours: ['Yellow', 'Orange'], sizes: adultSizes},
-  BC025: {name: 'Beechfield Authentic 5-Panel Cap', label: 'Caps', colours: ['Black', 'Navy', 'White'], sizes: oneSize}
-};
+export const skuKey = (colour, size) => `${colour}|${size}`;
 
-export const swatches = {
-  Black: '#202227', Navy: '#233354', White: '#fff', 'Sport Grey': '#b5bac1',
-  'Royal Blue': '#224db4', Charcoal: '#545a63', Yellow: '#d9ed22', Orange: '#f68027'
-};
+// Supplier colour names carry markers ("Black*", stray non-breaking spaces and
+// replacement characters). Customers see the clean name.
+export const cleanColour = name => String(name ?? '').replace(/[*\u2020\u2021\u00a0\ufffd]+/g, ' ').replace(/\s+/g, ' ').trim();
 
-const print = ['Print'];
-const printOrEmbroidery = ['Print', 'Embroidery'];
-export const bundles = [
-  {id: 'BUN-GD005-24', title: '24 Heavy Cotton T-Shirts', tag: 'Bulk printing', price: 14699, methods: print, delivery: true, art: 'tee', fixed: {GD005: 24}},
-  {id: 'BUN-5-OUTDOOR', title: '5 × Outdoor Worker Bundle', tag: 'Team workwear', price: 48999, methods: printOrEmbroidery, art: 'outdoor', fixed: {RX101: 15, RG045: 5, RX301: 10, BC045: 5}},
-  {id: 'BUN-5-COLD', title: '5 × Cold Weather Bundle', tag: 'Cold weather', price: 19599, methods: printOrEmbroidery, art: 'cold', fixed: {RG045: 5, BC045: 5}},
-  {id: 'BUN-EVENT-10', title: '10 × Staff Event Bundle', tag: 'Event teams', price: 15249, methods: printOrEmbroidery, art: 'event', fixed: {RX101: 10, YK001: 10}},
-  {id: 'BUN-GD005-100', title: '100 Heavy Cotton T-Shirts', tag: 'Bulk printing', price: 58799, methods: print, delivery: true, art: 'bulk', fixed: {GD005: 100}}
+export function registerProduct(component) {
+  const existing = products[component.code];
+  if (existing) return existing;
+  return (products[component.code] = {
+    code: component.code,
+    name: component.name,
+    label: component.type || component.name,
+    brand: component.brand,
+    image: component.image,
+    componentId: component.id,
+    loaded: false,
+    colours: [],
+    sizes: [],
+    skus: new Map(),
+    images: new Map()
+  });
+}
+
+export function fillOptions(product, options) {
+  const colours = [];
+  const sizes = new Map();
+  product.skus = new Map();
+  product.images = new Map();
+  for (const option of options) {
+    const colour = cleanColour(option.colourName);
+    const size = option.sizeName;
+    if (!colour || !size) continue;
+    if (!product.skus.has(skuKey(colour, size))) product.skus.set(skuKey(colour, size), option.skuCode);
+    if (option.image && !product.images.has(colour)) product.images.set(colour, option.image);
+    if (!colours.includes(colour)) colours.push(colour);
+    if (!sizes.has(size)) sizes.set(size, option.sizeOrder ?? 9999);
+  }
+  product.colours = colours;
+  product.sizes = [...sizes.entries()].sort((a, b) => a[1] - b[1]).map(([size]) => size);
+  product.loaded = true;
+}
+
+export const sizesFor = (product, colour) => product.sizes.filter(size => product.skus.has(skuKey(colour, size)));
+
+// Swatch colour from the supplier colour name. Unknown names get a neutral grey.
+const SWATCH_WORDS = [
+  [/black|jet/, '#202227'], [/navy|oxford|midnight|marine/, '#233354'], [/white|snow|natural|ivory|cream/, '#ffffff'],
+  [/charcoal|graphite|anthracite|gunmetal/, '#545a63'], [/grey|gray|silver|ash|stone|heather|steel/, '#b5bac1'],
+  [/royal|cobalt|sapphire|bright blue/, '#224db4'], [/sky|light blue|baby blue|aqua|turquoise/, '#7fb7e6'], [/blue|denim|petrol/, '#2f5fa8'],
+  [/bottle|forest|emerald|olive|khaki|sage|military/, '#2f6b45'], [/lime|fluorescent green|hi-?vis green/, '#9bd52a'], [/green/, '#3f9a55'],
+  [/fluorescent yellow|hi-?vis yellow|yellow|gold|sun|lemon|mustard/, '#e8d21d'], [/fluorescent orange|hi-?vis orange|orange|amber|pumpkin|rust/, '#f68027'],
+  [/burgundy|maroon|wine|claret|plum/, '#6f1d34'], [/red|cherry|scarlet|fire|crimson/, '#c8202d'],
+  [/pink|rose|fuchsia|magenta|blush|coral/, '#e56aa0'], [/purple|violet|lilac|lavender|mauve/, '#7a4aa8'],
+  [/brown|chocolate|coffee|walnut|tan|caramel|biscuit|sand|camel/, '#8a6a4a'], [/teal/, '#1f8a8a']
 ];
+export function swatchFor(name) {
+  const text = String(name).toLowerCase();
+  return SWATCH_WORDS.find(([pattern]) => pattern.test(text))?.[1] ?? '#c9ced6';
+}
 
-export const demos = [
-  {id: 'DEMO-HEADWEAR-100', title: '100 Caps or Beanies', tag: 'Single type', price: 39900, methods: ['Embroidery'], demo: true, fixed: {},
-    group: {name: 'Headwear style', type: 'exclusive', quantity: 100, codes: ['BC025', 'BC045']}},
-  {id: 'DEMO-MIXED-10', title: '10 Polos & T-Shirts', tag: 'Mix and match', price: 9900, methods: print, demo: true, fixed: {},
-    group: {name: 'Garment mix', type: 'mixed', quantity: 10, codes: ['RX101', 'GD005']}}
-];
-
-export const findBundle = id => [...bundles, ...demos].find(bundle => bundle.id === id);
 export const sum = quantities => quantities.reduce((total, quantity) => total + quantity, 0);
 export const pieceCount = bundle => sum(Object.values(bundle.fixed)) + (bundle.group?.quantity ?? 0);
 
@@ -88,7 +118,7 @@ export function variantsValid(draft) {
     Object.entries(target).every(([code, quantity]) => {
       const product = products[code];
       return allocated(draft, code) === quantity && (draft.allocations[code] ?? []).every(row =>
-        product.colours.includes(row.colour) && product.sizes.includes(row.size) && Number.isInteger(row.quantity) && row.quantity > 0);
+        product.skus.has(skuKey(row.colour, row.size)) && Number.isInteger(row.quantity) && row.quantity > 0);
     });
 }
 
@@ -114,7 +144,7 @@ export function setChoice(draft, code, quantity) {
 export function setAllocation(draft, code, colour, size, quantity) {
   const max = quotas(draft)[code];
   const product = products[code];
-  if (!max || !product.colours.includes(colour) || !product.sizes.includes(size) || !Number.isInteger(quantity) || quantity < 0) return false;
+  if (!max || !product?.skus.has(skuKey(colour, size)) || !Number.isInteger(quantity) || quantity < 0) return false;
   const rows = draft.allocations[code] ?? [];
   const otherRows = rows.filter(row => row.colour !== colour || row.size !== size);
   if (sum(otherRows.map(row => row.quantity)) + quantity > max) return false;
