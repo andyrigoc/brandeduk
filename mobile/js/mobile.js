@@ -672,7 +672,7 @@ function initCategories() {
 // circle. Customise uses V2 selectItem, so the circle moves onto it.
 // ============================================
 
-const BUK_NAV_CSS = '/mobile/css/bottom-nav.css?v=20261115-rise';
+const BUK_NAV_CSS = '/mobile/css/bottom-nav.css?v=20261115-quick';
 
 const BUK_ICONS = {
     home: '<svg viewBox="0 0 52 52" aria-hidden="true"><path d="M10 24v20h11V32h10v12h11V24"/><path class="accent" d="m5 25 21-18 21 18M36 14V8h6v11"/></svg>',
@@ -1058,8 +1058,43 @@ function fillCircleIcon(circle, item) {
     if (svg) holder.appendChild(svg.cloneNode(true));
 }
 
+const CENTRE_DOWN_MS = 180;
+const CENTRE_UP_MS = 200;
+
+function centreButton(nav) {
+    return nav && nav.querySelector(':scope > .nav-centre, :scope > #customiseNavBtn, :scope > #bundleFiltersNav');
+}
+
+function whenTravelDone(el, done) {
+    let ran = false;
+    const run = () => {
+        if (ran) return;
+        ran = true;
+        done();
+    };
+    if (!el) {
+        window.setTimeout(run, CENTRE_DOWN_MS);
+        return;
+    }
+    const onEnd = (event) => {
+        const name = event.propertyName || event.animationName || '';
+        if (name !== 'transform' && name !== 'buk-filters-down' && name !== 'buk-hole-down') return;
+        el.removeEventListener('transitionend', onEnd);
+        el.removeEventListener('animationend', onEnd);
+        run();
+    };
+    el.addEventListener('transitionend', onEnd);
+    el.addEventListener('animationend', onEnd);
+    window.setTimeout(() => {
+        const raw = getComputedStyle(el).transform;
+        const y = raw && raw !== 'none' ? new DOMMatrix(raw).m42 : 0;
+        if (y > 70) run();
+    }, CENTRE_DOWN_MS + 40);
+    window.setTimeout(run, 700);
+}
+
 function lowerCurrentCentre(nav) {
-    const button = nav.querySelector(':scope > .nav-centre, :scope > #customiseNavBtn, :scope > #bundleFiltersNav');
+    const button = centreButton(nav);
     if (!button) return;
     const current = button.querySelector('.nav-centre-face.is-current');
     if (!current) return;
@@ -1067,15 +1102,68 @@ function lowerCurrentCentre(nav) {
     current.classList.add('is-leaving');
 }
 
-function startFiltersRise(nav) {
-    if (!nav || !nav.classList.contains('has-filters-circle') || nav.dataset.filtersRise === '1') return;
-    nav.dataset.filtersRise = '1';
-    const run = () => {
-        nav.classList.add('filters-armed');
-        window.setTimeout(() => nav.classList.add('filters-risen'), 32);
-    };
-    window.requestAnimationFrame(run);
-    window.setTimeout(run, 48);
+function ensureFiltersCircle(face) {
+    let circle = face.querySelector(':scope > .indicator-filters');
+    if (!circle) {
+        circle = document.createElement('span');
+        circle.className = 'indicator-filters';
+        circle.setAttribute('aria-hidden', 'true');
+        face.insertBefore(circle, face.firstChild);
+    }
+    fillCircleIcon(circle, face);
+    return circle;
+}
+
+function raiseFiltersCircle(nav) {
+    if (!nav || nav.dataset.filtersShown === '1') return;
+    const button = centreButton(nav);
+    const face = button && button.querySelector('.nav-centre-face[data-centre="filters"]');
+    if (!face) return;
+    nav.dataset.filtersShown = '1';
+    face.classList.remove('is-leaving');
+    face.style.transition = 'none';
+    face.style.transform = 'translateY(120px)';
+    ensureFiltersCircle(face);
+    button.classList.add('has-slot-circle');
+    face.classList.add('is-current');
+    nav.classList.add('has-filters-circle', 'filters-swap');
+    face.getBoundingClientRect();
+    face.style.transition = 'transform ' + CENTRE_UP_MS + 'ms cubic-bezier(0.4, 0, 0.2, 1)';
+    face.style.transform = 'translateY(0)';
+}
+
+function dropFiltersThenCustomise(nav) {
+    if (!nav || nav.dataset.filtersLeaving === '1') return;
+    nav.dataset.filtersLeaving = '1';
+    nav.classList.add('filters-leave');
+    const rise = nav.querySelector('.centre-rise');
+    whenTravelDone(rise, () => {
+        const button = centreButton(nav);
+        nav.classList.remove('has-filters-circle', 'filters-leave', 'filters-swap', 'filters-risen', 'filters-armed');
+        if (button) button.classList.remove('has-slot-circle');
+        const filtersFace = button && button.querySelector('.nav-centre-face[data-centre="filters"]');
+        const customiseFace = button && button.querySelector('.nav-centre-face[data-centre="customise"]');
+        if (filtersFace) {
+            filtersFace.classList.remove('is-current', 'is-leaving');
+            filtersFace.style.transform = '';
+            filtersFace.style.transition = '';
+        }
+        if (customiseFace) {
+            customiseFace.classList.remove('is-leaving');
+            customiseFace.style.transition = 'none';
+            customiseFace.style.transform = 'translateY(120px)';
+            customiseFace.classList.add('is-current');
+            customiseFace.getBoundingClientRect();
+            customiseFace.style.transition = 'transform ' + CENTRE_UP_MS + 'ms cubic-bezier(0.4, 0, 0.2, 1)';
+            customiseFace.style.transform = 'translateY(0)';
+        }
+        if (button && button.dataset.centreLock !== 'filters') applyCentreIdentity(button, 'customise');
+        delete nav.dataset.filtersShown;
+    });
+}
+
+function startFiltersRise() {
+    return;
 }
 
 function startCustomiseRise() {
@@ -1235,6 +1323,9 @@ function loadBarPage(href) {
         const here = new URL(window.location.href);
         if (here.searchParams.get('force') === 'mobile' && !next.searchParams.has('force')) {
             next.searchParams.set('force', 'mobile');
+        }
+        if (pageKeyFromUrl(next.href) === 'bundles' && pageKeyFromUrl(here.href) !== 'bundles') {
+            sessionStorage.setItem('buk-filters-settled', '1');
         }
     } catch (error) {
         /* keep the link address */
@@ -1432,7 +1523,7 @@ function initBukNav(nav) {
         const started = performance.now();
         const timer = window.setTimeout(function check() {
             const slide = nav.getAnimations().find((anim) => anim.transitionProperty === '--x');
-            if (slide && (slide.playState === 'running' || slide.playState === 'paused') && performance.now() - started < 8000) {
+            if (slide && slide.playState === 'running' && performance.now() - started < 1200) {
                 window.setTimeout(check, 50);
                 return;
             }
@@ -1464,9 +1555,9 @@ function initBukNav(nav) {
         event.preventDefault();
         event.stopPropagation();
         const destKey = isLink ? pageKeyFromUrl(item.href) : '';
-        const filtersFace = item.querySelector('.nav-centre-face.is-current[data-centre="filters"]');
+        const customiseNow = item.querySelector('.nav-centre-face.is-current[data-centre="customise"]');
         const localRadial = document.getElementById('bundleRadial');
-        if (item.id === 'bundleFiltersNav' && localRadial) {
+        if (item.id === 'bundleFiltersNav' && localRadial && !customiseNow) {
             const fanOpen = !localRadial.classList.contains('is-returning') && (
                 localRadial.classList.contains('show')
                 || localRadial.classList.contains('is-opening')
@@ -1479,19 +1570,11 @@ function initBukNav(nav) {
             }
             return;
         }
-        if (destKey === 'bundles') {
+        if (destKey === 'bundles' && currentPageKey() !== 'bundles') {
             lowerCurrentCentre(nav);
+            whenTravelDone(centreButton(nav) && centreButton(nav).querySelector('.nav-centre-face.is-leaving'), () => raiseFiltersCircle(nav));
         } else if (nav.classList.contains('has-filters-circle')) {
-            nav.classList.remove('filters-risen');
-            const samePage = !destKey;
-            if (samePage) {
-                window.setTimeout(() => {
-                    swapCentre(nav, 'customise');
-                    syncFiltersCircle(nav);
-                }, 300);
-            } else {
-                try { sessionStorage.setItem('buk-centre-enter', 'customise'); } catch (error) { /* ignore */ }
-            }
+            dropFiltersThenCustomise(nav);
         } else if (destKey) {
             swapCentre(nav, 'customise');
         }
