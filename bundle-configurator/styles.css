@@ -611,6 +611,9 @@ body.dialog-open { padding-bottom: 0; }
   white-space: nowrap;
   transform: translateX(-50%);
 }
+.bundle-radial.buk-radial-measure .bundle-radial-item {
+  transition: none !important;
+}
 .bundle-radial.show .bundle-radial-item {
   opacity: 1;
   pointer-events: auto;

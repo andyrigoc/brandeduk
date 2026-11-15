@@ -1372,14 +1372,17 @@ function placeRadialHub() {
   const header = document.querySelector('.mobile-header');
   const headerBottom = header ? Math.max(0, header.getBoundingClientRect().bottom) : 0;
   const gutter = 14;
-  const labelRoom = 18;
+  const labelDrop = 18;
   const reach = 1.82;
   const topLimit = headerBottom + gutter;
-  const bottomLimit = navRect.top - gutter;
+  const indicator = nav.querySelector('.indicator');
+  const indicatorBox = indicator ? indicator.getBoundingClientRect() : null;
+  const circleTop = indicatorBox && indicatorBox.height ? indicatorBox.top - 2 : navRect.top - 18;
+  const bottomLimit = circleTop - 12;
   const availH = Math.max(0, bottomLimit - topLimit);
   const availW = Math.max(0, window.innerWidth - gutter * 2);
   const factor = reach + 0.5;
-  let plate = Math.min(availW / 2 / factor, (availH - labelRoom) / (2 * factor));
+  let plate = Math.min(availW / 2 / factor, (availH - labelDrop) / (2 * factor));
   if (!Number.isFinite(plate) || plate <= 0) plate = 56;
   plate = Math.min(70, plate);
   const hub = Math.min(64, Math.max(48, plate * 0.78));
@@ -1388,7 +1391,7 @@ function placeRadialHub() {
   bundleRadialAnchor.style.setProperty('--radial-reach', String(reach));
   bundleRadialAnchor.style.setProperty('--radial-diag', String(reach / Math.SQRT2));
   const side = plate * factor;
-  const bottomExtent = side + labelRoom;
+  const bottomExtent = side + labelDrop;
   const minX = gutter + side;
   const maxX = window.innerWidth - gutter - side;
   const centerX = Math.min(Math.max(btnRect.left + btnRect.width / 2, minX), maxX);
@@ -1405,6 +1408,44 @@ function placeRadialHub() {
   if (tucked < 8) fromY += 8 - tucked;
   bundleRadialAnchor.style.setProperty('--hub-from-x', `${fromX}px`);
   bundleRadialAnchor.style.setProperty('--hub-from-y', `${fromY}px`);
+  clearFanOfBar();
+}
+
+function bukPingSpeed() {
+  try {
+    if (typeof window.__bukSyncSpeedPark === 'function') window.__bukSyncSpeedPark();
+    if (window.parent && window.parent !== window && typeof window.parent.__bukSyncSpeedPark === 'function') {
+      window.parent.__bukSyncSpeedPark();
+    }
+  } catch (error) {
+    /* the parent page owns the speed control */
+  }
+}
+
+function clearFanOfBar() {
+  if (!bundleRadial || !bundleRadialAnchor) return;
+  const nav = bundleFiltersNav?.closest('.bottom-nav') || document.querySelector('nav.bottom-nav');
+  if (!nav) return;
+  const indicator = nav.querySelector('.indicator');
+  const indicatorBox = indicator ? indicator.getBoundingClientRect() : null;
+  const circleTop = indicatorBox && indicatorBox.height ? indicatorBox.top - 2 : nav.getBoundingClientRect().top - 18;
+  const limit = circleTop - 12;
+  const hadShow = bundleRadial.classList.contains('show');
+  bundleRadial.classList.add('show', 'buk-radial-measure');
+  let lowest = -Infinity;
+  bundleRadial.querySelectorAll('.bundle-radial-item').forEach((item) => {
+    const box = item.getBoundingClientRect();
+    if (box.width <= 0) return;
+    const label = item.querySelector('.bundle-radial-label');
+    const labelBottom = label ? label.getBoundingClientRect().bottom : box.bottom;
+    lowest = Math.max(lowest, box.bottom, labelBottom);
+  });
+  bundleRadial.classList.remove('buk-radial-measure');
+  if (!hadShow) bundleRadial.classList.remove('show');
+  if (Number.isFinite(lowest) && lowest > limit + 0.5) {
+    const current = parseFloat(bundleRadialAnchor.style.top) || 0;
+    bundleRadialAnchor.style.top = `${current - (lowest - limit)}px`;
+  }
 }
 
 function cancelRadialMotion() {
@@ -1442,6 +1483,7 @@ function finishRadialClose() {
   bundleRadialAnchor?.classList.remove('is-dropping');
   bundleRadialAnchor?.classList.remove('is-open');
   if (bundleRadialAnchor) bundleRadialAnchor.inert = true;
+  bukPingSpeed();
 }
 
 function dropHubBehindFilters() {
@@ -1469,6 +1511,7 @@ function toggleRadial(force) {
     if (bundleRadial) bundleRadial.inert = false;
     if (bundleRadialAnchor) bundleRadialAnchor.inert = false;
     const hubAlreadyCentered = bundleRadialAnchor?.classList.contains('show');
+    bukPingSpeed();
     if (hubAlreadyCentered) bundleRadial?.classList.add('show');
     else {
       requestAnimationFrame(() => {
@@ -1479,6 +1522,7 @@ function toggleRadial(force) {
         });
       });
     }
+    bukPingSpeed();
   } else if (bundleRadial?.classList.contains('show')) {
     bundleRadial?.classList.add('is-returning');
     bundleRadial?.classList.remove('show');
@@ -1596,6 +1640,7 @@ function openRadialSheet(item) {
   if (bundleRadialSheet) bundleRadialSheet.inert = false;
   document.body.classList.add('bundle-radial-sheet-open');
   renderFilterSheet();
+  bukPingSpeed();
   $('bundleRadialSheetBody')?.querySelector('.bundle-radial-option')?.focus({preventScroll: true});
 }
 
@@ -1616,6 +1661,7 @@ function closeRadialSheet(restore = true) {
     bundleRadialDim?.setAttribute('aria-hidden', 'false');
   }
   if (restore) bundleFiltersNav?.focus();
+  bukPingSpeed();
 }
 
 function applyRadialFilter() {

@@ -24,7 +24,6 @@ document.addEventListener('DOMContentLoaded', function() {
     initBrandsMarqueeLogos();
     initStickyBarFooterPush();
     mountBukNavIndicators();
-    mountSharedZSpeed();
 });
 
 function initMobileNavigation() {
@@ -672,7 +671,7 @@ function initCategories() {
 // circle. Customise uses V2 selectItem, so the circle moves onto it.
 // ============================================
 
-const BUK_NAV_CSS = '/mobile/css/bottom-nav.css?v=20261115-zfive';
+const BUK_NAV_CSS = '/mobile/css/bottom-nav.css?v=20261115-fangap';
 
 const BUK_ICONS = {
     home: '<svg viewBox="0 0 52 52" aria-hidden="true"><path d="M10 24v20h11V32h10v12h11V24"/><path class="accent" d="m5 25 21-18 21 18M36 14V8h6v11"/></svg>',
@@ -687,7 +686,7 @@ const BUK_ICONS = {
 function ensureBukNavCss() {
     const links = document.querySelectorAll('link[rel="stylesheet"]');
     for (let i = 0; i < links.length; i += 1) {
-        if ((links[i].getAttribute('href') || '').indexOf('bottom-nav.css?v=20261115-zfive') !== -1) return;
+        if ((links[i].getAttribute('href') || '').indexOf('bottom-nav.css?v=20261115-fangap') !== -1) return;
     }
     const link = document.createElement('link');
     link.rel = 'stylesheet';
@@ -897,8 +896,8 @@ function upgradeAllBukNavs() {
 }
 
 const BUK_Z_EASE = 'cubic-bezier(0.4, 0, 0.2, 1)';
-const BUK_Z_SPEED_KEY = 'buk-z-speed';
 const BUK_Z_BACK_KEY = 'buk-z-back';
+const BUK_Z_MS = 800;
 
 function pageKeyFromUrl(url) {
     let path = '';
@@ -913,19 +912,6 @@ function pageKeyFromUrl(url) {
     return '';
 }
 
-function sharedZDuration() {
-    const raw = sessionStorage.getItem(BUK_Z_SPEED_KEY);
-    if (raw === '300' || raw === '500' || raw === '850' || raw === '900' || raw === '1200') return Number(raw);
-    return 900;
-}
-
-const BUK_Z_SPEEDS = [
-    ['300', 'Normale: 300 ms'],
-    ['500', '500 ms'],
-    ['850', '850 ms'],
-    ['900', '900 ms'],
-    ['1200', 'Slow motion: 1.200 ms']
-];
 const CENTRE_SWAP_MS = 320;
 
 function centreFace(kind) {
@@ -1005,94 +991,6 @@ function mountCentreFaces(nav) {
     else button.append(other, current);
     applyCentreIdentity(button, kind);
     window.requestAnimationFrame(() => button.classList.remove('nav-centre--instant'));
-}
-
-function speedBarComplete(bar) {
-    const buttons = bar.querySelectorAll('button');
-    if (buttons.length !== BUK_Z_SPEEDS.length) return false;
-    return BUK_Z_SPEEDS.every((mode, index) => {
-        return buttons[index].dataset.ms === mode[0] && buttons[index].textContent === mode[1];
-    });
-}
-
-let bukSpeedParking = false;
-
-function parkSpeedControl() {
-    if (window.top !== window.self || bukSpeedParking) return null;
-    bukSpeedParking = true;
-    try {
-        let bar = document.getElementById('buk-z-speed');
-        if (bar && !speedBarComplete(bar)) {
-            bar.remove();
-            bar = null;
-        }
-        if (!bar) {
-            const stored = sessionStorage.getItem(BUK_Z_SPEED_KEY);
-            const known = BUK_Z_SPEEDS.some((mode) => mode[0] === stored);
-            if (sessionStorage.getItem('buk-z-speed-gen') !== '900' || !known) {
-                sessionStorage.setItem(BUK_Z_SPEED_KEY, '900');
-                sessionStorage.setItem('buk-z-speed-gen', '900');
-            }
-            bar = document.createElement('div');
-            bar.id = 'buk-z-speed';
-            bar.setAttribute('role', 'group');
-            bar.setAttribute('aria-label', 'Page transition speed');
-            const current = sessionStorage.getItem(BUK_Z_SPEED_KEY) === '900'
-                || BUK_Z_SPEEDS.some((mode) => mode[0] === sessionStorage.getItem(BUK_Z_SPEED_KEY))
-                ? sessionStorage.getItem(BUK_Z_SPEED_KEY)
-                : '900';
-            BUK_Z_SPEEDS.forEach((mode) => {
-                const button = document.createElement('button');
-                button.type = 'button';
-                button.dataset.ms = mode[0];
-                button.textContent = mode[1];
-                button.setAttribute('aria-pressed', mode[0] === current ? 'true' : 'false');
-                button.addEventListener('click', (event) => {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    sessionStorage.setItem(BUK_Z_SPEED_KEY, mode[0]);
-                    bar.querySelectorAll('button').forEach((other) => {
-                        other.setAttribute('aria-pressed', other === button ? 'true' : 'false');
-                    });
-                });
-                bar.appendChild(button);
-            });
-        }
-        const locked = {
-            position: 'fixed',
-            'z-index': '8000',
-            left: '8px',
-            bottom: '128px',
-            display: 'flex',
-            'flex-direction': 'column',
-            'flex-wrap': 'nowrap',
-            gap: '4px',
-            height: 'auto',
-            'max-height': 'none',
-            overflow: 'visible',
-            'pointer-events': 'auto',
-            opacity: '1',
-            visibility: 'visible',
-            transform: 'none',
-            margin: '0'
-        };
-        Object.keys(locked).forEach((key) => bar.style.setProperty(key, locked[key], 'important'));
-        if (bar.parentNode !== document.documentElement) document.documentElement.appendChild(bar);
-        return bar;
-    } finally {
-        bukSpeedParking = false;
-    }
-}
-
-function mountSharedZSpeed() {
-    if (window.top !== window.self) return;
-    parkSpeedControl();
-    if (window.__bukSpeedObserver) return;
-    window.__bukSpeedObserver = new MutationObserver(() => {
-        const bar = document.getElementById('buk-z-speed');
-        if (!bar || bar.parentNode !== document.documentElement) parkSpeedControl();
-    });
-    window.__bukSpeedObserver.observe(document.documentElement, { childList: true });
 }
 
 function ensureZRoot() {
@@ -1205,7 +1103,6 @@ function warmSharedZ(href) {
     });
     frame.src = href;
     document.body.appendChild(frame);
-    parkSpeedControl();
     bukZWarm.set(href, { key, url: href, el: frame, kind: 'frame', ready });
 }
 
@@ -1248,10 +1145,9 @@ async function playSharedZ(href, pop) {
     bukZPlaying = true;
     const hostNav = document.querySelector('nav.bottom-nav.buk-nav');
     if (hostNav) swapCentre(hostNav, key === 'bundles' ? 'filters' : 'customise');
-    parkSpeedControl();
     const fromKey = pageKeyFromUrl(window.location.href) || (bukZCurrent && bukZCurrent.key) || 'home';
     const reverse = key === sessionStorage.getItem(BUK_Z_BACK_KEY);
-    const ms = sharedZDuration();
+    const ms = BUK_Z_MS;
     try {
         if (!bukZCurrent) {
             bukZCurrent = { key: fromKey, url: window.location.href, el: ensureZRoot(), kind: 'root' };
@@ -1311,7 +1207,6 @@ async function playSharedZ(href, pop) {
         }
         bukZPrevious = outgoing;
         bukZCurrent = incoming;
-        parkSpeedControl();
         if (!pop) history.pushState({ bukZ: key }, '', href);
         try {
             if (incoming.kind === 'frame' && incoming.el.contentDocument && incoming.el.contentDocument.title) {

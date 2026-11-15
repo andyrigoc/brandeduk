@@ -803,6 +803,7 @@
         if (chatUnlocked && inputEl) {
             setTimeout(function () { inputEl.focus(); }, 180);
         }
+        if (typeof window.__bukSyncSpeedPark === 'function') window.__bukSyncSpeedPark();
     }
 
     function closePopup() {
@@ -810,6 +811,7 @@
         popup.classList.remove('is-minimized');
         popup.setAttribute('aria-hidden', 'true');
         if (fastReplies) fastReplies.classList.remove('is-open');
+        if (typeof window.__bukSyncSpeedPark === 'function') window.__bukSyncSpeedPark();
     }
 
     function minimizePopup() {
