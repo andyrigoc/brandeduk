@@ -831,21 +831,9 @@
         });
     }
 
-    /* Mobile header and menu (same markup as the mobile home). mobile/js/header-menu.js switches the
-       menu panels and closes the menu from the toggle; this opens it and runs search, VAT and the basket count. */
+    /* Mobile header (same markup as the mobile home): search, VAT and the basket count. */
     function initMobileHeader() {
-        var toggle = document.getElementById('menuToggle');
-        var menu = document.getElementById('slideMenu');
-        var overlay = document.getElementById('menuOverlay');
-        if (!toggle || !menu || !overlay) return;
-
-        function setMenu(open) {
-            menu.classList.toggle('active', open);
-            overlay.classList.toggle('active', open);
-            document.body.style.overflow = open ? 'hidden' : '';
-        }
-        toggle.addEventListener('click', function () { setMenu(true); });
-        overlay.addEventListener('click', function () { setMenu(false); });
+        if (!document.querySelector('.mobile-header--v2')) return;
 
         var vatBox = document.getElementById('vatToggleCheckbox');
         var vatWrap = document.getElementById('vatToggleContainer');

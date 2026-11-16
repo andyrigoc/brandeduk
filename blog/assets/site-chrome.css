@@ -1,4 +1,4 @@
-/* Site header, menu and footers on blog pages: the mobile v2 header below 700px, the PC header above. */
+/* Site header and footers on blog pages: the mobile v2 header below 700px, the PC header above. */
 @media (max-width: 699px) {
     body.blog-chrome {
         padding-top: var(--header-height, 128px) !important;
@@ -24,8 +24,6 @@
     }
 
     body.blog-chrome .mobile-header,
-    body.blog-chrome .slide-menu,
-    body.blog-chrome .menu-overlay,
     body.blog-chrome .bottom-nav,
     body.blog-chrome [data-mobile-footer] {
         display: none !important;

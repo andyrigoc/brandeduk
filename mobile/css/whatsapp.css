@@ -82,6 +82,16 @@
         display: none !important;
     }
 }
+/* The new bar's Chat button replaces the bubble. Old bars and desktop pages are unchanged. */
+body:has(#branded-nav [data-page="chat"]) .whatsapp-float,
+body:has(#branded-nav [data-page="chat"]) #openWhatsappPopup,
+body:has(#branded-nav [data-page="chat"]) .wa-float-close,
+body:has(#branded-nav [data-page="chat"]) .wa-dismiss-zone {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    animation: none !important;
+}
 .whatsapp-float.is-dragging {
     cursor: grabbing;
     transition: box-shadow 0.15s ease;

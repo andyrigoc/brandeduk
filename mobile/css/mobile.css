@@ -5973,14 +5973,6 @@ a {
     gap: 12px;
 }
 
-.menu-toggle {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
 .header-actions {
     display: flex;
     align-items: center;
@@ -6070,14 +6062,12 @@ a {
     z-index: var(--z-float);
 }
 
-.home-page .menu-overlay,
 .home-page .account-overlay,
 .home-page .popup-overlay,
 .home-page .upload-modal-overlay {
     z-index: var(--z-overlay);
 }
 
-.home-page .slide-menu,
 .home-page .account-panel,
 .home-page .popup-contact,
 .home-page .upload-modal,
@@ -6085,7 +6075,6 @@ a {
     z-index: var(--z-modal);
 }
 
-.home-page .menu-toggle,
 .home-page .header-action,
 .home-page .social-icon,
 .home-page .featured-control,
@@ -8585,98 +8574,6 @@ a {
     width: 24px;
 }
 
-/* Slide Menu */
-.menu-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    opacity: 0;
-    visibility: hidden;
-    transition: all var(--transition);
-    z-index: 200;
-}
-
-.menu-overlay.active {
-    opacity: 1;
-    visibility: visible;
-}
-
-.slide-menu {
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 85%;
-    max-width: 320px;
-    background: var(--white);
-    transform: translateX(-100%);
-    transition: transform var(--transition);
-    z-index: 201;
-    display: flex;
-    flex-direction: column;
-}
-
-.slide-menu.active {
-    transform: translateX(0);
-}
-
-.menu-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--gray-200);
-}
-
-.menu-logo {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.close-menu {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--gray-500);
-}
-
-.menu-content {
-    flex: 1;
-    overflow-y: auto;
-    padding: 8px 0;
-}
-
-.menu-section {
-    padding: 8px 0;
-}
-
-.menu-section-title {
-    padding: 8px 16px;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: var(--gray-400);
-}
-
-.menu-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    font-size: 15px;
-    color: var(--gray-700);
-    text-decoration: none;
-}
-
-.menu-item.active {
-    color: var(--purple);
-    background: var(--gray-50);
-}
-
 /* ============================================
    SHOP MOBILE PAGE - Desktop-like Cards
    ============================================ */
@@ -9468,71 +9365,6 @@ a {
     border-color: #7a2ee6;
     box-shadow: 0 0 0 2px white, 0 0 0 3px #7a2ee6;
     transform: scale(1.05);
-}
-
-
-.menu-item.sub-item {
-    padding-left: 48px;
-    font-size: 14px;
-}
-
-.menu-item svg {
-    width: 20px;
-    height: 20px;
-    color: var(--gray-400);
-}
-
-.menu-item.active svg {
-    color: var(--purple);
-}
-
-.menu-badge {
-    margin-left: auto;
-    min-width: 20px;
-    height: 20px;
-    padding: 0 6px;
-    background: var(--purple);
-    color: var(--white);
-    font-size: 11px;
-    font-weight: 600;
-    border-radius: var(--radius-full);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.menu-divider {
-    height: 1px;
-    background: var(--gray-200);
-    margin: 8px 16px;
-}
-
-.sustainable-link {
-    color: var(--green) !important;
-}
-
-.sustainable-link svg {
-    color: var(--green) !important;
-}
-
-.phone-link {
-    color: var(--teal) !important;
-}
-
-.whatsapp-link {
-    color: #25D366 !important;
-}
-
-.menu-footer {
-    padding: 12px 16px;
-    border-top: 1px solid var(--gray-200);
-    display: flex;
-    gap: 16px;
-}
-
-.menu-footer-link {
-    font-size: 13px;
-    color: var(--gray-500);
 }
 
 /* ============================================
