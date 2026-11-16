@@ -616,6 +616,15 @@
     text-align: right;
   }
 
+  .catalogue .card__face__number {
+    margin: 0;
+    color: #667085;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .04em;
+    text-align: right;
+  }
+
   .catalogue .card__face__chev {
     color: #9aa3b2;
     font-size: 1.05rem;

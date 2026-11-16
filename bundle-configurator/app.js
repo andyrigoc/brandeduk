@@ -570,6 +570,13 @@ function sortCatalogue(list) {
   return sorted;
 }
 
+function bundleFaceNumber(deal) {
+  if (Number(deal.bundleNumber) > 0) return String(deal.bundleNumber);
+  const slug = String(deal.slug || deal.id || '');
+  const match = slug.match(/(?:^|-)(\d+)(?:-|$)/);
+  return match ? match[1] : '';
+}
+
 function flipCardMarkup(deal, index) {
   const bundle = asBundle(deal);
   const items = Object.entries(bundle.fixed);
@@ -640,6 +647,7 @@ function flipCardMarkup(deal, index) {
               <h3 class="card__face__title">${escape(shortTitle)}</h3>
               <span class="card__face__chev" aria-hidden="true">›</span>
             </div>
+            <p class="card__face__number">${escape(bundleFaceNumber(deal))}</p>
           </div>
         </div>
       </div>
@@ -1042,6 +1050,7 @@ function openBundleColourPage() {
     title: draft.bundle.title,
     price: draft.bundle.price,
     bundleNumber: draft.bundle.bundleNumber || 0,
+    itemCount: components.reduce((sum, item) => sum + Number(item.qty || 0), 0),
     components,
     index: 0,
     picks: {}

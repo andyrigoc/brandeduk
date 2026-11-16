@@ -918,6 +918,17 @@
         .summary-bundle-card { display: flex; flex-direction: column; gap: 8px; }
         .summary-bundle-card[hidden] { display: none; }
         .summary-bundle-line { display: flex; justify-content: space-between; gap: 12px; font-weight: 750; }
+        .bundle-shop-card { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 8px; align-items: center; padding: 12px 12px 12px 16px; border: 1px solid #e6ebf2; border-radius: 16px; background: #fff; box-shadow: 0 2px 10px rgba(20, 33, 59, 0.08); }
+        .bundle-shop-card__accent { position: absolute; left: 0; top: 0; bottom: 0; width: 7px; border-radius: 16px 0 0 16px; background: #e8a317; }
+        .bundle-shop-card__meta { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+        .bundle-shop-card__meta strong { font-size: 1.15rem; }
+        .bundle-shop-card__items { display: inline-flex; padding: 3px 8px; border: 1px solid #d5deec; border-radius: 999px; background: #f5f7fb; font-size: .75rem; font-weight: 750; }
+        .bundle-shop-card__preview { display: grid; justify-items: end; gap: 4px; min-width: 0; }
+        .bundle-shop-card__thumbs { display: flex; gap: 6px; justify-content: flex-end; }
+        .bundle-shop-card__thumbs img, .bundle-card-logo { width: 44px; height: 44px; object-fit: contain; border-radius: 7px; background: #f5f7fb; }
+        .bundle-shop-card__preview h4 { margin: 0; font-size: .78rem; line-height: 1.2; text-align: right; }
+        .bundle-shop-card__number { margin: 0; color: #667085; font-size: 12px; font-weight: 800; text-align: right; }
+        .bundle-shop-card__tools { display: flex; justify-content: flex-end; gap: 12px; margin-top: 8px; }
         .bundle-row-kicker {
             display: inline-block;
             margin-right: 8px;
@@ -5081,22 +5092,34 @@
             if (isBundleLine(item)) {
                 const amount = bundlePriceNumber(item);
                 const priceText = amount == null ? '\u2014' : formatBundlePrice(item);
+                const title = escapeAttr(item.name || 'Bundle');
+                const count = Number(item.itemCount) || (Array.isArray(item.chosenLines) ? item.chosenLines.reduce((sum, line) => sum + (Number(line.quantity) || 0), 0) : 0);
                 const number = bundleDisplayNumber(item, index);
+                const thumbSources = []
+                    .concat(Array.isArray(item.thumbs) ? item.thumbs : [])
+                    .concat(Array.isArray(item.chosenLines) ? item.chosenLines.map(line => line && line.image).filter(Boolean) : [])
+                    .concat(item.image ? [item.image] : []);
+                const thumbs = [...new Set(thumbSources)].slice(0, 3).map(src => `<img src="${escapeAttr(src)}" alt="">`).join('');
+                const logo = Array.isArray(item.logos) && item.logos[0] ? item.logos[0] : (item.selection && item.selection.logo);
+                const logoSrc = logo ? (resolveLogoImageSource(logo) || '') : '';
                 html += `
                 <div class="basket-item-row basket-item-row--bundle" data-index="${index}" data-line-type="bundle">
-                    <div class="item-row-header">
-                        <div class="item-row-top">
-                            <div class="item-row-head-text">
-                                <div class="item-row-title-line">
-                                    <h4 class="item-row-title">Bundle ${escapeAttr(number)}</h4>
-                                    <button type="button" class="item-row-remove" onclick="event.stopPropagation(); removeItem(${index})">Remove</button>
-                                </div>
-                                <div class="bundle-row-price">
-                                    <span class="bundle-row-price-value">${priceText}</span>
-                                </div>
-                                <button type="button" class="bundle-row-edit" onclick="event.stopPropagation(); modifyBundle(${index})">Modifica bundle</button>
-                            </div>
+                    <article class="bundle-shop-card">
+                        <span class="bundle-shop-card__accent" aria-hidden="true"></span>
+                        <div class="bundle-shop-card__meta">
+                            <strong>${priceText}</strong>
+                            <span>Team of ${count || 1}</span>
+                            <span class="bundle-shop-card__items">${count || 1} items</span>
                         </div>
+                        <div class="bundle-shop-card__preview">
+                            <div class="bundle-shop-card__thumbs">${thumbs}${logoSrc ? `<img class="bundle-card-logo" src="${escapeAttr(logoSrc)}" alt="Your logo">` : ''}</div>
+                            <h4>${title}</h4>
+                            <p class="bundle-shop-card__number">${escapeAttr(number)}</p>
+                        </div>
+                    </article>
+                    <div class="bundle-shop-card__tools">
+                        <button type="button" class="bundle-row-edit" onclick="event.stopPropagation(); modifyBundle(${index})">Modifica bundle</button>
+                        <button type="button" class="item-row-remove" onclick="event.stopPropagation(); removeItem(${index})">Remove</button>
                     </div>
                 </div>`;
                 return;

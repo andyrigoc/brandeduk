@@ -12120,28 +12120,65 @@
     function saveBundlePick(job) {
         const item = job.components[job.index];
         const colour = state.selectedColorName || (document.getElementById('selectedColor') && document.getElementById('selectedColor').textContent) || '';
+        const image = state.selectedColorImage || (state.product && (state.product.image || state.product.imageUrl)) || '';
+        if (!job.thumbs) job.thumbs = {};
+        if (image) job.thumbs[item.code] = image;
         job.picks[item.code] = Object.entries(state.sizeQuantities || {})
             .filter(([, qty]) => Number(qty) > 0)
-            .map(([size, quantity]) => ({ colour: colour, size: size, quantity: Number(quantity) }));
+            .map(([size, quantity]) => ({ colour: colour, size: size, quantity: Number(quantity), image: image }));
     }
 
-    function commitBundleBuild(job) {
+    async function bundleLogoRecord() {
+        const src = typeof getLogoFromState === 'function' ? getLogoFromState() : '';
+        if (!src || src === window.location.href) return null;
+        const storage = window.BrandedQuoteStorage;
+        if (storage && typeof storage.persistLogo === 'function' && String(src).indexOf('data:image') === 0) {
+            try {
+                const result = await storage.persistLogo(src, 'bundle-logo.png');
+                const logoId = result && result.logoId ? result.logoId : '';
+                const ref = logoId && storage.refFor ? storage.refFor(logoId) : '';
+                return {
+                    filename: 'bundle-logo.png',
+                    logoId: logoId,
+                    ref: ref,
+                    logo: (result && /^https?:/i.test(result.url)) ? result.url : (ref || src),
+                    method: 'print',
+                    position: 'bundle',
+                    positionLabel: 'Bundle logo'
+                };
+            } catch (error) { /* keep the preview url */ }
+        }
+        return {
+            filename: 'bundle-logo.png',
+            logo: src,
+            method: 'print',
+            position: 'bundle',
+            positionLabel: 'Bundle logo'
+        };
+    }
+
+    async function commitBundleBuild(job) {
         const pounds = (Number(job.price) || 0) / 100;
         const chosenLines = [];
         const allocations = {};
+        const thumbs = [];
         job.components.forEach(component => {
             const rows = job.picks[component.code] || [];
             allocations[component.code] = rows;
+            const thumb = (job.thumbs && job.thumbs[component.code]) || '';
+            if (thumb && thumbs.indexOf(thumb) === -1) thumbs.push(thumb);
             rows.forEach(row => {
                 chosenLines.push({
                     code: component.code,
                     label: (component.name || component.code) + ' · ' + row.colour + ' · ' + row.size,
                     colour: row.colour,
                     size: row.size,
-                    quantity: row.quantity
+                    quantity: row.quantity,
+                    image: row.image || thumb
                 });
             });
         });
+        const logo = await bundleLogoRecord();
         const entry = {
             lineType: 'bundle',
             id: 'bundle-' + job.bundleId + '-' + Date.now(),
@@ -12149,14 +12186,17 @@
             bundleId: job.bundleId,
             bundleSlug: job.slug,
             bundleNumber: job.bundleNumber || 0,
+            itemCount: Number(job.itemCount) || job.components.reduce(function (sum, component) { return sum + Number(component.qty || 0); }, 0),
             currency: 'GBP',
             vatExcluded: true,
             price: pounds,
             bundlePrice: pounds,
             qty: 1,
+            image: thumbs[0] || '',
+            thumbs: thumbs,
             chosenLines: chosenLines,
-            logos: [],
-            selection: { allocations: allocations },
+            logos: logo ? [logo] : [],
+            selection: { allocations: allocations, logo: logo },
             builderState: { allocations: allocations }
         };
         let basket = [];
@@ -12196,8 +12236,9 @@
             window.location.href = '/mobile/customize-mobile.html?code=' + encodeURIComponent(next.code) + '&bundleBuild=1';
             return true;
         }
-        commitBundleBuild(job);
-        window.location.href = '/basket.html#orderSummary';
+        commitBundleBuild(job).then(function () {
+            window.location.href = '/basket.html#orderSummary';
+        });
         return true;
     }
 

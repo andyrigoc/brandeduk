@@ -1325,13 +1325,32 @@
                     const slug = String(item.bundleSlug || item.bundleId || '');
                     const fromSlug = slug.match(/(?:^|-)(\d+)(?:-|$)/);
                     const number = Number(item.bundleNumber) > 0 ? String(item.bundleNumber) : (fromSlug ? fromSlug[1] : String(index + 1));
+                    const count = Number(item.itemCount) || (Array.isArray(item.chosenLines) ? item.chosenLines.reduce((sum, line) => sum + (Number(line.quantity) || 0), 0) : 0);
                     const editId = encodeURIComponent(item.id || '');
                     const editKey = encodeURIComponent(item.bundleSlug || item.bundleId || '');
+                    const title = String(item.name || ('Bundle ' + number)).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+                    const thumbSources = []
+                        .concat(Array.isArray(item.thumbs) ? item.thumbs : [])
+                        .concat(item.image ? [item.image] : []);
+                    const thumbs = [...new Set(thumbSources.filter(Boolean))].slice(0, 4).map(src => `<img src="${String(src).replace(/"/g, '&quot;')}" alt="" width="48" height="48">`).join('');
+                    const logo = (Array.isArray(item.logos) && item.logos[0]) || null;
+                    const logoRaw = logo ? String(logo.logo || logo.ref || '') : '';
+                    const storage = window.BrandedQuoteStorage;
+                    const logoSrc = logo && storage && typeof storage.resolveSrc === 'function'
+                        ? (storage.resolveSrc(logoRaw, logo.logoId) || '')
+                        : (logoRaw.indexOf('bklogo:') === 0 ? '' : logoRaw);
+                    const logoHtml = logoSrc ? `<img src="${logoSrc.replace(/"/g, '&quot;')}" alt="Your logo" width="48" height="48">` : '';
                     html += `
-                    <div class="basket-item-card" data-index="${index}" data-line-type="bundle">
-                        <div class="basket-item-info">
-                            <h4>Bundle ${number}</h4>
-                            <p>${priceText}</p>
+                    <div class="basket-item-card bundle-shop-card" data-index="${index}" data-line-type="bundle">
+                        <div>
+                            <strong>${priceText}</strong>
+                            <p>${count} items</p>
+                        </div>
+                        <div style="text-align:right">
+                            <div>${thumbs}</div>
+                            <h4>${title}</h4>
+                            <p>${number}</p>
+                            ${logoHtml}
                             <a href="/bundles.html?force=mobile&amp;bundle=${editKey}&amp;edit=${editId}">Modifica bundle</a>
                         </div>
                         <button type="button" class="basket-item-remove" data-index="${index}" onclick="event.stopPropagation()">Remove</button>

@@ -1740,15 +1740,28 @@
                     bundleSummary.push({ number, money: priced ? money : null });
                     const priceText = priced ? ('£' + money.toFixed(2)) : '\u2014';
                     totalQtyAll += 1;
+                    const thumbSources = []
+                        .concat(Array.isArray(item.thumbs) ? item.thumbs : [])
+                        .concat(Array.isArray(item.chosenLines) ? item.chosenLines.map(line => line && line.image).filter(Boolean) : [])
+                        .concat(item.image ? [item.image] : []);
+                    const thumbs = [...new Set(thumbSources)].slice(0, 4).map(src => `<img src="${escapeHtml(src)}" alt="">`).join('');
+                    const logo = (Array.isArray(item.logos) && item.logos[0]) || (item.selection && item.selection.logo) || null;
+                    const logoRaw = logo ? String(logo.logo || logo.ref || '') : '';
+                    const logoSrc = logo && window.BrandedQuoteStorage && typeof window.BrandedQuoteStorage.resolveSrc === 'function'
+                        ? (window.BrandedQuoteStorage.resolveSrc(logoRaw, logo.logoId) || (logoRaw.indexOf('bklogo:') === 0 ? '' : logoRaw))
+                        : (logoRaw.indexOf('bklogo:') === 0 ? '' : logoRaw);
+                    const logoHtml = logoSrc ? `<img class="basket-logo-thumb" src="${escapeHtml(logoSrc)}" alt="Your logo">` : '';
                     html += `
                     <div class="basket-item">
+                        ${thumbs ? `<div class="bundle-basket-thumbs">${thumbs}</div>` : ''}
                         <div class="basket-item-main">
                             <div class="basket-item-top">
                                 <div>
-                                    <div class="basket-item-name">Bundle ${escapeHtml(number)}</div>
+                                    <div class="basket-item-name">${escapeHtml(item.name || ('Bundle ' + number))}</div>
                                 </div>
                                 <div class="basket-item-price">${priceText}<small>Bundle price</small></div>
                             </div>
+                            ${logoHtml}
                             <div class="basket-item-tools">
                                 <button type="button" class="basket-item-remove" data-drawer-action="remove" data-index="${itemIndex}">Remove</button>
                             </div>
