@@ -898,34 +898,75 @@ function groupsMarkup() {
       }).join('')}</div>`;
 }
 
+let logoPreviewUrl = '';
+
+function rememberLogoPreview(file) {
+  if (logoPreviewUrl) {
+    URL.revokeObjectURL(logoPreviewUrl);
+    logoPreviewUrl = '';
+  }
+  if (file instanceof File && /\.(png|jpe?g|gif|webp|svg)$/i.test(file.name)) {
+    logoPreviewUrl = URL.createObjectURL(file);
+  }
+}
+
+function logoPreviewSrc(logo) {
+  if (!logo) return '';
+  if (logo instanceof File) return logoPreviewUrl;
+  const storage = window.BrandedQuoteStorage;
+  const raw = String(logo.logo || logo.ref || '');
+  if (storage && typeof storage.resolveSrc === 'function') {
+    const resolved = storage.resolveSrc(raw, logo.logoId);
+    if (resolved && /^(https?:|data:image|blob:)/i.test(resolved)) return resolved;
+  }
+  return /^(https?:|data:image|blob:)/i.test(raw) ? raw : '';
+}
+
+function logoPreviewMarkup(logo, className) {
+  const src = logoPreviewSrc(logo);
+  if (!src) return '';
+  return `<img class="${className}" src="${escape(src)}" alt="Uploaded logo preview">`;
+}
+
 function colourDot(colour) {
   return `<span class="colour-swatch" style="--swatch:${swatchFor(colour)}" aria-hidden="true"></span>`;
 }
 
 function variantForm(code, required) {
   const product = products[code];
-  const remaining = required - allocated(draft, code);
   const options = variantInputs[code] ?? {};
   const colour = product.colours.includes(options.colour) ? options.colour : product.colours[0];
+  variantInputs[code] = {colour};
   const sizes = sizesFor(product, colour);
-  const size = sizes.includes(options.size) ? options.size : sizes[0];
   const rows = draft.allocations[code] ?? [];
+  const qtyFor = size => rows.find(row => row.colour === colour && row.size === size)?.quantity ?? 0;
+  const remaining = required - allocated(draft, code);
+  const colourButtons = product.colours.map(name => {
+    const image = product.images.get(name);
+    const active = name === colour;
+    const face = image
+      ? `<img src="${escape(image)}" alt="">`
+      : `<span class="bundle-colour-swatch" style="--swatch:${swatchFor(name)}"></span>`;
+    return `<button type="button" class="bundle-colour${active ? ' is-active' : ''}" data-action="pick-colour" data-code="${escape(code)}" data-colour="${escape(name)}" aria-pressed="${active}" title="${escape(name)}">${face}<span>${escape(name)}</span></button>`;
+  }).join('');
+  const sizeRows = sizes.map(size => {
+    const qty = qtyFor(size);
+    return `<div class="bundle-size-row">
+      <span>${escape(size)}</span>
+      <button type="button" data-action="size-qty" data-code="${escape(code)}" data-colour="${escape(colour)}" data-size="${escape(size)}" data-delta="-1" aria-label="Decrease ${escape(size)}" ${qty ? '' : 'disabled'}>−</button>
+      <strong>${qty}</strong>
+      <button type="button" data-action="size-qty" data-code="${escape(code)}" data-colour="${escape(colour)}" data-size="${escape(size)}" data-delta="1" aria-label="Increase ${escape(size)}" ${remaining ? '' : 'disabled'}>+</button>
+    </div>`;
+  }).join('');
   return `<div class="variant-body">
     ${rows.length ? `<ul class="allocation-list" aria-label="Selected variants">${rows.map(row => `
       <li>${colourDot(row.colour)}<span>${escape(row.colour)} · ${escape(row.size)}</span><strong>× ${row.quantity}</strong>
         <button class="icon-button small" type="button" data-action="remove-allocation" data-code="${code}" data-colour="${row.colour}" data-size="${row.size}" aria-label="Remove ${row.colour}, ${row.size}, ${row.quantity} pieces">${icon('x')}</button></li>`).join('')}</ul>` : ''}
-    ${remaining ? `<form class="allocation-form" data-code="${code}">
-      <div class="variant-fields">
-        <label>Colour<select name="colour">${product.colours.map(name => `<option ${colour === name ? 'selected' : ''}>${escape(name)}</option>`).join('')}</select></label>
-        <label>Size<select name="size">${sizes.map(name => `<option ${size === name ? 'selected' : ''}>${escape(name)}</option>`).join('')}</select></label>
-        <label>Quantity<input name="quantity" type="number" min="1" max="${remaining}" step="1" inputmode="numeric" required value="1"></label>
-      </div>
-      <p class="inline-error" role="alert" hidden></p>
-      <div class="variant-actions">
-        <button class="button secondary compact" type="submit">Add selection</button>
-        ${remaining > 1 ? `<button class="text-button" type="button" data-action="fill">${rows.length ? `Add remaining ${remaining}` : `Add all ${remaining}`}</button>` : ''}
-      </div>
-    </form>` : ''}
+    <div class="bundle-picker">
+      <div class="bundle-colours">${colourButtons}</div>
+      <p class="bundle-colour-name">${escape(colour)} · ${remaining} still to assign</p>
+      <div class="bundle-sizes">${sizeRows}</div>
+    </div>
   </div>`;
 }
 
@@ -934,7 +975,7 @@ function variantsMarkup() {
   const total = pieceCount(draft.bundle);
   const selected = sum(items.map(([code]) => allocated(draft, code)));
   const active = draft.activeProduct || items.find(([code, qty]) => allocated(draft, code) < qty)?.[0] || '';
-  return title('Colours & sizes', 'Split each product quantity across the colours and sizes you need.') +
+  return title('Colours & sizes', 'Choose a colour, then set the quantity for each size. Every garment in the bundle must be assigned before the logo step.') +
     `<div class="quantity-status ${selected === total ? 'finished' : ''}">${selected} / ${total} items configured</div>
     <div class="variants-list">${items.map(([code, qty]) => {
       const count = allocated(draft, code);
@@ -944,6 +985,7 @@ function variantsMarkup() {
           <span class="variant-counter ${count === qty ? 'finished' : ''}">${count === qty ? icon('tick') : ''}${count}/${qty}</span>
           ${icon('chevron', 'chevron')}</summary>${variantForm(code, qty)}</details>`;
     }).join('')}</div>
+    ${draft.logo ? `<div class="logo-preview-slot">${logoPreviewMarkup(draft.logo, 'logo-preview') || icon('file')}<small>${escape(draft.logo.name || draft.logo.filename || 'Uploaded logo')}</small></div>` : ''}
     <p class="small-note">Colours and sizes shown are the live options for each product.</p>`;
 }
 
@@ -955,8 +997,8 @@ function logoMarkup() {
         `<button type="button" class="button method" data-action="method" data-method="${option}" aria-pressed="${method === option}">${method === option ? icon('tick') : ''}${option}</button>`).join('')}</div></fieldset>`
       : `<div class="info-panel method-info">${icon('tick')}<div><strong>${isInclusion(bundle)}</strong></div></div>`) +
     `<div class="upload-area" id="upload-area">
-      <span class="upload-icon">${icon(logo ? 'file' : 'upload')}</span>
-      <strong>${pendingArtwork ? 'Checking file…' : logo ? escape(logo.name) : 'Drag your logo here'}</strong>
+      ${logoPreviewMarkup(logo, 'logo-preview') || `<span class="upload-icon">${icon(logo ? 'file' : 'upload')}</span>`}
+      <strong>${pendingArtwork ? 'Checking file…' : logo ? escape(logo.name || logo.filename || '') : 'Drag your logo here'}</strong>
       <small>PNG, JPG, PDF, SVG, AI or EPS · up to 10 MB</small>
       <button class="button secondary compact" type="button" data-action="browse">${logo ? 'Replace file' : 'Browse files'}</button>
       <input id="logo-file" type="file" accept=".png,.jpg,.jpeg,.pdf,.svg,.ai,.eps" aria-label="Upload your logo" hidden>
@@ -981,10 +1023,31 @@ function reviewMarkup() {
     ${selectedItems(draft.allocations)}</div>
     <div class="review-section">
       <div class="review-heading"><h4>Artwork</h4><button type="button" class="text-button" data-action="step" data-step="3">Edit logo</button></div>
-      <div class="info-panel">${icon('file')}<div><strong>${escape(draft.logo?.name || draft.logo?.filename || '')}</strong><small>${draft.method} included</small></div></div>
+      <div class="info-panel artwork-panel">${logoPreviewMarkup(draft.logo, 'logo-preview logo-preview--row') || icon('file')}<div><strong>${escape(draft.logo?.name || draft.logo?.filename || '')}</strong><small>${draft.method} included</small></div></div>
       ${draft.notes.trim() ? `<div class="review-notes"><strong>Notes</strong><p>${escape(draft.notes.trim())}</p></div>` : ''}
     </div>
     ${builderError ? `<p class="inline-error" role="alert">${escape(builderError)}</p>` : ''}`;
+}
+
+function openBundleColourPage() {
+  const components = Object.entries(quotas(draft)).map(([code, qty]) => ({
+    code,
+    qty,
+    name: products[code]?.name || code
+  })).filter(item => item.qty > 0);
+  if (!components.length) return;
+  sessionStorage.setItem('buk-bundle-build', JSON.stringify({
+    bundleId: draft.bundle.id,
+    slug: draft.bundle.slug || draft.bundle.id,
+    title: draft.bundle.title,
+    price: draft.bundle.price,
+    bundleNumber: draft.bundle.bundleNumber || 0,
+    components,
+    index: 0,
+    picks: {}
+  }));
+  const first = components[0];
+  window.location.href = `/mobile/customize-mobile.html?code=${encodeURIComponent(first.code)}&bundleBuild=1`;
 }
 
 function renderStep({reset = true} = {}) {
@@ -995,6 +1058,10 @@ function renderStep({reset = true} = {}) {
 
 function goTo(step) {
   if (saving || !canReach(step)) return;
+  if (step === 2) {
+    openBundleColourPage();
+    return;
+  }
   builderError = '';
   draft.step = step;
   renderStep();
@@ -1058,6 +1125,7 @@ async function chooseArtwork(files) {
     await file.slice(0, 16).arrayBuffer();
     if (draft !== current) return;
     draft.logo = file;
+    rememberLogoPreview(file);
     draft.dirty = true;
     announcement.textContent = `Logo added: ${file.name}`;
   } catch {
@@ -1380,6 +1448,21 @@ const actions = {
   step: button => goTo(Number(button.dataset.step)),
   next: advance,
   exclusive: button => changeChoice(button.dataset.code),
+  'pick-colour': button => {
+    variantInputs[button.dataset.code] = {colour: button.dataset.colour};
+    renderStep({reset: false});
+    scroll.querySelector(`[data-action="pick-colour"][data-code="${button.dataset.code}"][data-colour="${CSS.escape(button.dataset.colour)}"]`)?.focus({preventScroll: true});
+  },
+  'size-qty': button => {
+    const code = button.dataset.code;
+    const colour = button.dataset.colour;
+    const size = button.dataset.size;
+    const delta = Number(button.dataset.delta);
+    const current = (draft.allocations[code] ?? []).find(row => row.colour === colour && row.size === size)?.quantity ?? 0;
+    if (!setAllocation(draft, code, colour, size, Math.max(0, current + delta))) return;
+    variantInputs[code] = {colour};
+    renderStep({reset: false});
+  },
   fill: button => addAllocation(button.closest('form'), true),
   'remove-allocation': removeAllocation,
   method: button => {

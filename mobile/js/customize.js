@@ -5619,6 +5619,7 @@
         dialog.querySelector('.size-picker__close').addEventListener('click', closeSizePicker);
         dialog.querySelector('.size-picker__done').addEventListener('click', () => {
             closeSizePicker();
+            if (continueBundleBuild()) return;
             // Continue confirms the sizes: add them to the basket and show the "Added to basket" popup.
             if (state.quantity > 0) addSelectionToBasket();
         });
@@ -5745,6 +5746,15 @@
         const colour = dialog.querySelector('.size-picker__colour');
         colour.textContent = state.selectedColorName ? 'Colour: ' + state.selectedColorName : '';
         colour.hidden = !state.selectedColorName;
+        const done = dialog.querySelector('.size-picker__done');
+        const bundleJob = readBundleBuild();
+        if (done && bundleJob) {
+            const item = bundleJob.components[bundleJob.index] || {};
+            const last = bundleJob.index >= bundleJob.components.length - 1;
+            const only = bundleJob.components.length === 1;
+            done.textContent = only || last ? 'Add to basket' : 'Next bundle item';
+            if (!only && !last) done.insertAdjacentHTML('beforeend', ' <span aria-hidden="true">→</span>');
+        }
         updateSizePickerTotal();
 
         sizePickerBodyOverflow = document.body.style.overflow;
@@ -12046,5 +12056,115 @@
             });
         }
     });
+
+    function readBundleBuild() {
+        if (!/[?&]bundleBuild=1(?:&|$)/.test(location.search)) return null;
+        try { return JSON.parse(sessionStorage.getItem('buk-bundle-build') || 'null'); }
+        catch (error) { return null; }
+    }
+
+    function applyBundleBuildChrome() {
+        const job = readBundleBuild();
+        if (!job) return;
+        document.body.classList.add('bundle-build');
+        ['.pricing-section', '#galleryRelatedProducts', '#custRecommendationsSection', '.action-bar'].forEach(selector => {
+            document.querySelectorAll(selector).forEach(node => { node.hidden = true; node.style.display = 'none'; });
+        });
+        const item = job.components[job.index];
+        if (!item || document.getElementById('bundleBuildNote')) return;
+        const note = document.createElement('p');
+        note.id = 'bundleBuildNote';
+        note.style.cssText = 'margin:12px 16px;padding:10px 12px;border-radius:10px;background:#eef3ff;color:#162447;font-weight:700;';
+        const place = job.components.length > 1 ? ' Item ' + (job.index + 1) + ' of ' + job.components.length + '.' : '';
+        note.textContent = 'Bundle: choose colour and sizes for all ' + item.qty + ' × ' + item.code + '.' + place;
+        const colorSection = document.querySelector('.color-options');
+        if (colorSection && colorSection.parentElement) colorSection.parentElement.insertBefore(note, colorSection);
+    }
+
+    function saveBundlePick(job) {
+        const item = job.components[job.index];
+        const colour = state.selectedColorName || (document.getElementById('selectedColor') && document.getElementById('selectedColor').textContent) || '';
+        job.picks[item.code] = Object.entries(state.sizeQuantities || {})
+            .filter(([, qty]) => Number(qty) > 0)
+            .map(([size, quantity]) => ({ colour: colour, size: size, quantity: Number(quantity) }));
+    }
+
+    function commitBundleBuild(job) {
+        const pounds = (Number(job.price) || 0) / 100;
+        const chosenLines = [];
+        const allocations = {};
+        job.components.forEach(component => {
+            const rows = job.picks[component.code] || [];
+            allocations[component.code] = rows;
+            rows.forEach(row => {
+                chosenLines.push({
+                    code: component.code,
+                    label: (component.name || component.code) + ' · ' + row.colour + ' · ' + row.size,
+                    colour: row.colour,
+                    size: row.size,
+                    quantity: row.quantity
+                });
+            });
+        });
+        const entry = {
+            lineType: 'bundle',
+            id: 'bundle-' + job.bundleId + '-' + Date.now(),
+            name: job.title,
+            bundleId: job.bundleId,
+            bundleSlug: job.slug,
+            bundleNumber: job.bundleNumber || 0,
+            currency: 'GBP',
+            vatExcluded: true,
+            price: pounds,
+            bundlePrice: pounds,
+            qty: 1,
+            chosenLines: chosenLines,
+            logos: [],
+            selection: { allocations: allocations },
+            builderState: { allocations: allocations }
+        };
+        let basket = [];
+        try {
+            if (window.BrandedQuoteStorage && typeof window.BrandedQuoteStorage.loadBasket === 'function') {
+                basket = window.BrandedQuoteStorage.loadBasket() || [];
+            } else {
+                basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+            }
+        } catch (error) { basket = []; }
+        if (!Array.isArray(basket)) basket = [];
+        basket.push(entry);
+        if (window.BrandedQuoteStorage && typeof window.BrandedQuoteStorage.saveBasket === 'function') {
+            window.BrandedQuoteStorage.saveBasket(basket);
+        } else {
+            localStorage.setItem('quoteBasket', JSON.stringify(basket));
+        }
+        try { window.dispatchEvent(new Event('basketUpdated')); } catch (error) { /* ignore */ }
+        sessionStorage.removeItem('buk-bundle-build');
+    }
+
+    function continueBundleBuild() {
+        const job = readBundleBuild();
+        if (!job) return false;
+        const item = job.components[job.index];
+        const required = Number(item && item.qty) || 0;
+        const total = Number(state.quantity) || 0;
+        if (total !== required) {
+            window.alert('This bundle needs exactly ' + required + ' pieces. You have selected ' + total + '.');
+            return true;
+        }
+        saveBundlePick(job);
+        if (job.index < job.components.length - 1) {
+            job.index += 1;
+            sessionStorage.setItem('buk-bundle-build', JSON.stringify(job));
+            const next = job.components[job.index];
+            window.location.href = '/mobile/customize-mobile.html?code=' + encodeURIComponent(next.code) + '&bundleBuild=1';
+            return true;
+        }
+        commitBundleBuild(job);
+        window.location.href = '/basket.html#orderSummary';
+        return true;
+    }
+
+    applyBundleBuildChrome();
 
 })();
