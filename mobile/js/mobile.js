@@ -660,7 +660,17 @@ function findBukSlot(nav, names) {
     return Array.from(nav.querySelectorAll(':scope > a, :scope > button')).find((item) => wanted.indexOf(bukLabel(item)) !== -1) || null;
 }
 
+/* Colour & sizes is customize-mobile.html?bundleBuild=1, a different document from
+   the configurator. html.bundle-build is set in that page's head, before paint. */
+function isBundleBuildDocument() {
+    const root = document.documentElement;
+    if (root.classList.contains('bundle-build') || root.classList.contains('bundle-build-live')) return true;
+    if (document.body && document.body.classList.contains('bundle-build')) return true;
+    return /[?&]bundleBuild=1(?:&|$)/.test(window.location.search || '');
+}
+
 function currentBukSection() {
+    if (isBundleBuildDocument()) return 'bundles';
     const path = (window.location.pathname || '/').replace(/\\/g, '/').toLowerCase();
     const file = path.split('/').filter(Boolean).pop() || '';
     if (path.indexOf('/bundle-configurator') !== -1 || file === 'bundles.html' || file === 'bundles') return 'bundles';
@@ -991,6 +1001,14 @@ function swapCentre(nav, kind) {
 
 function mountCentreFaces(nav) {
     if (nav.querySelector('.nav-slot-swap')) {
+        /* Bundle colour step: Filters and Bundles are already the active pair.
+           Do not rise Filters in, and do not leave the circle on Home. */
+        if (isBundleBuildDocument()) {
+            nav.classList.add('instant', 'is-positioning');
+            setBundlesContext(nav, true);
+            window.requestAnimationFrame(() => nav.classList.remove('instant', 'is-positioning'));
+            return;
+        }
         if (currentPageKey() === 'bundles' && !nav.classList.contains('is-bundles')) {
             window.requestAnimationFrame(() => window.requestAnimationFrame(() => {
                 nav.classList.remove('is-positioning', 'instant');
@@ -3143,7 +3161,10 @@ function bootBrandedNav() {
     let swapFlag = '';
     try { swapFlag = sessionStorage.getItem('buk-bar-swap') || ''; } catch (error) { swapFlag = ''; }
     const here = pageKeyFromUrl(window.location.href);
-    if (here === 'bundles' && window.__bukBundlesIntro) {
+    if (isBundleBuildDocument()) {
+        shown = 'bundles';
+        selectPage('bundles', { instant: true, emit: false });
+    } else if (here === 'bundles' && window.__bukBundlesIntro) {
         try { sessionStorage.removeItem('buk-bar-swap'); } catch (error) { /* ignore */ }
         selectPage('bundles', { instant: true, emit: false });
     }
@@ -3237,7 +3258,7 @@ function bootBrandedNav() {
     }
     function resyncBar() {
         routeToken += 1;
-        const key = pageKeyFromUrl(window.location.href);
+        const key = isBundleBuildDocument() ? 'bundles' : pageKeyFromUrl(window.location.href);
         if (!key) return;
         shown = key;
         selectPage(key, { instant: true, emit: false });
