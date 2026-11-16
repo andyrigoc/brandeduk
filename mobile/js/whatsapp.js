@@ -61,8 +61,7 @@
     var IMG = {
         logoGif: assetUrl('../../brandedukv15-child/assets/videos/use-the-provided-circular-1727756126.gif?v=20261002-chatlogo'),
         wordmark: assetUrl('../../brandedukv15-child/assets/images/ui/Branded UK Logo on Transparent Background.png?v=20261002-chatlogo'),
-        mark: assetUrl('../../brandedukv15-child/assets/images/ui/bd-mark-circle.png'),
-        welcome: assetUrl('../../brandedukv15-child/assets/images/ui/chat-welcome-visual.png')
+        mark: assetUrl('../../brandedukv15-child/assets/images/ui/bd-mark-circle.png')
     };
 
     function waLink(text, number) {
@@ -366,15 +365,6 @@
             '      </button>' +
             '    </div>' +
             '  </div>' +
-            '  <div class="wa-popup__welcome">' +
-            '    <div class="wa-popup__agents" aria-hidden="true">' +
-            '      <img class="wa-popup__agents-visual" src="' + IMG.welcome + '" alt="">' +
-            '    </div>' +
-            '    <div class="wa-popup__welcome-copy">' +
-            '      <h3>Hi, welcome to Branded.</h3>' +
-            '      <p>Chat with our team about quotes, products and orders.</p>' +
-            '    </div>' +
-            '  </div>' +
             '  <div class="wa-popup__auth-gate" id="waAuthGate" hidden>' +
             '    <div class="wa-popup__auth-card">' +
             '      <p class="wa-popup__auth-title">Sign in with Google to chat</p>' +
@@ -406,11 +396,6 @@
             '      </button>' +
             '    </div>' +
             '  </div>' +
-            '  <div class="wa-popup__replies" id="waFastReplies" aria-label="Fast replies">' +
-            '    <button type="button" class="wa-popup__reply-chip" data-wa-reply="Hi, I need a quote for branded workwear.">Need a quote</button>' +
-            '    <button type="button" class="wa-popup__reply-chip" data-wa-reply="Hi, I have a question about my order.">Order question</button>' +
-            '    <button type="button" class="wa-popup__reply-chip" data-wa-reply="Hi, can you help with logo placement and pricing?">Logo help</button>' +
-            '  </div>' +
             '  <div class="wa-popup__actions">' +
             '    <a class="wa-popup__action wa-popup__action--alt" id="waEmailTeam" href="mailto:info@brandeduk.com?subject=BrandedUK%20Website%20Enquiry">' +
             '      <span class="wa-popup__action-icon wa-popup__action-icon--email" aria-hidden="true">' +
@@ -427,20 +412,6 @@
             '      <span class="wa-popup__action-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></span>' +
             '    </a>' +
             '  </div>' +
-            '  <div class="wa-popup__quick">' +
-            '    <button type="button" class="wa-popup__quick-btn" id="waFastRepliesBtn">' +
-            '      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>' +
-            '      Fast replies' +
-            '    </button>' +
-            '    <button type="button" class="wa-popup__quick-btn" id="waQuoteSupport" data-open-contact="1" data-contact-message="Hi, I need quote support for branded workwear / uniforms.">' +
-            '      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>' +
-            '      Quote support' +
-            '    </button>' +
-            '    <button type="button" class="wa-popup__quick-btn" id="waOrderHelp" data-open-contact="1" data-contact-message="Hi, I need help with an existing order.">' +
-            '      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.3 7L12 12l8.7-5M12 22V12"/></svg>' +
-            '      Order help' +
-            '    </button>' +
-            '  </div>' +
             '</div>';
     }
 
@@ -448,7 +419,7 @@
         /* Belt+suspenders: inline size lock so CSS cache cannot leave CTAs unequal/tall */
         var actions = root && root.querySelector
             ? root.querySelector('.wa-popup__actions')
-            : document.getElementById('waFastReplies') && document.querySelector('.wa-popup__actions');
+            : document.querySelector('.wa-popup__actions');
         if (!actions) actions = document.querySelector('.wa-popup__actions');
         if (!actions) return;
         actions.style.cssText =

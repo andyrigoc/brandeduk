@@ -843,14 +843,14 @@ function ensureBrandedChat() {
     if (!document.querySelector('link[href*="whatsapp.css"]')) {
         const css = document.createElement('link');
         css.rel = 'stylesheet';
-        css.href = '/mobile/css/whatsapp.css?v=20261115-nobubble';
+        css.href = '/mobile/css/whatsapp.css?v=20261116-slimchat';
         document.head.appendChild(css);
     }
     const existing = document.querySelector('script[src*="whatsapp.js"]');
     if (existing && typeof window.openBrandedChat === 'function') return Promise.resolve();
     return new Promise((resolve) => {
         const script = document.createElement('script');
-        script.src = '/mobile/js/whatsapp.js?v=20261027-no-attach';
+        script.src = '/mobile/js/whatsapp.js?v=20261116-slimchat';
         script.onload = () => resolve();
         script.onerror = () => resolve();
         document.body.appendChild(script);
