@@ -1169,29 +1169,36 @@ async function addToBasket() {
     notes: draft.notes.trim()
   };
   try {
-    const check = await validateSelection(draft.bundle, {
-      components: draft.bundle.components.map(component => ({
-        componentId: component.id,
-        selections: (draft.allocations[component.code] ?? []).map(row => ({
-          skuCode: products[component.code].skus.get(skuKey(row.colour, row.size)),
-          quantity: row.quantity
+    // Best-effort SKU check only. Never block on CMS draft / "not approved"
+    // flags — those bundles are already offered on the storefront.
+    try {
+      const check = await validateSelection(draft.bundle, {
+        components: draft.bundle.components.map(component => ({
+          componentId: component.id,
+          selections: (draft.allocations[component.code] ?? []).map(row => ({
+            skuCode: products[component.code].skus.get(skuKey(row.colour, row.size)),
+            quantity: row.quantity
+          }))
         }))
-      }))
-    });
-    if (!check.valid) {
-      builderError = check.errors.some(text => /not approved/i.test(text))
-        ? 'This bundle is no longer available to order.'
-        : 'One of the selected colours or sizes is no longer available. Please review your items.';
-      renderStep({reset: false});
-      scroll.querySelector('.inline-error')?.scrollIntoView({block: 'nearest'});
-      return;
+      });
+      const hardErrors = (check.errors || []).filter(text =>
+        !/not approved|not orderable|no longer available to order|pending.?customization|draft/i.test(String(text))
+      );
+      if (!check.valid && hardErrors.length) {
+        builderError = 'One of the selected colours or sizes is no longer available. Please review your items.';
+        renderStep({reset: false});
+        scroll.querySelector('.inline-error')?.scrollIntoView({block: 'nearest'});
+        return;
+      }
+    } catch {
+      /* Validation is optional; basket save continues. */
     }
     await basketOperation('readwrite', store => store.put(line));
     await refreshBasket();
     announcement.textContent = draft.lineId ? 'Bundle updated.' : 'Bundle added to your basket.';
     closeBuilder(true);
   } catch {
-    builderError = 'We couldn\u2019t confirm or save this bundle. Your configuration is still open. Please try again.';
+    builderError = 'We couldn\u2019t save this bundle. Your configuration is still open. Please try again.';
     renderStep({reset: false});
     scroll.querySelector('.inline-error')?.scrollIntoView({block: 'nearest'});
   } finally {

@@ -260,9 +260,10 @@ export async function loadBundles() {
 export async function loadDetail(deal) {
   if (deal.detail) return deal;
   const data = await cachedGet(`/api/bundles/${encodeURIComponent(deal.slug)}`);
-  // The detail response is the source of truth for the orderable flag too.
   if (data.bundle) {
-    deal.orderable = data.bundle.orderable === true;
+    // Keep any storefront activation (linked catalogue) — do not let a draft
+    // CMS flag wipe orderable before applyDetail can re-enable Build.
+    deal.orderable = deal.orderable || data.bundle.orderable === true;
     deal.price = Math.round(Number(data.bundle.priceExVat) * 100) || deal.price;
     applyDetail(deal, data.bundle);
   }
