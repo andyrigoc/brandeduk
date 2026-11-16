@@ -375,17 +375,10 @@
       if (!reqCard || !grid() || !grid().contains(reqCard)) return;
       event.preventDefault();
       event.stopPropagation();
-      if (requestBtn.disabled) return;
-
-      if (reqCard.classList.contains('req-active1')) {
-        if (reqCard.classList.contains('req-active2') && !animating) {
-          openBuilderFromCard(reqCard);
-          closeCard(reqCard, true);
-        }
-        return;
-      }
-
-      openRequest(reqCard);
+      if (requestBtn.disabled || animating) return;
+      // Only Build Your Bundle advances into the configurator.
+      openBuilderFromCard(reqCard);
+      closeCard(reqCard, true);
       return;
     }
 
@@ -399,8 +392,17 @@
 
     var card = target.closest('.card');
     if (!card || !grid() || !grid().contains(card)) return;
-    if (card.classList.contains('active') || card.classList.contains('req-active1')) return;
     event.preventDefault();
+    event.stopPropagation();
+    // Any other tap on an open card closes it; closed cards still open to browse.
+    if (
+      card.classList.contains('active') ||
+      card.classList.contains('flip-step1') ||
+      card.classList.contains('req-active1')
+    ) {
+      closeCard(card);
+      return;
+    }
     openCard(card);
   }
 
