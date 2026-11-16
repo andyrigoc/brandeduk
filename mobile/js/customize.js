@@ -1885,9 +1885,12 @@
 
                     if (detailRes.status === 'fulfilled' && detailRes.value.ok) {
                         productData = await detailRes.value.json();
-                        // CRITICAL: API detail endpoint doesn't return top-level 'image' (model shot)
-                        // Preserve it from the cached shop data if available
-                        if (!productData.image && cachedData && cachedData.image) {
+                        // The detail endpoint often has no hero image. Only reuse the
+                        // shop cache when it is the same product. A previous cap must
+                        // not become the jacket photo.
+                        const cachedCode = cachedData && (cachedData.code || cachedData.productCode || cachedData.sku);
+                        const sameCachedProduct = cachedCode && String(cachedCode).toUpperCase() === String(productCode).toUpperCase();
+                        if (!productData.image && sameCachedProduct && cachedData.image) {
                             productData.image = cachedData.image;
                             debugLog('🖼️ Preserved model image from shop data:', productData.image);
                         }
@@ -1901,7 +1904,7 @@
                     if (listingRes.status === 'fulfilled' && listingRes.value.ok) {
                         const listingData = await listingRes.value.json();
                         const items = listingData.items || listingData.products || [];
-                        listingProduct = items.find(p => p.code === productCode) || items[0] || null;
+                        listingProduct = items.find(p => String(p.code || p.productCode || '').toUpperCase() === String(productCode).toUpperCase()) || null;
                     }
 
                     if (productData && listingProduct && !productData.variants?.length) {
@@ -1919,9 +1922,11 @@
                         if (!productData.image && listingProduct.image) {
                             productData.image = listingProduct.image;
                         }
-                    } else if (!productData && listingProduct) {
+                    } else if (!productData && listingProduct && String(listingProduct.code || '').toUpperCase() === String(productCode).toUpperCase()) {
                         productData = listingProduct;
-                        if (!productData.image && cachedData && cachedData.image) {
+                        const cachedCode = cachedData && (cachedData.code || cachedData.productCode || cachedData.sku);
+                        const sameCachedProduct = cachedCode && String(cachedCode).toUpperCase() === String(productCode).toUpperCase();
+                        if (!productData.image && sameCachedProduct && cachedData.image) {
                             productData.image = cachedData.image;
                         }
                         // Use listing image as main image for direct links (no cached shop data)
@@ -1932,7 +1937,9 @@
                     }
 
                     if (productData) {
-                        if (cachedData) {
+                        const cachedCode = cachedData && (cachedData.code || cachedData.productCode || cachedData.sku);
+                        const sameCachedProduct = cachedCode && String(cachedCode).toUpperCase() === String(productCode).toUpperCase();
+                        if (sameCachedProduct && cachedData) {
                             if (cachedData.color) productData.color = cachedData.color;
                             if (cachedData.colorHex) productData.colorHex = cachedData.colorHex;
                             if (!productData.productType && cachedData.productType) productData.productType = cachedData.productType;
@@ -5643,7 +5650,10 @@
             if (!step) return;
             const row = step.closest('.size-picker__row');
             const qty = (sizePickerDraft[row.dataset.size] || 0) + Number(step.dataset.step);
+            const required = bundleRequiredQty();
+            const nextTotal = sizePickerTotal() - (sizePickerDraft[row.dataset.size] || 0) + Math.max(0, qty);
             if (qty < 0 || qty > SIZE_PICKER_MAX_QTY) return;
+            if (required && nextTotal > required) return;
             row.querySelector('.size-picker__qty').value = String(qty);
             setSizePickerQty(row, qty);
             if (navigator.vibrate) navigator.vibrate(10);
@@ -5651,8 +5661,15 @@
         list.addEventListener('input', (e) => {
             if (!e.target.matches('.size-picker__qty')) return;
             const digits = e.target.value.replace(/\D/g, '').replace(/^0+(?=\d)/, '').slice(0, 3);
-            if (digits !== e.target.value) e.target.value = digits;
-            setSizePickerQty(e.target.closest('.size-picker__row'), parseInt(digits, 10) || 0);
+            let qty = parseInt(digits, 10) || 0;
+            const required = bundleRequiredQty();
+            if (required) {
+                const row = e.target.closest('.size-picker__row');
+                const others = sizePickerTotal() - (sizePickerDraft[row.dataset.size] || 0);
+                qty = Math.max(0, Math.min(qty, required - others));
+            }
+            if (String(qty) !== e.target.value) e.target.value = String(qty);
+            setSizePickerQty(e.target.closest('.size-picker__row'), qty);
         });
         list.addEventListener('focusin', (e) => {
             if (e.target.matches('.size-picker__qty')) e.target.select();
@@ -5719,9 +5736,28 @@
         updateSizePickerTotal();
     }
 
+    function bundleRequiredQty() {
+        const job = readBundleBuild();
+        if (!job) return 0;
+        const item = job.components[job.index];
+        return Number(item && item.qty) || 0;
+    }
+
+    function sizePickerTotal() {
+        return Object.values(sizePickerDraft).reduce((sum, qty) => sum + qty, 0);
+    }
+
     function updateSizePickerTotal() {
-        const total = Object.values(sizePickerDraft).reduce((sum, qty) => sum + qty, 0);
-        getSizePickerDialog().querySelector('.size-picker__total strong').textContent = String(total);
+        const total = sizePickerTotal();
+        const required = bundleRequiredQty();
+        const dialog = getSizePickerDialog();
+        dialog.querySelector('.size-picker__total strong').textContent = required ? (total + '/' + required) : String(total);
+        const done = dialog.querySelector('.size-picker__done');
+        if (!done || !required) return;
+        const job = readBundleBuild();
+        const last = !job || job.index >= job.components.length - 1;
+        done.disabled = total !== required;
+        done.textContent = last ? 'Add to basket' : 'Next item';
     }
 
     function commitSizePicker() {

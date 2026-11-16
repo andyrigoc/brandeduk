@@ -1628,8 +1628,9 @@ a {
     font-weight: 700;
 }
 
-.size-picker__done:active {
-    background: #c2410c;
+.size-picker__done:disabled {
+    background: #d1d5db;
+    color: #6b7280;
 }
 
 /* === Pricing Tiers Grid (with discounts) === */
