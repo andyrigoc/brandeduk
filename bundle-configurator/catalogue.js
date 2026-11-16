@@ -155,5 +155,6 @@ export function setAllocation(draft, code, colour, size, quantity) {
 
 export const fileMax = 10 * 1024 * 1024;
 export const acceptedFile = file => file && file.size > 0 && file.size <= fileMax && /\.(png|jpe?g|pdf|svg|eps|ai)$/i.test(file.name);
-export const logoValid = draft => Boolean(acceptedFile(draft.logo) && draft.bundle.methods.includes(draft.method));
+export const storedLogo = logo => Boolean(logo && (logo.logoId || logo.ref || logo.filename || logo.name));
+export const logoValid = draft => Boolean((acceptedFile(draft.logo) || storedLogo(draft.logo)) && draft.bundle.methods.includes(draft.method));
 export const readyToAdd = draft => variantsValid(draft) && logoValid(draft);

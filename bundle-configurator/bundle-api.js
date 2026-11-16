@@ -182,6 +182,7 @@ function normalizeSummary(row) {
     methods,
     delivery: Boolean(row.freeDelivery),
     logoCount: Number(row.includedLogoCount) || 0,
+    bundleNumber: Number(row.sourceBundleNumber) || 0,
     freeGift: row.freeGift || '',
     featured: Boolean(row.isFeatured),
     detail: false,

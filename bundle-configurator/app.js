@@ -173,6 +173,7 @@ function asBundle(deal) {
     methods: deal.methods,
     delivery: deal.delivery,
     logoCount: deal.logoCount,
+    bundleNumber: deal.bundleNumber || 0,
     art: deal.productType.includes('t-shirts') ? 'tee' : 'outdoor',
     fixed: deal.fixed,
     components: deal.components
@@ -980,7 +981,7 @@ function reviewMarkup() {
     ${selectedItems(draft.allocations)}</div>
     <div class="review-section">
       <div class="review-heading"><h4>Artwork</h4><button type="button" class="text-button" data-action="step" data-step="3">Edit logo</button></div>
-      <div class="info-panel">${icon('file')}<div><strong>${escape(draft.logo?.name ?? '')}</strong><small>${draft.method} included</small></div></div>
+      <div class="info-panel">${icon('file')}<div><strong>${escape(draft.logo?.name || draft.logo?.filename || '')}</strong><small>${draft.method} included</small></div></div>
       ${draft.notes.trim() ? `<div class="review-notes"><strong>Notes</strong><p>${escape(draft.notes.trim())}</p></div>` : ''}
     </div>
     ${builderError ? `<p class="inline-error" role="alert">${escape(builderError)}</p>` : ''}`;
@@ -1104,9 +1105,7 @@ async function refreshBasket() {
   } catch {
     storeError = 'This browser could not open your basket. Check that site storage is enabled.';
   }
-  const count = $('basket-count');
-  count.textContent = String(lines.length);
-  count.hidden = lines.length === 0;
+  syncHeaderBasketCount();
   if (basket.open) renderBasket();
 }
 
@@ -1142,32 +1141,127 @@ function renderBasket() {
 }
 
 function openBasket() {
-  renderBasket();
-  if (!basket.open) basket.showModal();
-  syncScrollLock();
-  $('basket-content').scrollTop = 0;
-  $('basket-content').querySelector('[tabindex="-1"]')?.focus({preventScroll: true});
-  void refreshBasket();
+  // Always use the shared Branded UK basket (quoteBasket), not the prototype drawer.
+  window.location.href = quoteBasketHref();
 }
 basket.addEventListener('close', syncScrollLock);
+
+function readQuoteBasket() {
+  try {
+    if (window.BrandedCart && typeof window.BrandedCart.get === 'function') {
+      const cart = window.BrandedCart.get();
+      return Array.isArray(cart) ? cart : [];
+    }
+    if (window.BrandedQuoteStorage && typeof window.BrandedQuoteStorage.loadBasket === 'function') {
+      const stored = window.BrandedQuoteStorage.loadBasket();
+      return Array.isArray(stored) ? stored : [];
+    }
+    const parsed = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeQuoteBasket(next) {
+  if (window.BrandedCart && typeof window.BrandedCart.save === 'function') {
+    window.BrandedCart.save(next);
+    return;
+  }
+  if (window.BrandedQuoteStorage && typeof window.BrandedQuoteStorage.saveBasket === 'function') {
+    window.BrandedQuoteStorage.saveBasket(next);
+  } else {
+    localStorage.setItem('quoteBasket', JSON.stringify(next));
+  }
+  try { window.dispatchEvent(new Event('basketUpdated')); } catch { /* ignore */ }
+}
+
+function syncHeaderBasketCount() {
+  const count = $('basket-count');
+  if (!count) return;
+  const basketLines = readQuoteBasket();
+  const total = window.BrandedCart && typeof window.BrandedCart.itemCount === 'function'
+    ? window.BrandedCart.itemCount()
+    : basketLines.length;
+  count.hidden = total === 0;
+  count.textContent = String(total);
+}
+
+function chosenLinesFromDraft(current) {
+  return Object.entries(current.allocations || {}).flatMap(([code, rows]) => {
+    const product = products[code];
+    return (rows || []).map(row => ({
+      code,
+      name: product?.label || code,
+      label: `${product?.label || code} · ${row.colour} · ${row.size}`,
+      colour: row.colour,
+      size: row.size,
+      quantity: row.quantity,
+      image: product?.image || ''
+    }));
+  });
+}
+
+async function persistDraftLogo(file, methodLabel) {
+  if (!file) return null;
+  if (!(file instanceof File)) return file;
+  const method = /embroid/i.test(String(methodLabel || '')) ? 'embroidery' : 'dtf';
+  const dataUrl = await new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ''));
+    reader.onerror = () => reject(reader.error || new Error('logo read failed'));
+    reader.readAsDataURL(file);
+  });
+  const storage = window.BrandedQuoteStorage;
+  if (!storage || typeof storage.persistLogo !== 'function' || dataUrl.indexOf('data:image') !== 0) {
+    return {
+      filename: file.name,
+      logoId: '',
+      ref: '',
+      logo: '',
+      method,
+      position: 'bundle',
+      positionLabel: 'Bundle logo'
+    };
+  }
+  try {
+    const result = await storage.persistLogo(dataUrl, file.name);
+    const logoId = result && result.logoId ? result.logoId : '';
+    const ref = logoId && storage.refFor ? storage.refFor(logoId) : '';
+    const preview = result && /^https?:/i.test(String(result.url || '')) ? result.url : (ref || dataUrl);
+    return {
+      filename: file.name,
+      logoId,
+      ref,
+      logo: preview,
+      method,
+      position: 'bundle',
+      positionLabel: 'Bundle logo',
+      included: true,
+      unitPrice: 0
+    };
+  } catch {
+    return {
+      filename: file.name,
+      logoId: '',
+      ref: '',
+      logo: '',
+      method,
+      position: 'bundle',
+      positionLabel: 'Bundle logo'
+    };
+  }
+}
+
+function quoteBasketHref() {
+  return '/basket.html#orderSummary';
+}
 
 async function addToBasket() {
   if (saving || !readyToAdd(draft) || !canReach(4) || !canLeave(4)) return;
   saving = true;
   builderError = '';
   renderControls();
-  const prior = lines.find(line => line.id === draft.lineId);
-  const line = {
-    id: draft.lineId ?? crypto.randomUUID(),
-    createdAt: prior?.createdAt ?? Date.now(),
-    bundleId: draft.bundle.id,
-    choice: draft.choice,
-    mix: draft.mix,
-    allocations: draft.allocations,
-    method: draft.method,
-    logo: draft.logo,
-    notes: draft.notes.trim()
-  };
   try {
     // Best-effort SKU check only. Never block on CMS draft / "not approved"
     // flags — those bundles are already offered on the storefront.
@@ -1193,10 +1287,68 @@ async function addToBasket() {
     } catch {
       /* Validation is optional; basket save continues. */
     }
-    await basketOperation('readwrite', store => store.put(line));
-    await refreshBasket();
+
+    const logoRecord = await persistDraftLogo(draft.logo, draft.method);
+    const pounds = (Number(draft.bundle.price) || 0) / 100;
+    const firstImage = chosenLinesFromDraft(draft).find(line => line.image)?.image
+      || products[Object.keys(draft.allocations || {})[0]]?.image
+      || '';
+    const entryId = draft.lineId || (`bundle-${draft.bundle.id}-${Date.now()}`);
+    const entry = {
+      lineType: 'bundle',
+      id: entryId,
+      name: draft.bundle.title,
+      bundleId: draft.bundle.id,
+      bundleSlug: draft.bundle.slug || draft.bundle.id,
+      bundleNumber: draft.bundle.bundleNumber || 0,
+      currency: 'GBP',
+      vatExcluded: true,
+      price: pounds,
+      bundlePrice: pounds,
+      qty: 1,
+      image: firstImage,
+      chosenLines: chosenLinesFromDraft(draft),
+      logos: logoRecord ? [logoRecord] : [],
+      selection: {
+        choice: draft.choice,
+        mix: draft.mix,
+        allocations: draft.allocations,
+        method: draft.method,
+        notes: draft.notes.trim(),
+        logo: logoRecord
+      },
+      builderState: {
+        choice: draft.choice,
+        mix: draft.mix,
+        allocations: draft.allocations,
+        method: draft.method,
+        notes: draft.notes.trim()
+      }
+    };
+
+    const quote = readQuoteBasket();
+    const existing = quote.findIndex(item => item && item.lineType === 'bundle' && item.id === entryId);
+    if (existing >= 0) quote[existing] = entry;
+    else quote.push(entry);
+    writeQuoteBasket(quote);
+    syncHeaderBasketCount();
+
+    // Keep prototype IDB in sync as a local cache, but the real cart is quoteBasket.
+    try {
+      await basketOperation('readwrite', store => store.put({
+        id: entryId,
+        createdAt: Date.now(),
+        bundleId: draft.bundle.id,
+        choice: draft.choice,
+        mix: draft.mix,
+        allocations: draft.allocations,
+        method: draft.method,
+        notes: draft.notes.trim()
+      }));
+    } catch { /* optional cache */ }
+
     announcement.textContent = draft.lineId ? 'Bundle updated.' : 'Bundle added to your basket.';
-    closeBuilder(true);
+    window.location.href = quoteBasketHref();
   } catch {
     builderError = 'We couldn\u2019t save this bundle. Your configuration is still open. Please try again.';
     renderStep({reset: false});
@@ -1974,6 +2126,35 @@ function renderSoon() {
   }, 700);
 }
 
+async function resumeQuoteEdit() {
+  const params = new URLSearchParams(location.search);
+  const editId = params.get('edit') || '';
+  const bundleKey = params.get('bundle') || '';
+  if (!editId && !bundleKey) return;
+  const line = readQuoteBasket().find(item =>
+    item && item.lineType === 'bundle' &&
+    ((editId && item.id === editId) || (bundleKey && (item.bundleSlug === bundleKey || item.bundleId === bundleKey)))
+  );
+  if (!line) return;
+  const deal = [...offerById.values()].find(entry =>
+    entry.id === line.bundleId || entry.slug === line.bundleSlug || entry.id === line.bundleSlug || entry.slug === line.bundleId
+  );
+  const bundle = deal && canBuild(deal) ? asBundle(deal) : undefined;
+  if (!bundle) return;
+  const state = line.builderState || line.selection || {};
+  const logo = state.logo || (Array.isArray(line.logos) ? line.logos[0] : null);
+  if (logo && !logo.name) logo.name = logo.filename || 'Uploaded logo';
+  await openBuilder(bundle, null, {
+    id: line.id,
+    choice: state.choice || '',
+    mix: state.mix || {},
+    allocations: state.allocations || {},
+    method: state.method || '',
+    notes: state.notes || '',
+    logo
+  });
+}
+
 async function init() {
   listState = 'loading';
   renderShop();
@@ -1990,7 +2171,13 @@ async function init() {
   renderShop();
   refreshCatalogueVatLabels();
   void hydrateBlackThumbs();
+  syncHeaderBasketCount();
+  window.addEventListener('basketUpdated', syncHeaderBasketCount);
+  window.addEventListener('storage', event => {
+    if (!event.key || event.key === 'quoteBasket') syncHeaderBasketCount();
+  });
   void refreshBasket();
+  void resumeQuoteEdit();
   // Older API builds don't return contents in the list; load them slowly.
   void loadAllDetails(deals, {onProgress: renderSoon}).then(() => {
     clearTimeout(renderTimer);

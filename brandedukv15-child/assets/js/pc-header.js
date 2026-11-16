@@ -379,7 +379,7 @@
         }
         // The basket page already shows the full basket, so its laptop icon does not open the drawer.
         if (!isBasketPage() && typeof window.openOrderDrawer !== 'function' && !hasScript('order-drawer-pc.js')) {
-            appendScript(new URL('order-drawer-pc.js?v=20261007-tablet-side', projectRoot).href);
+            appendScript(new URL('order-drawer-pc.js?v=20261116-bundlelogo', projectRoot).href);
         }
         if (!hasScript('header-basket-lottie.js')) {
             appendScript(new URL('js/header-basket-lottie.js?v=20261012-allpages', assetsRoot).href);

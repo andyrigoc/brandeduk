@@ -1065,6 +1065,7 @@
                     <span class="label">Garments Subtotal</span>
                     <span class="value" id="garmentsSubtotal">Ã‚£0.00</span>
                 </div>
+                <div id="bundleTotalsList"></div>
                 <div class="total-row">
                     <span class="label">Customization Subtotal</span>
                     <span class="value" id="customSubtotal">Ã‚£0.00</span>
@@ -1318,20 +1319,20 @@
             
             basket.forEach((item, index) => {
                 if (item && item.lineType === 'bundle') {
-                    const chosen = Array.isArray(item.chosenLines) ? item.chosenLines : [];
-                    const lines = chosen.map(line => {
-                        const text = String((line.quantity || 0) + ' ' + (line.label || '') + (line.detail ? ' (' + line.detail + ')' : '')).replace(/&/g, '&amp;').replace(/</g, '&lt;');
-                        return `<p>${text}</p>`;
-                    }).join('');
                     const raw = item.bundlePrice != null ? item.bundlePrice : item.price;
                     const money = raw == null || raw === '' ? null : Number(raw);
                     const priceText = Number.isFinite(money) ? ('\u00A3' + money.toFixed(2)) : '\u2014';
+                    const slug = String(item.bundleSlug || item.bundleId || '');
+                    const fromSlug = slug.match(/(?:^|-)(\d+)(?:-|$)/);
+                    const number = Number(item.bundleNumber) > 0 ? String(item.bundleNumber) : (fromSlug ? fromSlug[1] : String(index + 1));
+                    const editId = encodeURIComponent(item.id || '');
+                    const editKey = encodeURIComponent(item.bundleSlug || item.bundleId || '');
                     html += `
                     <div class="basket-item-card" data-index="${index}" data-line-type="bundle">
                         <div class="basket-item-info">
-                            <h4>${String(item.name || 'Bundle').replace(/&/g, '&amp;').replace(/</g, '&lt;')}</h4>
-                            ${lines}
-                            <p>Bundle price ${priceText}</p>
+                            <h4>Bundle ${number}</h4>
+                            <p>${priceText}</p>
+                            <a href="/bundles.html?force=mobile&amp;bundle=${editKey}&amp;edit=${editId}">Modifica bundle</a>
                         </div>
                         <button type="button" class="basket-item-remove" data-index="${index}" onclick="event.stopPropagation()">Remove</button>
                     </div>`;
@@ -1470,12 +1471,18 @@
         function renderTotals(basket) {
             let garmentsTotal = 0;
             let customTotal = 0;
+            let bundleTotal = 0;
+            const bundleLines = [];
             
-            basket.forEach(item => {
+            basket.forEach((item, index) => {
                 if (item && item.lineType === 'bundle') {
                     const raw = item.bundlePrice != null ? item.bundlePrice : item.price;
                     const money = raw == null || raw === '' ? null : Number(raw);
-                    if (Number.isFinite(money)) garmentsTotal += money;
+                    const slug = String(item.bundleSlug || item.bundleId || '');
+                    const fromSlug = slug.match(/(?:^|-)(\d+)(?:-|$)/);
+                    const number = Number(item.bundleNumber) > 0 ? String(item.bundleNumber) : (fromSlug ? fromSlug[1] : String(index + 1));
+                    if (Number.isFinite(money)) bundleTotal += money;
+                    bundleLines.push({ number, money });
                     return;
                 }
                 const sizes = item.sizes || item.quantities || {};
@@ -1493,14 +1500,26 @@
                 });
             });
             
-            const grandTotal = garmentsTotal + customTotal;
-            const onlyUnpricedBundle = basket.length > 0 && basket.every(item => item && item.lineType === 'bundle') && garmentsTotal === 0 && customTotal === 0;
+            const grandTotal = garmentsTotal + bundleTotal + customTotal;
+            const goodsCount = basket.filter(item => item && item.lineType !== 'bundle').length;
+            const onlyUnpricedBundle = basket.length > 0 && goodsCount === 0 && bundleTotal === 0 && customTotal === 0;
             
             // Update DOM
             const garmentsSubtotal = document.getElementById('garmentsSubtotal');
             const customSubtotal = document.getElementById('customSubtotal');
             const grandTotalEl = document.getElementById('grandTotal');
             const actionBarTotal = document.getElementById('actionBarTotal');
+            const bundleHost = document.getElementById('bundleTotalsList');
+            const garmentsRow = garmentsSubtotal && garmentsSubtotal.closest('.total-row');
+            const customRow = customSubtotal && customSubtotal.closest('.total-row');
+            if (garmentsRow) garmentsRow.hidden = goodsCount === 0;
+            if (customRow) customRow.hidden = goodsCount === 0;
+            if (bundleHost) {
+                bundleHost.innerHTML = bundleLines.map(line => {
+                    const amount = Number.isFinite(line.money) ? formatCurrency(line.money) : '\u2014';
+                    return `<div class="total-row"><span class="label">Bundle ${line.number}</span><span class="value">${amount}</span></div>`;
+                }).join('');
+            }
 
             if (onlyUnpricedBundle) {
                 if (garmentsSubtotal) garmentsSubtotal.textContent = '\u2014';

@@ -915,7 +915,22 @@
             appearance: none;
         }
         .item-row-remove:hover { color: #dc2626; text-decoration: underline; }
-        .basket-item-row.basket-item-row--bundle { display: block; }
+        .summary-bundle-card { display: flex; flex-direction: column; gap: 8px; }
+        .summary-bundle-card[hidden] { display: none; }
+        .summary-bundle-line { display: flex; justify-content: space-between; gap: 12px; font-weight: 750; }
+        .bundle-row-kicker {
+            display: inline-block;
+            margin-right: 8px;
+            padding: 2px 7px;
+            border-radius: 999px;
+            background: #111827;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            vertical-align: middle;
+        }
         .bundle-row-banner {
             width: 96px;
             height: 42px;
@@ -3069,6 +3084,7 @@
                     <div class="summary-breakdown-list" id="summarySetupBreakdown"></div>
                 </div>
                 </div>
+                <div class="summary-bundle-card" id="summaryBundleCard" hidden></div>
                 <div class="summary-delivery-card">
                 <div class="summary-row summary-card-heading">
                     <span>Delivery <small class="summary-delivery-note" id="summaryDeliveryVatLabel">(exc. VAT)</small></span>
@@ -5063,21 +5079,19 @@
         const chargedEmbroideryDesigns = new Set();
         basket.forEach((item, index) => {
             if (isBundleLine(item)) {
-                const banner = bundleBannerSrc(item);
                 const amount = bundlePriceNumber(item);
                 const priceText = amount == null ? '\u2014' : formatBundlePrice(item);
+                const number = bundleDisplayNumber(item, index);
                 html += `
                 <div class="basket-item-row basket-item-row--bundle" data-index="${index}" data-line-type="bundle">
                     <div class="item-row-header">
                         <div class="item-row-top">
-                            ${banner ? `<div class="bundle-row-banner"><img src="${escapeAttr(banner)}" alt=""></div>` : ''}
                             <div class="item-row-head-text">
                                 <div class="item-row-title-line">
-                                    <h4 class="item-row-title">${escapeAttr(item.name || 'Bundle')}</h4>
+                                    <h4 class="item-row-title">Bundle ${escapeAttr(number)}</h4>
                                     <button type="button" class="item-row-remove" onclick="event.stopPropagation(); removeItem(${index})">Remove</button>
                                 </div>
                                 <div class="bundle-row-price">
-                                    <span class="bundle-row-price-label">Offer price</span>
                                     <span class="bundle-row-price-value">${priceText}</span>
                                 </div>
                                 <button type="button" class="bundle-row-edit" onclick="event.stopPropagation(); modifyBundle(${index})">Modifica bundle</button>
@@ -5430,11 +5444,21 @@
         return normalizeDecorationMethod(logo && logo.method) === 'embroidery';
     }
 
+    function bundleDisplayNumber(item, index) {
+        const explicit = Number(item && (item.bundleNumber || item.sourceBundleNumber));
+        if (Number.isFinite(explicit) && explicit > 0) return String(explicit);
+        const slug = String((item && (item.bundleSlug || item.bundleId)) || '');
+        const match = slug.match(/(?:^|-)(\d+)(?:-|$)/);
+        return match ? match[1] : String(index + 1);
+    }
+
     function computeBasketTotals(basket) {
         let productCosts = 0;
         let logoCosts = 0;
+        let bundleCosts = 0;
         let unpricedBundleCount = 0;
         let bundleCount = 0;
+        const bundleLines = [];
         const uniqueEmbroideryDesigns = new Set();
         const customisationGroups = new Map();
         const setupBreakdown = [];
@@ -5451,8 +5475,10 @@
             if (isBundleLine(item)) {
                 bundleCount += 1;
                 const bundleAmount = bundlePriceNumber(item);
+                const number = bundleDisplayNumber(item, bundleCount - 1);
                 if (bundleAmount == null) unpricedBundleCount += 1;
-                else productCosts += bundleAmount;
+                else bundleCosts += bundleAmount;
+                bundleLines.push({ number, amount: bundleAmount });
                 return;
             }
             const qty = item.qty || 0;
@@ -5508,13 +5534,15 @@
         const embroideryDesignCount = uniqueEmbroideryDesigns.size;
         const digitizingFee = embroideryDesignCount * DIGITIZING_FEE_PER_DESIGN;
         // Goods only: the minimum order check must not count delivery.
-        const subtotalExVat = productCosts + logoCosts + digitizingFee;
+        const subtotalExVat = productCosts + bundleCosts + logoCosts + digitizingFee;
         const order = window.brandedOrderTotals(subtotalExVat, basket.length);
         const orderRules = window.brandedCheckOrderRules(basket, subtotalExVat);
-
         const pricedGoods = (basket || []).filter((item) => !isBundleLine(item)).length;
+
         return {
             productCosts,
+            bundleCosts,
+            bundleLines,
             logoCosts,
             digitizingFee,
             unpricedBundleOnly: bundleCount > 0 && unpricedBundleCount === bundleCount && pricedGoods === 0 && logoCosts === 0 && digitizingFee === 0,
@@ -5574,6 +5602,7 @@
         }
         const {
             productCosts,
+            bundleLines = [],
             logoCosts,
             digitizingFee,
             embroideryDesignCount,
@@ -5592,6 +5621,19 @@
         document.querySelectorAll('[data-summary-vat-label]').forEach(label => {
             label.textContent = summaryVatLabel;
         });
+        const pricedGoods = (basket || []).filter(item => !isBundleLine(item)).length;
+        const productCard = document.querySelector('.summary-product-card');
+        const customCard = document.querySelector('.summary-customisation-card');
+        if (productCard) productCard.hidden = pricedGoods === 0;
+        if (customCard) customCard.hidden = pricedGoods === 0;
+        const bundleCard = el('summaryBundleCard');
+        if (bundleCard) {
+            bundleCard.hidden = bundleLines.length === 0;
+            bundleCard.innerHTML = bundleLines.map(line => {
+                const amount = line.amount == null ? '\u2014' : formatCurrency(line.amount);
+                return `<div class="summary-row summary-bundle-line"><span>Bundle ${escapeAttr(line.number)}</span><span class="summary-val">${amount}</span></div>`;
+            }).join('');
+        }
         if (el('summaryProductCosts')) el('summaryProductCosts').textContent = formatCurrency(productCosts);
         if (el('summaryLogoCosts')) el('summaryLogoCosts').textContent = formatCurrency(logoCosts);
         if (el('summaryCustomisationWithSetup')) el('summaryCustomisationWithSetup').textContent = formatCurrency(logoCosts + digitizingFee);
