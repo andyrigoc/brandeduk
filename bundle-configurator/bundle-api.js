@@ -134,12 +134,8 @@ const decorationLabel = method => ({print: 'Print', embroidery: 'Embroidery'})[S
 // `includedDecorationMethods` / orderable:false. Infer a method from the
 // catalogue wording so Build stays available when every product is linked.
 function inferDecorationMethods(row) {
-  const listed = (row.includedDecorationMethods || []).map(String).filter(Boolean);
-  if (listed.length) return listed;
-  const text = `${row.name || ''} ${row.sourceIncludeText || ''} ${row.description || ''}`;
-  if (/embroider|stitched|ricam/i.test(text)) return ['embroidery'];
-  if (/print|stampa|dtf|dtg|vinyl|heat.?press/i.test(text)) return ['print'];
-  if (/logo/i.test(text)) return ['embroidery'];
+  // Bundles are print only. Supplier embroidery flags and titles are ignored.
+  void row;
   return ['print'];
 }
 

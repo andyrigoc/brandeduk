@@ -436,22 +436,6 @@
             '      </button>' +
             '    </div>' +
             '  </div>' +
-            '  <div class="wa-popup__actions">' +
-            '    <a class="wa-popup__action wa-popup__action--alt" id="waEmailTeam" href="mailto:info@brandeduk.com?subject=BrandedUK%20Website%20Enquiry">' +
-            '      <span class="wa-popup__action-icon wa-popup__action-icon--email" aria-hidden="true">' +
-            '        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>' +
-            '      </span>' +
-            '      <span class="wa-popup__action-label">EMAIL</span>' +
-            '      <span class="wa-popup__action-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></span>' +
-            '    </a>' +
-            '    <a class="wa-popup__action" id="waCallTeam" href="tel:' + PHONE_TEL + '">' +
-            '      <span class="wa-popup__action-icon wa-popup__action-icon--call" aria-hidden="true">' +
-            '        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.68 2.35a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.75.32 1.54.55 2.35.68A2 2 0 0 1 22 16.92z"/></svg>' +
-            '      </span>' +
-            '      <span class="wa-popup__action-label">Call our team</span>' +
-            '      <span class="wa-popup__action-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></span>' +
-            '    </a>' +
-            '  </div>' +
             '</div>';
     }
 
@@ -1185,20 +1169,35 @@
             prechatCollecting = !!collecting;
             applyAuthGateUi();
         },
-        showEnquiry: function (text) {
+        showEnquiry: function (payload) {
             cancelPendingWelcomeForOperatorReply();
-            if (chatBody.querySelector('.buk-pc-native-summary')) return;
-            appendUserBubble(text);
-            var bubbles = chatBody.querySelectorAll('.wa-msg--user');
-            if (bubbles.length) bubbles[bubbles.length - 1].classList.add('buk-pc-native-summary');
+            if (!chatBody || chatBody.querySelector('.buk-pc-native-summary')) return;
+            var text = typeof payload === 'string' ? payload : (payload && payload.text) || '';
+            var html = payload && typeof payload === 'object' ? String(payload.html || '') : '';
+            if ((!text && !html) || !chatUnlocked) return;
+            var wrap = document.createElement('div');
+            wrap.className = 'wa-msg wa-msg--user buk-pc-native-summary';
+            wrap.innerHTML =
+                '<div class="wa-msg__bubble"></div>' +
+                '<div class="wa-msg__meta"><span></span>' +
+                '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>' +
+                '</div>';
+            var bubble = wrap.querySelector('.wa-msg__bubble');
+            if (html) bubble.innerHTML = html;
+            else bubble.textContent = text;
+            wrap.querySelector('.wa-msg__meta span').textContent = nowLabel();
+            var typing = document.getElementById('waTypingMsg');
+            if (typing && typing.parentNode === chatBody && !typing.hasAttribute('hidden')) chatBody.insertBefore(wrap, typing);
+            else chatBody.appendChild(wrap);
+            chatBody.scrollTop = chatBody.scrollHeight;
         }
     };
     var prechatCss = document.createElement('link');
     prechatCss.rel = 'stylesheet';
-    prechatCss.href = assetUrl('../css/prechat.css?v=20261116-reference');
+    prechatCss.href = assetUrl('../css/prechat.css?v=20261116-logo-card');
     document.head.appendChild(prechatCss);
     var prechatScript = document.createElement('script');
-    prechatScript.src = assetUrl('prechat.js?v=20261116-reference');
+    prechatScript.src = assetUrl('prechat.js?v=20261116-logo-card');
     prechatScript.onerror = function () {
         prechatCollecting = false;
         applyAuthGateUi();

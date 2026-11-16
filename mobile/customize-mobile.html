@@ -15,14 +15,18 @@
     </script>
     <style id="buk-z">
       :root { --buk-z-ms: 900ms; }
-      ::view-transition { background: transparent; }
-      ::view-transition-group(root) { animation: none; }
-      ::view-transition-old(root) { transform-origin: center center; animation: buk-z-out var(--buk-z-ms) ease-in-out both; }
-      ::view-transition-new(root) { transform-origin: center center; animation: buk-z-in var(--buk-z-ms) ease-in-out both; }
+      ::view-transition { background: transparent; pointer-events: none; }
+      ::view-transition-group(root) { animation: none; pointer-events: none; }
+      ::view-transition-image-pair(root) { pointer-events: none; }
+      ::view-transition-old(root) { transform-origin: center center; animation: buk-z-out var(--buk-z-ms) ease-in-out both; pointer-events: none; }
+      ::view-transition-new(root) { transform-origin: center center; animation: buk-z-in var(--buk-z-ms) ease-in-out both; pointer-events: none; }
       @keyframes buk-z-out { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(1.08); } }
       @keyframes buk-z-in { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
       #branded-nav { view-transition-name: branded-nav; }
-      ::view-transition-group(branded-nav) { animation: none; }
+      ::view-transition-group(branded-nav) { animation: none; pointer-events: none; }
+      ::view-transition-image-pair(branded-nav),
+      ::view-transition-old(branded-nav),
+      ::view-transition-new(branded-nav) { pointer-events: none; }
     </style>
     <!-- Google Consent Mode v2 defaults (must stay before the Google tag) -->
     <script>
@@ -73,8 +77,53 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Customize Product - BrandedUK</title>
-    <link rel="stylesheet" href="css/mobile.css?v=20261116-bundlebar">
-    <link rel="stylesheet" href="css/header-v2.css?v=20261116-nohamburger">
+    <script>
+        if (/[?&]bundleBuild=1(?:&|$)/.test(location.search)) {
+            document.documentElement.classList.add('bundle-build');
+        }
+        // Cross-document view transitions snapshot the new document on its first frame.
+        // That frame used to be the regular customiser. Skip the snapshot while this
+        // page is the bundle colour step, in either direction.
+        window.addEventListener('pagereveal', function (e) {
+            if (!document.documentElement.classList.contains('bundle-build') || !e.viewTransition) return;
+            try { e.viewTransition.skipTransition(); } catch (err) {}
+        });
+        window.addEventListener('pageswap', function (e) {
+            if (!document.documentElement.classList.contains('bundle-build') || !e.viewTransition) return;
+            try { e.viewTransition.skipTransition(); } catch (err) {}
+        });
+    </script>
+    <style id="bundle-build-guard">
+        /* html.bundle-build is set above, before the body exists. These rules have to
+           live here: body.bundle-build and the order-steps flag are applied only after
+           customize.js, which is after the first paint and after a view-transition snapshot. */
+        #bundleBuilderBar { display: none !important; }
+        html.bundle-build #bundleBuilderBar { display: block !important; }
+        html.bundle-build #orderSteps,
+        html.bundle-build .pricing-section,
+        html.bundle-build .action-bar,
+        html.bundle-build .action-bar.action-bar--atc,
+        html.bundle-build #addToBasketBtn,
+        html.bundle-build .delivery-section,
+        html.bundle-build #positionsSection,
+        html.bundle-build #positionsSectionTitle {
+            display: none !important;
+        }
+        html.bundle-build:not(.bundle-heading-ready) #productSku,
+        html.bundle-build:not(.bundle-heading-ready) #productTitle,
+        html.bundle-build:not(.bundle-build-live) #productSpecs,
+        html.bundle-build:not(.bundle-build-live) .color-count,
+        html.bundle-build:not(.bundle-build-live) .selected-color-name {
+            visibility: hidden;
+        }
+        html.bundle-build .bundle-builder-bar__step.is-done:not(.is-current) { color: #13764a; }
+        html.bundle-build .bundle-builder-bar__step.is-done:not(.is-current) .bundle-builder-bar__num {
+            background: #e7f6ee;
+            color: #13764a;
+        }
+    </style>
+    <link rel="stylesheet" href="css/mobile.css?v=20261116-bundleghost">
+    <link rel="stylesheet" href="css/header-v2.css?v=20261116-bundlegap">
     <link rel="stylesheet" href="css/bottom-nav.css?v=20261115-closex">
     <link rel="stylesheet" href="css/rainbow-atc-bar.css?v=20261019-navy">
     <link rel="stylesheet" href="css/breadcrumbs.css?v=20260407a">
@@ -247,6 +296,28 @@
 
     </div>
 
+    <!-- Bundle colour step. Hidden unless html.bundle-build (set in the head, before first paint). -->
+    <section id="bundleBuilderBar" class="bundle-builder-bar" aria-label="Build your bundle">
+        <div class="bundle-builder-bar__head">
+            <div>
+                <p class="bundle-builder-bar__kicker">BUILD YOUR BUNDLE</p>
+                <h2 class="bundle-builder-bar__title">Bundle</h2>
+            </div>
+            <button type="button" class="bundle-builder-bar__close" aria-label="Close bundle builder">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <ol class="bundle-builder-bar__steps" aria-label="Configuration progress">
+            <li class="bundle-builder-bar__step is-done"><span class="bundle-builder-bar__num">✓</span><span class="bundle-builder-bar__label">Included</span></li>
+            <li class="bundle-builder-bar__step is-done"><span class="bundle-builder-bar__num">✓</span><span class="bundle-builder-bar__label">Groups</span></li>
+            <li class="bundle-builder-bar__step is-current"><span class="bundle-builder-bar__num">3</span><span class="bundle-builder-bar__label">Colours &amp; sizes</span></li>
+            <li class="bundle-builder-bar__step"><span class="bundle-builder-bar__num">4</span><span class="bundle-builder-bar__label">Logo</span></li>
+            <li class="bundle-builder-bar__step"><span class="bundle-builder-bar__num">5</span><span class="bundle-builder-bar__label">Review</span></li>
+        </ol>
+    </section>
 
     <!-- Breadcrumbs -->
     <nav class="site-breadcrumbs" id="siteBreadcrumbs" aria-label="Breadcrumb">
@@ -407,6 +478,38 @@
                 <span class="color-count">37 colors</span>
             </h2>
             <div class="selected-color-name">Selected: <span id="selectedColor">Aquatic</span></div>
+            <script>
+            (function () {
+                if (!document.documentElement.classList.contains('bundle-build')) return;
+                var job = null;
+                try { job = JSON.parse(sessionStorage.getItem('buk-bundle-build') || 'null'); } catch (e) {}
+                var titleEl = document.querySelector('#bundleBuilderBar .bundle-builder-bar__title');
+                if (titleEl) titleEl.textContent = (job && job.title) || 'Bundle';
+                var item = job && Array.isArray(job.components) ? job.components[job.index || 0] : null;
+                var productTitle = document.getElementById('productTitle');
+                var sku = document.getElementById('productSku');
+                if (productTitle && item && item.name) productTitle.textContent = item.name;
+                if (sku && item && item.code) sku.textContent = '#' + item.code;
+                var specs = document.getElementById('productSpecs');
+                if (specs) specs.replaceChildren();
+                var count = document.querySelector('.color-count');
+                if (count) count.textContent = '';
+                var selected = document.getElementById('selectedColor');
+                if (selected) selected.textContent = '';
+                document.documentElement.classList.add('bundle-heading-ready');
+                var closeBtn = document.querySelector('#bundleBuilderBar .bundle-builder-bar__close');
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', function () {
+                        var slug = (job && (job.slug || job.bundleId)) || '';
+                        if (job && job.returnToBasket) {
+                            window.location.href = '/basket.html#orderSummary';
+                            return;
+                        }
+                        window.location.href = '/bundle-configurator/?force=mobile' + (slug ? '&bundle=' + encodeURIComponent(slug) : '');
+                    });
+                }
+            })();
+            </script>
             <div class="color-options" id="colorOptions">
                 <!-- Colors rendered dynamically by JS -->
             </div>
@@ -1120,8 +1223,8 @@
     <script src="../brandedukv15-child/assets/js/garment-color-behind-scenes.js?v=20260610h"></script>
     <script src="js/basket-logos.js?v=20260519"></script>
     <script src="../brandedukv15-child/assets/js/variant-pricing.js?v=20261104"></script>
-    <script src="js/customize.js?v=20261116-bundlebar3"></script>
-    <script src="js/order-steps.js?v=20261116-bundleseq"></script>
+    <script src="js/customize.js?v=20261116-bundleghost"></script>
+    <script src="js/order-steps.js?v=20261116-bundleghost"></script>
     <script src="js/marker-editor.js?v=20260531a"></script>
     <script src="../brandedukv15-child/assets/js/api-config.js?v=20261107-colourprice"></script>
     <script src="../brandedukv15-child/assets/js/api.js?v=20261107-colourprice"></script>

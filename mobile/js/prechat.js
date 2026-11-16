@@ -14,6 +14,9 @@
   var SENT = 'buk_prechat_sent_v3';
   var SCRIPT_SRC = document.currentScript && document.currentScript.src;
   var REFERENCE = new URL('../images/prechat/reference-artwork.webp', SCRIPT_SRC || location.href).href;
+  // Same assets as the site header lockup (animated circle + sharp wordmark).
+  var LOGO_BADGE = '/brandedukv15-child/assets/videos/use-the-provided-circular-1727756126.gif?v=20261001-newgif';
+  var LOGO_WORD = '/brandedukv15-child/assets/images/ui/Branded%20UK%20Logo%20on%20Transparent%20Background.png?v=20261002-logocombo';
   var chat = window.BrandedOnsiteChat;
   var MAX_FILE = 10 * 1024 * 1024;
   var ALLOWED = ['png','jpg','jpeg','pdf','ai','eps','svg'];
@@ -38,6 +41,7 @@
       if (!d || !Array.isArray(d.items)) return;
       state = Object.assign(state, d);
       delete state.logoPreview;
+      delete state.logoPendingNote;
       state.items = state.items.filter(function(id){return ITEMS.some(function(item){return item.id===id;});});
       state.quantity = QUANTITIES.indexOf(state.quantity)>=0 ? state.quantity : '';
       state.step = Math.max(1,Math.min(5,Number(state.step)||1));
@@ -51,7 +55,7 @@
   }
   function save() {
     try {
-      var s = Object.assign({}, state); delete s.logoMissingAfterNavigation; delete s.logoPreview;
+      var s = Object.assign({}, state); delete s.logoMissingAfterNavigation; delete s.logoPreview; delete s.logoPendingNote;
       sessionStorage.setItem(STORAGE, JSON.stringify(s));
     } catch(e) {}
   }
@@ -69,6 +73,24 @@
     return String(s || '').replace(/[&<>"']/g, function(ch) {
       return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];
     });
+  }
+  function headerLogoMarkup() {
+    return '<img class="wa-popup__brand-badge" src="' + escapeText(LOGO_BADGE) + '" alt="" width="400" height="400" data-buk-logo-src="' + escapeText(LOGO_BADGE) + '" aria-hidden="true">' +
+      '<img class="wa-popup__brand-word" src="' + escapeText(LOGO_WORD) + '" alt="" width="1916" height="821">';
+  }
+  function replayChatLogo() {
+    var img = document.querySelector('#waPopup .buk-pc-brand .wa-popup__brand-badge');
+    if (!img || !img.parentNode) return;
+    var src = img.getAttribute('data-buk-logo-src') || LOGO_BADGE;
+    var fresh = document.createElement('img');
+    fresh.className = 'wa-popup__brand-badge';
+    fresh.alt = '';
+    fresh.width = 400;
+    fresh.height = 400;
+    fresh.setAttribute('aria-hidden', 'true');
+    fresh.setAttribute('data-buk-logo-src', src);
+    img.parentNode.replaceChild(fresh, img);
+    fresh.src = src;
   }
   // Display the supplied artwork through a viewBox. The source pixels are
   // preserved; no generated replacements or substitute product photography.
@@ -137,12 +159,6 @@
     }
     if(status) status.textContent=msg||'';
   }
-  function supportFooter(){
-    return '<nav class="buk-pc-footer" aria-label="Chat support options">'+
-      '<button type="button" data-pc="quick-replies">'+icon('bolt',20)+'<span>Fast replies</span></button>'+
-      '<button type="button" data-pc="quote-support">'+icon('note',20)+'<span>Quote support</span></button>'+
-      '<button type="button" data-pc="fast-track">'+icon('box',20)+'<span>Order help</span></button></nav>';
-  }
   function title(title, subtitle, kind) {
     return '<div class="buk-pc-section-title">'+svgMark(kind,29)+'<div><h3>'+escapeText(title).replace(/\n/g,'<br>')+'</h3><p>'+escapeText(subtitle)+'</p></div></div>';
   }
@@ -190,13 +206,72 @@
   function itemLabels() {
     return state.items.map(function(id){var x=ITEMS.find(function(i){return i.id===id;});return x?x.label:id;}).join(', ');
   }
+  function canPreview(f) {
+    var type = String(f && f.type || '').toLowerCase();
+    if (['image/png','image/jpeg','image/jpg','image/gif','image/webp','image/svg+xml','image/pjpeg','image/x-png'].indexOf(type) >= 0) return true;
+    if (type && type !== 'application/octet-stream') return false;
+    return /\.(png|jpe?g|gif|webp|svg)$/i.test(String(f && f.name || ''));
+  }
+  function safePreview(url) {
+    var value = String(url || '');
+    if (/^blob:[A-Za-z0-9.+_-]+:\/[^\s"'<>]+$/.test(value) || /^blob:[A-Za-z0-9.+_-]+$/.test(value)) return value;
+    if (/^data:image\/(?:png|jpe?g|gif|webp|svg\+xml);base64,[a-z0-9+/=\s]+$/i.test(value)) return value.replace(/\s/g, '');
+    return '';
+  }
+  function revokePreview() {
+    if (state.logoPreview && /^blob:/.test(state.logoPreview) && window.URL && typeof URL.revokeObjectURL === 'function') {
+      try { URL.revokeObjectURL(state.logoPreview); } catch (e) {}
+    }
+  }
+  function rememberPreview(f) {
+    revokePreview();
+    state.logoPreview = '';
+    if (!canPreview(f)) return;
+    try {
+      if (window.URL && typeof URL.createObjectURL === 'function') {
+        state.logoPreview = URL.createObjectURL(f);
+        return;
+      }
+    } catch (e) {}
+    if (!window.FileReader) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      if (file !== f || sending) return;
+      var url = safePreview(reader.result);
+      if (!url) return;
+      state.logoPreview = url;
+      if (root && (root.querySelector('.buk-pc-summary') || root.querySelector('.buk-pc-file'))) render();
+    };
+    try { reader.readAsDataURL(f); } catch (e) {}
+  }
+  function bindPreviewErrors(scope) {
+    if (!scope) return;
+    scope.querySelectorAll('img.buk-pc-summary-logo').forEach(function (img) {
+      img.addEventListener('error', function () { if (img.parentNode) img.remove(); });
+    });
+  }
+  function summaryCard(opts) {
+    opts = opts || {};
+    var preview = safePreview(state.logoPreview);
+    var name = state.logoName || 'Will send later';
+    var image = preview ? '<img class="buk-pc-summary-logo" src="'+escapeText(preview)+'" alt="Selected logo preview">' : '';
+    var note = opts.note ? '<small class="buk-pc-summary-logo-note">'+escapeText(opts.note)+'</small>' : '';
+    var edit = opts.edit ? '<button type="button" data-pc="edit">Edit '+icon('edit',14)+'</button>' : '';
+    return '<div class="buk-pc-summary"><div class="buk-pc-summary-head"><strong><span>✓</span> Your enquiry summary</strong>'+edit+'</div>'+
+      '<div class="buk-pc-summary-row">'+icon('tshirt',18)+' <span>Garments:</span><b>'+escapeText(itemLabels()||'Not specified')+'</b></div>'+
+      '<div class="buk-pc-summary-row">'+icon('users',18)+' <span>Quantity:</span><b>'+escapeText(state.quantity||'Not specified').replace('–',' – ')+'</b></div>'+
+      '<div class="buk-pc-summary-row buk-pc-summary-row--logo">'+icon('image',18)+' <span>Logo:</span><b>'+image+'<span class="buk-pc-summary-logo-name">'+escapeText(name)+'</span>'+note+'</b></div></div>';
+  }
+  function enquiryChatHtml(note) {
+    var follow = '';
+    if (state.notes) follow += '<p class="buk-pc-summary-follow">'+escapeText(state.notes)+'</p>';
+    follow += '<p class="buk-pc-summary-follow">Please connect me with a human operator.</p>';
+    return summaryCard({note: note || ''}) + follow;
+  }
   function stepFive() {
     return title('Anything else we should know?','Add any extra details like colours, sizes, positions (e.g. left chest, large back), or a deadline.','note')+
       '<div class="buk-pc-notebox"><textarea id="bukPcNotes" aria-label="Additional details" maxlength="500" rows="3" placeholder="e.g. Colours, sizes, logo position,\ndeadline, or any special requirements..."></textarea><small><span id="bukPcCount">'+state.notes.length+'</span> / 500</small></div>'+
-      '<div class="buk-pc-summary"><div class="buk-pc-summary-head"><strong><span>✓</span> Your enquiry summary</strong><button type="button" data-pc="edit">Edit '+icon('edit',14)+'</button></div>'+
-      '<div class="buk-pc-summary-row">'+icon('tshirt',18)+' <span>Garments:</span><b>'+escapeText(itemLabels()||'Not specified')+'</b></div>'+
-      '<div class="buk-pc-summary-row">'+icon('users',18)+' <span>Quantity:</span><b>'+escapeText(state.quantity||'Not specified').replace('–',' – ')+'</b></div>'+
-      '<div class="buk-pc-summary-row">'+icon('image',18)+' <span>Logo:</span><b>'+escapeText(state.logoName||'To follow')+'</b></div></div>'+
+      summaryCard({edit:true,note:state.logoPendingNote||''})+
       '<p id="bukPcStatus" class="buk-pc-status" role="status" aria-live="polite"></p>'+
       '<button type="button" class="buk-pc-main buk-pc-submit" data-pc="submit">'+icon('send',18)+' Send to our team</button>';
   }
@@ -261,6 +336,7 @@
       }
     }
     if(panel) panel.scrollTop=0;
+    bindPreviewErrors(root);
     save();
   }
   function handleFile(e){var f=e.target.files && e.target.files[0];if(f)acceptFile(f);}
@@ -269,13 +345,14 @@
     if(ALLOWED.indexOf(ext)<0){setStatus('Please select PNG, JPG, PDF, AI, EPS or SVG.');return;}
     if(!f.size || f.size>MAX_FILE){setStatus('Select a non-empty file up to 10 MB.');return;}
     attachment=null;
-    if(state.logoPreview && window.URL.revokeObjectURL) URL.revokeObjectURL(state.logoPreview);
-    state.logoPreview=/^image\//.test(f.type||'') && window.URL.createObjectURL ? URL.createObjectURL(f) : '';
-    file=f;state.logoName=f.name;state.logoType=f.type||'application/octet-stream';state.logoMissingAfterNavigation=false;render();
+    state.logoPendingNote='';
+    file=f;state.logoName=f.name;state.logoType=f.type||'application/octet-stream';state.logoMissingAfterNavigation=false;
+    rememberPreview(f);
+    render();
   }
   function clearFile(){
-    if(state.logoPreview && window.URL.revokeObjectURL) URL.revokeObjectURL(state.logoPreview);
-    attachment=null;file=null;state.logoName='';state.logoType='';state.logoPreview='';state.logoMissingAfterNavigation=false;
+    revokePreview();
+    attachment=null;file=null;state.logoName='';state.logoType='';state.logoPreview='';state.logoPendingNote='';state.logoMissingAfterNavigation=false;
   }
   function next() {
     if(state.step===2 && !state.items.length)return;
@@ -303,12 +380,18 @@
     if(consent && typeof consent.open==='function') consent.open();
     else setStatus('Cookie settings are not available. Try again or contact us by email.');
   }
+  function logoLine(){
+    if(!state.logoName) return 'Will send later';
+    if(attachment && attachment.status==='uploaded') return state.logoName+' (uploaded)';
+    if(attachment && attachment.status==='local') return state.logoName+' (selected on this device; will be sent later)';
+    return state.logoName+(file?' (upload pending)':' (reselect after login)');
+  }
   function makeSummary(){
     if(state.fastTrack)return 'CUSTOMER SUPPORT — BRANDED UK\nOrder number: '+(state.orderRef||'Not provided')+'\nMessage: '+(state.notes||'Please connect me with an operator.')+'\nRequested: Human operator.';
     return 'NEW ENQUIRY — BRANDED UK\n'+
       'Garments: '+(itemLabels()||'Not specified')+'\n'+
       'Quantity: '+(state.quantity||'Not specified')+'\n'+
-      'Logo: '+(state.logoName ? (file ? state.logoName+' (upload pending)' : state.logoName+' (reselect after login)') : 'Will send later / needs help')+'\n'+
+      'Logo: '+logoLine()+'\n'+
       'Additional details: '+(state.notes||'None provided')+'\n'+
       'Request: Please connect me with a human operator.';
   }
@@ -322,12 +405,14 @@
     var box=document.getElementById('waChatBody');
     if(box)box.scrollTop=box.scrollHeight;
   }
-  function addLocalSummary(text){
-    if(chat) {chat.showEnquiry(text);return;}
+  function addLocalSummary(payload){
+    if(chat) {chat.showEnquiry(payload);bindPreviewErrors(document.getElementById('waChatBody'));return;}
     var box=document.getElementById('waChatBody');if(!box)return;
     var wrap=el('div','wa-msg wa-msg--user buk-pc-native-summary');
-    var bubble=el('div','wa-msg__bubble',text);
-    wrap.appendChild(bubble);box.appendChild(wrap);box.scrollTop=box.scrollHeight;
+    var bubble=el('div','wa-msg__bubble');
+    if(payload && typeof payload==='object' && payload.html) bubble.innerHTML=payload.html;
+    else bubble.textContent=typeof payload==='string'?payload:(payload&&payload.text)||'';
+    wrap.appendChild(bubble);box.appendChild(wrap);bindPreviewErrors(wrap);box.scrollTop=box.scrollHeight;
   }
   async function uploadLogoIfPossible(){
     if(!file) return {status:'none'};
@@ -371,20 +456,31 @@
     var btn=root.querySelector('[data-pc="submit"]');if(btn){btn.disabled=true;btn.textContent='Sending enquiry...';}
     setStatus('Sending your details securely to our team...');
     try{
-      var uploaded=state.fastTrack?{status:'none'}:await uploadLogoIfPossible();
+      var uploaded={status:'none'};
+      state.logoPendingNote='';
+      if(!state.fastTrack && file){
+        try { uploaded=await uploadLogoIfPossible(); }
+        catch(uploadError){
+          uploaded={status:'local',name:file.name};
+          state.logoPendingNote='This logo will be sent later.';
+        }
+        attachment=uploaded;
+      }
       writeCrispData();
       var summary=makeSummary();
-      if(uploaded.status==='uploaded') summary=summary.replace(' (upload pending)',' (uploaded)');
       var message=summary;
       if(uploaded.status==='uploaded') message+='\nArtwork download (private link, valid 7 days): '+uploaded.url;
+      if(uploaded.status==='local') message+='\nArtwork note: the file is still on the customer\'s device and was not uploaded.';
       await chat.sendConfirmed(message);
       state.summary=summary;
-      addLocalSummary(state.summary);
+      addLocalSummary(state.fastTrack ? summary : {text:summary, html:enquiryChatHtml(state.logoPendingNote)});
       state.handoffAck=true;state.stage='done';try{sessionStorage.setItem(SENT,'1');}catch(e){}
       render();
       window.setTimeout(function(){if(state.stage==='done')releaseNativeChat();},4200);
     }catch(err){
-      setStatus(err.message||'The enquiry was not confirmed as delivered. Please try again.');
+      var message=err.message||'The enquiry was not confirmed as delivered. Please try again.';
+      if(state.logoPendingNote) render();
+      setStatus(message);
       if(!root.querySelector('[data-pc="back"]')) root.querySelector('#bukPcStatus').insertAdjacentHTML('afterend','<button type="button" class="buk-pc-back-small" data-pc="back">← Back</button>');
       var b=root.querySelector('[data-pc="submit"]');if(b){b.disabled=false;b.textContent='Try sending again';}
     }finally{sending=false;root.inert=false;root.setAttribute('aria-busy','false');}
@@ -410,7 +506,8 @@
         if(menu){menu.remove();return;}
         menu=el('div','buk-pc-quick-menu');
         ['Delivery times','Logo setup','Minimum order'].forEach(function(label){menu.appendChild(button(label,'',function(){state.fastTrack=true;state.stage='support';state.notes=label;menu.remove();render();}));});
-        popup.querySelector('.buk-pc-footer').insertAdjacentElement('beforebegin',menu);
+        var footer=popup.querySelector('.buk-pc-footer');
+        if(footer) footer.insertAdjacentElement('beforebegin',menu);
       }
       else if(a==='edit'){state.stage=state.fastTrack?'support':'collect';if(!state.fastTrack)state.step=2;render();}
       else if(a==='submit')submit();
@@ -446,9 +543,8 @@
     var brand=card.querySelector('.wa-popup__brand');
     brand.classList.add('buk-pc-brand');
     brand.setAttribute('aria-label','Branded UK');
-    brand.innerHTML=referencePhoto([32,17,113,36],'buk-pc-brand-image');
-    card.insertAdjacentHTML('beforeend',supportFooter());
-    card.querySelector('.buk-pc-footer').addEventListener('click',onClick);
+    brand.innerHTML=headerLogoMarkup();
+    if (popup.classList.contains('is-active')) replayChatLogo();
     if(hasSent()) {
       state.stage='sent';live=true;
       chat.setCollecting(false);
@@ -462,7 +558,6 @@
     welcome.insertAdjacentElement('afterend',root);
     panel=root;
     popup.classList.add('buk-prechat-collect');
-    card.querySelectorAll('.wa-popup__actions,[id="waEmailTeam"],[id="waCallTeam"]').forEach(function(node){node.removeAttribute('style');});
     chat.setCollecting(true);
     root.addEventListener('click',onClick);
     render();live=true;
@@ -475,6 +570,7 @@
     observer.observe(document.documentElement,{childList:true,subtree:true});
     setTimeout(function(){observer.disconnect();},20000);
   }
+  window.addEventListener('branded:chat-opened', replayChatLogo);
   window.addEventListener('branded:auth-changed',onResume);
   window.addEventListener('brandeduk:consent',onResume);
   window.addEventListener('pageshow',onResume);

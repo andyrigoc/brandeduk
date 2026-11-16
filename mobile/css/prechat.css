@@ -17,8 +17,9 @@ html:has(#waPopup.buk-prechat-collect.is-active),body:has(#waPopup.buk-prechat-c
 #waPopup.buk-prechat-collect button,#waPopup.buk-prechat-collect input,#waPopup.buk-prechat-collect textarea{font-family:inherit;}
 #waPopup.buk-prechat-collect button{cursor:pointer;-webkit-tap-highlight-color:transparent;}
 #waPopup.buk-prechat-collect .wa-popup__topbar{padding:8px 18px 8px 21px;height:54px;min-height:54px;gap:0;background:#fff;border-bottom:1px solid #e9edf1;}
-.buk-pc-brand{width:113px;height:36px;flex:none!important;}
-.buk-pc-brand-image{display:block;width:113px;height:36px;}
+.buk-pc-brand{display:flex;align-items:center;gap:2px;width:auto;height:36px;max-width:none;flex:0 0 auto!important;min-width:0;}
+#waPopup .buk-pc-brand .wa-popup__brand-badge{width:32px;height:32px;max-width:32px;max-height:32px;flex:0 0 32px;object-fit:contain;border-radius:0;display:block;}
+#waPopup .buk-pc-brand .wa-popup__brand-word{width:84px;height:36px;max-width:84px;max-height:36px;flex:0 0 84px;object-fit:contain;object-position:left center;display:block;transform:translateY(2px);}
 #waPopup.buk-prechat-collect .wa-popup__controls{margin-left:auto;gap:12px;}
 #waPopup.buk-prechat-collect .wa-popup__ctrl{width:24px;height:28px;padding:4px;color:#38475e;background:none;border:0;}
 #waPopup.buk-prechat-collect .wa-popup__ctrl svg{width:15px;height:15px;}
@@ -118,6 +119,12 @@ html:has(#waPopup.buk-prechat-collect.is-active),body:has(#waPopup.buk-prechat-c
 .buk-pc-summary-row span,.buk-pc-summary-row b{font-size:11px;line-height:14px;color:#15233d;}
 .buk-pc-summary-row span{font-weight:700;}
 .buk-pc-summary-row b{font-weight:500;overflow-wrap:anywhere;}
+.buk-pc-summary-row--logo{align-items:start;}
+.buk-pc-summary-row--logo b{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-width:0;}
+.buk-pc-summary-logo{display:block;width:72px;height:72px;max-width:100%;flex:none;object-fit:contain;object-position:left center;background:#fff;border:1px solid #e3e8ee;border-radius:8px;}
+.buk-pc-summary-logo-name{font-weight:500;overflow-wrap:anywhere;}
+.buk-pc-summary-logo-note{font-size:10px;line-height:13px;font-weight:600;color:#8a4b1f;}
+.buk-pc-summary-follow{margin:8px 2px 0;font-size:12px;line-height:16px;color:#15233d;}
 .buk-pc-status{font-size:12px;line-height:17px;color:#aa411f;margin:8px 0;}
 .buk-pc-status:empty{display:none;}
 .buk-pc-submit{width:100%;height:41px;border-radius:11px;margin-top:16px;gap:10px;font-size:14px;font-weight:600;}
@@ -162,7 +169,10 @@ html:has(#waPopup.buk-prechat-collect.is-active),body:has(#waPopup.buk-prechat-c
 .buk-pc-benefits>span{height:84px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:9px;border:1px solid #f4f5f7;border-radius:13px;background:linear-gradient(#fff,#fafbfd);box-shadow:0 3px 6px #14223812;}
 .buk-pc-benefits svg{color:#ff9a00;stroke-width:1.6;}
 .buk-pc-benefits small{font-size:10px;line-height:13px;color:#334158;white-space:nowrap;}
+.wa-msg.buk-pc-native-summary{max-width:100%;width:100%;align-items:stretch;}
 .buk-pc-native-summary .wa-msg__bubble{white-space:pre-wrap;max-width:100%;}
+.buk-pc-native-summary .wa-msg__bubble:has(.buk-pc-summary){display:block;width:100%;padding:0 0 8px;background:linear-gradient(110deg,#f0f3f6,#f7f9fb);color:#101c32;white-space:normal;border:1px solid #eff2f5;border-radius:18px;box-shadow:none;}
+.buk-pc-native-summary .buk-pc-summary{margin-top:0;border:0;background:transparent;color:#101c32;}
 .buk-prechat-conversation .buk-pc-welcome{display:none;}
 .buk-pc-support-fields{display:flex;flex-direction:column;gap:8px;margin:12px 0;}
 .buk-pc-support-fields label{font-size:12px;font-weight:700;}

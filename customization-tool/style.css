@@ -4520,3 +4520,18 @@ html.force-mobile-customizer .customization-context-label {
   }
 }
 
+/* Desktop-only panels must not sit in the mobile canvas row. */
+@media (max-width: 699px) {
+  #inlineLogoUpload,
+  #inlineLogoSettings {
+    display: none !important;
+  }
+
+  body:not(.is-pc-order-embed) .desktop-inspector,
+  body:not(.is-pc-order-embed) .garment-preview-heading,
+  body:not(.is-pc-order-embed) .left-selected-colour-bar,
+  body:not(.is-pc-order-embed) #pcOrderSummary {
+    display: none !important;
+  }
+}
+

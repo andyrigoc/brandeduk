@@ -69,7 +69,7 @@
       // runs when Vercel serves the extensionless /customization-tool URL.
       var toolStyles = document.createElement("link");
       toolStyles.rel = "stylesheet";
-      toolStyles.href = folderPath + "style.css?v=20261002-orbitloader";
+      toolStyles.href = folderPath + "style.css?v=20261116-overlay2";
       document.head.appendChild(toolStyles);
 
       // PC overrides are loaded only for the desktop customizer. Mobile keeps
@@ -88,7 +88,7 @@
       if (isPcCustomization) {
         var desktopStyles = document.createElement("link");
         desktopStyles.rel = "stylesheet";
-        desktopStyles.href = folderPath + "desktop.css?v=20260929-touchdnd5";
+        desktopStyles.href = folderPath + "desktop.css?v=20261116-overlay3";
         document.head.appendChild(desktopStyles);
       }
     })();
@@ -1250,7 +1250,7 @@
     apiScript.src = new URL("customization-api.js?v=20261002-api-positions", document.baseURI).href;
     apiScript.onload = function () {
       var appScript = document.createElement("script");
-      appScript.src = new URL("app.js?v=20261104-variant-pricing", document.baseURI).href;
+      appScript.src = new URL("app.js?v=20261116-overlay", document.baseURI).href;
       appScript.async = false;
       document.body.appendChild(appScript);
     };

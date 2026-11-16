@@ -136,20 +136,15 @@
     // Resolve at request time so api-config.js (loaded after this file) can point
     // local preview at the CORS proxy. Production still uses api.brandeduk.com.
     function brandedApiBase() {
-        var host = (window.location && window.location.hostname) || '';
-        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
-        // Local preview cannot call api.brandeduk.com (403). Use the CORS proxy
-        // even if a cached api-config.js still points at the production host.
-        if (isLocal && window.API_USE_LOCAL === true) {
-            return 'http://localhost:3004/api';
-        }
-        if (isLocal && window.API_USE_LOCAL_PROXY !== false) {
-            return 'http://127.0.0.1:3005/api';
-        }
+        // Same host the rest of the site uses. Local preview is same-origin
+        // /__api (npm run dev). Port 3005 is not that proxy, so product photos
+        // never arrived and the page kept the hoodie colour fallback.
         var root = (typeof window.resolveBrandedApiBase === 'function')
             ? window.resolveBrandedApiBase()
             : (window.API_BASE_URL || 'https://api.brandeduk.com');
-        return String(root || 'https://api.brandeduk.com').replace(/\/+$/, '') + '/api';
+        root = String(root || 'https://api.brandeduk.com').replace(/\/+$/, '');
+        if (/\/api$/i.test(root)) return root;
+        return root + '/api';
     }
     const CUSTOMIZATION_CONFIG_CACHE = new Map();
     const CUSTOMIZATION_CONFIGS = new Map();
@@ -1963,6 +1958,7 @@
             if (!productData) {
                 // No product data available — leave default state (fallback product)
                 debugWarn('?? No product data available, using fallback');
+                document.documentElement.classList.add('bundle-build-live');
                 return false;
             }
 
@@ -2107,6 +2103,7 @@
             return true;
         } catch (e) {
             debugWarn('Unexpected error loading product:', e);
+            document.documentElement.classList.add('bundle-build-live');
             return false;
         }
     }
@@ -2163,8 +2160,11 @@
                 mainLogoOverlayImg.src = '';
             }
             
-            // Update gallery thumbnails - show different color images
-            renderColorThumbnails();
+            // The hero update above does not touch #colorOptions. Rebuild the swatches
+            // from the product just loaded, or a bundle step change keeps the previous
+            // garment's colour photos and "Selected" name on screen.
+            if (document.getElementById('colorOptions')) renderColorButtons();
+            else renderColorThumbnails();
 
             // Color count
             const colorCount = document.querySelector('.color-count');
@@ -2188,8 +2188,8 @@
                         const last = sizes[sizes.length - 1];
                         specs.push(`${first}-${last}`);
                     }
-                } else {
-                    specs.push('S-5XL'); // Fallback
+                } else if (!/[?&]bundleBuild=1(?:&|$)/.test(location.search)) {
+                    specs.push('S-5XL'); // Standalone customiser only. A bundle step omits a missing range.
                 }
                 
                 // Colors count
@@ -2437,6 +2437,9 @@
             }
         } catch (e) {
             debugWarn('Failed to refresh product DOM', e);
+        }
+        if (document.documentElement.classList.contains('bundle-build')) {
+            document.documentElement.classList.add('bundle-build-live');
         }
     }
 
@@ -3047,6 +3050,7 @@
             debugWarn('Early product load failed, continuing with fallback', e);
             applyFreshItemSessionIfNeeded();
             restoreCustomizationState();
+            document.documentElement.classList.add('bundle-build-live');
         }
 
         // Check if coming from shop page with selected color (apply after loading product)
@@ -4816,7 +4820,21 @@
         colorOptions.addEventListener('click', (e) => {
             const btn = e.target.closest('.color-btn');
             if (!btn) return;
-            
+
+            // Bundle colour step: select the tapped colour and open Select sizes
+            // immediately. A tap on the colour that is already selected still
+            // opens the sheet. Nothing here runs on page load.
+            if (readBundleBuild()) {
+                if (btn.dataset.color !== state.selectedColor) {
+                    persistBundleColourDraft();
+                    applyColorChange(btn);
+                    loadBundleSizesForSelectedColour();
+                    refreshSizeSummary();
+                }
+                openSizePicker();
+                return;
+            }
+
             // Check if same color is clicked
             if (btn.dataset.color === state.selectedColor) return;
 
@@ -4830,15 +4848,6 @@
                     _sessionSavedIds.clear();
                     state.selectionSaved = false;
                 }
-                return;
-            }
-
-            // Bundle build: keep running totals across colours; never dump into the normal basket.
-            if (readBundleBuild()) {
-                persistBundleColourDraft();
-                applyColorChange(btn);
-                loadBundleSizesForSelectedColour();
-                refreshSizeSummary();
                 return;
             }
 
@@ -4993,6 +5002,7 @@
         if (selectedColorEl) {
             selectedColorEl.textContent = colorData.name;
         }
+        renderSizePickerFacts();
     }
 
     // Apply color change
@@ -5306,37 +5316,42 @@
             
             // Add click handler to change main image and selected color
             thumbButton.addEventListener('click', () => {
-                if (color.id === state.selectedColor) {
-                    syncColorSelectionUI(color.id);
+                // Bundle build: same persist → change → load → open path as .color-btn clicks,
+                // so a gallery tap cannot re-attribute the previous colour's sizes.
+                if (readBundleBuild()) {
+                    if (color.id !== state.selectedColor) {
+                        persistBundleColourDraft();
+                        const swatch = document.querySelector('#colorOptions .color-btn[data-color="' + color.id + '"]');
+                        if (swatch) {
+                            applyColorChange(swatch);
+                        } else {
+                            state.selectedColor = color.id;
+                            state.selectedColorName = color.name;
+                            state.selectedColorImage = color.image;
+                            const mainImg = document.getElementById('mainImage');
+                            if (mainImg && color.image) {
+                                mainImg.src = '';
+                                const cacheBuster = '_t=' + Date.now();
+                                mainImg.src = color.image + (color.image.includes('?') ? '&' : '?') + cacheBuster;
+                                mainImg.alt = `${state.product?.name || 'Product'} - ${color.name}`;
+                            }
+                            syncColorSelectionUI(color.id);
+                            applyGarmentColorToLogoPreview();
+                            applyGarmentColorToPositionPreviews();
+                            updatePricingSummary();
+                        }
+                        loadBundleSizesForSelectedColour();
+                        refreshSizeSummary();
+                        if (navigator.vibrate) navigator.vibrate(10);
+                    } else {
+                        syncColorSelectionUI(color.id);
+                    }
+                    openSizePicker();
                     return;
                 }
 
-                // Bundle build: same persist → change → load path as .color-btn clicks,
-                // so a gallery tap cannot re-attribute the previous colour's sizes.
-                if (readBundleBuild()) {
-                    persistBundleColourDraft();
-                    const swatch = document.querySelector('#colorOptions .color-btn[data-color="' + color.id + '"]');
-                    if (swatch) {
-                        applyColorChange(swatch);
-                    } else {
-                        state.selectedColor = color.id;
-                        state.selectedColorName = color.name;
-                        state.selectedColorImage = color.image;
-                        const mainImg = document.getElementById('mainImage');
-                        if (mainImg && color.image) {
-                            mainImg.src = '';
-                            const cacheBuster = '_t=' + Date.now();
-                            mainImg.src = color.image + (color.image.includes('?') ? '&' : '?') + cacheBuster;
-                            mainImg.alt = `${state.product?.name || 'Product'} - ${color.name}`;
-                        }
-                        syncColorSelectionUI(color.id);
-                        applyGarmentColorToLogoPreview();
-                        applyGarmentColorToPositionPreviews();
-                        updatePricingSummary();
-                    }
-                    loadBundleSizesForSelectedColour();
-                    refreshSizeSummary();
-                    if (navigator.vibrate) navigator.vibrate(10);
+                if (color.id === state.selectedColor) {
+                    syncColorSelectionUI(color.id);
                     return;
                 }
 
@@ -5640,7 +5655,10 @@
     // customize.html's order summary edits state.sizeQuantities directly; mirror it in the size section.
     function refreshSizeSummary() {
         const container = document.querySelector('.size-qty-compact');
-        if (!container || isOneSizeProduct()) return;
+        if (!container) return;
+        // Standalone one-size products use the inline quantity row. Bundle steps still
+        // rewrite this summary, otherwise the previous garment's sizes stay visible.
+        if (isOneSizeProduct() && !readBundleBuild()) return;
         renderSizeSummary(container);
         const totalSpan = document.getElementById('totalQty');
         if (totalSpan) totalSpan.textContent = state.quantity || 0;
@@ -5656,17 +5674,24 @@
         dialog.setAttribute('aria-labelledby', 'sizePickerTitle');
         dialog.innerHTML = `
             <div class="size-picker__header">
-                <div>
+                <div class="size-picker__copy">
                     <h3 class="size-picker__title" id="sizePickerTitle">Select sizes</h3>
                     <p class="size-picker__colour" hidden></p>
                     <button type="button" class="size-picker__change-colour" hidden>Change colour</button>
                 </div>
-                <button type="button" class="size-picker__close" aria-label="Close" autofocus>
+                <div class="size-picker__aside">
+                    <div class="size-picker__colour-box" hidden></div>
+                    <div class="size-picker__identity" hidden>
+                        <span class="size-picker__brand"></span>
+                        <span class="size-picker__code"></span>
+                    </div>
+                    <button type="button" class="size-picker__close" aria-label="Close" autofocus>
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                         <line x1="18" y1="6" x2="6" y2="18"/>
                         <line x1="6" y1="6" x2="18" y2="18"/>
                     </svg>
-                </button>
+                    </button>
+                </div>
             </div>
             <ul class="size-picker__list"></ul>
             <div class="size-picker__footer">
@@ -5739,12 +5764,16 @@
             const step = e.target.closest('.size-picker__step');
             if (!step) return;
             const row = step.closest('.size-picker__row');
-            const qty = (sizePickerDraft[row.dataset.size] || 0) + Number(step.dataset.step);
+            const delta = Number(step.dataset.step);
+            const qty = (sizePickerDraft[row.dataset.size] || 0) + delta;
             const required = bundleRequiredQty();
             const otherColours = bundleOtherColourTotal();
             const nextCurrent = sizePickerTotal() - (sizePickerDraft[row.dataset.size] || 0) + Math.max(0, qty);
             if (qty < 0 || qty > SIZE_PICKER_MAX_QTY) return;
-            if (required && (otherColours + nextCurrent) > required) return;
+            if (required && (otherColours + nextCurrent) > required) {
+                if (delta > 0) shakeSizePickerStep(step);
+                return;
+            }
             row.querySelector('.size-picker__qty').value = String(qty);
             setSizePickerQty(row, qty);
             if (navigator.vibrate) navigator.vibrate(10);
@@ -5900,10 +5929,23 @@
         sizePickerDraft = getPositiveSizeQuantities(state.sizeQuantities);
     }
 
+    function shakeSizePickerStep(step) {
+        const target = step.closest('.size-picker__stepper') || step;
+        target.classList.remove('is-shaking');
+        void target.offsetWidth;
+        target.classList.add('is-shaking');
+        window.setTimeout(function () { target.classList.remove('is-shaking'); }, 420);
+    }
+
     function updateSizePickerTotal() {
         const required = bundleRequiredQty();
         const total = required ? bundleAllocatedTotal() : sizePickerTotal();
         const dialog = getSizePickerDialog();
+        const full = Boolean(required) && total >= required;
+        dialog.classList.toggle('is-qty-full', full);
+        dialog.querySelectorAll('.size-picker__step[data-step="1"]').forEach(function (button) {
+            button.setAttribute('aria-disabled', full ? 'true' : 'false');
+        });
         dialog.querySelector('.size-picker__total strong').textContent = required ? (total + '/' + required) : String(total);
         dialog.querySelector('.size-picker__total strong').classList.toggle('is-met', Boolean(required) && total === required);
         const done = dialog.querySelector('.size-picker__done');
@@ -6006,11 +6048,6 @@
 
     function scheduleBundleColorAutoscroll() {
         let tries = 0;
-        let userInteracted = false;
-        const mark = function () { userInteracted = true; };
-        ['touchstart', 'wheel', 'keydown', 'mousedown'].forEach(function (ev) {
-            window.addEventListener(ev, mark, { once: true, passive: true });
-        });
         const timer = window.setInterval(function () {
             tries += 1;
             const colours = document.getElementById('colorOptions');
@@ -6021,14 +6058,41 @@
             // Product colours are ready — restore any in-progress multi-colour sizes.
             loadBundleSizesForSelectedColour();
             refreshSizeSummary();
-            if (userInteracted || window.pageYOffset > 40) return;
-            // Live product data and images keep moving the section down after the first pass.
-            [350, 1000, 2000, 3500].forEach(function (delay) {
-                window.setTimeout(function () {
-                    if (!userInteracted) scrollBundleToColorSection();
-                }, delay);
-            });
+            // The garment photo is hidden, so the colour grid already sits under the
+            // breadcrumb, title, and spec line. Scrolling the grid to the top would
+            // hide that header. Explicit "Change colour" still uses scrollBundleToColorSection.
         }, 250);
+    }
+
+    function selectBundleItemColour() {
+        const picks = bundlePicksForCurrentItem();
+        const row = picks.length ? picks[picks.length - 1] : null;
+        const wanted = row && String(row.colour || '').trim().toLowerCase();
+        if (!wanted) return;
+        const match = (PRODUCT_COLORS || []).find(function (color) {
+            return String(color.name || '').trim().toLowerCase() === wanted;
+        });
+        if (!match) return;
+        state.selectedColor = match.id;
+        state.selectedColorName = match.name;
+        state.selectedColorImage = match.image || match.thumb || state.selectedColorImage;
+    }
+
+    function refreshOpenSizePickerForBundleItem() {
+        const dialog = document.getElementById('sizePickerDialog');
+        if (!dialog) return;
+        delete dialog.dataset.sizePickerFacts;
+        if (dialog.open) {
+            const list = dialog.querySelector('.size-picker__list');
+            if (list) list.replaceChildren(...getSizePickerSizes().map(createSizePickerRow));
+            const colour = dialog.querySelector('.size-picker__colour');
+            if (colour) {
+                colour.textContent = state.selectedColorName ? 'Colour: ' + state.selectedColorName : '';
+                colour.hidden = !state.selectedColorName;
+            }
+            updateSizePickerTotal();
+        }
+        renderSizePickerFacts();
     }
 
     function swapBundleItem(job, next) {
@@ -6041,20 +6105,37 @@
         sessionStorage.removeItem('selectedColorUrl');
         state.sizeQuantities = {};
         state.quantity = 0;
+        sizePickerDraft = {};
         state.selectedColor = null;
         state.selectedColorName = null;
         state.selectedColorImage = null;
+        const summary = document.getElementById('sizeSummary');
+        if (summary) {
+            summary.textContent = '';
+            summary.hidden = true;
+        }
+        const totalSpan = document.getElementById('totalQty');
+        if (totalSpan) totalSpan.textContent = '0';
+        const swapToken = (swapBundleItem.token = (swapBundleItem.token || 0) + 1);
         loadProductFromSessionOrApi().then(function () {
+            if (swapToken !== swapBundleItem.token) return;
             const paint = function () {
+                selectBundleItemColour();
                 refreshProductDOM();
                 renderBundleSequence(job);
                 loadBundleSizesForSelectedColour();
+                refreshSizeSummary();
+                refreshOpenSizePickerForBundleItem();
                 const note = document.getElementById('bundleBuildNote');
                 if (note) note.textContent = 'Bundle: choose colour and sizes for all ' + next.qty + ' × ' + next.code + '. Item ' + (job.index + 1) + ' of ' + job.components.length + '.';
                 scheduleBundleColorAutoscroll();
+                window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
             };
-            if (document.startViewTransition) document.startViewTransition(paint);
-            else paint();
+            // Paint in place. A root view transition keeps the previous garment's
+            // colour photos on screen for the zoom, and that snapshot takes the tap
+            // (pointer-events stay auto, elementFromPoint misses .color-btn). The
+            // ring never moves to the swatch the shopper tapped.
+            paint();
         });
     }
 
@@ -6074,6 +6155,100 @@
         updateSizeQuantities();
     }
 
+    function sizePickerColourRecord() {
+        const name = String(state.selectedColorName || '').trim();
+        const match = (PRODUCT_COLORS || []).find(function (color) {
+            return color.id === state.selectedColor ||
+                (name && String(color.name || '').trim().toLowerCase() === name.toLowerCase());
+        });
+        return {
+            name: name || (match && match.name) || '',
+            image: (match && (match.image || match.thumb)) || state.selectedColorImage || '',
+            hex: (match && match.hex) || ''
+        };
+    }
+
+    function sizePickerColourHex(record) {
+        if (isUsableColorHex(record.hex)) return record.hex;
+        if (!record.name || !window.BrandedColorHex || typeof BrandedColorHex.lookup !== 'function') return '';
+        const code = state.product && state.product.code;
+        const found = BrandedColorHex.lookup(record.name, code, record.image);
+        return isUsableColorHex(found) ? found : '';
+    }
+
+    function sizePickerIdentity() {
+        const product = state.product || {};
+        const raw = product.rawData || {};
+        const job = readBundleBuild();
+        const item = job && Array.isArray(job.components) ? job.components[job.index] : null;
+        const code = String((item && item.code) || product.code || product.sku || raw.code || '').trim();
+        let brand = String(product.brand || product.brand_name || raw.brand || raw.brand_name || '').trim();
+        if (['absolute', 'ralawise'].some(function (blocked) { return brand.toLowerCase().includes(blocked); })) {
+            brand = '';
+        }
+        return { brand: brand, code: code };
+    }
+
+    function paintSizePickerSwatch(box, hex) {
+        box.replaceChildren();
+        if (!hex) {
+            box.hidden = true;
+            box.style.backgroundColor = '';
+            box.classList.remove('is-swatch');
+            return;
+        }
+        box.style.backgroundColor = hex;
+        box.classList.add('is-swatch');
+        box.hidden = false;
+    }
+
+    function renderSizePickerFacts() {
+        const dialog = document.getElementById('sizePickerDialog');
+        if (!dialog) return;
+        const colourBox = dialog.querySelector('.size-picker__colour-box');
+        const identity = dialog.querySelector('.size-picker__identity');
+        if (!colourBox || !identity) return;
+
+        const record = sizePickerColourRecord();
+        const hex = sizePickerColourHex(record);
+        const identityText = sizePickerIdentity();
+        const signature = [record.image, hex, record.name, identityText.brand, identityText.code].join('|');
+        if (dialog.dataset.sizePickerFacts === signature) return;
+        dialog.dataset.sizePickerFacts = signature;
+
+        colourBox.classList.remove('is-swatch');
+        colourBox.style.backgroundColor = hex || '';
+        colourBox.replaceChildren();
+        colourBox.title = record.name || '';
+        if (record.image) {
+            const img = document.createElement('img');
+            img.className = 'size-picker__colour-img';
+            img.alt = '';
+            img.src = record.image;
+            colourBox.hidden = false;
+            colourBox.appendChild(img);
+            img.addEventListener('error', function () {
+                paintSizePickerSwatch(colourBox, hex);
+                dialog.dataset.sizePickerFacts = [hex, record.name, identityText.brand, identityText.code].join('|');
+            });
+        } else {
+            paintSizePickerSwatch(colourBox, hex);
+        }
+
+        const brandEl = identity.querySelector('.size-picker__brand');
+        const codeEl = identity.querySelector('.size-picker__code');
+        if (brandEl) {
+            brandEl.textContent = identityText.brand;
+            brandEl.hidden = !identityText.brand;
+        }
+        if (codeEl) {
+            codeEl.textContent = identityText.code;
+            codeEl.hidden = !identityText.code;
+        }
+        identity.hidden = !identityText.brand && !identityText.code;
+        identity.title = [identityText.brand, identityText.code].filter(Boolean).join(' · ');
+    }
+
     function openSizePicker() {
         const dialog = getSizePickerDialog();
         if (dialog.open) return;
@@ -6087,6 +6262,7 @@
         const colour = dialog.querySelector('.size-picker__colour');
         colour.textContent = state.selectedColorName ? 'Colour: ' + state.selectedColorName : '';
         colour.hidden = !state.selectedColorName;
+        renderSizePickerFacts();
         const changeColour = dialog.querySelector('.size-picker__change-colour');
         const bundleJob = readBundleBuild();
         if (changeColour) {
@@ -6478,6 +6654,7 @@
                     
                     const method = badge.dataset.method; // 'embroidery' or 'print'
                     if (!method) return;
+                    if (method === 'embroidery' && /[?&]bundleBuild=1(?:&|$)/.test(location.search)) return;
                     
                     // Check if this is a POA badge (disabled for embroidery on large positions)
                     const isPOA = badge.classList.contains('poa-badge') || badge.querySelector('.price-value')?.textContent === 'POA';
@@ -9503,6 +9680,10 @@
         
         // --- Method picker mini popup ---
         function _showMethodPicker(position, itemIndex) {
+            if (/[?&]bundleBuild=1(?:&|$)/.test(location.search)) {
+                openDesignModal(position, 'print', 'logo');
+                return;
+            }
             // Remove existing picker if any
             let existing = document.getElementById('methodPickerOverlay');
             if (existing) existing.remove();
@@ -12412,6 +12593,10 @@
         // the colour autoscroll; this flag makes it skip that reset on the bundle detour.
         window.__brandedScrollTopOnReload = true;
         document.body.classList.add('bundle-build');
+        document.querySelectorAll('.price-emb, .key-badge.embroidery').forEach(node => {
+            node.hidden = true;
+            node.style.display = 'none';
+        });
         renderBundleSequence(job);
         loadBundleSizesForSelectedColour();
         ['.pricing-section', '#galleryRelatedProducts', '#custRecommendationsSection', '.action-bar'].forEach(selector => {

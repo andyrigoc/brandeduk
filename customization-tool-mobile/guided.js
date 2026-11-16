@@ -21,6 +21,10 @@
   let popupContext = null;
   let uploadContext = null;
   let preservePendingMethod = false;
+  let artworkMode = "existing";
+  let artworkEntries = [];
+  let artworkSelected = 0;
+  let artworkApplying = false;
   // The first position is active by default, but library logos and uploads only
   // go to a position the customer picked (tapped, used its + button or dropped on).
   let positionChosen = false;
@@ -100,6 +104,74 @@
     return logoId ? `id:${logoId}` : `src:${source}`;
   }
 
+  function normaliseReusableLogo(logo) {
+    if (!logo || typeof logo !== "object") return null;
+    const source = String(logo.logo || logo.ref || logo.url || "").trim();
+    const logoId = String(logo.logoId || "").trim()
+      || (source.startsWith("bklogo:") ? source.slice(7) : "");
+    const stored = source || (logoId ? `bklogo:${logoId}` : "");
+    if (!stored) return null;
+    const previewCandidate = String(
+      logo.preview || logo.previewData || logo.logoData || logo.dataUrl || logo.designPreview?.logoImage || ""
+    ).trim();
+    return {
+      logo: stored,
+      logoId,
+      preview: /^(https?:|data:image|blob:)/i.test(previewCandidate) ? previewCandidate : "",
+      method: logo.method || "print",
+      name: String(logo.name || "").trim() || "Your logo"
+    };
+  }
+
+  function fileToImageSrc(file) {
+    if (!file) return Promise.resolve("");
+    if (typeof file === "string") {
+      return Promise.resolve(/^(https?:|data:image|blob:)/i.test(file) ? file : "");
+    }
+    if (typeof Blob !== "undefined" && file instanceof Blob) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(typeof reader.result === "string" ? reader.result : "");
+        reader.onerror = () => {
+          try { resolve(URL.createObjectURL(file)); } catch (error) { resolve(""); }
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+    return Promise.resolve("");
+  }
+
+  // Bundle artwork is often only a bklogo reference. Resolve bytes for the
+  // canvas; a missing thumbnail must not block Continue.
+  function usableLogoSource(entry) {
+    const raw = String(entry?.logo || "").trim();
+    const preview = String(entry?.preview || "").trim();
+    const logoId = String(entry?.logoId || "").trim() || (raw.startsWith("bklogo:") ? raw.slice(7) : "");
+    const direct = [raw, preview].find((value) => /^(https?:|data:image)/i.test(value));
+    if (direct) return Promise.resolve(direct);
+    const storage = window.BrandedQuoteStorage;
+    const resolved = storage?.resolveSrc ? String(storage.resolveSrc(raw, logoId) || "") : "";
+    if (/^(https?:|data:image)/i.test(resolved)) return Promise.resolve(resolved);
+    const blobFallback = /^(blob:)/i.test(resolved) ? resolved : (/^(blob:)/i.test(raw) ? raw : "");
+    if (!storage?.getQuoteFile) return Promise.resolve(blobFallback);
+    const pending = storage.getQuoteFile(logoId ? `bklogo:${logoId}` : raw, logoId)
+      .then((file) => fileToImageSrc(file))
+      .catch(() => "");
+    return Promise.race([
+      pending,
+      new Promise((resolve) => setTimeout(() => resolve(""), 8000))
+    ]).then((src) => src || blobFallback);
+  }
+
+  function quickLogoPreview(entry) {
+    const raw = String(entry?.logo || "").trim();
+    const preview = String(entry?.preview || "").trim();
+    const logoId = String(entry?.logoId || "").trim() || (raw.startsWith("bklogo:") ? raw.slice(7) : "");
+    const storage = window.BrandedQuoteStorage;
+    const resolved = storage?.resolveSrc ? String(storage.resolveSrc(raw, logoId) || "") : "";
+    return [resolved, preview, raw].find((value) => /^(https?:|data:image|blob:)/i.test(value)) || "";
+  }
+
   // Logos already used on any basket line stay reusable on every product, so
   // the customer never has to upload the same artwork twice.
   function library() {
@@ -120,12 +192,54 @@
       const identity = libraryIdentity(logo);
       if (!source || seen.has(identity)) return;
       seen.add(identity);
-      fromBasket.push({ logo: source, method: logo.method || "print", name: logo.name || "Your logo" });
+      fromBasket.push({
+        logo: source,
+        logoId: String(logo.logoId || "").trim() || (source.startsWith("bklogo:") ? source.slice(7) : ""),
+        preview: String(logo.previewData || logo.logoData || logo.dataUrl || logo.designPreview?.logoImage || "").trim(),
+        method: logo.method || "print",
+        name: logo.name || "Your logo"
+      });
     }));
     return [...fromBasket, ...sessionEntries].filter((entry) => (
       !hiddenLibraryLogos.has(entry.logo)
       && (state.copyrightConfirmed || entry.logo !== state.uploadedLogo)
     )).slice(-6);
+  }
+
+  // Every logo already in this session, including a bundle upload. The strip
+  // below still uses library(), which keeps its own shorter list.
+  function popupLibrary() {
+    const combined = [];
+    const indexById = new Map();
+    const push = (raw) => {
+      const entry = normaliseReusableLogo(raw);
+      if (!entry) return;
+      if (hiddenLibraryLogos.has(entry.logo)) return;
+      if (!state.copyrightConfirmed && entry.logo === state.uploadedLogo) return;
+      const identity = libraryIdentity(entry);
+      const existingIndex = indexById.get(identity);
+      if (existingIndex == null) {
+        indexById.set(identity, combined.length);
+        combined.push(entry);
+        return;
+      }
+      const existing = combined[existingIndex];
+      if (existing.name === "Your logo" && entry.name !== "Your logo") existing.name = entry.name;
+      if (!existing.preview && entry.preview) existing.preview = entry.preview;
+      if (!existing.logoId && entry.logoId) existing.logoId = entry.logoId;
+      if (/^(https?:|data:image)/i.test(entry.logo) && !/^(https?:|data:image)/i.test(existing.logo)) {
+        existing.logo = entry.logo;
+      }
+    };
+    readQuoteBasket().forEach((item) => {
+      (item?.logos || []).forEach(push);
+      if (item?.selection?.logo) push(item.selection.logo);
+      if (item?.positionDesigns && typeof item.positionDesigns === "object") {
+        Object.values(item.positionDesigns).forEach(push);
+      }
+    });
+    getSessionLogoLibrary().forEach(push);
+    return combined;
   }
 
   function saveDraft() {
@@ -340,6 +454,7 @@
   }
 
   function showMethodChoices() {
+    methodDialog.classList.remove("is-logo-step");
     const { position, intent, entry } = popupContext;
     const current = getDraftAreaDesigns()[position];
     const currentMethod = current?.logo ? (current.method === "embroidery" ? "embroidery" : "print") : "";
@@ -398,35 +513,16 @@
       return;
     }
     state.pendingDecorationType = method;
-    const entries = library();
-    if (intent === "upload" || !entries.length) {
+    if (intent === "upload") {
       startUpload();
       return;
     }
-    byId("guidedMethodTitle").textContent = "Add your logo";
-    byId("guidedMethodPosition").textContent = `${getDesignAreaLabel(position)} \u00b7 ${method === "embroidery" ? "Embroidery" : "Print"}`;
-    byId("guidedMethodChoices").hidden = true;
-    byId("guidedMethodNotice").hidden = true;
-    byId("guidedMethodContact").hidden = true;
-    byId("guidedArtworkChoices").hidden = false;
-    byId("guidedPopupLibrary").replaceChildren(...entries.map((libraryEntry) => {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.setAttribute("aria-label", `Reuse ${libraryEntry.name || "logo"} on ${getDesignAreaLabel(position)}`);
-      const image = document.createElement("img");
-      image.src = libraryEntry.logo;
-      image.alt = libraryEntry.name || "Uploaded logo";
-      image.addEventListener("click", zoomLogoOnClick);
-      const name = document.createElement("small");
-      name.textContent = libraryEntry.name || "Your logo";
-      button.append(image, name);
-      button.addEventListener("click", () => {
-        closeMethodDialog();
-        assignLogo(libraryEntry, method, conflicts);
-      });
-      return button;
-    }));
-    byId("guidedPopupUpload").focus();
+    artworkEntries = popupLibrary();
+    const currentMatch = artworkEntries.findIndex((libraryEntry) => libraryEntry.logo && libraryEntry.logo === state.uploadedLogo);
+    artworkSelected = currentMatch >= 0 ? currentMatch : 0;
+    artworkMode = artworkEntries.length ? "existing" : "new";
+    artworkApplying = false;
+    showArtworkStep(position, method);
   }
 
   function startUpload() {
@@ -448,14 +544,155 @@
     openFilePicker();
   }
 
-  function assignLogo(entry, method, conflicts = []) {
+  function showArtworkStep(position, method) {
+    byId("guidedMethodTitle").textContent = "Add your logo";
+    const technique = method === "embroidery" ? "Embroidery" : "Print";
+    byId("guidedMethodPosition").textContent = `${getDesignAreaLabel(position)} \u00b7 ${technique}`;
+    byId("guidedMethodChoices").hidden = true;
+    byId("guidedMethodNotice").hidden = true;
+    byId("guidedMethodContact").hidden = true;
+    byId("guidedArtworkChoices").hidden = false;
+    methodDialog.classList.add("is-logo-step");
+    syncArtworkMode();
+    renderArtworkRows();
+    const focusTarget = artworkMode === "existing" ? byId("guidedPopupExisting") : byId("guidedPopupUpload");
+    focusTarget?.focus();
+  }
+
+  function syncArtworkMode() {
+    const hasLogos = artworkEntries.length > 0;
+    if (!hasLogos) artworkMode = "new";
+    const existingOn = artworkMode === "existing" && hasLogos;
+    const existingBtn = byId("guidedPopupExisting");
+    const uploadBtn = byId("guidedPopupUpload");
+    existingBtn.disabled = !hasLogos;
+    existingBtn.setAttribute("aria-pressed", String(existingOn));
+    uploadBtn.setAttribute("aria-pressed", String(!existingOn));
+    existingBtn.classList.toggle("is-selected", existingOn);
+    uploadBtn.classList.toggle("is-selected", !existingOn);
+    byId("guidedPopupLibrary").hidden = !existingOn;
+    byId("guidedPopupEmpty").hidden = hasLogos;
+    byId("guidedPopupContinue").disabled = artworkApplying;
+  }
+
+  function selectArtworkMode(mode) {
+    if (mode === "existing") {
+      if (!artworkEntries.length) return;
+      artworkMode = "existing";
+      syncArtworkMode();
+      return;
+    }
+    artworkMode = "new";
+    syncArtworkMode();
+    startUpload();
+  }
+
+  function logoFallbackMark() {
+    const mark = document.createElement("span");
+    mark.className = "guided-logo-fallback";
+    mark.setAttribute("aria-hidden", "true");
+    mark.innerHTML = '<svg viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg"><rect width="52" height="52" rx="8" fill="#e7e1d8"/><path d="M11 31c0-6.2 5.2-10.4 12.2-10.4 8 0 13.2 4.6 13.2 10.8S31.2 42 23.2 42c-1.2 0-2.4-.1-3.5-.4L13 44.6l1.2-4.4C12.2 38.2 11 35 11 31z" fill="#f6a04a"/><path d="M17 20.5c0-5.4 4.8-9.4 11.4-9.4 7.2 0 12.4 4.2 12.4 9.6S35.6 30.5 28.4 30.5c-1 0-2.1-.1-3-.4L19 32.4l1-3.6c-1.9-1.9-3-4.5-3-8.3z" fill="#f47b20"/><circle cx="24.6" cy="20.4" r="1.35" fill="#fff"/><circle cx="28.8" cy="20.4" r="1.35" fill="#fff"/><circle cx="33" cy="20.4" r="1.35" fill="#fff"/></svg>';
+    return mark;
+  }
+
+  function mountLogoThumb(entry) {
+    const thumb = document.createElement("span");
+    thumb.className = "guided-logo-thumb";
+    const image = document.createElement("img");
+    image.alt = "";
+    const fallback = logoFallbackMark();
+    thumb.append(image, fallback);
+    const showImage = (src) => {
+      if (!src || !/^(https?:|data:image|blob:)/i.test(src)) {
+        image.hidden = true;
+        image.removeAttribute("src");
+        fallback.hidden = false;
+        return;
+      }
+      image.hidden = false;
+      fallback.hidden = true;
+      if (image.getAttribute("src") !== src) image.src = src;
+    };
+    const quick = quickLogoPreview(entry);
+    let triedFull = !quick;
+    image.addEventListener("error", () => {
+      image.hidden = true;
+      fallback.hidden = false;
+      if (triedFull) return;
+      triedFull = true;
+      usableLogoSource(entry).then((src) => {
+        if (image.isConnected && src && src !== quick) showImage(src);
+      });
+    });
+    showImage(quick);
+    if (!quick) {
+      usableLogoSource(entry).then((src) => {
+        if (image.isConnected && src) showImage(src);
+      });
+    }
+    return thumb;
+  }
+
+  function renderArtworkRows() {
+    const list = byId("guidedPopupLibrary");
+    const rows = artworkEntries.map((entry, index) => {
+      const row = document.createElement("button");
+      row.type = "button";
+      row.className = `guided-logo-row${index === artworkSelected ? " is-chosen" : ""}`;
+      row.setAttribute("aria-pressed", String(index === artworkSelected));
+      const label = entry.name || "Your logo";
+      row.setAttribute("aria-label", `Use ${label}`);
+      const name = document.createElement("span");
+      name.className = "guided-logo-name";
+      name.textContent = label;
+      const check = document.createElement("span");
+      check.className = "guided-logo-check";
+      check.setAttribute("aria-hidden", "true");
+      check.innerHTML = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M7.2 12.4 10.4 15.6 16.8 8.8" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      row.append(mountLogoThumb(entry), name, check);
+      row.addEventListener("click", () => {
+        artworkSelected = index;
+        list.querySelectorAll(".guided-logo-row").forEach((button, buttonIndex) => {
+          const chosen = buttonIndex === index;
+          button.classList.toggle("is-chosen", chosen);
+          button.setAttribute("aria-pressed", String(chosen));
+        });
+      });
+      return row;
+    });
+    list.replaceChildren(...rows);
+  }
+
+  async function continueArtwork() {
+    if (artworkApplying) return;
+    if (artworkMode !== "existing" || !artworkEntries.length) {
+      selectArtworkMode("new");
+      return;
+    }
+    const entry = artworkEntries[artworkSelected] || artworkEntries[0];
+    if (!entry || !popupContext) return;
+    const { method, conflicts } = popupContext;
+    artworkApplying = true;
+    byId("guidedPopupContinue").disabled = true;
+    closeMethodDialog();
+    try {
+      await assignLogo(entry, method, conflicts || []);
+    } finally {
+      artworkApplying = false;
+    }
+  }
+
+  async function assignLogo(entry, method, conflicts = []) {
     removeConflicts(conflicts);
     state.decorationType = method;
     state.pendingDecorationType = null;
-    state.uploadedLogoName = entry.name || "Your logo";
-    state.originalUploadedLogo = entry.logo;
+    state.uploadedLogoName = entry?.name || "Your logo";
+    const resolved = await usableLogoSource(entry);
+    const logo = resolved || entry?.logo || "";
+    if (!logo) return;
+    state.originalUploadedLogo = entry?.logo || logo;
     state.copyrightConfirmed = true;
-    reuseLibraryLogo(entry.logo);
+    reuseLibraryLogo(logo);
     scheduleRender();
   }
 
@@ -759,13 +996,17 @@
     if (event.target === methodDialog) closeMethodDialog();
   });
   methodDialog.addEventListener("close", () => {
+    methodDialog.classList.remove("is-logo-step");
     if (!preservePendingMethod) state.pendingDecorationType = null;
     preservePendingMethod = false;
   });
   methodDialog.querySelectorAll("[data-popup-method]").forEach((button) => {
     button.addEventListener("click", () => choosePopupMethod(button.dataset.popupMethod));
   });
-  byId("guidedPopupUpload").addEventListener("click", startUpload);
+  byId("guidedPopupUpload").addEventListener("click", () => selectArtworkMode("new"));
+  byId("guidedPopupExisting").addEventListener("click", () => selectArtworkMode("existing"));
+  byId("guidedPopupContinue").addEventListener("click", () => { continueArtwork(); });
+  byId("guidedArtworkCancel").addEventListener("click", () => closeMethodDialog());
   byId("guidedChangeMethod").addEventListener("click", () => {
     state.pendingDecorationType = null;
     showMethodChoices();

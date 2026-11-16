@@ -412,8 +412,11 @@ body:has(.mobile-header--v2) .mobile-header--v2:has(.search-suggestions.active) 
     padding-top: 0;
 }
 
-/* The wrapper above already reserves the fixed header height; breadcrumbs.css adds it again on product pages. */
-.header-with-promo:has(.mobile-header--v2) + .site-breadcrumbs {
+/* The wrapper above already reserves the fixed header height; breadcrumbs.css adds it again on product pages.
+   The bundle colour step inserts .bundle-builder-bar between the wrapper and the crumbs, so the
+   adjacent reset must include that bar or the crumbs keep a full header-height gap under the steps. */
+.header-with-promo:has(.mobile-header--v2) + .site-breadcrumbs,
+.header-with-promo:has(.mobile-header--v2) + .bundle-builder-bar + .site-breadcrumbs {
     margin-top: 0;
 }
 

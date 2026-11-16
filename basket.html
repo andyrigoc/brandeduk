@@ -925,9 +925,12 @@
         .bundle-shop-card__items { display: inline-flex; padding: 3px 8px; border: 1px solid #d5deec; border-radius: 999px; background: #f5f7fb; font-size: .75rem; font-weight: 750; }
         .bundle-shop-card__preview { display: grid; justify-items: end; gap: 4px; min-width: 0; }
         .bundle-shop-card__thumbs { display: flex; gap: 6px; justify-content: flex-end; }
-        .bundle-shop-card__thumbs img, .bundle-card-logo { width: 44px; height: 44px; object-fit: contain; border-radius: 7px; background: #f5f7fb; }
+        .bundle-shop-card__thumbs img { width: 44px; height: 44px; object-fit: contain; border-radius: 7px; background: #f5f7fb; }
         .bundle-shop-card__preview h4 { margin: 0; font-size: .78rem; line-height: 1.2; text-align: right; }
-        .bundle-shop-card__number { margin: 0; color: #667085; font-size: 12px; font-weight: 800; text-align: right; }
+        .bundle-shop-card__number { margin: 2px 0 0; color: #344054; font-size: 12px; font-weight: 800; line-height: 1.2; text-align: left; }
+        .bundle-shop-card__logo { position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; box-sizing: border-box; width: 112px; height: 64px; margin-top: 2px; padding: 4px; border-radius: 8px; background: #f4f6fa; }
+        .bundle-shop-card__logo-art { display: block; width: auto; height: auto; max-width: 100%; max-height: 100%; object-fit: contain; object-position: center; background: transparent; }
+        .bundle-shop-card__stamp { position: absolute; left: 50%; top: 50%; z-index: 1; display: block; width: auto; height: 86%; max-width: 86%; max-height: 86%; object-fit: contain; transform: translate(-50%, -50%) rotate(-6deg); pointer-events: none; opacity: 0.86; background: transparent; }
         .bundle-shop-card__tools { display: flex; justify-content: flex-end; gap: 12px; margin-top: 8px; }
         .bundle-row-kicker {
             display: inline-block;
@@ -1761,6 +1764,7 @@
         .copy-logo-modal .source-logo .source-info span b { color: #1f2937; }
         .copy-logo-modal .garment-list { padding: 16px 20px; overflow-y: auto; flex: 1; }
         .copy-logo-modal .garment-list h4 { font-size: 15px; font-weight: 700; color: #1f2937; margin: 0 0 12px; }
+        .copy-logo-modal .copy-logo-empty { margin: 0; font-size: 13px; line-height: 1.45; color: #6b7280; }
         .copy-logo-modal .garment-item {
             display: flex; align-items: center; gap: 12px; padding: 14px 12px;
             border: 1px solid #e5e7eb; border-radius: 10px; cursor: pointer; margin-bottom: 10px;
@@ -5082,26 +5086,51 @@
     // RENDER ITEM ROWS
     // ========================
 
+    function bundleOffersFreeLogo(item) {
+        const name = String((item && (item.name || item.bundleName)) || '');
+        return /\bfree\s+(?:stitched\s+)?logos?\b/i.test(name);
+    }
+
+    function bundleBasketTitle(item) {
+        const raw = String((item && (item.name || item.bundleName)) || 'Bundle');
+        if (!bundleOffersFreeLogo(item)) return raw;
+        const cleaned = raw
+            .replace(/\s*(?:\+|\/|&|,)?\s*\bwith\s+(?:a\s+)?free\s+(?:stitched\s+)?logos?\b/gi, '')
+            .replace(/\s*(?:\+|\/|&|,)?\s*\bfree\s+(?:stitched\s+)?logos?\b/gi, '')
+            .replace(/\s{2,}/g, ' ')
+            .replace(/^[\s,.;:|+\-\u2013\u2014/&]+|[\s,.;:|+\-\u2013\u2014/&]+$/g, '')
+            .trim();
+        return cleaned || 'Bundle';
+    }
+
     function renderItems(basket) {
         const container = document.getElementById('basketItemsList');
         if (!container) return;
 
         let html = '';
         const chargedEmbroideryDesigns = new Set();
+        let bundleOrdinal = 0;
         basket.forEach((item, index) => {
             if (isBundleLine(item)) {
                 const amount = bundlePriceNumber(item);
                 const priceText = amount == null ? '\u2014' : formatBundlePrice(item);
-                const title = escapeAttr(item.name || 'Bundle');
+                const title = escapeAttr(bundleBasketTitle(item));
                 const count = Number(item.itemCount) || (Array.isArray(item.chosenLines) ? item.chosenLines.reduce((sum, line) => sum + (Number(line.quantity) || 0), 0) : 0);
-                const number = bundleDisplayNumber(item, index);
+                const number = bundleDisplayNumber(item, bundleOrdinal);
+                bundleOrdinal += 1;
+                const logo = Array.isArray(item.logos) && item.logos[0] ? item.logos[0] : (item.selection && item.selection.logo);
+                const logoSrc = logo ? (resolveLogoImageSource(logo) || '') : '';
                 const thumbSources = []
                     .concat(Array.isArray(item.thumbs) ? item.thumbs : [])
                     .concat(Array.isArray(item.chosenLines) ? item.chosenLines.map(line => line && line.image).filter(Boolean) : [])
                     .concat(item.image ? [item.image] : []);
-                const thumbs = [...new Set(thumbSources)].slice(0, 3).map(src => `<img src="${escapeAttr(src)}" alt="">`).join('');
-                const logo = Array.isArray(item.logos) && item.logos[0] ? item.logos[0] : (item.selection && item.selection.logo);
-                const logoSrc = logo ? (resolveLogoImageSource(logo) || '') : '';
+                const thumbs = [...new Set(thumbSources.filter(src => src && src !== logoSrc))].slice(0, 3).map(src => `<img src="${escapeAttr(src)}" alt="">`).join('');
+                const stampHtml = bundleOffersFreeLogo(item) && logoSrc
+                    ? `<img class="bundle-shop-card__stamp" src="brandedukv15-child/assets/images/bundles/free-logo-stamp.png" alt="" aria-hidden="true">`
+                    : '';
+                const logoHtml = logoSrc
+                    ? `<div class="bundle-shop-card__logo"><img class="bundle-shop-card__logo-art" src="${escapeAttr(logoSrc)}" alt="Your logo">${stampHtml}</div>`
+                    : '';
                 html += `
                 <div class="basket-item-row basket-item-row--bundle" data-index="${index}" data-line-type="bundle">
                     <article class="bundle-shop-card">
@@ -5110,11 +5139,12 @@
                             <strong>${priceText}</strong>
                             <span>Team of ${count || 1}</span>
                             <span class="bundle-shop-card__items">${count || 1} items</span>
+                            <p class="bundle-shop-card__number">Bundle n\u00B0 ${escapeAttr(number)}</p>
                         </div>
                         <div class="bundle-shop-card__preview">
-                            <div class="bundle-shop-card__thumbs">${thumbs}${logoSrc ? `<img class="bundle-card-logo" src="${escapeAttr(logoSrc)}" alt="Your logo">` : ''}</div>
+                            <div class="bundle-shop-card__thumbs">${thumbs}</div>
                             <h4>${title}</h4>
-                            <p class="bundle-shop-card__number">${escapeAttr(number)}</p>
+                            ${logoHtml}
                         </div>
                     </article>
                     <div class="bundle-shop-card__tools">
@@ -6360,11 +6390,21 @@
 
         const listEl = document.getElementById('copyLogoGarmentList');
         let listHtml = '<h4>Choose Garment</h4>';
+        let offeredGarments = 0;
+        let hiddenBundles = 0;
+        let otherProducts = 0;
         basket.forEach((item, idx) => {
             if (idx === sourceItemIndex) return;
+            // Bundles are edited only from Edit bundle. Never offer one as a replicate target.
+            if (isBundleLine(item)) {
+                hiddenBundles += 1;
+                return;
+            }
+            otherProducts += 1;
             // Skip if item already has a logo at this position
             if (item.logos && item.logos.some(l => l.position === logo.position)) return;
 
+            offeredGarments += 1;
             const img = item.colorImage || item.image || 'brandedukv15-child/assets/images/products/default.jpg';
             listHtml += `
                 <label class="garment-item">
@@ -6379,6 +6419,9 @@
                 </label>
             `;
         });
+        if (offeredGarments === 0 && hiddenBundles > 0 && otherProducts === 0) {
+            listHtml += '<p class="copy-logo-empty">Bundles can only be changed from Edit bundle</p>';
+        }
         listEl.innerHTML = listHtml;
 
         const overlay = document.getElementById('copyLogoOverlay');
@@ -6418,6 +6461,7 @@
             const targetIdx = parseInt(cb.dataset.targetIndex);
             if (targetIdx < 0 || targetIdx >= basket.length) return;
             const targetItem = basket[targetIdx];
+            if (!targetItem || isBundleLine(targetItem)) return;
             const adapted = adaptLogoForTargetItem(logo, targetItem);
             if (!adapted.logo) return;
             if (!targetItem.logos) targetItem.logos = [];

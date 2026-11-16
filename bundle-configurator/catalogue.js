@@ -72,15 +72,40 @@ export const pieceCount = bundle => sum(Object.values(bundle.fixed)) + (bundle.g
 const money = new Intl.NumberFormat('en-GB', {style: 'currency', currency: 'GBP'});
 export const formatPrice = pence => money.format(pence / 100);
 
+const cleanSize = size => String(size ?? '').replace(/\s+/g, ' ').trim();
+
+// Colour names from the product page keep supplier marks ("Yellow*"). The
+// bundle SKU list stores the cleaned name, so rows are normalised before
+// they are checked or saved.
+export function normalizeAllocations(allocations) {
+  const next = {};
+  Object.entries(allocations || {}).forEach(([code, rows]) => {
+    if (!Array.isArray(rows)) return;
+    const merged = new Map();
+    rows.forEach(row => {
+      const colour = cleanColour(row?.colour);
+      const size = cleanSize(row?.size);
+      const quantity = Number(row?.quantity);
+      if (!colour || !size || !Number.isInteger(quantity) || quantity < 1) return;
+      const key = skuKey(colour, size);
+      const prev = merged.get(key);
+      if (prev) prev.quantity += quantity;
+      else merged.set(key, {colour, size, quantity, ...(row?.image ? {image: row.image} : {})});
+    });
+    next[code] = [...merged.values()];
+  });
+  return next;
+}
+
 export function newDraft(bundle, saved) {
   return {
-    bundle,
+    bundle: {...bundle, methods: ['Print']},
     step: saved ? 4 : 0,
     reached: saved ? 4 : 0,
     choice: saved?.choice ?? '',
     mix: {...saved?.mix},
-    allocations: structuredClone(saved?.allocations ?? {}),
-    method: saved?.method ?? (bundle.methods.length === 1 ? bundle.methods[0] : ''),
+    allocations: normalizeAllocations(saved?.allocations),
+    method: 'Print',
     logo: saved?.logo ?? null,
     notes: saved?.notes ?? '',
     lineId: saved?.id,
@@ -111,14 +136,18 @@ export function quotas(draft) {
 
 export const allocated = (draft, code) => sum((draft.allocations[code] ?? []).map(row => row.quantity));
 
+const allocationMatchesSku = (product, row) => {
+  const quantity = Number(row?.quantity);
+  return Boolean(product?.skus.has(skuKey(cleanColour(row?.colour), cleanSize(row?.size))) && Number.isInteger(quantity) && quantity > 0);
+};
+
 export function variantsValid(draft) {
   if (!choiceValid(draft)) return false;
   const target = quotas(draft);
   return Object.entries(draft.allocations).every(([code, rows]) => Boolean(target[code]) || rows.length === 0) &&
     Object.entries(target).every(([code, quantity]) => {
       const product = products[code];
-      return allocated(draft, code) === quantity && (draft.allocations[code] ?? []).every(row =>
-        product.skus.has(skuKey(row.colour, row.size)) && Number.isInteger(row.quantity) && row.quantity > 0);
+      return allocated(draft, code) === quantity && (draft.allocations[code] ?? []).every(row => allocationMatchesSku(product, row));
     });
 }
 
@@ -144,11 +173,14 @@ export function setChoice(draft, code, quantity) {
 export function setAllocation(draft, code, colour, size, quantity) {
   const max = quotas(draft)[code];
   const product = products[code];
-  if (!max || !product?.skus.has(skuKey(colour, size)) || !Number.isInteger(quantity) || quantity < 0) return false;
+  const clean = cleanColour(colour);
+  const cleanSizeName = cleanSize(size);
+  const amount = Number(quantity);
+  if (!max || !product?.skus.has(skuKey(clean, cleanSizeName)) || !Number.isInteger(amount) || amount < 0) return false;
   const rows = draft.allocations[code] ?? [];
-  const otherRows = rows.filter(row => row.colour !== colour || row.size !== size);
-  if (sum(otherRows.map(row => row.quantity)) + quantity > max) return false;
-  draft.allocations[code] = quantity ? [...otherRows, {colour, size, quantity}] : otherRows;
+  const otherRows = rows.filter(row => cleanColour(row.colour) !== clean || cleanSize(row.size) !== cleanSizeName);
+  if (sum(otherRows.map(row => row.quantity)) + amount > max) return false;
+  draft.allocations[code] = amount ? [...otherRows, {colour: clean, size: cleanSizeName, quantity: amount}] : otherRows;
   draft.dirty = true;
   return true;
 }

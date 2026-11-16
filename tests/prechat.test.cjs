@@ -72,14 +72,41 @@ test('logo validation, upload and private link are included in the one acknowled
     assert.equal(e.uploads,2);assert.equal(e.messages.length,1);
     assert.match(e.messages[0],/logo.pdf \(uploaded\)/);assert.match(e.messages[0],/Artwork download \(private link, valid 7 days\): https:/);
     assert.ok(e.q('[data-pc="open-chat"]'));
+    const card=e.q('#waChatBody .buk-pc-summary');
+    assert.ok(card);assert.match(card.textContent,/Your enquiry summary/);
+    assert.match(card.textContent,/Polos/);assert.match(card.textContent,/logo\.pdf/);
+    assert.equal(e.q('#waChatBody .buk-pc-summary-logo'),null);
+    assert.match(e.q('#waChatBody').textContent,/Please connect me with a human operator/);
 });
 
-test('failed upload blocks delivery; choosing send later is explicit',async t=>{
+test('selected logo stays on the card when artwork upload is unavailable',async t=>{
     const e=setup({uploadFailure:true});t.after(()=>e.dom.window.close());e.toLogo();
-    e.selectFile(new e.w.File(['logo'],'logo.png',{type:'image/png'}));e.next();e.click('[data-pc="submit"]');await e.flush();
-    assert.equal(e.messages.length,0);assert.match(e.q('#bukPcStatus').textContent,/unavailable/);
-    e.click('[data-pc="back"]');e.click('[data-pc="logo-skip"]');e.click('[data-pc="submit"]');await e.flush();
-    assert.equal(e.messages.length,1);assert.match(e.messages[0],/Logo: Will send later/);
+    e.w.URL.createObjectURL=()=>'blob:local-logo';e.w.URL.revokeObjectURL=()=>{};
+    e.selectFile(new e.w.File(['logo'],'Orange hand cradling a sprout.png',{type:'image/png'}));
+    e.next();
+    assert.equal(e.q('.buk-pc-summary-logo').getAttribute('src'),'blob:local-logo');
+    assert.match(e.q('.buk-pc-summary').textContent,/Orange hand cradling a sprout\.png/);
+    assert.doesNotMatch(e.q('.buk-pc-summary').textContent,/Will send later/);
+    e.click('[data-pc="submit"]');await e.flush();
+    assert.equal(e.messages.length,1);
+    assert.match(e.messages[0],/Logo: Orange hand cradling a sprout\.png \(selected on this device; will be sent later\)/);
+    assert.match(e.messages[0],/was not uploaded/);
+    assert.doesNotMatch(e.messages[0],/Logo: Will send later/);
+    assert.doesNotMatch(e.messages[0],/Artwork download/);
+    const chatLogo=e.q('#waChatBody .buk-pc-summary-logo');
+    assert.equal(chatLogo.getAttribute('src'),'blob:local-logo');
+    assert.match(e.q('#waChatBody .buk-pc-summary-logo-note').textContent,/sent later/);
+    assert.match(e.q('#waChatBody .buk-pc-summary').textContent,/Hoodies/);
+});
+
+test('skipped logo says it will be sent later and has no image',async t=>{
+    const e=setup();t.after(()=>e.dom.window.close());e.toReview();
+    assert.match(e.q('.buk-pc-summary').textContent,/Will send later/);
+    assert.equal(e.q('.buk-pc-summary-logo'),null);
+    e.click('[data-pc="submit"]');await e.flush();
+    assert.match(e.messages[0],/Logo: Will send later/);
+    assert.equal(e.q('#waChatBody .buk-pc-summary-logo'),null);
+    assert.match(e.q('#waChatBody .buk-pc-summary').textContent,/Your enquiry summary/);
 });
 
 test('missing receipt never reports success; a late receipt prevents duplicate retry',async t=>{
@@ -90,11 +117,14 @@ test('missing receipt never reports success; a late receipt prevents duplicate r
     e.click('[data-pc="submit"]');await e.flush();assert.equal(e.messages.length,1);assert.ok(e.q('[data-pc="open-chat"]'));
 });
 
-test('support bypasses questionnaire and treats customer text as text',async t=>{
-    const e=setup();t.after(()=>e.dom.window.close());e.click('[data-pc="fast-track"]');
-    const note=e.q('#bukPcSupportNotes');note.value='<img src=x onerror=alert(1)>';note.dispatchEvent(new e.w.Event('input'));
-    e.click('[data-pc="submit"]');await e.flush();
-    assert.match(e.messages[0],/^CUSTOMER SUPPORT/);assert.equal(e.q('#waChatBody img[src="x"]'),null);
+test('new chat does not restore the removed shortcut block',t=>{
+    const e=setup();t.after(()=>e.dom.window.close());
+    assert.equal(e.q('[data-pc="fast-track"]'),null);
+    assert.equal(e.q('[data-pc="quote-support"]'),null);
+    assert.equal(e.q('[data-pc="quick-replies"]'),null);
+    assert.equal(e.q('#waEmailTeam'),null);
+    assert.equal(e.q('.buk-pc-footer'),null);
+    assert.equal(e.messages.length,0);
 });
 
 test('draft survives reload and requires artwork reselection after login',t=>{
@@ -109,20 +139,20 @@ test('previously confirmed enquiry restores the native conversation without send
     const e=setup({sent:true,draft:{items:['polos'],stage:'sent',summary:'Saved enquiry'}});t.after(()=>e.dom.window.close());
     assert.equal(e.q('#bukPrechat'),null);assert.equal(e.q('#waChatInput').disabled,false);
     assert.match(e.q('#waChatBody').textContent,/Saved enquiry/);assert.equal(e.messages.length,0);
-    e.click('[data-pc="fast-track"]');assert.equal(e.q('#waChatInput').value,'I need help with my order.');
-    e.click('[data-pc="quote-support"]');assert.equal(e.q('#waChatInput').value,'I need help with a quote.');
-    assert.equal(e.messages.length,0,'Footer shortcuts must not send a message automatically');
+    assert.equal(e.q('[data-pc="fast-track"]'),null);
+    assert.equal(e.q('[data-pc="quote-support"]'),null);
+    assert.equal(e.messages.length,0);
 });
 
-test('reference photographs remain selectable and footer shortcuts preserve the enquiry without sending',t=>{
+test('reference photographs remain selectable without the removed chat shortcuts',t=>{
     const e=setup();t.after(()=>e.dom.window.close());e.next();
     const photos=[...e.w.document.querySelectorAll('[data-item] .buk-pc-product image')];
     assert.equal(photos.length,7,'All seven garment categories use the supplied photographs');
     assert.ok(photos.every(image=>image.getAttribute('href').endsWith('/mobile/images/prechat/reference-artwork.webp')));
-    e.click('[data-item="polos"]');e.click('[data-pc="quote-support"]');e.next();
+    e.click('[data-item="polos"]');
     assert.equal(e.q('[data-item="polos"]').getAttribute('aria-pressed'),'true');
-    e.click('[data-pc="quick-replies"]');e.click('.buk-pc-quick-menu button');
-    assert.equal(e.q('#bukPcSupportNotes').value,'Delivery times');assert.equal(e.messages.length,0);
+    assert.equal(e.q('[data-pc="quick-replies"]'),null);
+    assert.equal(e.messages.length,0);
 });
 
 test('replacing, removing or postponing a logo releases its temporary preview',t=>{

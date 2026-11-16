@@ -1,9 +1,11 @@
+import { playBundlesPageIntro } from './bundles-intro.js?v=20261116-bounce';
 import {
   products, registerProduct, fillOptions, sizesFor, skuKey, swatchFor, formatPrice, pieceCount, sum,
   newDraft, choiceValid, quotas, allocated, variantsValid, setChoice, setAllocation,
   acceptedFile, logoValid, readyToAdd
-} from './catalogue.js';
-import { loadBundles, loadDetail, loadAllDetails, loadComponentOptions, validateSelection, availability } from './bundle-api.js';
+} from './catalogue.js?v=20261116-printonly';
+import { loadBundles, loadDetail, loadAllDetails, loadComponentOptions, validateSelection, availability } from './bundle-api.js?v=20261116-printonly';
+playBundlesPageIntro();
 
 const icons = {
   bag: '<path d="M5 8h14l1 13H4L5 8Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/>',
@@ -43,7 +45,12 @@ const title = (heading, copy) => `<div class="step-heading"><h3 tabindex="-1">${
 const thumb = (code, cls = '') => products[code]?.image
   ? `<img class="thumb ${cls}" src="${escape(products[code].image)}" alt="" width="432" height="432" loading="lazy" decoding="async" data-thumb="${escape(code)}">`
   : `<span class="cap-thumb ${cls}">${icon('layers')}</span>`;
-const isInclusion = bundle => bundle.methods.length > 1 ? 'One logo included' : `${bundle.methods[0] === 'Print' ? 'Printing' : 'Embroidery'} included`;
+const isInclusion = () => 'Printing included';
+const printOnlyCopy = text => String(text || '')
+  .replace(/embroidered/gi, word => (/^[A-Z]/.test(word) ? 'Printed' : 'printed'))
+  .replace(/embroidery/gi, word => (/^[A-Z]/.test(word) ? 'Printing' : 'printing'))
+  .replace(/\bPrinted\/Printed\b/g, 'Printed')
+  .replace(/\bprinted\/printed\b/g, 'printed');
 const pluralBundles = n => `${n} ${n === 1 ? 'bundle' : 'bundles'}`;
 const announcement = $('announcement');
 
@@ -137,7 +144,12 @@ let lines = [];
 let storeError = '';
 let saving = false;
 let pendingArtwork = false;
+let pendingLogoFile = null;
 let fileError = '';
+let uploadGeneration = 0;
+let uploadAbort = null;
+let shownProgress = 0;
+let renderingStep = false;
 let builderError = '';
 let variantInputs = {};
 let returnToBasket = false;
@@ -293,7 +305,7 @@ const radialCatalog = [
   {id: 'purpose', title: 'Purpose', iconFile: 'purpose', icon: radialIcon('purpose'), prompt: 'What is the main purpose?', layout: 'radios', values: ['Staff Uniforms', 'New Starter Kits', 'Team / Event', 'Promotional / Branding', 'Workwear / PPE', 'Corporate / Office']},
   {id: 'quantity', title: 'Quantity', iconFile: 'quantity', icon: radialIcon('quantity'), prompt: 'How many items in total?', layout: 'grid2', values: ['Up to 10', '11–25', '26–50', '51–100', '101–250', '250+']},
   {id: 'season', title: 'Season', iconFile: 'season', icon: radialIcon('season'), prompt: 'When will the uniforms be used?', layout: 'grid2', icons: SEASON_ICONS, values: ['Spring', 'Summer', 'Autumn', 'Winter']},
-  {id: 'branding', title: 'Branding', iconFile: 'branding', icon: radialIcon('branding'), prompt: 'How do you want to brand them?', layout: 'stack', values: ['Embroidery', 'Printing (DTF / DTG)', 'Both (Embroidery & Print)', 'No Branding (Plain)']}
+  {id: 'branding', title: 'Branding', iconFile: 'branding', icon: radialIcon('branding'), prompt: 'How do you want to brand them?', layout: 'stack', values: ['Printing (DTF / DTG)', 'No Branding (Plain)']}
 ];
 const appliedBundleFilters = Object.fromEntries(radialCatalog.map(item => [item.id, item.multi ? [] : '']));
 let announceBundleFilters = false;
@@ -420,17 +432,17 @@ function seasonMatches(deal, season) {
   return false;
 }
 
+function isPlainBundle(deal) {
+  const title = deal.title || '';
+  return /no branding|\bplain\b|unbranded/i.test(title) && !/logo|print|dtf|dtg/i.test(title);
+}
+
 function brandingMatches(deal, value) {
   if (!value) return true;
-  const title = deal.title || '';
-  // The decoration methods stored on the bundle win; the title is the fallback.
-  const stored = deal.methods || [];
-  const print = stored.length ? stored.includes('Print') : /print|dtf|dtg/i.test(title);
-  const embroidery = stored.length ? stored.includes('Embroidery') : /embroider|stitch/i.test(title);
-  if (value === 'Embroidery') return embroidery;
-  if (value === 'Printing (DTF / DTG)') return print;
-  if (value === 'Both (Embroidery & Print)') return print && embroidery;
-  if (value === 'No Branding (Plain)') return !print && !embroidery && !/logo/i.test(title);
+  // Older sessions could still have embroidery selected. Bundles are print only.
+  if (value === 'Embroidery' || value === 'Both (Embroidery & Print)') value = 'Printing (DTF / DTG)';
+  if (value === 'No Branding (Plain)') return isPlainBundle(deal);
+  if (value === 'Printing (DTF / DTG)') return !isPlainBundle(deal);
   return false;
 }
 
@@ -584,7 +596,8 @@ function flipCardMarkup(deal, index) {
   const qty = deal.qty || pieceCount(bundle) || 0;
   const team = kitPeople(deal) || qty;
   const theme = accentTheme(deal, index);
-  const shortTitle = bundle.title.length > 42 ? `${bundle.title.slice(0, 40)}…` : bundle.title;
+  const shownTitle = printOnlyCopy(bundle.title);
+  const shortTitle = shownTitle.length > 42 ? `${shownTitle.slice(0, 40)}…` : shownTitle;
   const closedThumbs = closedSkuThumbsHtml(deal);
   const openThumbs = codes => {
     const figs = (codes || []).map(code => {
@@ -605,11 +618,17 @@ function flipCardMarkup(deal, index) {
     : `<li><span>${escape((deal.codes || []).join(', ') || 'See bundle details')}</span></li>`;
   const ctaLabel = build ? 'Build Your Bundle' : availability(deal).label;
   const ctaDisabled = build ? '' : 'disabled';
+  // Same number the basket shows: catalogue bundleNumber (sourceBundleNumber),
+  // otherwise the digits in the slug. No number means no label.
+  const faceNumber = bundleFaceNumber(deal);
+  const faceNumberHtml = faceNumber
+    ? `<p class="card__face__number">Bundle n\u00B0 ${escape(faceNumber)}</p>`
+    : '';
 
   return `<section class="card theme-${theme}${build ? '' : ' is-blocked'}" data-bundle-id="${escape(deal.id)}" data-can-build="${build ? '1' : '0'}" aria-expanded="false">
     <div class="card__map">
       <div class="card__map__inner">
-        <p class="card__map__title">${escape(bundle.title)}</p>
+        <p class="card__map__title">${escape(shownTitle)}</p>
         <p class="card__map__meta">${deal.price ? price(deal.price) : ''} · Team of ${team} · ${qty} items</p>
         <ul class="card__map__list">${includedInline}</ul>
       </div>
@@ -618,7 +637,7 @@ function flipCardMarkup(deal, index) {
       <div class="card__part__inner">
         <div class="card__header__close-btn" role="button" tabindex="0" aria-label="Close bundle details">&times;</div>
         <header class="card__header">
-          <span class="card__header__id">${escape(bundle.title)}</span>
+          <span class="card__header__id">${escape(shownTitle)}</span>
           <span class="card__header__price">${deal.price ? price(deal.price) : ''}</span>
         </header>
         <div class="card__stats-panel">
@@ -640,6 +659,7 @@ function flipCardMarkup(deal, index) {
             <h3 class="card__face__price">${deal.price ? price(deal.price) : ''}</h3>
             <span class="card__face__team">Team of ${team}</span>
             <span class="card__face__items">${qty} items</span>
+            ${faceNumberHtml}
           </div>
           <div class="card__face__preview">
             ${closedThumbs}
@@ -647,14 +667,13 @@ function flipCardMarkup(deal, index) {
               <h3 class="card__face__title">${escape(shortTitle)}</h3>
               <span class="card__face__chev" aria-hidden="true">›</span>
             </div>
-            <p class="card__face__number">${escape(bundleFaceNumber(deal))}</p>
           </div>
         </div>
       </div>
       <div class="card__part__side m--front">
         <div class="card__sender">
           <h4 class="card__sender__heading">What's included</h4>
-          <p class="card__sender__name">${escape(bundle.title)}</p>
+          <p class="card__sender__name">${escape(shownTitle)}</p>
           <ul class="card__included-inline">${includedInline}</ul>
         </div>
         <div class="card__from-to">
@@ -792,10 +811,11 @@ async function openBuilder(bundle, source, saved) {
     if (variantsValid(draft)) draft.reached = Math.max(draft.reached, logoValid(draft) ? 4 : 3);
     if (basket.open) basket.close();
     variantInputs = {};
-    pendingArtwork = false;
+    invalidateLogoUpload();
     fileError = '';
+    draft.notes = cleanLogoNotes(draft.notes);
     builderError = '';
-    $('builder-title').textContent = bundle.title;
+    $('builder-title').textContent = printOnlyCopy(bundle.title);
     $('builder-kicker').textContent = 'BUILD YOUR BUNDLE';
     $('builder-price').innerHTML = price(bundle.price);
     openBundleColourPage();
@@ -803,10 +823,11 @@ async function openBuilder(bundle, source, saved) {
   }
   if (basket.open) basket.close();
   variantInputs = {};
-  pendingArtwork = false;
+  invalidateLogoUpload();
   fileError = '';
+  draft.notes = cleanLogoNotes(draft.notes);
   builderError = '';
-  $('builder-title').textContent = bundle.title;
+  $('builder-title').textContent = printOnlyCopy(bundle.title);
   $('builder-kicker').textContent = 'BUILD YOUR BUNDLE';
   $('builder-price').innerHTML = price(bundle.price);
   renderStep();
@@ -824,6 +845,7 @@ function focusHeading() {
 }
 
 function closeBuilder(added = false) {
+  invalidateLogoUpload();
   builder.close();
   draft = undefined;
   if (added || returnToBasket) {
@@ -879,8 +901,16 @@ function renderControls() {
   next.disabled = saving || !canLeave(draft.step);
 }
 
-function itemRow(code, qty) {
-  return `<li class="item-row">${thumb(code)}<div><strong>${escape(products[code].name)}</strong><small>${escape(code)}</small></div><span class="row-quantity">× ${qty}</span></li>`;
+function itemRow(code, qty, selected = false) {
+  return `<li class="item-row${selected ? ' is-selected' : ''}"${selected ? ' aria-current="true"' : ''}>${thumb(code)}<div><strong>${escape(products[code].name)}</strong><small>${escape(code)}</small></div><span class="row-quantity">× ${qty}</span></li>`;
+}
+
+function nextFixedItemCode(entries) {
+  const open = entries.filter(([code, qty]) => allocated(draft, code) < Number(qty));
+  const active = open.find(([code]) => code === draft.activeProduct);
+  if (active) return active[0];
+  if (open.length) return open[0][0];
+  return entries[0]?.[0] || '';
 }
 
 function includedMarkup() {
@@ -891,14 +921,16 @@ function includedMarkup() {
       ${group ? `<li class="item-row"><span class="cap-thumb">${icon('layers')}</span><div><strong>${group.name}</strong>
         <small>${group.codes.map(code => products[code].label).join(group.type === 'exclusive' ? ' or ' : ' and ')}</small></div><span class="row-quantity">× ${group.quantity}</span></li>` : ''}
     </ul>
-    <div class="info-panel">${icon('tick')}<div><strong>${isInclusion(bundle)}</strong><small>${bundle.methods.join(' or ')}${bundle.delivery ? ' · Free delivery' : ''}</small></div></div>`;
+    <div class="info-panel">${icon('tick')}<div><strong>${isInclusion()}</strong><small>Printing${bundle.delivery ? ' · Free delivery' : ''}</small></div></div>`;
 }
 
 function groupsMarkup() {
   const group = draft.bundle.group;
   if (!group) {
+    const entries = Object.entries(draft.bundle.fixed);
+    const current = nextFixedItemCode(entries);
     return title('Fixed composition', 'The products and quantities are set for this bundle. Next, choose the colours and sizes.') +
-      `<ul class="item-list">${Object.entries(draft.bundle.fixed).map(([code, qty]) => itemRow(code, qty)).join('')}</ul>`;
+      `<ul class="item-list item-list--cards">${entries.map(([code, qty]) => itemRow(code, qty, code === current)).join('')}</ul>`;
   }
   if (group.type === 'exclusive') {
     return title('Choose one headwear style', `Choose all ${group.quantity} pieces in one style.`) + `<div class="choice-list">${group.codes.map(code => {
@@ -1012,32 +1044,220 @@ function variantsMarkup() {
     <p class="small-note">Colours and sizes shown are the live options for each product.</p>`;
 }
 
+const usableImage = value => {
+  const src = String(value || '').trim();
+  return src && src !== 'undefined' && src !== 'null' ? src : '';
+};
+
+function imageForColour(product, colour) {
+  if (!product?.images || !colour) return '';
+  const direct = product.images.get(colour);
+  if (direct) return direct;
+  const wanted = String(colour).trim().toLowerCase();
+  for (const [name, url] of product.images) {
+    if (String(name).trim().toLowerCase() === wanted) return url || '';
+  }
+  return '';
+}
+
+// The colour with the most pieces already assigned. Later edits replace that
+// row, so returning to Logo shows the colour the customer just chose.
+// Pass `rows` to resolve one review line; omit it to read the live draft.
+function dominantColour(code, rows) {
+  const source = Array.isArray(rows) ? rows : (draft?.allocations?.[code] ?? []);
+  const totals = new Map();
+  source.forEach(row => {
+    const quantity = Number(row?.quantity) || 0;
+    const colour = String(row?.colour || '').trim();
+    if (quantity < 1 || !colour) return;
+    const key = colour.toLowerCase();
+    const prev = totals.get(key) || {colour, quantity: 0, image: ''};
+    prev.quantity += quantity;
+    if (!prev.image) prev.image = usableImage(row.image);
+    totals.set(key, prev);
+  });
+  let best = null;
+  totals.forEach(entry => {
+    if (!best || entry.quantity > best.quantity) best = entry;
+  });
+  return best;
+}
+
+function garmentPhoto(code, rows) {
+  const product = products[code];
+  const fallback = usableImage(product?.image);
+  const chosen = dominantColour(code, rows);
+  if (!chosen) return {src: fallback, fallback: ''};
+  const src = usableImage(chosen.image) || usableImage(imageForColour(product, chosen.colour)) || fallback;
+  return {src, fallback: src && fallback && src !== fallback ? fallback : ''};
+}
+
+function garmentThumb(code, rows) {
+  const {src, fallback} = garmentPhoto(code, rows);
+  if (!src) return `<span class="cap-thumb">${icon('layers')}</span>`;
+  const fallbackAttr = fallback ? ` data-fallback="${escape(fallback)}"` : '';
+  return `<img class="thumb logo-recap__photo" src="${escape(src)}"${fallbackAttr} alt="" width="42" height="42" loading="lazy" decoding="async">`;
+}
+
+function logoItemRecap() {
+  const items = Object.entries(quotas(draft)).filter(([, qty]) => Number(qty) > 0);
+  if (!items.length) return '';
+  return `<ul class="logo-recap" aria-label="Items in this bundle">${items.map(([code, required]) => {
+    const name = products[code]?.name || code;
+    const configured = allocated(draft, code);
+    const qty = configured > 0 ? configured : required;
+    return `<li class="logo-recap__card">${garmentThumb(code)}<span class="logo-recap__copy"><strong>${escape(name)}</strong><small>${escape(code)}</small></span><span class="row-quantity">× ${qty}</span></li>`;
+  }).join('')}</ul>`;
+}
+
+function cleanLogoNotes(value) {
+  const text = String(value ?? '');
+  if (/modal__sr|bundle-upload__/.test(text)) return '';
+  return text;
+}
+
 function logoMarkup() {
-  const {bundle, method, logo, notes} = draft;
-  return title('Upload your logo', 'Choose one artwork file for the whole bundle.') +
-    (bundle.methods.length > 1
-      ? `<fieldset class="method-field"><legend>Included decoration</legend><div>${bundle.methods.map(option =>
-        `<button type="button" class="button method" data-action="method" data-method="${option}" aria-pressed="${method === option}">${method === option ? icon('tick') : ''}${option}</button>`).join('')}</div></fieldset>`
-      : `<div class="info-panel method-info">${icon('tick')}<div><strong>${isInclusion(bundle)}</strong></div></div>`) +
-    `<div class="upload-area" id="upload-area">
-      ${logoPreviewMarkup(logo, 'logo-preview') || `<span class="upload-icon">${icon(logo ? 'file' : 'upload')}</span>`}
-      <strong>${pendingArtwork ? 'Checking file…' : logo ? escape(logo.name || logo.filename || '') : 'Drag your logo here'}</strong>
-      <small>PNG, JPG, PDF, SVG, AI or EPS · up to 10 MB</small>
-      <button class="button secondary compact" type="button" data-action="browse">${logo ? 'Replace file' : 'Browse files'}</button>
-      <input id="logo-file" type="file" accept=".png,.jpg,.jpeg,.pdf,.svg,.ai,.eps" aria-label="Upload your logo" hidden>
-    </div>
-    <p class="inline-error" id="file-error" role="alert" ${fileError ? '' : 'hidden'}>${escape(fileError)}</p>
+  const logo = draft.logo;
+  const notes = cleanLogoNotes(draft.notes);
+  if (notes !== draft.notes) draft.notes = notes;
+  return logoItemRecap() +
+    title('Upload your logo', 'Choose one artwork file for the whole bundle.') +
+    `<div class="info-panel method-info">${icon('tick')}<div><strong>Printing included</strong></div></div>` +
+    (builderError ? `<p class="inline-error" role="alert">${escape(builderError)}</p>` : '') +
+    bundleUploadMarkup() +
+    attachedLogoMarkup(logo) +
+    `<p class="inline-error" id="file-error" role="alert" ${fileError ? '' : 'hidden'}>${escape(fileError)}</p>
     <label class="notes-label">Notes <span>Optional</span>
       <textarea id="notes" maxlength="500" rows="3" placeholder="Add any instructions for your logo.">${escape(notes)}</textarea>
     </label>
     <p class="small-note count-note"><span id="notes-count">${notes.length}</span> / 500</p>`;
 }
 
+function attachedLogoMarkup(logo) {
+  if (!logo) return '';
+  const name = logo.name || logo.filename || 'Uploaded logo';
+  const preview = logoPreviewMarkup(logo, 'logo-preview') || `<span class="upload-icon">${icon('file')}</span>`;
+  return `<div class="logo-attached" id="logo-attached">${preview}<strong>${escape(name)}</strong></div>`;
+}
+
+function bundleUploadMarkup() {
+  return `<section class="bundle-upload" id="bundle-upload" data-state="0" data-ready="false" aria-labelledby="bundle-upload-title-0">
+    <div class="bundle-upload__header">
+      <button class="bundle-upload__close" type="button" data-action="logo-dismiss">
+        <svg class="bundle-upload__close-icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+          <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <polyline points="1,1 15,15"></polyline>
+            <polyline points="15,1 1,15"></polyline>
+          </g>
+        </svg>
+        <span class="bundle-upload__sr">Close</span>
+      </button>
+    </div>
+    <div class="bundle-upload__body">
+      <div class="bundle-upload__col">
+        <svg class="bundle-upload__icon bundle-upload__icon--blue" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+          <g fill="none" stroke="hsl(223,90%,50%)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle class="bundle-upload__sdo69" cx="12" cy="12" r="11" stroke-dasharray="69.12 69.12"></circle>
+            <polyline class="bundle-upload__sdo14" points="7 12 12 7 17 12" stroke-dasharray="14.2 14.2"></polyline>
+            <line class="bundle-upload__sdo10" x1="12" y1="7" x2="12" y2="17" stroke-dasharray="10 10"></line>
+          </g>
+        </svg>
+        <svg class="bundle-upload__icon bundle-upload__icon--red" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+          <g fill="none" stroke="hsl(3,90%,50%)" stroke-width="2" stroke-linecap="round">
+            <circle class="bundle-upload__sdo69" cx="12" cy="12" r="11" stroke-dasharray="69.12 69.12"></circle>
+            <line class="bundle-upload__sdo14" x1="7" y1="7" x2="17" y2="17" stroke-dasharray="14.2 14.2"></line>
+            <line class="bundle-upload__sdo14" x1="17" y1="7" x2="7" y2="17" stroke-dasharray="14.2 14.2"></line>
+          </g>
+        </svg>
+        <svg class="bundle-upload__icon bundle-upload__icon--green" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+          <g fill="none" stroke="hsl(138,90%,40%)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle class="bundle-upload__sdo69" cx="12" cy="12" r="11" stroke-dasharray="69.12 69.12"></circle>
+            <polyline class="bundle-upload__sdo14" points="7 12.5 10 15.5 17 8.5" stroke-dasharray="14.2 14.2"></polyline>
+          </g>
+        </svg>
+      </div>
+      <div class="bundle-upload__col">
+        <div class="bundle-upload__content">
+          <h2 class="bundle-upload__title" id="bundle-upload-title-0">Upload a File</h2>
+          <p class="bundle-upload__message">Select a file to upload from your computer or device.</p>
+          <div class="bundle-upload__actions">
+            <button class="bundle-upload__button bundle-upload__button--choose" type="button" data-action="logo-choose">Choose File</button>
+            <input id="logo-file" type="file" accept=".png,.jpg,.jpeg,.pdf,.svg,.ai,.eps" aria-label="Upload your logo" hidden>
+          </div>
+          <div class="bundle-upload__actions">
+            <svg class="bundle-upload__file-icon" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+              <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="4 1 12 1 20 8 20 23 4 23"></polygon>
+                <polyline points="12 1 12 8 20 8"></polyline>
+              </g>
+            </svg>
+            <div class="bundle-upload__file" data-file></div>
+            <button class="bundle-upload__close" type="button" data-action="logo-clear" aria-label="Remove selected file">
+              <svg class="bundle-upload__close-icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+                <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <polyline points="4,4 12,12"></polyline>
+                  <polyline points="12,4 4,12"></polyline>
+                </g>
+              </svg>
+              <span class="bundle-upload__sr">Remove</span>
+            </button>
+            <button class="bundle-upload__button" type="button" data-action="logo-upload">Upload</button>
+          </div>
+        </div>
+        <div class="bundle-upload__content">
+          <h2 class="bundle-upload__title" id="bundle-upload-title-1">Uploading…</h2>
+          <p class="bundle-upload__message">Just give us a moment to process your file.</p>
+          <div class="bundle-upload__actions">
+            <div class="bundle-upload__progress">
+              <div class="bundle-upload__progress-value" data-progress-value>0%</div>
+              <div class="bundle-upload__progress-bar"><div class="bundle-upload__progress-fill" data-progress-fill></div></div>
+            </div>
+            <button class="bundle-upload__button" type="button" data-action="logo-cancel">Cancel</button>
+          </div>
+        </div>
+        <div class="bundle-upload__content">
+          <h2 class="bundle-upload__title" id="bundle-upload-title-2">Oops!</h2>
+          <p class="bundle-upload__message">Your file could not be uploaded due to an error.</p>
+          <div class="bundle-upload__actions bundle-upload__actions--center">
+            <button class="bundle-upload__button" type="button" data-action="logo-upload">Retry</button>
+            <button class="bundle-upload__button" type="button" data-action="logo-cancel">Cancel</button>
+          </div>
+        </div>
+        <div class="bundle-upload__content">
+          <h2 class="bundle-upload__title" id="bundle-upload-title-3">Upload Successful!</h2>
+          <p class="bundle-upload__message">Your logo is attached to this bundle.</p>
+          <div class="bundle-upload__success-preview" data-success-preview></div>
+          <div class="bundle-upload__actions bundle-upload__actions--center">
+            <button class="bundle-upload__button" type="button" data-action="logo-done">Done</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>`;
+}
+
+function colourGroups(rows) {
+  const groups = [];
+  const byColour = new Map();
+  (rows || []).forEach(row => {
+    const key = String(row?.colour || '').trim().toLowerCase();
+    if (!byColour.has(key)) {
+      const group = [];
+      byColour.set(key, group);
+      groups.push(group);
+    }
+    byColour.get(key).push(row);
+  });
+  return groups;
+}
+
 function selectedItems(allocations) {
-  return `<ul class="item-list review-list">${Object.entries(allocations).filter(([, rows]) => rows.length).map(([code, rows]) => `
-    <li class="item-row">${thumb(code)}<div><strong>${sum(rows.map(row => row.quantity))} × ${escape(products[code].label)}</strong>
-      <small>${escape(code)}</small><ul class="review-variants">${rows.map(row => `<li>${colourDot(row.colour)} ${escape(row.colour)} · ${escape(row.size)} × ${row.quantity}</li>`).join('')}</ul>
-      </div></li>`).join('')}</ul>`;
+  return `<ul class="item-list review-list">${Object.entries(allocations).filter(([, rows]) => rows.length).flatMap(([code, rows]) =>
+    colourGroups(rows).map(group => `
+    <li class="item-row">${garmentThumb(code, group)}<div><strong>${sum(group.map(row => row.quantity))} × ${escape(products[code].label)}</strong>
+      <small>${escape(code)}</small><ul class="review-variants">${group.map(row => `<li>${colourDot(row.colour)} ${escape(row.colour)} · ${escape(row.size)} × ${row.quantity}</li>`).join('')}</ul>
+      </div></li>`)
+  ).join('')}</ul>`;
 }
 
 function reviewMarkup() {
@@ -1046,7 +1266,7 @@ function reviewMarkup() {
     ${selectedItems(draft.allocations)}</div>
     <div class="review-section">
       <div class="review-heading"><h4>Artwork</h4><button type="button" class="text-button" data-action="step" data-step="3">Edit logo</button></div>
-      <div class="info-panel artwork-panel">${logoPreviewMarkup(draft.logo, 'logo-preview logo-preview--row') || icon('file')}<div><strong>${escape(draft.logo?.name || draft.logo?.filename || '')}</strong><small>${draft.method} included</small></div></div>
+      <div class="info-panel artwork-panel">${logoPreviewMarkup(draft.logo, 'logo-preview logo-preview--row') || icon('file')}<div><strong>${escape(draft.logo?.name || draft.logo?.filename || '')}</strong><small>Printing included</small></div></div>
       ${draft.notes.trim() ? `<div class="review-notes"><strong>Notes</strong><p>${escape(draft.notes.trim())}</p></div>` : ''}
     </div>
     ${builderError ? `<p class="inline-error" role="alert">${escape(builderError)}</p>` : ''}`;
@@ -1081,17 +1301,28 @@ function openBundleColourPage() {
     returnToBasket: Boolean(returnToBasket || draft.lineId)
   }));
   const first = components[0];
-  window.location.href = `/mobile/customize-mobile.html?code=${encodeURIComponent(first.code)}&bundleBuild=1`;
+  const colourPage = new URL('/mobile/customize-mobile.html', location.origin);
+  colourPage.searchParams.set('code', first.code);
+  colourPage.searchParams.set('bundleBuild', '1');
+  colourPage.searchParams.set('force', 'mobile');
+  window.location.href = `${colourPage.pathname}${colourPage.search}`;
 }
 
 function renderStep({reset = true} = {}) {
+  renderingStep = true;
   scroll.innerHTML = [includedMarkup, groupsMarkup, variantsMarkup, logoMarkup, reviewMarkup][draft.step]();
+  renderingStep = false;
   if (reset) scroll.scrollTop = 0;
   renderControls();
+  bindLogoStep();
 }
 
 function goTo(step) {
   if (saving || !canReach(step)) return;
+  if (draft.step === 3 && step !== 3) {
+    invalidateLogoUpload();
+    fileError = '';
+  }
   if (step === 2) {
     openBundleColourPage();
     return;
@@ -1139,39 +1370,270 @@ function removeAllocation(button) {
   announcement.textContent = 'Selection removed.';
 }
 
-async function chooseArtwork(files) {
-  if (pendingArtwork || !draft || draft.step !== 3) return;
-  const current = draft;
-  const focusBrowse = () => scroll.querySelector('[data-action="browse"]')?.focus({preventScroll: true});
-  if (files.length !== 1 || !acceptedFile(files[0])) {
-    fileError = files.length > 1 ? 'Choose exactly one logo file.' : 'Choose a supported file up to 10 MB.';
-    if (draft.logo) fileError += ' Your current logo is still attached.';
-    renderStep({reset: false});
-    focusBrowse();
+function invalidateLogoUpload() {
+  uploadGeneration += 1;
+  if (uploadAbort) {
+    uploadAbort.abort();
+    uploadAbort = null;
+  }
+  pendingArtwork = false;
+  pendingLogoFile = null;
+  shownProgress = 0;
+}
+
+function uploadRoot() {
+  return document.getElementById('bundle-upload');
+}
+
+function showFileError(message) {
+  fileError = message || '';
+  const error = $('file-error');
+  if (!error) return;
+  error.textContent = fileError;
+  error.hidden = !fileError;
+}
+
+function setReady(name) {
+  const root = uploadRoot();
+  if (!root) return;
+  root.setAttribute('data-ready', name ? 'true' : 'false');
+  const label = root.querySelector('[data-file]');
+  if (!label) return;
+  label.textContent = name || '';
+  label.title = name || '';
+  replayUploadContent(root);
+}
+
+function setProgress(ratio) {
+  shownProgress = Math.max(0, Math.min(1, Number(ratio) || 0));
+  const root = uploadRoot();
+  if (!root) return;
+  const percent = Math.round(shownProgress * 100);
+  const value = root.querySelector('[data-progress-value]');
+  const fill = root.querySelector('[data-progress-fill]');
+  if (value) value.textContent = `${percent}%`;
+  if (fill) fill.style.transform = `translateX(${percent}%)`;
+}
+
+function replayUploadIcon(root, state) {
+  const icon = root.querySelector(state === 2
+    ? '.bundle-upload__icon--red'
+    : state === 3
+      ? '.bundle-upload__icon--green'
+      : '.bundle-upload__icon--blue');
+  if (!icon) return;
+  const shapes = icon.querySelectorAll('circle, line, polyline');
+  shapes.forEach(shape => { shape.style.animation = 'none'; });
+  void icon.getBoundingClientRect();
+  shapes.forEach(shape => { shape.style.animation = ''; });
+}
+
+function replayUploadContent(root) {
+  const state = Number(root?.dataset.state || 0);
+  const content = root?.querySelectorAll('.bundle-upload__content')[state];
+  if (!content) return;
+  const parts = content.querySelectorAll(':scope > *');
+  parts.forEach(part => { part.style.animation = 'none'; });
+  void content.offsetWidth;
+  parts.forEach(part => { part.style.animation = ''; });
+}
+
+function setUploadState(state) {
+  const root = uploadRoot();
+  if (!root) return;
+  const nextState = String(state);
+  root.dataset.state = nextState;
+  root.setAttribute('aria-busy', nextState === '1' ? 'true' : 'false');
+  const title = root.querySelector(`#bundle-upload-title-${nextState}`);
+  if (title) root.setAttribute('aria-labelledby', title.id);
+  replayUploadIcon(root, Number(nextState));
+  replayUploadContent(root);
+}
+
+function bindLogoStep() {
+  if (!draft || draft.step !== 3) return;
+  const notes = cleanLogoNotes(draft.notes);
+  if (notes !== draft.notes) draft.notes = notes;
+  const notesField = $('notes');
+  if (notesField && notesField.value !== notes) notesField.value = notes;
+  const count = $('notes-count');
+  if (count) count.textContent = String(notes.length);
+  if (pendingLogoFile) setReady(pendingLogoFile.name);
+  if (pendingArtwork) {
+    setUploadState(1);
+    setProgress(shownProgress);
+  }
+}
+
+function resetLogoUploadUi() {
+  invalidateLogoUpload();
+  const input = $('logo-file');
+  if (input) input.value = '';
+  showFileError('');
+  setReady('');
+  setProgress(0);
+  setUploadState(0);
+  if (draft && builder.open) renderControls();
+}
+
+function finishLogoUpload() {
+  invalidateLogoUpload();
+  showFileError('');
+  if (!draft || draft.step !== 3) return;
+  renderStep({reset: false});
+  $('logo-attached')?.scrollIntoView({block: 'nearest'});
+}
+
+function stageLogoFile(file) {
+  if (pendingArtwork || !draft || draft.step !== 3 || !file) return;
+  if (!acceptedFile(file)) {
+    pendingLogoFile = null;
+    setReady('');
+    const input = $('logo-file');
+    if (input) input.value = '';
+    if (uploadRoot()?.dataset.state !== '0') setUploadState(0);
+    showFileError(`Choose a supported file up to 10 MB.${draft.logo ? ' Your current logo is still attached.' : ''}`);
     return;
   }
-  const file = files[0];
-  pendingArtwork = true;
-  fileError = '';
-  renderStep({reset: false});
-  try {
-    // Read only a prefix to confirm the browser can access the file.
-    await file.slice(0, 16).arrayBuffer();
-    if (draft !== current) return;
-    draft.logo = file;
-    rememberLogoPreview(file);
-    draft.dirty = true;
-    announcement.textContent = `Logo added: ${file.name}`;
-  } catch {
-    if (draft === current) fileError = 'The file could not be read. Please choose it again.';
-  } finally {
-    if (draft === current) {
-      pendingArtwork = false;
-      if (draft.step === 3) {
-        renderStep({reset: false});
-        focusBrowse();
-      }
+  pendingLogoFile = file;
+  showFileError('');
+  void startLogoUpload();
+}
+
+function stageLogoFiles(list) {
+  if (pendingArtwork || !draft || draft.step !== 3) return;
+  const files = Array.from(list || []);
+  if (files.length !== 1) {
+    pendingLogoFile = null;
+    setReady('');
+    showFileError(files.length > 1
+      ? `Choose exactly one logo file.${draft.logo ? ' Your current logo is still attached.' : ''}`
+      : '');
+    return;
+  }
+  stageLogoFile(files[0]);
+}
+
+function readFileWithProgress(file, onProgress, signal) {
+  return new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(new DOMException('aborted', 'AbortError'));
+      return;
     }
+    const reader = new FileReader();
+    const stop = () => {
+      try { reader.abort(); } catch { /* The read may already have finished. */ }
+    };
+    signal?.addEventListener('abort', stop, {once: true});
+    reader.onprogress = event => {
+      if (event.lengthComputable && event.total > 0) onProgress(event.loaded / event.total);
+    };
+    reader.onload = () => {
+      signal?.removeEventListener('abort', stop);
+      resolve();
+    };
+    reader.onerror = () => {
+      signal?.removeEventListener('abort', stop);
+      reject(reader.error || new Error('The file could not be read.'));
+    };
+    reader.onabort = () => {
+      signal?.removeEventListener('abort', stop);
+      reject(new DOMException('aborted', 'AbortError'));
+    };
+    try {
+      reader.readAsArrayBuffer(file);
+    } catch (error) {
+      signal?.removeEventListener('abort', stop);
+      reject(error);
+    }
+  });
+}
+
+function animateProgress(target, generation) {
+  const from = shownProgress;
+  const start = performance.now();
+  // Previous fill was 900ms. Speed × 0.7 stretches the same bar to 900/0.7 ms.
+  const duration = 900 / 0.7;
+  return new Promise(resolve => {
+    const tick = now => {
+      if (generation !== uploadGeneration) {
+        resolve(false);
+        return;
+      }
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - ((1 - t) * (1 - t));
+      setProgress(from + (target - from) * eased);
+      if (t < 1) requestAnimationFrame(tick);
+      else resolve(true);
+    };
+    requestAnimationFrame(tick);
+  });
+}
+
+function showSuccessPreview() {
+  const slot = uploadRoot()?.querySelector('[data-success-preview]');
+  if (!slot) return;
+  slot.replaceChildren();
+  const src = logoPreviewSrc(draft?.logo);
+  if (!src) return;
+  const image = document.createElement('img');
+  image.className = 'bundle-upload__preview';
+  image.alt = 'Uploaded logo preview';
+  image.src = src;
+  slot.append(image);
+}
+
+async function startLogoUpload() {
+  if (pendingArtwork || !pendingLogoFile || !draft || draft.step !== 3) return;
+  const file = pendingLogoFile;
+  const current = draft;
+  if (!acceptedFile(file)) {
+    showFileError(`Choose a supported file up to 10 MB.${current.logo ? ' Your current logo is still attached.' : ''}`);
+    return;
+  }
+  const generation = ++uploadGeneration;
+  uploadAbort?.abort();
+  const controller = new AbortController();
+  uploadAbort = controller;
+  pendingArtwork = true;
+  showFileError('');
+  setUploadState(1);
+  setProgress(0);
+  renderControls();
+  announcement.textContent = 'Uploading your logo.';
+  const alive = () => generation === uploadGeneration && draft === current && current.step === 3;
+  let sawPartial = false;
+  try {
+    await readFileWithProgress(file, ratio => {
+      if (!alive() || ratio >= 0.98) return;
+      sawPartial = true;
+      setProgress(Math.min(0.9, ratio));
+    }, controller.signal);
+    if (!alive()) return;
+    // A small local file reports complete in one tick. Fill the bar only after that read succeeds.
+    if (!sawPartial) setProgress(0);
+    const finished = await animateProgress(1, generation);
+    if (!finished || !alive()) return;
+    current.logo = file;
+    rememberLogoPreview(file);
+    current.dirty = true;
+    pendingLogoFile = null;
+    pendingArtwork = false;
+    uploadAbort = null;
+    const input = $('logo-file');
+    if (input) input.value = '';
+    showSuccessPreview();
+    setUploadState(3);
+    announcement.textContent = `Logo added: ${file.name}`;
+    renderControls();
+  } catch (error) {
+    if (!alive()) return;
+    if (error?.name === 'AbortError') return;
+    pendingArtwork = false;
+    uploadAbort = null;
+    setUploadState(2);
+    announcement.textContent = 'Your file could not be uploaded due to an error.';
+    renderControls();
   }
 }
 
@@ -1226,7 +1688,7 @@ function renderBasket() {
     const bundle = findOffer(line.bundleId);
     return `<article class="basket-line">
       <div class="basket-line-heading">
-        <div><h3>${escape(bundle.title)}</h3><p>${pieceCount(bundle)} items · ${bundle.logoCount > 1 ? `${bundle.logoCount} logos included` : 'One logo included'}</p></div>
+        <div><h3>${escape(printOnlyCopy(bundle.title))}</h3><p>${pieceCount(bundle)} items · ${bundle.logoCount > 1 ? `${bundle.logoCount} logos included` : 'One logo included'}</p></div>
         <div class="line-price">${price(bundle.price)}</div>
       </div>
       <div class="basket-line-actions">
@@ -1235,7 +1697,7 @@ function renderBasket() {
       </div>
       <details class="basket-details"><summary>View items ${icon('chevron')}</summary>
         ${selectedItems(line.allocations)}
-        <div class="info-panel">${icon('file')}<div><strong>${escape(line.logo.name)}</strong><small>${line.method} included</small></div></div>
+        <div class="info-panel">${icon('file')}<div><strong>${escape(line.logo.name)}</strong><small>Printing included</small></div></div>
         ${line.notes ? `<div class="review-notes"><strong>Notes</strong><p>${escape(line.notes)}</p></div>` : ''}
       </details>
     </article>`;
@@ -1304,10 +1766,13 @@ function chosenLinesFromDraft(current) {
   });
 }
 
-async function persistDraftLogo(file, methodLabel) {
+async function persistDraftLogo(file) {
   if (!file) return null;
-  if (!(file instanceof File)) return file;
-  const method = /embroid/i.test(String(methodLabel || '')) ? 'embroidery' : 'dtf';
+  if (!(file instanceof File)) {
+    if (file && typeof file === 'object') return {...file, method: 'dtf'};
+    return file;
+  }
+  const method = 'dtf';
   const dataUrl = await new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(String(reader.result || ''));
@@ -1390,7 +1855,7 @@ async function addToBasket() {
       /* Validation is optional; basket save continues. */
     }
 
-    const logoRecord = await persistDraftLogo(draft.logo, draft.method);
+    const logoRecord = await persistDraftLogo(draft.logo);
     const pounds = (Number(draft.bundle.price) || 0) / 100;
     const firstImage = chosenLinesFromDraft(draft).find(line => line.image)?.image
       || products[Object.keys(draft.allocations || {})[0]]?.image
@@ -1469,6 +1934,12 @@ function advance() {
   }
   const nextStep = draft.step + 1;
   draft.reached = Math.max(draft.reached, nextStep);
+  if (!canReach(nextStep)) {
+    builderError = 'Choose a colour and sizes for every garment before reviewing the bundle.';
+    renderStep({reset: false});
+    scroll.querySelector('.inline-error')?.scrollIntoView({block: 'nearest'});
+    return;
+  }
   goTo(nextStep);
 }
 
@@ -1499,13 +1970,21 @@ const actions = {
   },
   fill: button => addAllocation(button.closest('form'), true),
   'remove-allocation': removeAllocation,
-  method: button => {
-    draft.method = button.dataset.method;
+  method: () => {
+    draft.method = 'Print';
     draft.dirty = true;
     renderStep({reset: false});
-    scroll.querySelector(`[data-method="${draft.method}"]`)?.focus();
   },
-  browse: () => $('logo-file').click(),
+  browse: () => $('logo-file')?.click(),
+  'logo-choose': () => $('logo-file')?.click(),
+  'logo-clear': () => resetLogoUploadUi(),
+  'logo-upload': () => { void startLogoUpload(); },
+  'logo-cancel': () => resetLogoUploadUi(),
+  'logo-dismiss': () => {
+    if (uploadRoot()?.dataset.state === '3') finishLogoUpload();
+    else resetLogoUploadUi();
+  },
+  'logo-done': () => finishLogoUpload(),
   edit: button => {
     const line = lines.find(entry => entry.id === button.dataset.id);
     if (line) openBuilder(findOffer(line.bundleId), button, line);
@@ -1545,34 +2024,44 @@ scroll.addEventListener('change', event => {
   if (field.name === 'size' && field.form?.matches('.allocation-form')) {
     variantInputs[field.form.dataset.code] = {colour: field.form.elements.colour.value, size: field.value};
   }
-  if (field.id === 'logo-file' && field.files.length) void chooseArtwork(field.files);
+  if (field.id === 'logo-file') {
+    if (field.files?.length) stageLogoFiles(field.files);
+    field.value = '';
+  }
 });
 scroll.addEventListener('input', event => {
-  if (event.target.id !== 'notes') return;
-  draft.notes = event.target.value;
+  if (renderingStep || event.target.id !== 'notes') return;
+  const notes = cleanLogoNotes(event.target.value);
+  if (notes !== event.target.value) event.target.value = notes;
+  draft.notes = notes;
   draft.dirty = true;
-  $('notes-count').textContent = draft.notes.length;
+  const count = $('notes-count');
+  if (count) count.textContent = String(notes.length);
 });
 scroll.addEventListener('toggle', event => {
   const card = event.target;
   if (card.matches('.variant-card') && card.open && scroll.contains(card)) draft.activeProduct = card.querySelector('summary').dataset.code;
 }, true);
+const dragHasFiles = event => Array.from(event.dataTransfer?.types || []).includes('Files');
 scroll.addEventListener('dragover', event => {
-  const upload = event.target.closest('#upload-area');
+  const upload = event.target.closest('#bundle-upload');
+  if (event.target.closest('#notes') && dragHasFiles(event)) event.preventDefault();
   if (!upload) return;
   event.preventDefault();
-  upload.classList.add('dragging');
+  if (!pendingArtwork) upload.classList.add('is-dragging');
 });
 scroll.addEventListener('dragleave', event => {
-  const upload = event.target.closest('#upload-area');
-  if (upload && !upload.contains(event.relatedTarget)) upload.classList.remove('dragging');
+  const upload = event.target.closest('#bundle-upload');
+  if (upload && !upload.contains(event.relatedTarget)) upload.classList.remove('is-dragging');
 });
 scroll.addEventListener('drop', event => {
-  const upload = event.target.closest('#upload-area');
+  const upload = event.target.closest('#bundle-upload');
+  const files = event.dataTransfer?.files;
+  if (event.target.closest('#notes') && files?.length) event.preventDefault();
   if (!upload) return;
   event.preventDefault();
-  upload.classList.remove('dragging');
-  void chooseArtwork(event.dataTransfer.files);
+  upload.classList.remove('is-dragging');
+  if (!pendingArtwork) stageLogoFiles(files);
 });
 const bundleRadial = $('bundleRadial');
 const bundleRadialAnchor = $('bundleRadialAnchor');
@@ -2313,10 +2802,11 @@ async function resumeColourBuild() {
   draft.reached = Math.max(draft.step, draft.reached || 0);
   returnToBasket = Boolean(job.returnToBasket || job.lineId);
   variantInputs = {};
-  pendingArtwork = false;
+  invalidateLogoUpload();
   fileError = '';
+  draft.notes = cleanLogoNotes(draft.notes);
   builderError = '';
-  $('builder-title').textContent = live.title;
+  $('builder-title').textContent = printOnlyCopy(live.title);
   $('builder-kicker').textContent = 'BUILD YOUR BUNDLE';
   $('builder-price').innerHTML = price(live.price);
   try {
@@ -2373,6 +2863,16 @@ async function init() {
 // A broken product image falls back to a plain tile instead of a broken icon.
 document.addEventListener('error', event => {
   const image = event.target;
+  if (image?.matches?.('img.logo-recap__photo')) {
+    const fallback = image.dataset.usedFallback === '1' ? '' : (image.dataset.fallback || '');
+    if (fallback) {
+      image.dataset.usedFallback = '1';
+      image.src = fallback;
+      return;
+    }
+    image.replaceWith(Object.assign(document.createElement('span'), {className: 'cap-thumb', innerHTML: icon('layers')}));
+    return;
+  }
   if (image?.matches?.('img[data-thumb]')) {
     const code = image.dataset.thumb;
     if (products[code]) products[code].image = '';

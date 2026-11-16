@@ -3143,7 +3143,11 @@ function bootBrandedNav() {
     let swapFlag = '';
     try { swapFlag = sessionStorage.getItem('buk-bar-swap') || ''; } catch (error) { swapFlag = ''; }
     const here = pageKeyFromUrl(window.location.href);
-    if (here === 'bundles' && swapFlag !== 'bundles') playBundlesEntrance();
+    if (here === 'bundles' && window.__bukBundlesIntro) {
+        try { sessionStorage.removeItem('buk-bar-swap'); } catch (error) { /* ignore */ }
+        selectPage('bundles', { instant: true, emit: false });
+    }
+    else if (here === 'bundles' && swapFlag !== 'bundles') playBundlesEntrance();
     else if (here) {
         if (swapFlag === 'bundles') {
             try { sessionStorage.removeItem('buk-bar-swap'); } catch (error) { /* ignore */ }
