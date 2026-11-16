@@ -14,6 +14,12 @@ messages, receipts, replies and uploads are simulated. The existing local Google
 sign-in preview is used. No Crisp message or customer file is sent in this mode.
 Use **Ricomincia** to clear only the questionnaire draft and restart.
 
+The seven garment photos, team portraits, logo and reference icons use SVG
+viewBoxes over a shared lossless artwork asset
+(`mobile/images/prechat/reference-artwork.webp`). The asset preserves the
+supplied image pixels for those elements. Text, selection, upload, navigation
+and the enquiry summary are interactive HTML controls.
+
 The review sets a local session cookie so internal page navigation and automatic
 mobile/desktop redirects keep the simulation active. To leave test mode, visit
 `/__preview/leave`. Normal production HTML never contains the adapter. The dev

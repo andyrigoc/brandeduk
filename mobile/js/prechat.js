@@ -13,17 +13,18 @@
   var STORAGE = 'buk_prechat_draft_v3';
   var SENT = 'buk_prechat_sent_v3';
   var SCRIPT_SRC = document.currentScript && document.currentScript.src;
+  var REFERENCE = new URL('../images/prechat/reference-artwork.webp', SCRIPT_SRC || location.href).href;
   var chat = window.BrandedOnsiteChat;
   var MAX_FILE = 10 * 1024 * 1024;
   var ALLOWED = ['png','jpg','jpeg','pdf','ai','eps','svg'];
   var ITEMS = [
-    { id:'tshirts', label:'T-Shirts', icon:'tshirt' },
-    { id:'polos', label:'Polos', icon:'polo' },
-    { id:'hoodies', label:'Hoodies', icon:'hoodie' },
-    { id:'sweatshirts', label:'Sweatshirts', icon:'sweatshirt' },
-    { id:'jackets', label:'Jackets', icon:'jacket' },
-    { id:'workwear', label:'Workwear', icon:'vest' },
-    { id:'hivis', label:'Hi-Vis', icon:'vest' },
+    { id:'tshirts', label:'T-Shirts', photo:[399,264,44,47] },
+    { id:'polos', label:'Polos', photo:[552,264,44,47] },
+    { id:'hoodies', label:'Hoodies', photo:[400,324,44,46] },
+    { id:'sweatshirts', label:'Sweatshirts', photo:[552,325,44,47] },
+    { id:'jackets', label:'Jackets', photo:[400,383,44,48] },
+    { id:'workwear', label:'Workwear', photo:[552,382,44,49] },
+    { id:'hivis', label:'Hi-Vis', photo:[400,442,44,47] },
     { id:'other', label:'Other / Not listed', icon:'other' }
   ];
   var QUANTITIES = ['1–10 items','11–25 items','26–50 items','51–75 items','76+ items'];
@@ -36,6 +37,7 @@
       var d = JSON.parse(sessionStorage.getItem(STORAGE) || 'null');
       if (!d || !Array.isArray(d.items)) return;
       state = Object.assign(state, d);
+      delete state.logoPreview;
       state.items = state.items.filter(function(id){return ITEMS.some(function(item){return item.id===id;});});
       state.quantity = QUANTITIES.indexOf(state.quantity)>=0 ? state.quantity : '';
       state.step = Math.max(1,Math.min(5,Number(state.step)||1));
@@ -49,7 +51,7 @@
   }
   function save() {
     try {
-      var s = Object.assign({}, state); delete s.logoMissingAfterNavigation;
+      var s = Object.assign({}, state); delete s.logoMissingAfterNavigation; delete s.logoPreview;
       sessionStorage.setItem(STORAGE, JSON.stringify(s));
     } catch(e) {}
   }
@@ -68,7 +70,17 @@
       return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];
     });
   }
+  // Display the supplied artwork through a viewBox. The source pixels are
+  // preserved; no generated replacements or substitute product photography.
+  function referencePhoto(box, cls) {
+    return '<svg class="'+cls+'" viewBox="'+box.join(' ')+'" aria-hidden="true" focusable="false"><image href="'+escapeText(REFERENCE)+'" x="0" y="0" width="1069" height="1472"/></svg>';
+  }
   function icon(name, size) {
+    var artwork={tshirt:[397,188,40,35],users:[746,189,43,31],image:[44,918,43,33],note:[395,915,30,35],upload:[155,1032,57,47],bolt:[61,655,22,23],box:[282,655,23,23],cart:[869,1141,32,30]};
+    if(size<=20){
+      artwork.tshirt=[399,1138,25,23];artwork.users=[400,1167,25,23];artwork.image=[400,1197,24,20];artwork.note=[173,655,22,24];
+    }else{artwork.bolt=[766,1141,27,31];}
+    if(artwork[name]) return referencePhoto(artwork[name],'buk-pc-art-icon').replace('<svg ','<svg width="'+(size||25)+'" height="'+(size||25)+'" ');
     var start = '<svg width="'+(size||25)+'" height="'+(size||25)+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">';
     var drawings = {
       tshirt:'<path d="M9 3H7L2 6l2 5 3-1v11h10V10l3 1 2-5-5-3h-2a3 3 0 0 1-6 0Z"/>',
@@ -77,11 +89,15 @@
       sweatshirt:'<path d="m7 4-4 4-1 8 5 1v4h10v-4l5-1-1-8-4-4-2 2H9L7 4Z"/><path d="M9 4c0 2 6 2 6 0"/>',
       jacket:'<path d="M7 3 3 7 2 17l5 1v3h10v-3l5-1-1-10-4-4-5 3-5-3Z"/><path d="M12 6v15m-5-15 5 5 5-5"/>',
       vest:'<path d="m7 3-4 4v14h18V7l-4-4h-3l-2 5-2-5H7Z"/><path d="M3 12h18M3 16h18M12 9v12"/>',
-      other:'<circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>',
+      other:'<circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/>',
       users:'<circle cx="9" cy="8" r="3"/><path d="M2 21v-2a7 7 0 0 1 14 0v2M16 5a3 3 0 0 1 0 6m2 3a6 6 0 0 1 4 6"/>',
       image:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8" cy="8" r="1"/><path d="m3 17 5-5 4 4 3-3 6 6"/>',
       note:'<path d="M5 2h10l5 5v15H5Z"/><path d="M15 2v5h5M8 12h9m-9 4h9"/>',
-      upload:'<path d="M12 16V3m-5 5 5-5 5 5"/><path d="M4 16v4h16v-4"/>',
+      upload:'<path d="M6 18H5a4 4 0 0 1-1-7.9A7 7 0 0 1 17.8 8a5 5 0 0 1 1.2 10h-1M12 21V10m-5 5 5-5 5 5"/>',
+      bolt:'<path d="m13 2-9 12h7l-1 8 10-13h-7l1-7Z"/>',
+      cart:'<path d="M2 3h3l3 13h11l3-10H6M9 19h.01M18 19h.01"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/>',
+      box:'<path d="m12 2 9 5v10l-9 5-9-5V7l9-5Zm0 10 9-5m-9 5L3 7m9 5v10M7.5 4.5l9 5"/>',
+      trash:'<path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7"/>',
       send:'<path d="M22 2 11 13M22 2l-7 20-4-9-9-4Z"/>',
       clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l4 2"/>',
       check:'<path d="m5 12 5 5 9-10"/>',
@@ -121,8 +137,14 @@
     }
     if(status) status.textContent=msg||'';
   }
+  function supportFooter(){
+    return '<nav class="buk-pc-footer" aria-label="Chat support options">'+
+      '<button type="button" data-pc="quick-replies">'+icon('bolt',20)+'<span>Fast replies</span></button>'+
+      '<button type="button" data-pc="quote-support">'+icon('note',20)+'<span>Quote support</span></button>'+
+      '<button type="button" data-pc="fast-track">'+icon('box',20)+'<span>Order help</span></button></nav>';
+  }
   function title(title, subtitle, kind) {
-    return '<div class="buk-pc-section-title">'+svgMark(kind,29)+'<div><h3>'+escapeText(title)+'</h3><p>'+escapeText(subtitle)+'</p></div></div>';
+    return '<div class="buk-pc-section-title">'+svgMark(kind,29)+'<div><h3>'+escapeText(title).replace(/\n/g,'<br>')+'</h3><p>'+escapeText(subtitle)+'</p></div></div>';
   }
   function stepper() {
     var a = '<div class="buk-pc-steps" aria-label="Step '+state.step+' of 5">';
@@ -142,43 +164,41 @@
       '<div class="buk-pc-intro-text"><span class="buk-pc-eyebrow">QUICK ENQUIRY</span><h2>Tell us about<br>your order</h2>'+
       '<ul><li>Garment &amp; quantity</li><li>Your logo</li><li>Fast, accurate quote</li></ul>'+
       '<p class="buk-pc-time">'+icon('clock',16)+' Takes less than 1 minute</p></div>'+
-      '<div class="buk-pc-hero" aria-hidden="true"></div></div>'+
-      '<button type="button" class="buk-pc-main buk-pc-start" data-pc="next">Let\'s get started <span>→</span></button>'+
-      '<button type="button" class="buk-pc-skip" data-pc="fast-track">Existing order or general help? Speak to our team</button>';
+      referencePhoto([193,207,155,272],'buk-pc-hero')+'</div>'+
+      '<button type="button" class="buk-pc-main buk-pc-start" data-pc="next">Let\'s get started '+icon('back',19).replace('m15 18-6-6 6-6m-6 6h12','m9 6 6 6-6 6M3 12h12')+'</button>';
   }
   function stepTwo() {
     var cards=ITEMS.map(function(p){
       var selected=state.items.indexOf(p.id)>=0;
       return '<button type="button" class="buk-pc-item'+(selected?' selected':'')+'" data-item="'+p.id+'" aria-pressed="'+selected+'">'+
-        '<span class="buk-pc-product '+(p.id==='hivis'||p.id==='workwear'?'hi-vis':'')+'">'+icon(p.icon,28)+'</span><span class="buk-pc-item-label">'+escapeText(p.label)+'</span><span class="buk-pc-check">'+(selected?'✓':'')+'</span></button>';
+        '<span class="buk-pc-product">'+(p.photo?referencePhoto(p.photo,'buk-pc-product-photo'):icon('other',28))+'</span><span class="buk-pc-item-label">'+(p.id==='other'?'Other /<br>Not listed':escapeText(p.label))+'</span><span class="buk-pc-check">'+(selected?'✓':'')+'</span></button>';
     }).join('');
-    return title('What type of garments do you need?','Select one or more options.','tshirt')+'<div class="buk-pc-products">'+cards+'</div>'+nav(true,'Next',state.items.length>0);
+    return title('What type of garments\ndo you need?','Select one or more options.','tshirt')+'<div class="buk-pc-products">'+cards+'</div>'+nav(true,'Next',state.items.length>0);
   }
   function stepThree() {
-    var rows=QUANTITIES.map(function(q){var selected=state.quantity===q;return '<button type="button" class="buk-pc-qty'+(selected?' selected':'')+'" data-qty="'+escapeText(q)+'" aria-pressed="'+selected+'"><strong>'+escapeText(q)+'</strong><span class="buk-pc-radio"></span></button>';}).join('');
-    return title('How many items do you need?','Choose the closest range.','users')+'<div class="buk-pc-qty-list">'+rows+'</div>'+nav(true,'Next',!!state.quantity);
+    var rows=QUANTITIES.map(function(q){var selected=state.quantity===q;return '<button type="button" class="buk-pc-qty'+(selected?' selected':'')+'" data-qty="'+escapeText(q)+'" aria-pressed="'+selected+'"><strong>'+escapeText(q).replace('–',' – ')+'</strong><span class="buk-pc-radio"></span></button>';}).join('');
+    return title('How many items\ndo you need?','Choose the closest range.','users')+'<div class="buk-pc-qty-list">'+rows+'</div>'+nav(true,'Next',!!state.quantity);
   }
   function stepFour() {
-    var uploaded=state.logoName ? '<div class="buk-pc-file"><span class="buk-pc-file-icon">'+icon('image',22)+'</span><span class="buk-pc-file-copy"><strong>'+escapeText(state.logoName)+'</strong><small>'+(state.logoMissingAfterNavigation?'Please reselect the file after signing in':'File selected')+'</small></span><span class="buk-pc-file-ok">'+(file?'✓':'!')+'</span><button type="button" data-pc="remove-file" aria-label="Remove selected logo">×</button></div>' : '';
-    return title('Do you already have your logo?','Upload your logo so we can give you an accurate quote.','image')+
-      '<label class="buk-pc-upload" for="bukPcFile"><span>'+icon('upload',38)+'</span><strong>Upload your logo</strong><small>Drag &amp; drop a file here or tap to browse</small><div class="buk-pc-filetypes"><i>PNG</i><i>JPG</i><i>PDF</i><i>AI</i><i>EPS</i></div></label>'+
+    var size=file ? (file.size/1048576).toFixed(1)+' MB' : '';
+    var uploaded=state.logoName ? '<div class="buk-pc-file"><span class="buk-pc-file-icon">'+(state.logoPreview?'<img src="'+escapeText(state.logoPreview)+'" alt="Selected logo">':icon('image',30))+'</span><span class="buk-pc-file-copy"><strong>'+escapeText(state.logoName)+'</strong><small>'+(state.logoMissingAfterNavigation?'Please reselect the file after signing in':size)+'</small></span><span class="buk-pc-file-ok">'+(file?'✓':'!')+'</span><button type="button" data-pc="remove-file" aria-label="Remove selected logo">'+icon('trash',19)+'</button></div>' : '';
+    return title('Do you already have\nyour logo?','Upload your logo so we can give you an accurate quote.','image')+
+      '<label class="buk-pc-upload" for="bukPcFile"><span>'+icon('upload',48)+'</span><strong>Upload your logo</strong><small>Drag &amp; drop a file here or tap to browse</small><div class="buk-pc-filetypes"><i>PNG</i><i>JPG</i><i>PDF</i><i>AI</i><i>EPS</i></div></label>'+
       '<input type="file" id="bukPcFile" class="buk-pc-file-input" aria-label="Upload your logo (maximum 10 MB)" accept=".png,.jpg,.jpeg,.pdf,.ai,.eps,.svg">'+uploaded+
-      '<p class="buk-pc-upload-note">PNG, JPG, PDF, AI, EPS or SVG · Maximum 10 MB</p>'+
-      '<button type="button" class="buk-pc-skip" data-pc="logo-skip">I don\'t have a logo / I\'ll send it later</button>'+nav(true,'Next',!state.logoName||!!file);
+      '<button type="button" class="buk-pc-skip'+(state.logoName?' buk-pc-sr-only':'')+'" data-pc="logo-skip">I\'ll send my logo later</button>'+nav(true,'Next',!state.logoName||!!file);
   }
   function itemLabels() {
     return state.items.map(function(id){var x=ITEMS.find(function(i){return i.id===id;});return x?x.label:id;}).join(', ');
   }
   function stepFive() {
-    return title('Anything else we should know?','Add colours, sizes, logo position or any special requirements.','note')+
-      '<div class="buk-pc-notebox"><textarea id="bukPcNotes" aria-label="Additional details" maxlength="500" rows="3" placeholder="e.g. Colours, sizes, left chest logo, large back or a deadline..."></textarea><small><span id="bukPcCount">'+state.notes.length+'</span> / 500</small></div>'+
+    return title('Anything else we should know?','Add any extra details like colours, sizes, positions (e.g. left chest, large back), or a deadline.','note')+
+      '<div class="buk-pc-notebox"><textarea id="bukPcNotes" aria-label="Additional details" maxlength="500" rows="3" placeholder="e.g. Colours, sizes, logo position,\ndeadline, or any special requirements..."></textarea><small><span id="bukPcCount">'+state.notes.length+'</span> / 500</small></div>'+
       '<div class="buk-pc-summary"><div class="buk-pc-summary-head"><strong><span>✓</span> Your enquiry summary</strong><button type="button" data-pc="edit">Edit '+icon('edit',14)+'</button></div>'+
       '<div class="buk-pc-summary-row">'+icon('tshirt',18)+' <span>Garments:</span><b>'+escapeText(itemLabels()||'Not specified')+'</b></div>'+
-      '<div class="buk-pc-summary-row">'+icon('users',18)+' <span>Quantity:</span><b>'+escapeText(state.quantity||'Not specified')+'</b></div>'+
+      '<div class="buk-pc-summary-row">'+icon('users',18)+' <span>Quantity:</span><b>'+escapeText(state.quantity||'Not specified').replace('–',' – ')+'</b></div>'+
       '<div class="buk-pc-summary-row">'+icon('image',18)+' <span>Logo:</span><b>'+escapeText(state.logoName||'To follow')+'</b></div></div>'+
       '<p id="bukPcStatus" class="buk-pc-status" role="status" aria-live="polite"></p>'+
-      '<button type="button" class="buk-pc-main buk-pc-submit" data-pc="submit">'+icon('send',18)+' Send to our team</button>'+
-      '<button type="button" class="buk-pc-back-small" data-pc="back">← Back</button>';
+      '<button type="button" class="buk-pc-main buk-pc-submit" data-pc="submit">'+icon('send',18)+' Send to our team</button>';
   }
   function stepSupport() {
     return title('How can we help?','Existing order or general question — no questionnaire required.','note')+
@@ -197,10 +217,12 @@
       '<button type="button" class="buk-pc-link" data-pc="edit">Edit enquiry</button><p class="buk-pc-status" id="bukPcStatus" role="status"></p></div>';
   }
   function stepDone() {
-    return '<div class="buk-pc-finish"><div class="buk-pc-team-photo" aria-hidden="true"></div><h2>Thanks! <span>✓</span></h2><h3>Connecting you to our team...</h3><p>We\'ve received your enquiry. A member of our team will respond as soon as possible.</p><div class="buk-pc-benefits"><span>⚡<small>Fast quotes</small></span><span>⌁<small>Product advice</small></span><span>♧<small>Order support</small></span></div><button type="button" class="buk-pc-main buk-pc-open" data-pc="open-chat">Open live conversation →</button></div>';
+    var waves='<svg class="buk-pc-waves" viewBox="716 792 340 506" preserveAspectRatio="none" aria-hidden="true"><defs><clipPath id="bukPcWaves"><rect x="716" y="892" width="93" height="126"/><rect x="994" y="1090" width="62" height="36"/><rect x="914" y="1218" width="142" height="80"/></clipPath></defs><image href="'+escapeText(REFERENCE)+'" width="1069" height="1472" clip-path="url(#bukPcWaves)"/></svg>';
+    return '<div class="buk-pc-finish">'+waves+referencePhoto([803,817,187,153],'buk-pc-team-photo')+'<h2>Thanks! <span>✓</span></h2><h3>Connecting you to our team...</h3><p>We\'ve got your details and a member<br>of our team will be with you shortly.</p><div class="buk-pc-benefits"><span>'+icon('bolt',26)+'<small>Fast quotes</small></span><span>'+icon('cart',26)+'<small>Product advice</small></span><span>'+icon('tshirt',26)+'<small>Order support</small></span></div><button type="button" class="buk-pc-sr-only" data-pc="open-chat">Open live conversation</button></div>';
   }
   function render() {
     if(!root) return;
+    popup.dataset.prechatStep=state.stage==='collect'?String(state.step):state.stage;
     var content=el('div','buk-pc-inner');
     if(state.stage==='auth') {
       content.innerHTML=stepAuth();
@@ -247,7 +269,13 @@
     if(ALLOWED.indexOf(ext)<0){setStatus('Please select PNG, JPG, PDF, AI, EPS or SVG.');return;}
     if(!f.size || f.size>MAX_FILE){setStatus('Select a non-empty file up to 10 MB.');return;}
     attachment=null;
+    if(state.logoPreview && window.URL.revokeObjectURL) URL.revokeObjectURL(state.logoPreview);
+    state.logoPreview=/^image\//.test(f.type||'') && window.URL.createObjectURL ? URL.createObjectURL(f) : '';
     file=f;state.logoName=f.name;state.logoType=f.type||'application/octet-stream';state.logoMissingAfterNavigation=false;render();
+  }
+  function clearFile(){
+    if(state.logoPreview && window.URL.revokeObjectURL) URL.revokeObjectURL(state.logoPreview);
+    attachment=null;file=null;state.logoName='';state.logoType='';state.logoPreview='';state.logoMissingAfterNavigation=false;
   }
   function next() {
     if(state.step===2 && !state.items.length)return;
@@ -357,6 +385,7 @@
       window.setTimeout(function(){if(state.stage==='done')releaseNativeChat();},4200);
     }catch(err){
       setStatus(err.message||'The enquiry was not confirmed as delivered. Please try again.');
+      if(!root.querySelector('[data-pc="back"]')) root.querySelector('#bukPcStatus').insertAdjacentHTML('afterend','<button type="button" class="buk-pc-back-small" data-pc="back">← Back</button>');
       var b=root.querySelector('[data-pc="submit"]');if(b){b.disabled=false;b.textContent='Try sending again';}
     }finally{sending=false;root.inert=false;root.setAttribute('aria-busy','false');}
   }
@@ -365,17 +394,31 @@
     var action=event.target.closest('[data-pc]');
     if(action){
       var a=action.getAttribute('data-pc');
+      if((state.stage==='sent'||state.stage==='done') && ['fast-track','quote-support','quick-replies'].indexOf(a)>=0){
+        if(state.stage==='done')releaseNativeChat();
+        var input=document.getElementById('waChatInput');
+        if(input){input.value=a==='fast-track'?'I need help with my order.':a==='quote-support'?'I need help with a quote.':'';input.focus();}
+        return;
+      }
       if(a==='next')next();
       else if(a==='back')back();
       else if(a==='start-over'){state.stage='collect';state.step=1;state.fastTrack=false;render();}
       else if(a==='fast-track'){state.fastTrack=true;state.stage='support';render();}
+      else if(a==='quote-support'){state.fastTrack=false;state.stage='collect';state.step=1;render();}
+      else if(a==='quick-replies'){
+        var menu=popup.querySelector('.buk-pc-quick-menu');
+        if(menu){menu.remove();return;}
+        menu=el('div','buk-pc-quick-menu');
+        ['Delivery times','Logo setup','Minimum order'].forEach(function(label){menu.appendChild(button(label,'',function(){state.fastTrack=true;state.stage='support';state.notes=label;menu.remove();render();}));});
+        popup.querySelector('.buk-pc-footer').insertAdjacentElement('beforebegin',menu);
+      }
       else if(a==='edit'){state.stage=state.fastTrack?'support':'collect';if(!state.fastTrack)state.step=2;render();}
       else if(a==='submit')submit();
       else if(a==='google')startGoogle();
       else if(a==='cookies')openCookies();
       else if(a==='open-chat')releaseNativeChat();
-      else if(a==='logo-skip'){attachment=null;file=null;state.logoName='';state.logoType='';state.logoMissingAfterNavigation=false;next();}
-      else if(a==='remove-file'){attachment=null;file=null;state.logoName='';state.logoType='';state.logoMissingAfterNavigation=false;render();}
+      else if(a==='logo-skip'){clearFile();next();}
+      else if(a==='remove-file'){clearFile();render();}
       return;
     }
     var item=event.target.closest('[data-item]');
@@ -400,6 +443,12 @@
     if(!popup || !popup.querySelector('.wa-popup__card'))return false;
     var card=popup.querySelector('.wa-popup__card');
     fromStore();
+    var brand=card.querySelector('.wa-popup__brand');
+    brand.classList.add('buk-pc-brand');
+    brand.setAttribute('aria-label','Branded UK');
+    brand.innerHTML=referencePhoto([32,17,113,36],'buk-pc-brand-image');
+    card.insertAdjacentHTML('beforeend',supportFooter());
+    card.querySelector('.buk-pc-footer').addEventListener('click',onClick);
     if(hasSent()) {
       state.stage='sent';live=true;
       chat.setCollecting(false);
@@ -407,13 +456,13 @@
       return true;
     }
     var welcome=el('div','wa-popup__welcome buk-pc-welcome');
-    var welcomeImage=new URL('../images/prechat/welcome.png',SCRIPT_SRC||location.href).href;
-    welcome.innerHTML='<img class="wa-popup__agents-visual" src="'+escapeText(welcomeImage)+'" alt=""><div class="wa-popup__welcome-copy"><h3>Hi, welcome to Branded.</h3><p>Let’s get a few details so we can help you faster.</p></div>';
+    welcome.innerHTML=referencePhoto([34,78,94,44],'buk-pc-welcome-photo')+'<div class="wa-popup__welcome-copy"><h3>Hi, welcome to Branded.</h3><p>Let’s get a few details so we can<br>help you faster.</p></div>';
     card.querySelector('.wa-popup__topbar').insertAdjacentElement('afterend',welcome);
     root=el('section','buk-pc-root');root.id='bukPrechat';root.setAttribute('aria-label','Quick enquiry questionnaire');
     welcome.insertAdjacentElement('afterend',root);
     panel=root;
     popup.classList.add('buk-prechat-collect');
+    card.querySelectorAll('.wa-popup__actions,[id="waEmailTeam"],[id="waCallTeam"]').forEach(function(node){node.removeAttribute('style');});
     chat.setCollecting(true);
     root.addEventListener('click',onClick);
     render();live=true;

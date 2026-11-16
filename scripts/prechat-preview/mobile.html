@@ -12,13 +12,15 @@ main{flex:1;min-height:0;display:flex;justify-content:center}iframe{height:100%;
 </style>
 </head>
 <body>
-<header><div><strong>Branded UK · Mobile</strong><small>Test locale: messaggi e upload simulati</small></div><div><select aria-label="Larghezza anteprima"><option value="412">Mobile 412 px</option><option value="360">Mobile 360 px</option><option value="100%">Desktop</option></select> <button type="button" id="reset">Ricomincia</button></div></header>
+<header><div><strong>Branded UK · Mobile</strong><small>Test locale: messaggi e upload simulati</small></div><div><select aria-label="Larghezza anteprima"><option value="412">Mobile 412 px</option><option value="360">Mobile 360 px</option><option value="360x640">Mobile 360 × 640 px</option><option value="100%">Desktop</option></select> <button type="button" id="reset">Ricomincia</button></div></header>
 <main><iframe id="site" title="Sito Branded UK locale con nuova chat" src="/index-mobile.html?prechat-preview=1"></iframe></main>
 <script>
 const frame=document.getElementById('site');
 document.querySelector('select').addEventListener('change',event=>{
   const desktop=event.target.value==='100%';
-  frame.style.width=desktop?'100%':event.target.value+'px';
+  const size=event.target.value.split('x');
+  frame.style.width=desktop?'100%':size[0]+'px';
+  frame.style.height=size[1]?size[1]+'px':'100%';
   const page=desktop?'/home-pc.html':'/index-mobile.html';
   if(new URL(frame.contentWindow.location.href).pathname!==page)frame.src=page+'?prechat-preview=1';
 });

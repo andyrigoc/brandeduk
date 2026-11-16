@@ -109,6 +109,31 @@ test('previously confirmed enquiry restores the native conversation without send
     const e=setup({sent:true,draft:{items:['polos'],stage:'sent',summary:'Saved enquiry'}});t.after(()=>e.dom.window.close());
     assert.equal(e.q('#bukPrechat'),null);assert.equal(e.q('#waChatInput').disabled,false);
     assert.match(e.q('#waChatBody').textContent,/Saved enquiry/);assert.equal(e.messages.length,0);
+    e.click('[data-pc="fast-track"]');assert.equal(e.q('#waChatInput').value,'I need help with my order.');
+    e.click('[data-pc="quote-support"]');assert.equal(e.q('#waChatInput').value,'I need help with a quote.');
+    assert.equal(e.messages.length,0,'Footer shortcuts must not send a message automatically');
+});
+
+test('reference photographs remain selectable and footer shortcuts preserve the enquiry without sending',t=>{
+    const e=setup();t.after(()=>e.dom.window.close());e.next();
+    const photos=[...e.w.document.querySelectorAll('[data-item] .buk-pc-product image')];
+    assert.equal(photos.length,7,'All seven garment categories use the supplied photographs');
+    assert.ok(photos.every(image=>image.getAttribute('href').endsWith('/mobile/images/prechat/reference-artwork.webp')));
+    e.click('[data-item="polos"]');e.click('[data-pc="quote-support"]');e.next();
+    assert.equal(e.q('[data-item="polos"]').getAttribute('aria-pressed'),'true');
+    e.click('[data-pc="quick-replies"]');e.click('.buk-pc-quick-menu button');
+    assert.equal(e.q('#bukPcSupportNotes').value,'Delivery times');assert.equal(e.messages.length,0);
+});
+
+test('replacing, removing or postponing a logo releases its temporary preview',t=>{
+    const e=setup();t.after(()=>e.dom.window.close());e.toLogo();
+    const released=[];let n=0;e.w.URL.createObjectURL=()=>`blob:local-${++n}`;e.w.URL.revokeObjectURL=url=>released.push(url);
+    const file=()=>new e.w.File(['logo'],'logo.png',{type:'image/png'});
+    e.selectFile(file());assert.equal(e.q('.buk-pc-file-icon img').src,'blob:local-1');
+    e.selectFile(file());assert.deepEqual(released,['blob:local-1']);
+    e.click('[data-pc="remove-file"]');assert.deepEqual(released,['blob:local-1','blob:local-2']);
+    e.selectFile(file());e.click('[data-pc="logo-skip"]');assert.deepEqual(released,['blob:local-1','blob:local-2','blob:local-3']);
+    assert.equal(e.w.sessionStorage.getItem('buk_prechat_draft_v3').includes('blob:local-'),false);
 });
 
 test('upload endpoint validates authentication and generates private bounded signed policy',async()=>{

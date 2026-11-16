@@ -767,7 +767,7 @@
         if (inputEl) {
             inputEl.disabled = !canCompose;
             inputEl.tabIndex = canCompose ? 0 : -1;
-            inputEl.placeholder = prechatCollecting ? 'Complete your enquiry above…' : (chatUnlocked ? 'Write a message…' : 'Sign in with Google to write…');
+            inputEl.placeholder = prechatCollecting ? 'Write a message...' : (chatUnlocked ? 'Write a message...' : 'Sign in with Google to write…');
         }
         if (sendBtn) sendBtn.disabled = !canCompose;
         if (composer) composer.inert = prechatCollecting;
@@ -1195,10 +1195,10 @@
     };
     var prechatCss = document.createElement('link');
     prechatCss.rel = 'stylesheet';
-    prechatCss.href = assetUrl('../css/prechat.css?v=20261116-integrated');
+    prechatCss.href = assetUrl('../css/prechat.css?v=20261116-reference');
     document.head.appendChild(prechatCss);
     var prechatScript = document.createElement('script');
-    prechatScript.src = assetUrl('prechat.js?v=20261116-integrated');
+    prechatScript.src = assetUrl('prechat.js?v=20261116-reference');
     prechatScript.onerror = function () {
         prechatCollecting = false;
         applyAuthGateUi();
