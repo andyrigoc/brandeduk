@@ -1077,6 +1077,7 @@ function openBundleColourPage() {
     lineId: draft.lineId || '',
     method: draft.method || (draft.bundle.methods.length === 1 ? draft.bundle.methods[0] : ''),
     notes: draft.notes || '',
+    logo: draft.logo || null,
     returnToBasket: Boolean(returnToBasket || draft.lineId)
   }));
   const first = components[0];
@@ -2271,6 +2272,14 @@ async function resumeQuoteEdit() {
   });
 }
 
+function logoFromBasketLine(lineId) {
+  if (!lineId) return null;
+  const line = readQuoteBasket().find(item => item && item.lineType === 'bundle' && item.id === lineId);
+  if (!line) return null;
+  const state = line.builderState || line.selection || {};
+  return state.logo || (Array.isArray(line.logos) ? line.logos[0] : null) || null;
+}
+
 async function resumeColourBuild() {
   const params = new URLSearchParams(location.search);
   if (params.get('resumeBuild') !== '1') return false;
@@ -2290,12 +2299,14 @@ async function resumeColourBuild() {
     return false;
   }
   const live = asBundle(offerById.get(bundle.id));
+  const logo = job.logo || logoFromBasketLine(job.lineId) || null;
+  if (logo && !logo.name) logo.name = logo.filename || 'Uploaded logo';
   draft = newDraft(live, {
     id: job.lineId || undefined,
     allocations: job.picks || {},
     method: job.method || (live.methods.length === 1 ? live.methods[0] : ''),
     notes: job.notes || '',
-    logo: null
+    logo
   });
   const step = Number(job.resumeStep);
   draft.step = Number.isInteger(step) ? Math.min(4, Math.max(0, step)) : 3;

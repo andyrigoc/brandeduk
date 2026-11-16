@@ -5294,6 +5294,40 @@
             
             // Add click handler to change main image and selected color
             thumbButton.addEventListener('click', () => {
+                if (color.id === state.selectedColor) {
+                    syncColorSelectionUI(color.id);
+                    return;
+                }
+
+                // Bundle build: same persist → change → load path as .color-btn clicks,
+                // so a gallery tap cannot re-attribute the previous colour's sizes.
+                if (readBundleBuild()) {
+                    persistBundleColourDraft();
+                    const swatch = document.querySelector('#colorOptions .color-btn[data-color="' + color.id + '"]');
+                    if (swatch) {
+                        applyColorChange(swatch);
+                    } else {
+                        state.selectedColor = color.id;
+                        state.selectedColorName = color.name;
+                        state.selectedColorImage = color.image;
+                        const mainImg = document.getElementById('mainImage');
+                        if (mainImg && color.image) {
+                            mainImg.src = '';
+                            const cacheBuster = '_t=' + Date.now();
+                            mainImg.src = color.image + (color.image.includes('?') ? '&' : '?') + cacheBuster;
+                            mainImg.alt = `${state.product?.name || 'Product'} - ${color.name}`;
+                        }
+                        syncColorSelectionUI(color.id);
+                        applyGarmentColorToLogoPreview();
+                        applyGarmentColorToPositionPreviews();
+                        updatePricingSummary();
+                    }
+                    loadBundleSizesForSelectedColour();
+                    refreshSizeSummary();
+                    if (navigator.vibrate) navigator.vibrate(10);
+                    return;
+                }
+
                 state.selectedColor = color.id;
                 state.selectedColorName = color.name;
                 state.selectedColorImage = color.image;
@@ -12515,6 +12549,7 @@
                 lineId: job.lineId || '',
                 method: job.method || '',
                 notes: job.notes || '',
+                logo: job.logo || null,
                 returnToBasket: !!job.returnToBasket,
                 resumeStep: 3
             }));
