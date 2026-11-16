@@ -5077,6 +5077,18 @@
     function scrollMobileCustomizeAfterColorPick() {
         if (!isCustomizeTouchViewport()) return;
 
+        // The bundle detour hides the ATC bar used as the anchor below.
+        if (readBundleBuild()) {
+            const scrollToBundleSizes = function () {
+                scrollBundleToSection(document.getElementById('sizeQtySection'));
+            };
+            requestAnimationFrame(function () {
+                requestAnimationFrame(scrollToBundleSizes);
+            });
+            setTimeout(scrollToBundleSizes, 380);
+            return;
+        }
+
         const scrollToQtyAnchor = function () {
             const totalBar = document.querySelector('.qty-total-bar');
             const actionBar = document.querySelector('.action-bar--atc');
@@ -5975,16 +5987,21 @@
         renderBundleBuilderBar(job);
     }
 
-    function scrollBundleToColorSection() {
-        const colours = document.getElementById('colorOptions') || document.querySelector('.color-options');
-        if (!colours) return;
-        const section = colours.closest('section') || colours;
+    function scrollBundleToSection(section) {
+        if (!section) return;
         const bar = document.getElementById('bundleBuilderBar');
         const header = document.querySelector('.mobile-header, header');
         const offset = ((bar && bar.getBoundingClientRect().height) || 0) +
             ((header && header.getBoundingClientRect().height) || 0) + 12;
-        const top = section.getBoundingClientRect().top + window.pageYOffset - offset;
-        window.scrollTo({ top: Math.max(0, top), left: 0, behavior: 'smooth' });
+        const top = Math.max(0, Math.round(section.getBoundingClientRect().top + window.pageYOffset - offset));
+        if (Math.abs(top - window.pageYOffset) < 4) return;
+        window.scrollTo({ top: top, left: 0, behavior: 'smooth' });
+    }
+
+    function scrollBundleToColorSection() {
+        const colours = document.getElementById('colorOptions') || document.querySelector('.color-options');
+        if (!colours) return;
+        scrollBundleToSection(colours.closest('section') || colours);
     }
 
     function scheduleBundleColorAutoscroll() {
@@ -6005,7 +6022,12 @@
             loadBundleSizesForSelectedColour();
             refreshSizeSummary();
             if (userInteracted || window.pageYOffset > 40) return;
-            window.setTimeout(scrollBundleToColorSection, 350);
+            // Live product data and images keep moving the section down after the first pass.
+            [350, 1000, 2000, 3500].forEach(function (delay) {
+                window.setTimeout(function () {
+                    if (!userInteracted) scrollBundleToColorSection();
+                }, delay);
+            });
         }, 250);
     }
 
@@ -12386,6 +12408,9 @@
     function applyBundleBuildChrome() {
         const job = readBundleBuild();
         if (!job) return;
+        // footer.js (loaded after this script) snaps to the top on window load, seconds after
+        // the colour autoscroll; this flag makes it skip that reset on the bundle detour.
+        window.__brandedScrollTopOnReload = true;
         document.body.classList.add('bundle-build');
         renderBundleSequence(job);
         loadBundleSizesForSelectedColour();
