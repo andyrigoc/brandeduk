@@ -80,6 +80,37 @@
     var RECENT_OUTBOUND_TTL_MS = 8000;
     var CRISP_READY_WAIT_MS = 6000;
     var pendingCrispWatchdogs = {};
+    var confirmedMessages = new Set();
+    var pendingMessages = new Map();
+    var prechatCollecting = true;
+
+    // Use the existing SDK listener, so the questionnaire never replaces the
+    // native reply/delivery hooks. A queued command is not a delivery receipt.
+    function sendConfirmed(text) {
+        var message = String(text || '').trim();
+        if (!message || !isSignedIn() || !isCrispSdkReady() ||
+            !window.BrandedCrispConsent || !window.BrandedCrispConsent.allowed()) {
+            return Promise.reject(new Error('Chat is not ready.'));
+        }
+        if (confirmedMessages.has(message)) return Promise.resolve();
+        if (pendingMessages.has(message)) return pendingMessages.get(message).promise;
+        var entry = {};
+        entry.promise = new Promise(function (resolve, reject) {
+            entry.resolve = resolve;
+            entry.reject = reject;
+        });
+        pendingMessages.set(message, entry);
+        entry.timer = window.setTimeout(function () {
+            pendingMessages.delete(message);
+            entry.reject(new Error('Delivery was not confirmed.'));
+        }, 14000);
+        if (!sendToCrispBackend(message)) {
+            clearTimeout(entry.timer);
+            pendingMessages.delete(message);
+            entry.reject(new Error('Could not send the enquiry.'));
+        }
+        return entry.promise;
+    }
 
     // Self-heal: if footer.js failed to parse/inject crisp-chat.js, load it here.
     function ensureCrispBackendLoader() {
@@ -285,6 +316,15 @@
             forceHideCrispUi();
             var text = extractCrispText(data);
             if (text) wasRecentOutbound(text);
+            if (!data || data.type === 'text' || !data.type) {
+                confirmedMessages.add(text);
+                var entry = pendingMessages.get(text);
+                if (entry) {
+                    clearTimeout(entry.timer);
+                    pendingMessages.delete(text);
+                    entry.resolve();
+                }
+            }
         }]);
 
         window.$crisp.push(['on', 'chat:opened', function () {
@@ -706,6 +746,7 @@
 
     function applyAuthGateUi() {
         chatUnlocked = BUK_REQUIRE_AUTH_FOR_COMPOSER ? isSignedIn() : true;
+        var canCompose = chatUnlocked && !prechatCollecting;
         if (popup) {
             popup.classList.toggle('is-locked', !chatUnlocked);
             popup.classList.toggle('is-unlocked', chatUnlocked);
@@ -724,11 +765,12 @@
             composer.setAttribute('aria-hidden', chatUnlocked ? 'false' : 'true');
         }
         if (inputEl) {
-            inputEl.disabled = !chatUnlocked;
-            inputEl.tabIndex = chatUnlocked ? 0 : -1;
-            inputEl.placeholder = chatUnlocked ? 'Write a message…' : 'Sign in with Google to write…';
+            inputEl.disabled = !canCompose;
+            inputEl.tabIndex = canCompose ? 0 : -1;
+            inputEl.placeholder = prechatCollecting ? 'Complete your enquiry above…' : (chatUnlocked ? 'Write a message…' : 'Sign in with Google to write…');
         }
-        if (sendBtn) sendBtn.disabled = !chatUnlocked;
+        if (sendBtn) sendBtn.disabled = !canCompose;
+        if (composer) composer.inert = prechatCollecting;
         if (fastReplies) {
             fastReplies.hidden = !chatUnlocked;
             fastReplies.setAttribute('aria-hidden', chatUnlocked ? 'false' : 'true');
@@ -771,9 +813,10 @@
         popup.classList.add('is-active');
         popup.setAttribute('aria-hidden', 'false');
         // No auto-greeting on open — wait for the customer's first message.
-        if (chatUnlocked && inputEl) {
-            setTimeout(function () { inputEl.focus(); }, 180);
+        if (chatUnlocked && inputEl && !prechatCollecting) {
+            setTimeout(function () { if (!prechatCollecting) inputEl.focus(); }, 180);
         }
+        window.dispatchEvent(new CustomEvent('branded:chat-opened'));
         if (typeof window.__bukSyncSpeedPark === 'function') window.__bukSyncSpeedPark();
     }
 
@@ -874,7 +917,7 @@
     }
 
     function sendToWhatsApp(text) {
-        if (!chatUnlocked) {
+        if (!chatUnlocked || prechatCollecting) {
             applyAuthGateUi();
             return '';
         }
@@ -1134,4 +1177,31 @@
     window.openBrandedChat = openPopup;
     window.closeBrandedChat = closePopup;
     window.openBrandedCrispChat = openCrispChat;
+    window.BrandedOnsiteChat = {
+        isSignedIn: isSignedIn,
+        isReady: isCrispSdkReady,
+        sendConfirmed: sendConfirmed,
+        setCollecting: function (collecting) {
+            prechatCollecting = !!collecting;
+            applyAuthGateUi();
+        },
+        showEnquiry: function (text) {
+            cancelPendingWelcomeForOperatorReply();
+            if (chatBody.querySelector('.buk-pc-native-summary')) return;
+            appendUserBubble(text);
+            var bubbles = chatBody.querySelectorAll('.wa-msg--user');
+            if (bubbles.length) bubbles[bubbles.length - 1].classList.add('buk-pc-native-summary');
+        }
+    };
+    var prechatCss = document.createElement('link');
+    prechatCss.rel = 'stylesheet';
+    prechatCss.href = assetUrl('../css/prechat.css?v=20261116-integrated');
+    document.head.appendChild(prechatCss);
+    var prechatScript = document.createElement('script');
+    prechatScript.src = assetUrl('prechat.js?v=20261116-integrated');
+    prechatScript.onerror = function () {
+        prechatCollecting = false;
+        applyAuthGateUi();
+    };
+    document.head.appendChild(prechatScript);
 })();

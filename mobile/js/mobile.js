@@ -850,7 +850,7 @@ function ensureBrandedChat() {
     if (existing && typeof window.openBrandedChat === 'function') return Promise.resolve();
     return new Promise((resolve) => {
         const script = document.createElement('script');
-        script.src = '/mobile/js/whatsapp.js?v=20261116-slimchat';
+        script.src = '/mobile/js/whatsapp.js?v=20261116-prechat';
         script.onload = () => resolve();
         script.onerror = () => resolve();
         document.body.appendChild(script);

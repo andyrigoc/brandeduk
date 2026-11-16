@@ -113,7 +113,23 @@ function safeJoin(root, requestPath) {
 }
 
 function serveStatic(req, res) {
-    const urlPath = decodeURIComponent(new URL(req.url, `http://${HOST}:${PORT}`).pathname);
+    const requestUrl = new URL(req.url, `http://${HOST}:${PORT}`);
+    const urlPath = decodeURIComponent(requestUrl.pathname);
+    if (urlPath==='/__preview/leave') {
+        send(res,303,{'Set-Cookie':'buk_prechat_preview=; Path=/; Max-Age=0; HttpOnly; SameSite=Strict',Location:'/index-mobile.html'},'');
+        return;
+    }
+    const previewFiles = {
+        '/__preview/prechat': 'scripts/prechat-preview/mobile.html',
+        '/__preview/prechat-adapter.js': 'scripts/prechat-preview/adapter.js'
+    };
+    if (previewFiles[urlPath]) {
+        const file = path.join(ROOT,previewFiles[urlPath]);
+        const headers={'Content-Type':contentType(file),'Cache-Control':'no-store'};
+        if(urlPath==='/__preview/prechat')headers['Set-Cookie']='buk_prechat_preview=1; Path=/; HttpOnly; SameSite=Strict';
+        send(res,200,headers,fs.readFileSync(file));
+        return;
+    }
     let filePath = safeJoin(ROOT, urlPath === '/' ? '/index.html' : urlPath);
     if (!filePath) {
         send(res, 403, { 'Content-Type': 'text/plain' }, 'Forbidden');
@@ -130,7 +146,13 @@ function serveStatic(req, res) {
                 send(res, 404, { 'Content-Type': 'text/plain' }, 'Not found: ' + urlPath);
                 return;
             }
-            send(res, 200, { 'Content-Type': contentType(filePath) }, data);
+            // Explicit local review mode; never included in production HTML.
+            // Load before storefront scripts so no real Crisp SDK can initialise.
+            const preview=requestUrl.searchParams.get('prechat-preview')==='1'||/(?:^|;\s*)buk_prechat_preview=1(?:;|$)/.test(req.headers.cookie||'');
+            if (preview && path.extname(filePath)==='.html') {
+                data=Buffer.from(data.toString().replace(/<head([^>]*)>/i,'<head$1><script src="/__preview/prechat-adapter.js"></script>'));
+            }
+            send(res, 200, { 'Content-Type': contentType(filePath), 'Cache-Control':'no-store' }, data);
         });
     });
 }
