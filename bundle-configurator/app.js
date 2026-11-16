@@ -784,8 +784,23 @@ async function openBuilder(bundle, source, saved) {
   }
   trigger = source;
   draft = newDraft(bundle, saved);
-  if (saved && !readyToAdd(draft)) draft.step = draft.reached = 0;
   returnToBasket = Boolean(saved);
+  // Editing from basket should open the product colour/size step, not restart at Included.
+  if (saved) {
+    draft.reached = Math.max(2, Number(draft.reached) || 0);
+    if (choiceValid(draft)) draft.reached = Math.max(draft.reached, 2);
+    if (variantsValid(draft)) draft.reached = Math.max(draft.reached, logoValid(draft) ? 4 : 3);
+    if (basket.open) basket.close();
+    variantInputs = {};
+    pendingArtwork = false;
+    fileError = '';
+    builderError = '';
+    $('builder-title').textContent = bundle.title;
+    $('builder-kicker').textContent = 'BUILD YOUR BUNDLE';
+    $('builder-price').innerHTML = price(bundle.price);
+    openBundleColourPage();
+    return;
+  }
   if (basket.open) basket.close();
   variantInputs = {};
   pendingArtwork = false;
@@ -1044,6 +1059,11 @@ function openBundleColourPage() {
     name: products[code]?.name || code
   })).filter(item => item.qty > 0);
   if (!components.length) return;
+  const picks = {};
+  components.forEach(({code}) => {
+    const rows = draft.allocations?.[code];
+    if (Array.isArray(rows) && rows.length) picks[code] = structuredClone(rows);
+  });
   sessionStorage.setItem('buk-bundle-build', JSON.stringify({
     bundleId: draft.bundle.id,
     slug: draft.bundle.slug || draft.bundle.id,
@@ -1053,7 +1073,11 @@ function openBundleColourPage() {
     itemCount: components.reduce((sum, item) => sum + Number(item.qty || 0), 0),
     components,
     index: 0,
-    picks: {}
+    picks,
+    lineId: draft.lineId || '',
+    method: draft.method || (draft.bundle.methods.length === 1 ? draft.bundle.methods[0] : ''),
+    notes: draft.notes || '',
+    returnToBasket: Boolean(returnToBasket || draft.lineId)
   }));
   const first = components[0];
   window.location.href = `/mobile/customize-mobile.html?code=${encodeURIComponent(first.code)}&bundleBuild=1`;
@@ -2247,6 +2271,58 @@ async function resumeQuoteEdit() {
   });
 }
 
+async function resumeColourBuild() {
+  const params = new URLSearchParams(location.search);
+  if (params.get('resumeBuild') !== '1') return false;
+  let job = null;
+  try { job = JSON.parse(sessionStorage.getItem('buk-bundle-resume') || sessionStorage.getItem('buk-bundle-build') || 'null'); }
+  catch { job = null; }
+  if (!job) return false;
+  const deal = [...offerById.values()].find(entry =>
+    entry.id === job.bundleId || entry.slug === job.slug || entry.id === job.slug || entry.slug === job.bundleId
+  );
+  const bundle = deal && canBuild(deal) ? asBundle(deal) : undefined;
+  if (!bundle) return false;
+  try {
+    await prepareBundle(offerById.get(bundle.id));
+  } catch {
+    showNotice('We couldn\u2019t restore this bundle. Please open it again from the catalogue.');
+    return false;
+  }
+  const live = asBundle(offerById.get(bundle.id));
+  draft = newDraft(live, {
+    id: job.lineId || undefined,
+    allocations: job.picks || {},
+    method: job.method || (live.methods.length === 1 ? live.methods[0] : ''),
+    notes: job.notes || '',
+    logo: null
+  });
+  const step = Number(job.resumeStep);
+  draft.step = Number.isInteger(step) ? Math.min(4, Math.max(0, step)) : 3;
+  draft.reached = Math.max(draft.step, draft.reached || 0);
+  returnToBasket = Boolean(job.returnToBasket || job.lineId);
+  variantInputs = {};
+  pendingArtwork = false;
+  fileError = '';
+  builderError = '';
+  $('builder-title').textContent = live.title;
+  $('builder-kicker').textContent = 'BUILD YOUR BUNDLE';
+  $('builder-price').innerHTML = price(live.price);
+  try {
+    sessionStorage.removeItem('buk-bundle-resume');
+    sessionStorage.removeItem('buk-bundle-build');
+  } catch { /* ignore */ }
+  renderStep();
+  builder.showModal();
+  syncScrollLock();
+  focusHeading();
+  // Drop the resume flag from the URL so refresh does not loop.
+  params.delete('resumeBuild');
+  const next = `${location.pathname}?${params.toString()}`.replace(/\?$/, '');
+  history.replaceState(null, '', next + location.hash);
+  return true;
+}
+
 async function init() {
   listState = 'loading';
   renderShop();
@@ -2269,7 +2345,10 @@ async function init() {
     if (!event.key || event.key === 'quoteBasket') syncHeaderBasketCount();
   });
   void refreshBasket();
-  void resumeQuoteEdit();
+  void (async () => {
+    if (await resumeColourBuild()) return;
+    await resumeQuoteEdit();
+  })();
   // Older API builds don't return contents in the list; load them slowly.
   void loadAllDetails(deals, {onProgress: renderSoon}).then(() => {
     clearTimeout(renderTimer);

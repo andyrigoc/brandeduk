@@ -4833,6 +4833,15 @@
                 return;
             }
 
+            // Bundle build: keep running totals across colours; never dump into the normal basket.
+            if (readBundleBuild()) {
+                persistBundleColourDraft();
+                applyColorChange(btn);
+                loadBundleSizesForSelectedColour();
+                refreshSizeSummary();
+                return;
+            }
+
             // Check if there are sizes selected
             const hasSelection = Object.values(state.sizeQuantities || {}).some(qty => qty > 0);
             
@@ -5604,6 +5613,7 @@
                 <div>
                     <h3 class="size-picker__title" id="sizePickerTitle">Select sizes</h3>
                     <p class="size-picker__colour" hidden></p>
+                    <button type="button" class="size-picker__change-colour" hidden>Change colour</button>
                 </div>
                 <button type="button" class="size-picker__close" aria-label="Close" autofocus>
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -5619,15 +5629,45 @@
             </div>`;
         document.body.appendChild(dialog);
 
-        // Every way of closing keeps the quantities, so a stray tap never loses them.
+        // Keep quantities on every close path (X, backdrop, Escape). Never clear them.
         const closeSizePicker = () => {
+            persistBundleColourDraft();
             commitSizePicker();
-            dialog.close();
+            window.clearTimeout(bundleAdvanceTimer);
+            bundleAdvanceTimer = null;
+            if (dialog.open) dialog.close();
         };
         dialog.querySelector('.size-picker__close').addEventListener('click', closeSizePicker);
+        dialog.querySelector('.size-picker__change-colour').addEventListener('click', () => {
+            persistBundleColourDraft();
+            commitSizePicker();
+            window.clearTimeout(bundleAdvanceTimer);
+            bundleAdvanceTimer = null;
+            if (dialog.open) dialog.close();
+            scrollBundleToColorSection();
+        });
         dialog.querySelector('.size-picker__done').addEventListener('click', () => {
-            closeSizePicker();
-            if (continueBundleBuild()) return;
+            const job = readBundleBuild();
+            persistBundleColourDraft();
+            commitSizePicker();
+            window.clearTimeout(bundleAdvanceTimer);
+            bundleAdvanceTimer = null;
+            if (job) {
+                const required = bundleRequiredQty();
+                const total = bundleAllocatedTotal();
+                if (dialog.open) dialog.close();
+                if (total < required) {
+                    // Under target: leave the modal and let the user pick another colour.
+                    scrollBundleToColorSection();
+                    return;
+                }
+                if (total === required) {
+                    continueBundleBuild();
+                    return;
+                }
+                return;
+            }
+            if (dialog.open) dialog.close();
             // Continue confirms the sizes: add them to the basket and show the "Added to basket" popup.
             if (state.quantity > 0) addSelectionToBasket();
         });
@@ -5642,7 +5682,10 @@
         });
         // Native close requests (e.g. the Android back gesture) bypass the handlers above.
         dialog.addEventListener('close', () => {
-            if (!dialog.open) commitSizePicker();
+            persistBundleColourDraft();
+            commitSizePicker();
+            window.clearTimeout(bundleAdvanceTimer);
+            bundleAdvanceTimer = null;
         });
 
         const list = dialog.querySelector('.size-picker__list');
@@ -5652,9 +5695,10 @@
             const row = step.closest('.size-picker__row');
             const qty = (sizePickerDraft[row.dataset.size] || 0) + Number(step.dataset.step);
             const required = bundleRequiredQty();
-            const nextTotal = sizePickerTotal() - (sizePickerDraft[row.dataset.size] || 0) + Math.max(0, qty);
+            const otherColours = bundleOtherColourTotal();
+            const nextCurrent = sizePickerTotal() - (sizePickerDraft[row.dataset.size] || 0) + Math.max(0, qty);
             if (qty < 0 || qty > SIZE_PICKER_MAX_QTY) return;
-            if (required && nextTotal > required) return;
+            if (required && (otherColours + nextCurrent) > required) return;
             row.querySelector('.size-picker__qty').value = String(qty);
             setSizePickerQty(row, qty);
             if (navigator.vibrate) navigator.vibrate(10);
@@ -5667,7 +5711,8 @@
             if (required) {
                 const row = e.target.closest('.size-picker__row');
                 const others = sizePickerTotal() - (sizePickerDraft[row.dataset.size] || 0);
-                qty = Math.max(0, Math.min(qty, required - others));
+                const room = Math.max(0, required - bundleOtherColourTotal() - others);
+                qty = Math.max(0, Math.min(qty, room));
             }
             if (String(qty) !== e.target.value) e.target.value = String(qty);
             setSizePickerQty(e.target.closest('.size-picker__row'), qty);
@@ -5748,48 +5793,186 @@
         return Object.values(sizePickerDraft).reduce((sum, qty) => sum + qty, 0);
     }
 
+    function currentBundleColourName() {
+        return String(state.selectedColorName || '').trim();
+    }
+
+    function bundlePicksForCurrentItem() {
+        const job = readBundleBuild();
+        if (!job) return [];
+        const item = job.components[job.index];
+        if (!item) return [];
+        return Array.isArray(job.picks[item.code]) ? job.picks[item.code] : [];
+    }
+
+    function bundleOtherColourTotal() {
+        const colour = currentBundleColourName().toLowerCase();
+        return bundlePicksForCurrentItem().reduce(function (sum, row) {
+            if (String(row.colour || '').trim().toLowerCase() === colour) return sum;
+            return sum + (Number(row.quantity) || 0);
+        }, 0);
+    }
+
+    function bundleAllocatedTotal() {
+        // Live draft for the active colour + stored rows for every other colour.
+        return bundleOtherColourTotal() + sizePickerTotal();
+    }
+
+    function persistBundleColourDraft() {
+        const job = readBundleBuild();
+        if (!job) return;
+        const item = job.components[job.index];
+        if (!item) return;
+        const colour = currentBundleColourName();
+        if (!colour) return;
+        const image = state.selectedColorImage || (state.product && (state.product.image || state.product.imageUrl)) || '';
+        const others = bundlePicksForCurrentItem().filter(function (row) {
+            return String(row.colour || '').trim().toLowerCase() !== colour.toLowerCase();
+        });
+        const rows = Object.entries(sizePickerDraft)
+            .filter(function (entry) { return Number(entry[1]) > 0; })
+            .map(function (entry) {
+                return { colour: colour, size: entry[0], quantity: Number(entry[1]), image: image };
+            });
+        job.picks[item.code] = others.concat(rows);
+        if (!job.thumbs) job.thumbs = {};
+        if (image) job.thumbs[item.code] = image;
+        try { sessionStorage.setItem('buk-bundle-build', JSON.stringify(job)); } catch (error) { /* ignore */ }
+    }
+
+    function loadBundleSizesForSelectedColour() {
+        const colour = currentBundleColourName().toLowerCase();
+        const next = {};
+        bundlePicksForCurrentItem().forEach(function (row) {
+            if (String(row.colour || '').trim().toLowerCase() !== colour) return;
+            next[row.size] = Number(row.quantity) || 0;
+        });
+        state.sizeQuantities = getPositiveSizeQuantities(next);
+        state.quantity = bundlePicksForCurrentItem().reduce(function (sum, row) {
+            return sum + (Number(row.quantity) || 0);
+        }, 0);
+        sizePickerDraft = getPositiveSizeQuantities(state.sizeQuantities);
+    }
+
     function updateSizePickerTotal() {
-        const total = sizePickerTotal();
         const required = bundleRequiredQty();
+        const total = required ? bundleAllocatedTotal() : sizePickerTotal();
         const dialog = getSizePickerDialog();
         dialog.querySelector('.size-picker__total strong').textContent = required ? (total + '/' + required) : String(total);
         dialog.querySelector('.size-picker__total strong').classList.toggle('is-met', Boolean(required) && total === required);
         const done = dialog.querySelector('.size-picker__done');
-        if (!done || !required) return;
+        if (!done) return;
         const job = readBundleBuild();
-        const last = !job || job.index >= job.components.length - 1;
-        done.disabled = total !== required;
-        done.textContent = last ? 'Add to basket' : 'Next item';
-        if (total === required) scheduleBundleAdvance();
-        else window.clearTimeout(bundleAdvanceTimer);
+        if (!job || !required) {
+            done.disabled = false;
+            return;
+        }
+        const last = job.index >= job.components.length - 1;
+        // Always keep an explicit action: change colour while under target, or confirm when met.
+        // Never auto-advance — the shopper must tap the button.
+        done.disabled = false;
+        if (total < required) {
+            done.textContent = 'Change colour';
+        } else if (!last) {
+            done.textContent = 'Next item';
+            done.insertAdjacentHTML('beforeend', ' <span aria-hidden="true">→</span>');
+        } else {
+            // Colours are done — next stop is the configurator Logo step (explicit tap only).
+            done.textContent = 'Continue to logo';
+            done.insertAdjacentHTML('beforeend', ' <span aria-hidden="true">→</span>');
+        }
+        window.clearTimeout(bundleAdvanceTimer);
+        bundleAdvanceTimer = null;
     }
 
-    function scheduleBundleAdvance() {
-        if (bundleAdvanceTimer) return;
-        bundleAdvanceTimer = window.setTimeout(function () {
-            bundleAdvanceTimer = null;
-            if (!readBundleBuild() || sizePickerTotal() !== bundleRequiredQty()) return;
-            state.sizeQuantities = Object.assign({}, sizePickerDraft);
-            state.quantity = sizePickerTotal();
-            const dialog = document.getElementById('sizePickerDialog');
-            if (dialog && dialog.open) dialog.close();
-            continueBundleBuild();
-        }, 280);
+    function renderBundleBuilderBar(job) {
+        if (!job) return;
+        let bar = document.getElementById('bundleBuilderBar');
+        if (!bar) {
+            bar = document.createElement('section');
+            bar.id = 'bundleBuilderBar';
+            bar.className = 'bundle-builder-bar';
+            bar.setAttribute('aria-label', 'Build your bundle');
+            const crumbs = document.getElementById('siteBreadcrumbs');
+            const steps = document.getElementById('orderSteps');
+            const anchor = crumbs || steps;
+            if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(bar, anchor);
+            else document.body.insertBefore(bar, document.body.firstChild);
+        }
+        const labels = ['Included', 'Groups', 'Colours & sizes', 'Logo', 'Review'];
+        const current = 2; // product colour/size detour is always the Colours & sizes step
+        bar.innerHTML =
+            '<div class="bundle-builder-bar__head">' +
+                '<div><p class="bundle-builder-bar__kicker">BUILD YOUR BUNDLE</p>' +
+                '<h2 class="bundle-builder-bar__title"></h2></div>' +
+                '<button type="button" class="bundle-builder-bar__close" aria-label="Close bundle builder">' +
+                    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">' +
+                        '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>' +
+                    '</svg>' +
+                '</button>' +
+            '</div>' +
+            '<ol class="bundle-builder-bar__steps" aria-label="Configuration progress">' +
+                labels.map(function (label, index) {
+                    const isCurrent = index === current;
+                    const isDone = index < current;
+                    return '<li class="bundle-builder-bar__step' + (isCurrent ? ' is-current' : '') + (isDone ? ' is-done' : '') + '">' +
+                        '<span class="bundle-builder-bar__num">' + (isDone ? '✓' : (index + 1)) + '</span>' +
+                        '<span class="bundle-builder-bar__label">' + label + '</span></li>';
+                }).join('') +
+            '</ol>';
+        bar.querySelector('.bundle-builder-bar__title').textContent = job.title || 'Bundle';
+        bar.querySelector('.bundle-builder-bar__close').addEventListener('click', function () {
+            const slug = job.slug || job.bundleId || '';
+            if (job.returnToBasket) {
+                window.location.href = '/basket.html#orderSummary';
+                return;
+            }
+            window.location.href = '/bundle-configurator/?force=mobile' + (slug ? '&bundle=' + encodeURIComponent(slug) : '');
+        });
     }
 
     function renderBundleSequence(job) {
         const list = document.getElementById('orderSteps');
         if (!list || !job) return;
+        // Full Build Your Bundle bar replaces the product order-steps strip.
+        list.hidden = true;
         list.setAttribute('data-bundle-sequence', '1');
-        list.setAttribute('aria-label', 'Bundle progress');
-        list.innerHTML = job.components.map(function (component, index) {
-            const done = index < job.index;
-            const current = index === job.index;
-            return '<li class="order-step' + (done ? ' is-done' : '') + (current ? ' is-current' : '') + '">' +
-                '<span class="order-step__btn"><span class="order-step__dot">' + (done ? '✓' : (index + 1)) + '</span>' +
-                '<span class="order-step__text"><span class="order-step__label">' + component.code + '</span>' +
-                '<span class="order-step__sub">' + component.qty + '</span></span></span></li>';
-        }).join('');
+        list.setAttribute('aria-hidden', 'true');
+        renderBundleBuilderBar(job);
+    }
+
+    function scrollBundleToColorSection() {
+        const colours = document.getElementById('colorOptions') || document.querySelector('.color-options');
+        if (!colours) return;
+        const section = colours.closest('section') || colours;
+        const bar = document.getElementById('bundleBuilderBar');
+        const header = document.querySelector('.mobile-header, header');
+        const offset = ((bar && bar.getBoundingClientRect().height) || 0) +
+            ((header && header.getBoundingClientRect().height) || 0) + 12;
+        const top = section.getBoundingClientRect().top + window.pageYOffset - offset;
+        window.scrollTo({ top: Math.max(0, top), left: 0, behavior: 'smooth' });
+    }
+
+    function scheduleBundleColorAutoscroll() {
+        let tries = 0;
+        let userInteracted = false;
+        const mark = function () { userInteracted = true; };
+        ['touchstart', 'wheel', 'keydown', 'mousedown'].forEach(function (ev) {
+            window.addEventListener(ev, mark, { once: true, passive: true });
+        });
+        const timer = window.setInterval(function () {
+            tries += 1;
+            const colours = document.getElementById('colorOptions');
+            const ready = colours && colours.querySelector('[data-color], .color-btn');
+            if (!ready && tries < 40) return;
+            window.clearInterval(timer);
+            if (!ready) return;
+            // Product colours are ready — restore any in-progress multi-colour sizes.
+            loadBundleSizesForSelectedColour();
+            refreshSizeSummary();
+            if (userInteracted || window.pageYOffset > 40) return;
+            window.setTimeout(scrollBundleToColorSection, 350);
+        }, 250);
     }
 
     function swapBundleItem(job, next) {
@@ -5809,8 +5992,10 @@
             const paint = function () {
                 refreshProductDOM();
                 renderBundleSequence(job);
+                loadBundleSizesForSelectedColour();
                 const note = document.getElementById('bundleBuildNote');
                 if (note) note.textContent = 'Bundle: choose colour and sizes for all ' + next.qty + ' × ' + next.code + '. Item ' + (job.index + 1) + ' of ' + job.components.length + '.';
+                scheduleBundleColorAutoscroll();
             };
             if (document.startViewTransition) document.startViewTransition(paint);
             else paint();
@@ -5819,12 +6004,17 @@
 
     function commitSizePicker() {
         document.body.style.overflow = sizePickerBodyOverflow;
-        const current = state.sizeQuantities || {};
-        const draftSizes = Object.keys(sizePickerDraft);
-        const unchanged = draftSizes.length === Object.keys(current).length &&
-            draftSizes.every(size => sizePickerDraft[size] === current[size]);
-        if (unchanged) return;
-        state.sizeQuantities = { ...sizePickerDraft };
+        state.sizeQuantities = { ...getPositiveSizeQuantities(sizePickerDraft) };
+        if (readBundleBuild()) {
+            // Keep page total as the full multi-colour allocation for this garment.
+            state.quantity = bundlePicksForCurrentItem().reduce(function (sum, row) {
+                return sum + (Number(row.quantity) || 0);
+            }, 0) || Object.values(state.sizeQuantities).reduce(function (sum, qty) { return sum + qty; }, 0);
+            refreshSizeSummary();
+            const totalSpan = document.getElementById('totalQty');
+            if (totalSpan) totalSpan.textContent = state.quantity || 0;
+            return;
+        }
         updateSizeQuantities();
     }
 
@@ -5832,21 +6022,19 @@
         const dialog = getSizePickerDialog();
         if (dialog.open) return;
 
-        sizePickerDraft = getPositiveSizeQuantities(state.sizeQuantities);
+        if (readBundleBuild()) loadBundleSizesForSelectedColour();
+        else sizePickerDraft = getPositiveSizeQuantities(state.sizeQuantities);
+
         const list = dialog.querySelector('.size-picker__list');
         list.replaceChildren(...getSizePickerSizes().map(createSizePickerRow));
 
         const colour = dialog.querySelector('.size-picker__colour');
         colour.textContent = state.selectedColorName ? 'Colour: ' + state.selectedColorName : '';
         colour.hidden = !state.selectedColorName;
-        const done = dialog.querySelector('.size-picker__done');
+        const changeColour = dialog.querySelector('.size-picker__change-colour');
         const bundleJob = readBundleBuild();
-        if (done && bundleJob) {
-            const item = bundleJob.components[bundleJob.index] || {};
-            const last = bundleJob.index >= bundleJob.components.length - 1;
-            const only = bundleJob.components.length === 1;
-            done.textContent = only || last ? 'Add to basket' : 'Next bundle item';
-            if (!only && !last) done.insertAdjacentHTML('beforeend', ' <span aria-hidden="true">→</span>');
+        if (changeColour) {
+            changeColour.hidden = !bundleJob;
         }
         updateSizePickerTotal();
 
@@ -12124,17 +12312,22 @@
     document.addEventListener('DOMContentLoaded', () => {
         const backBtn = document.getElementById('breadcrumbBackBtn');
         if (backBtn) {
-            backBtn.addEventListener('click', () => {
+            backBtn.addEventListener('click', (event) => {
+                // Bundle detour back is owned by breadcrumbs.js (natural history / Bundles path).
+                if (readBundleBuild()) return;
+
                 // Check if coming from basket customization
                 const returnTarget = sessionStorage.getItem('returnAfterCustomize');
                 
                 // If in iframe popup, close the popup
                 if (window.parent !== window && typeof window.parent.closeCustomizePopup === 'function') {
+                    event.preventDefault();
                     sessionStorage.removeItem('customizingBasketIndex');
                     sessionStorage.removeItem('returnAfterCustomize');
                     window.parent.closeCustomizePopup();
                 } else if (returnTarget === 'basket') {
                     // Navigate back to basket
+                    event.preventDefault();
                     sessionStorage.removeItem('customizingBasketIndex');
                     sessionStorage.removeItem('returnAfterCustomize');
                     window.location.href = '../basket.html';
@@ -12161,29 +12354,38 @@
         if (!job) return;
         document.body.classList.add('bundle-build');
         renderBundleSequence(job);
+        loadBundleSizesForSelectedColour();
         ['.pricing-section', '#galleryRelatedProducts', '#custRecommendationsSection', '.action-bar'].forEach(selector => {
             document.querySelectorAll(selector).forEach(node => { node.hidden = true; node.style.display = 'none'; });
         });
         const item = job.components[job.index];
-        if (!item || document.getElementById('bundleBuildNote')) return;
-        const note = document.createElement('p');
-        note.id = 'bundleBuildNote';
-        note.style.cssText = 'margin:12px 16px;padding:10px 12px;border-radius:10px;background:#eef3ff;color:#162447;font-weight:700;';
-        const place = job.components.length > 1 ? ' Item ' + (job.index + 1) + ' of ' + job.components.length + '.' : '';
-        note.textContent = 'Bundle: choose colour and sizes for all ' + item.qty + ' × ' + item.code + '.' + place;
-        const colorSection = document.querySelector('.color-options');
-        if (colorSection && colorSection.parentElement) colorSection.parentElement.insertBefore(note, colorSection);
+        if (item && !document.getElementById('bundleBuildNote')) {
+            const note = document.createElement('p');
+            note.id = 'bundleBuildNote';
+            note.style.cssText = 'margin:12px 16px;padding:10px 12px;border-radius:10px;background:#eef3ff;color:#162447;font-weight:700;';
+            const place = job.components.length > 1 ? ' Item ' + (job.index + 1) + ' of ' + job.components.length + '.' : '';
+            note.textContent = 'Bundle: choose colour and sizes for all ' + item.qty + ' × ' + item.code + '.' + place;
+            const colorSection = document.querySelector('.color-options');
+            if (colorSection && colorSection.parentElement) colorSection.parentElement.insertBefore(note, colorSection);
+        }
+        scheduleBundleColorAutoscroll();
+        if (typeof window.updateBreadcrumbProduct === 'function' && item && item.code) {
+            window.updateBreadcrumbProduct(item.code);
+        }
     }
 
     function saveBundlePick(job) {
+        // Multi-colour allocations live in job.picks; merge the active colour draft into them.
+        persistBundleColourDraft();
         const item = job.components[job.index];
-        const colour = state.selectedColorName || (document.getElementById('selectedColor') && document.getElementById('selectedColor').textContent) || '';
+        if (!item) return;
         const image = state.selectedColorImage || (state.product && (state.product.image || state.product.imageUrl)) || '';
         if (!job.thumbs) job.thumbs = {};
         if (image) job.thumbs[item.code] = image;
-        job.picks[item.code] = Object.entries(state.sizeQuantities || {})
-            .filter(([, qty]) => Number(qty) > 0)
-            .map(([size, quantity]) => ({ colour: colour, size: size, quantity: Number(quantity), image: image }));
+        // Ensure quantity reflects every colour already stored for this garment.
+        state.quantity = (job.picks[item.code] || []).reduce(function (sum, row) {
+            return sum + (Number(row.quantity) || 0);
+        }, 0);
     }
 
     async function bundleLogoRecord() {
@@ -12281,21 +12483,43 @@
         if (!job) return false;
         const item = job.components[job.index];
         const required = Number(item && item.qty) || 0;
-        const total = Number(state.quantity) || 0;
+        saveBundlePick(job);
+        const total = (job.picks[item.code] || []).reduce(function (sum, row) {
+            return sum + (Number(row.quantity) || 0);
+        }, 0);
         if (total !== required) {
-            window.alert('This bundle needs exactly ' + required + ' pieces. You have selected ' + total + '.');
+            // Under-target is a colour-change pause, not an error — keep picks and return.
+            try { sessionStorage.setItem('buk-bundle-build', JSON.stringify(job)); } catch (error) { /* ignore */ }
             return true;
         }
-        saveBundlePick(job);
+        try { sessionStorage.setItem('buk-bundle-build', JSON.stringify(job)); } catch (error) { /* ignore */ }
         if (job.index < job.components.length - 1) {
             job.index += 1;
             sessionStorage.setItem('buk-bundle-build', JSON.stringify(job));
             swapBundleItem(job, job.components[job.index]);
             return true;
         }
-        commitBundleBuild(job).then(function () {
-            window.location.href = '/basket.html#orderSummary';
-        });
+        // Explicit confirm only. Prefer returning to the configurator logo step when possible.
+        const slug = job.slug || job.bundleId || '';
+        try {
+            sessionStorage.setItem('buk-bundle-resume', JSON.stringify({
+                bundleId: job.bundleId,
+                slug: job.slug,
+                title: job.title,
+                price: job.price,
+                bundleNumber: job.bundleNumber || 0,
+                itemCount: job.itemCount,
+                components: job.components,
+                picks: job.picks,
+                thumbs: job.thumbs || {},
+                lineId: job.lineId || '',
+                method: job.method || '',
+                notes: job.notes || '',
+                returnToBasket: !!job.returnToBasket,
+                resumeStep: 3
+            }));
+        } catch (error) { /* ignore */ }
+        window.location.href = '/bundle-configurator/?force=mobile&bundle=' + encodeURIComponent(slug) + '&resumeBuild=1';
         return true;
     }
 
