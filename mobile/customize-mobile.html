@@ -13,6 +13,17 @@
             d.write('<script src="' + base + '/desktop-gate.js?v=20260929-mobilestay1"><\/script>');
         }(document));
     </script>
+    <style id="buk-z">
+      :root { --buk-z-ms: 900ms; }
+      ::view-transition { background: transparent; }
+      ::view-transition-group(root) { animation: none; }
+      ::view-transition-old(root) { transform-origin: center center; animation: buk-z-out var(--buk-z-ms) ease-in-out both; }
+      ::view-transition-new(root) { transform-origin: center center; animation: buk-z-in var(--buk-z-ms) ease-in-out both; }
+      @keyframes buk-z-out { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(1.08); } }
+      @keyframes buk-z-in { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
+      #branded-nav { view-transition-name: branded-nav; }
+      ::view-transition-group(branded-nav) { animation: none; }
+    </style>
     <!-- Google Consent Mode v2 defaults (must stay before the Google tag) -->
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -309,6 +320,7 @@
                     <script>
                     (function(){
                         try {
+                            if (/[?&]bundleBuild=1(?:&|$)/.test(location.search)) return;
                             var d = sessionStorage.getItem('selectedProductData');
                             if(d){var p=JSON.parse(d); var s=p.image||p.photo||(p.colors&&p.colors[0]&&p.colors[0].image)||'';
                             if(s){document.getElementById('mainImage').src=s;}}
@@ -1108,8 +1120,8 @@
     <script src="../brandedukv15-child/assets/js/garment-color-behind-scenes.js?v=20260610h"></script>
     <script src="js/basket-logos.js?v=20260519"></script>
     <script src="../brandedukv15-child/assets/js/variant-pricing.js?v=20261104"></script>
-    <script src="js/customize.js?v=20261116-bundlecard"></script>
-    <script src="js/order-steps.js?v=20261019c"></script>
+    <script src="js/customize.js?v=20261116-bundlesoft"></script>
+    <script src="js/order-steps.js?v=20261116-bundleseq"></script>
     <script src="js/marker-editor.js?v=20260531a"></script>
     <script src="../brandedukv15-child/assets/js/api-config.js?v=20261107-colourprice"></script>
     <script src="../brandedukv15-child/assets/js/api.js?v=20261107-colourprice"></script>

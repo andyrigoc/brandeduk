@@ -4,7 +4,7 @@
     'use strict';
 
     var root = document.getElementById('orderSteps');
-    if (!root) return;
+    if (!root || root.getAttribute('data-bundle-sequence') === '1') return;
 
     var colourPicked = false;
     var lastKey = '';

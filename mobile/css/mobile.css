@@ -1628,7 +1628,7 @@ a {
     font-weight: 700;
 }
 
-.size-picker__done:disabled {
+.size-picker__total strong.is-met { color: #16a34a; }
     background: #d1d5db;
     color: #6b7280;
 }
