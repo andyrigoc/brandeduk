@@ -38,6 +38,23 @@
         return;
     }
 
+    /* Same lockup as pc-header.css / home-pc.html. Injected as a real style
+       element before the header markup, because addStylesheet() is async and
+       the 1916×821 wordmark otherwise paints at intrinsic size for one frame. */
+    function installLockupStyle() {
+        if (document.getElementById('pc-header-lockup-critical')) return;
+        var style = document.createElement('style');
+        style.id = 'pc-header-lockup-critical';
+        style.textContent = '@media (min-width:700px){' +
+            '.site-header .searchbar-header__brand-badge-wrap{display:block;flex:0 0 auto;height:45px;width:auto;overflow:visible}' +
+            '.site-header .searchbar-header__brand-badge{display:block!important;height:45px!important;max-height:45px!important;width:auto!important;max-width:45px!important;object-fit:contain!important}' +
+            '.site-header img.searchbar-header__brand-text{display:block!important;flex:0 0 auto;height:87.36px!important;max-height:87.36px!important;width:auto!important;max-width:220px!important;margin:0!important;object-fit:contain!important;background:transparent!important}' +
+            '}';
+        (document.head || document.documentElement).appendChild(style);
+    }
+
+    installLockupStyle();
+
     function addStylesheet(href, marker) {
         var targetPath = new URL(href, window.location.href).pathname;
         var alreadyLoaded = Array.from(document.querySelectorAll('link[rel="stylesheet"][href]')).some(function (link) {
@@ -388,6 +405,7 @@
 
     function mount() {
         if (mounted) return true;
+        installLockupStyle();
         var templateSource = window.BrandedPcHeaderTemplate;
         var existingHeader = document.querySelector('.site-header');
         if (!templateSource || !existingHeader) return false;
