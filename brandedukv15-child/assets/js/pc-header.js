@@ -64,7 +64,7 @@
         }
         addStylesheet(new URL('css/components/header.css?v=20260220', assetsRoot).href, 'base');
         addStylesheet(new URL('css/components/promo-bar.css?v=20260425a', assetsRoot).href, 'promo');
-        addStylesheet(new URL('css/components/pc-header.css?v=20261012-more', assetsRoot).href, 'standard');
+        addStylesheet(new URL('css/components/pc-header.css?v=20261117-wordmark', assetsRoot).href, 'standard');
         addStylesheet(new URL('css/components/pc-nav-overflow.css?v=20261012-navmore', assetsRoot).href, 'nav-overflow');
         addStylesheet(new URL('css/components/pc-search.css?v=20261030-live-search', assetsRoot).href, 'search');
         addStylesheet(new URL('css/components/header-basket-lottie.css?v=20261012-allpages', assetsRoot).href, 'basket');

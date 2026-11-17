@@ -207,7 +207,12 @@
 
     .site-header .searchbar-header__brand {
         flex: 0 0 auto;
+        align-items: center;
+        gap: 10px;
         margin-right: 8px;
+        width: auto;
+        max-width: 280px;
+        min-width: 0;
     }
 
     .site-header .searchbar-header__brand-img {
@@ -216,6 +221,39 @@
         height: 64px !important;
         max-width: none;
         object-fit: contain;
+    }
+
+    /* Combo lockup: GIF badge + wordmark PNG (about 1916×821).
+       Homepage sets this in home-pc.html. Other desktop pages only sized the
+       old .searchbar-header__brand-img, so the wordmark kept its intrinsic
+       size (and mobile.css `img { height: auto; max-width: 100% }` on basket). */
+    .site-header .searchbar-header__brand-badge-wrap {
+        display: block;
+        flex: 0 0 auto;
+        height: 45px;
+        width: auto;
+        overflow: visible;
+    }
+
+    .site-header .searchbar-header__brand-badge {
+        display: block !important;
+        height: 45px !important;
+        max-height: 45px !important;
+        width: auto !important;
+        max-width: 45px !important;
+        object-fit: contain !important;
+    }
+
+    .site-header img.searchbar-header__brand-text {
+        display: block !important;
+        flex: 0 0 auto;
+        height: 87.36px !important;
+        max-height: 87.36px !important;
+        width: auto !important;
+        max-width: 220px !important;
+        margin: 0 !important;
+        object-fit: contain !important;
+        background: transparent !important;
     }
 
     .site-header .searchbar-header .category-dropdown {
