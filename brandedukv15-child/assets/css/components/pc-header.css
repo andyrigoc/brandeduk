@@ -173,6 +173,12 @@
         color: #111827;
     }
 
+    /* The count badge hangs 3px + 18px past the cart (header-basket-lottie.css, cart-lottie-icon.css).
+       Reserve that space so the badge, not the cart, sits on the header's right edge. */
+    .site-header .header-top .header-top-basket-link {
+        margin-right: 21px;
+    }
+
     .site-header .header-top-basket-badge {
         position: absolute;
         top: -7px;
@@ -996,10 +1002,6 @@
         white-space: nowrap;
     }
 
-    .site-header .header-top .header-top-basket-link {
-        display: none;
-    }
-
     .site-header .searchbar-header__inner {
         gap: 12px;
         min-height: 56px;
@@ -1047,6 +1049,11 @@
 
     .site-header .searchbar-header__surface {
         padding: 10px 16px !important;
+    }
+
+    .site-header .header-top .header-container {
+        padding-left: 16px;
+        padding-right: 16px;
     }
 
     .site-header .searchbar-header__brand {
@@ -1115,6 +1122,13 @@
 
     .site-header .main-nav > .menu > li > a {
         font-size: 13px;
+    }
+}
+
+/* Tablets: no room for the mini basket in the top bar; the search row keeps its Basket link. */
+@media (min-width: 700px) and (max-width: 1023px) {
+    .site-header .header-top .header-top-basket-link {
+        display: none;
     }
 }
 
