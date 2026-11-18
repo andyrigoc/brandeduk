@@ -1,0 +1,32 @@
+/* Mobile product page: pinch / double-tap zoom inside the main image box (js/image-zoom.js).
+   1x keeps page scrolling on the image; zoomed, one finger pans the photo instead. */
+.image-zoom {
+    position: relative;
+    min-width: 0;
+    overflow: hidden;
+    touch-action: pan-x pan-y;
+}
+
+.image-zoom img {
+    display: block;
+    transform-origin: 0 0;
+}
+
+.image-zoom.is-zoomed {
+    touch-action: none;
+}
+
+.image-zoom.is-zoomed img {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* Only while a finger is down or the zoom is easing, so the photo re-rasterises sharp at rest. */
+.image-zoom.is-active img {
+    will-change: transform;
+}
+
+.image-zoom.is-easing img {
+    transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
