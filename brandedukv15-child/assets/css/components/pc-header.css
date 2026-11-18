@@ -1164,3 +1164,28 @@
         min-width: 128px;
     }
 }
+
+/* Wide screens: let the search bar use the empty space between the logo and the
+   header links instead of sitting as a fixed 400px box pushed to the far right.
+   Shop products stays beside the logo; the bar grows up to 720px. Screens up to
+   1280px keep the existing, tighter rules above. */
+@media (min-width: 1281px) {
+    .site-header .searchbar-header .category-dropdown {
+        margin-left: 0;
+    }
+
+    .site-header .searchbar-header__actions {
+        flex: 1 1 auto;
+    }
+
+    .site-header .searchbar-header__search-expand {
+        flex: 1 1 auto;
+        width: auto !important;
+        min-width: 320px;
+        max-width: 720px;
+    }
+
+    .site-header .searchbar-header__actions > .header-util-link {
+        flex: 0 0 auto;
+    }
+}
