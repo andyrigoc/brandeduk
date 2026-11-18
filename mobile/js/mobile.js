@@ -465,10 +465,15 @@ function initSearch() {
         let debounceTimer;
         const debounce = (cb, ms) => { clearTimeout(debounceTimer); debounceTimer = setTimeout(cb, ms); };
 
-        const renderSuggestions = (data, query) => {
+        const renderSuggestions = (data, typedQuery) => {
+            // The in-memory engine already ranks and typo-corrects; only filter legacy SQL results.
+            const fromEngine = data.engine === 'memory';
+            const query = data.correctedQuery || typedQuery;
             let { products = [], keywords = [] } = data;
-            keywords = Array.isArray(keywords) ? keywords.slice(0, 3) : [];
-            products = filterSuggestByTitle(products, query);
+            keywords = Array.isArray(data.suggestions) && data.suggestions.length
+                ? data.suggestions.slice(0, 4)
+                : (Array.isArray(keywords) ? keywords.slice(0, 3) : []);
+            products = fromEngine ? (products || []) : filterSuggestByTitle(products, query);
             // Strip hidden brand names
             products = products.map(p => {
                 let label = p.label || '';
@@ -485,9 +490,13 @@ function initSearch() {
             };
 
             let html = '';
-            
+
             // Check if we're not already in the mobile folder (e.g. from index-mobile.html)
             const baseUrl = getMobileBaseUrl();
+
+            if (data.correctedQuery) {
+                html += `<div class="suggestion-group-title">Showing matches for “${esc(data.correctedQuery)}”</div>`;
+            }
 
             if (keywords.length) {
                 html += '<div class="suggestion-group-title">Suggested searches</div>';
@@ -527,27 +536,37 @@ function initSearch() {
                         <div class="suggestion-item-aside">${brandHtml}${priceHtml}</div>
                     </a>`;
             });
-            html += `<a href="${getCanonicalShopUrl(`q=${encodeURIComponent(query)}`)}" class="view-all-results">View all results for "${query}" →</a>`;
+            html += `<a href="${getCanonicalShopUrl(`q=${encodeURIComponent(query)}`)}" class="view-all-results">View all results for "${esc(query)}" →</a>`;
             suggestionBox.innerHTML = html;
             suggestionBox.classList.add('active');
         };
 
+        let activeRequest = null;
         const fetchSuggestions = async (query) => {
+            if (activeRequest) activeRequest.abort();
             if (query.length < 1) { suggestionBox.classList.remove('active'); return; }
+            const controller = new AbortController();
+            activeRequest = controller;
             try {
                 const apiBase = (typeof window.resolveBrandedApiBase === 'function'
                     ? window.resolveBrandedApiBase()
                     : (window.API_BASE_URL || 'https://api.brandeduk.com')).replace(/\/+$/, '');
-                const res = await fetch(`${apiBase}/api/products/suggest?q=${encodeURIComponent(query)}`);
+                const res = await fetch(`${apiBase}/api/products/suggest?q=${encodeURIComponent(query)}`, { signal: controller.signal });
                 if (!res.ok) throw new Error('API Error');
                 const data = await res.json();
+                // Ignore answers that arrive after the shopper has typed on.
+                if (activeRequest !== controller) return;
+                activeRequest = null;
                 renderSuggestions(data, query);
-            } catch (err) { console.error('Search Suggestion Error:', err); }
+            } catch (err) {
+                if (err && err.name === 'AbortError') return;
+                console.error('Search Suggestion Error:', err);
+            }
         };
 
         inputEl.addEventListener('input', (e) => {
             const query = e.target.value.trim();
-            debounce(() => fetchSuggestions(query), 300);
+            debounce(() => fetchSuggestions(query), 150);
         });
 
         // Close when clicking outside

@@ -66,7 +66,7 @@
         addStylesheet(new URL('css/components/promo-bar.css?v=20260425a', assetsRoot).href, 'promo');
         addStylesheet(new URL('css/components/pc-header.css?v=20261012-more', assetsRoot).href, 'standard');
         addStylesheet(new URL('css/components/pc-nav-overflow.css?v=20261012-navmore', assetsRoot).href, 'nav-overflow');
-        addStylesheet(new URL('css/components/pc-search.css?v=20261030-live-search', assetsRoot).href, 'search');
+        addStylesheet(new URL('css/components/pc-search.css?v=20261118-instant-search', assetsRoot).href, 'search');
         addStylesheet(new URL('css/components/header-basket-lottie.css?v=20261012-allpages', assetsRoot).href, 'basket');
         addFonts();
     }
@@ -351,10 +351,10 @@
             });
         }
         chain.then(function () {
-            return appendScript('js/pc-search.js?v=20261103-brandcatalog', { 'data-pc-search': 'true' });
+            return appendScript('js/pc-search.js?v=20261118-instant-search', { 'data-pc-search': 'true' });
         }).catch(function () {
             // Search should still work even if the eco badge assets fail to load.
-            appendScript('js/pc-search.js?v=20261103-brandcatalog', { 'data-pc-search': 'true' });
+            appendScript('js/pc-search.js?v=20261118-instant-search', { 'data-pc-search': 'true' });
         });
     }
 

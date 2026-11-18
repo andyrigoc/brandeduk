@@ -679,9 +679,11 @@
                 debounceTimer = setTimeout(callback, time);
             };
 
-            const renderSuggestions = (data, query) => {
+            const renderSuggestions = (data, typedQuery) => {
+                // The in-memory engine already ranks and typo-corrects; only filter legacy SQL results.
+                const query = data.correctedQuery || typedQuery;
                 let { products = [] } = data;
-                products = filterSuggestByTitle(products, query);
+                products = data.engine === 'memory' ? (products || []) : filterSuggestByTitle(products, query);
 
                 // Strip hidden brand names from suggestion labels
                 const _HIDDEN_HDR = ['absolute apparel', 'ralawise'];
@@ -770,7 +772,7 @@
 
             searchInput.addEventListener('input', (e) => {
                 const query = e.target.value.trim();
-                debounce(() => fetchSuggestions(query), 300);
+                debounce(() => fetchSuggestions(query), 150);
             });
 
             // Close when clicking outside
