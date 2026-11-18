@@ -61,7 +61,7 @@
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20261002-logocombo">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/promo-bar.css?v=20260425a">
     <script src="brandedukv15-child/assets/js/pc-header-template.js?v=20261015-nodeals"></script>
-    <script src="brandedukv15-child/assets/js/pc-header.js?v=20261117-wordmark"></script>
+    <script src="brandedukv15-child/assets/js/pc-header.js?v=20261117-lockup"></script>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie_light.min.js" media="(min-width: 700px)">
     <link rel="preload" as="fetch" href="brandedukv15-child/assets/images/ui/cart-icon-loader.json" crossorigin media="(min-width: 700px)">
@@ -96,6 +96,20 @@
         @media (min-width: 700px) {
             body.basket-page .basket-content {
                 padding-top: 32px !important;
+            }
+        }
+
+        /* PC only: the basket under the blue bar rises into place; the header and ticker stay still.
+           #basketContent and #emptyBasket start hidden, so the rise plays when renderBasket() shows them.
+           Keep the fill "backwards": a transform left behind would trap position:fixed and sticky children. */
+        @media (min-width: 700px) and (prefers-reduced-motion: no-preference) {
+            @keyframes basket-content-rise {
+                from { transform: translateY(100vh); }
+                to { transform: none; }
+            }
+            body.basket-page #basketContent,
+            body.basket-page #emptyBasket {
+                animation: basket-content-rise 420ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
             }
         }
 
@@ -7331,7 +7345,7 @@
 <script src="brandedukv15-child/assets/js/storage/quote-storage.js?v=20261103-quote-artwork"></script>
 <script src="brandedukv15-child/assets/js/cart.js?v=20261025-storage"></script>
 <script src="brandedukv15-child/assets/js/header.js?v=20261020-suggest"></script>
-<script src="brandedukv15-child/assets/js/api-config.js?v=20260530"></script>
+<script src="brandedukv15-child/assets/js/api-config.js?v=20261118-localapi"></script>
 <script src="brandedukv15-child/assets/js/color-eyedropper.js?v=20260610n"></script>
 <script src="brandedukv15-child/assets/js/color-hex.js?v=20260704a"></script>
 <script src="brandedukv15-child/assets/js/variant-pricing.js?v=20261104"></script>
