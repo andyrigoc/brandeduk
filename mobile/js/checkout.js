@@ -12,7 +12,7 @@ const CHECKOUT_SESSION_ENDPOINT = `${API_BASE_URL}/api/quotes/stripe/checkout-se
 const CREATE_ORDER_ENDPOINT = `${API_BASE_URL}/api/checkout/create-order`;
 const VAT_RATE = 0.20;
 const DIGITIZING_FEE_PER_DESIGN = 25;
-const BASKET_URL = '/basket.html';
+const BASKET_URL = '/basket';
 
 function isLocalApiBase() {
     try {

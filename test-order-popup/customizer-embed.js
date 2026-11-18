@@ -73,7 +73,7 @@
             document.body.appendChild(preloadFrame);
         }
 
-        var target = new URL('customization-tool/index.html', window.location.href);
+        var target = new URL('/customization-tool/', window.location.href);
         target.searchParams.set('code', code);
         target.searchParams.set('from', 'basket');
         target.searchParams.set('logoOnly', '1');
@@ -183,7 +183,7 @@
             window.parent.postMessage({ type: 'closeCustomizePopup' }, window.location.origin);
             return;
         }
-        window.location.assign(new URL('basket.html', window.location.href).href);
+        window.location.assign(new URL('/basket', window.location.href).href);
     }
 
     window.openPcOrderCustomizer = function openPcOrderCustomizer() {
@@ -272,7 +272,7 @@
             summary.textContent = parts.join('  |  ') || 'Your order selections are preserved';
         }
 
-        var target = new URL('customization-tool/index.html', window.location.href);
+        var target = new URL('/customization-tool/', window.location.href);
         target.searchParams.set('code', item.productCode || item.code || '');
         target.searchParams.set('from', 'basket');
         target.searchParams.set('logoOnly', '1');

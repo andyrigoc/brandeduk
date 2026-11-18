@@ -42,8 +42,8 @@
             return heroCta.href;
         }
         var label = navItemLabel(item).toLowerCase();
-        if (label === 'industries') return new URL('industries.html', projectRoot).href;
-        return new URL('shop-pc.html', projectRoot).href;
+        if (label === 'industries') return new URL('/industries', projectRoot).href;
+        return new URL('/shop-pc', projectRoot).href;
     }
 
     function navOverflowItems(menu) {

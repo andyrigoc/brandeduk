@@ -14,8 +14,8 @@
 
     const scriptElement = document.currentScript;
     const SHOP_PAGE_URL = scriptElement && scriptElement.src
-        ? new URL('../../shop-pc.html', scriptElement.src).href
-        : 'shop-pc.html';
+        ? new URL('/shop-pc', scriptElement.src).href
+        : '/shop-pc';
     
     // Cache for product types
     let productTypesCache = null;

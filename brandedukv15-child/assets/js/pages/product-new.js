@@ -278,7 +278,7 @@ quoteButton.onclick = () => {
     sessionStorage.setItem('customizingProduct', JSON.stringify(productData));
 
     // Navigate to positions
-    window.location.href = 'customize-positions.html';
+    window.location.href = '/customize-positions';
 };
 
 function getSizesSummary() {

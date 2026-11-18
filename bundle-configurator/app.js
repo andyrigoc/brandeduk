@@ -1301,7 +1301,7 @@ function openBundleColourPage() {
     returnToBasket: Boolean(returnToBasket || draft.lineId)
   }));
   const first = components[0];
-  const colourPage = new URL('/mobile/customize-mobile.html', location.origin);
+  const colourPage = new URL('/mobile/customize-mobile', location.origin);
   colourPage.searchParams.set('code', first.code);
   colourPage.searchParams.set('bundleBuild', '1');
   colourPage.searchParams.set('force', 'mobile');
@@ -1821,7 +1821,7 @@ async function persistDraftLogo(file) {
 }
 
 function quoteBasketHref() {
-  return '/basket.html#orderSummary';
+  return '/basket#orderSummary';
 }
 
 async function addToBasket() {

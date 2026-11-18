@@ -194,7 +194,7 @@ function initSearch() {
         searchBtn.addEventListener('click', function() {
             const query = searchInput.value.trim();
             if (query) {
-                window.location.href = `search-results.html?s=${encodeURIComponent(query)}`;
+                window.location.href = `/search-results?s=${encodeURIComponent(query)}`;
             }
         });
         
@@ -202,7 +202,7 @@ function initSearch() {
             if (e.key === 'Enter') {
                 const query = this.value.trim();
                 if (query) {
-                    window.location.href = `search-results.html?s=${encodeURIComponent(query)}`;
+                    window.location.href = `/search-results?s=${encodeURIComponent(query)}`;
                 }
             }
         });

@@ -156,14 +156,6 @@
         return new URLSearchParams(window.location.search).get(name) || '';
     }
 
-    /** Resolve the correct path prefix (root vs mobile/ subfolder) */
-    function rootPrefix() {
-        // If we're inside /mobile/, go up one level
-        var path = window.location.pathname.replace(/\\/g, '/');
-        if (/\/mobile\//i.test(path)) return '../';
-        return '';
-    }
-
     /* ── Page detection ────────────────────────────── */
 
     /** Detect which page we're on from the filename */
@@ -212,13 +204,12 @@
     /* ── Build breadcrumb trail ────────────────────── */
 
     function buildTrail(page) {
-        var prefix = rootPrefix();
         var crumbs = [];
         var category = resolveCategory();  // always a slug now
         var product = resolveProduct();
         var catDisplay = prettyCategory(category);
-        var shopUrl = prefix + 'shop.html';
-        var homeUrl = prefix + 'index.html';
+        var shopUrl = '/shop';
+        var homeUrl = '/';
 
         /* Always start with Home */
         crumbs.push({ label: 'Home', href: homeUrl });
@@ -311,7 +302,7 @@
             case 'checkout':
                 crumbs.push({
                     label: 'Basket',
-                    href: prefix + 'basket.html'
+                    href: '/basket'
                 });
                 crumbs.push({ label: 'Checkout', href: null });
                 break;
@@ -319,7 +310,7 @@
             case 'quote':
                 crumbs.push({
                     label: 'Basket',
-                    href: prefix + 'basket.html'
+                    href: '/basket'
                 });
                 crumbs.push({ label: 'Request Quote', href: null });
                 break;
@@ -349,7 +340,6 @@
     /* ── Back button target ────────────────────────── */
 
     function getBackTarget(page) {
-        var prefix = rootPrefix();
         var category = resolveCategory();
 
         if ((page === 'product' || page === 'customize') && isBundleBuildPage()) {
@@ -358,21 +348,21 @@
 
         switch (page) {
             case 'shop':
-                return prefix + 'index.html';
+                return '/';
             case 'product':
             case 'customize':
                 if (category) {
-                    return prefix + 'shop.html?category=' + encodeURIComponent(category);
+                    return '/shop?category=' + encodeURIComponent(category);
                 }
-                return prefix + 'shop.html';
+                return '/shop';
             case 'basket':
-                return prefix + 'shop.html?category=all';
+                return '/shop?category=all';
             case 'checkout':
-                return prefix + 'basket.html';
+                return '/basket';
             case 'quote':
-                return prefix + 'basket.html';
+                return '/basket';
             default:
-                return prefix + 'index.html';
+                return '/';
         }
     }
 

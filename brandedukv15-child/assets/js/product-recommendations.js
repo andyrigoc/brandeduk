@@ -161,17 +161,12 @@
         const safeCode = encodeURIComponent(code || '');
 
         if (pageType === 'mobile') {
-            return 'customize-mobile.html?code=' + safeCode;
+            return '/product/' + safeCode + '?force=mobile';
         }
 
-        if (typeof window !== 'undefined') {
-            const pathname = window.location.pathname || '';
-            if (/^\/product\/[^/]+\/?$/.test(pathname)) {
-                return '/product/' + safeCode;
-            }
-        }
-
-        return 'product-detail.html?code=' + safeCode;
+        var narrow = false;
+        try { narrow = window.matchMedia('(max-width: 699px)').matches; } catch (e) {}
+        return '/product/' + safeCode + (narrow ? '?force=mobile' : '');
     }
 
     function createCard(product, options) {

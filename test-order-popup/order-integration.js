@@ -1285,7 +1285,7 @@
     }
     
     // Intercept product links
-    $(document).on('click', 'a[href*="product-detail.html"]', function(e) {
+    $(document).on('click', 'a[href*="/product-detail"]', function(e) {
         e.preventDefault();
         const href = $(this).attr('href');
         const params = new URLSearchParams(href.split('?')[1]);

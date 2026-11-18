@@ -87,17 +87,12 @@
             document.getElementById('ogUrl').setAttribute('content', cleanUrl);
             document.getElementById('twitterUrl').setAttribute('content', cleanUrl);
 
-            var isMobile = window.innerWidth < 700 || /Mobi|Android|iPhone|iPod/i.test(navigator.userAgent || '');
-            if (isMobile && code) {
-                window.location.replace('mobile/customize-mobile.html?code=' + encodeURIComponent(code));
-            } else if (code) {
-                // The PC catalogue uses one canonical product experience: the
-                // order popup hosted by shop-pc.html. Keep this legacy URL as a
-                // compatibility redirect for search engines, bookmarks and any
-                // older desktop links that still point here.
-                var desktopProductUrl = new URL('shop-pc.html', window.location.href);
-                desktopProductUrl.searchParams.set('product', code);
-                window.location.replace(desktopProductUrl.toString());
+            if (code) {
+                var targetPath = '/product/' + encodeURIComponent(code);
+                var here = (window.location.pathname || '/').replace(/\/+$/, '') || '/';
+                if (here !== targetPath) {
+                    window.location.replace(targetPath + (window.location.hash || ''));
+                }
             }
         })();
     </script>
@@ -1004,7 +999,7 @@
                             <span class="header-top-vat-toggle__label header-top-vat-toggle__label--inc" data-vat-inc>inc vat</span>
                         </button>
                     </div>
-                    <a class="header-top-basket-link" href="basket.html#orderSummary" aria-label="View quote">
+                    <a class="header-top-basket-link" href="/basket#orderSummary" aria-label="View quote">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M6 6h15l-1.5 9h-12z"/>
                             <circle cx="9" cy="20" r="1"/>
@@ -1021,7 +1016,7 @@
     <div class="searchbar-header">
         <div class="searchbar-header__surface">
             <div class="searchbar-header__inner">
-                <a class="searchbar-header__brand" href="home-pc.html" aria-label="brandedUK home">
+                <a class="searchbar-header__brand" href="/" aria-label="brandedUK home">
                     <img class="searchbar-header__brand-img" src="brandedukv15-child/assets/images/ui/branded-uk-header-logo-black.png?v=20260927-logoblack" alt="brandedUK">
                 </a>
 
@@ -1066,7 +1061,7 @@
                 <div class="dropdown-box" role="region" aria-label="Browse categories">
                     <ul class="menu vertical-menu category-menu">
                         <li class="has-children">
-                            <a href="shop-pc.html?productType=tshirts" data-product-type="t-shirts">
+                            <a href="/shop-pc?productType=tshirts" data-product-type="t-shirts">
                                 <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/icon-shirt-71%201.png" alt="" aria-hidden="true">
                                 <span class="category-text">T-Shirts</span>
                                 <span class="category-caret" aria-hidden="true"></span>
@@ -1080,7 +1075,7 @@
                                         <li><a href="#">Lightweight</a></li>
                                         <li><a href="#">Long Sleeve T-shirts</a></li>
                                         <li><a href="#">Performance / Sports</a></li>
-                                        <li><a href="customization-tool/index.html?code=8700M&from=short-sleeve&product=tshirt">Short Sleeve T-shirts</a></li>
+                                        <li><a href="/customization-tool/?code=8700M&from=short-sleeve&product=tshirt">Short Sleeve T-shirts</a></li>
                                         <li><a href="#">Tank Tops</a></li>
                                         <li><a href="#">T-shirts for Embroidery</a></li>
                                         <li><a href="#">T-shirts for Print</a></li>
@@ -1091,7 +1086,7 @@
                             </ul>
                         </li>
                         <li class="has-children">
-                            <a href="shop-pc.html?productType=polos" data-product-type="polos">
+                            <a href="/shop-pc?productType=polos" data-product-type="polos">
                                 <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Polo.png" alt="" aria-hidden="true">
                                 <span class="category-text">Polo Shirts</span>
                                 <span class="category-caret" aria-hidden="true"></span>
@@ -1113,7 +1108,7 @@
                             </ul>
                         </li>
                         <li class="has-children">
-                            <a href="shop-pc.html?productType=hoodies" data-product-type="hoodies">
+                            <a href="/shop-pc?productType=hoodies" data-product-type="hoodies">
                                 <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/icon-hoodies-71%201.png" alt="" aria-hidden="true">
                                 <span class="category-text">Hoodies &amp; Sweatshirts</span>
                                 <span class="category-caret" aria-hidden="true"></span>
@@ -1134,7 +1129,7 @@
                             </ul>
                         </li>
                         <li class="has-children">
-                            <a href="shop-pc.html?productType=jackets" data-product-type="jackets">
+                            <a href="/shop-pc?productType=jackets" data-product-type="jackets">
                                 <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Jacket.png" alt="" aria-hidden="true">
                                 <span class="category-text">Jackets &amp; Softshell</span>
                                 <span class="category-caret" aria-hidden="true"></span>
@@ -1156,7 +1151,7 @@
                             </ul>
                         </li>
                         <li class="has-children">
-                            <a href="shop-pc.html?productType=safety-vests" data-product-type="safety-vests">
+                            <a href="/shop-pc?productType=safety-vests" data-product-type="safety-vests">
                                 <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Hi%20Vis.png" alt="" aria-hidden="true">
                                 <span class="category-text">Hi-Vis Clothing</span>
                                 <span class="category-caret" aria-hidden="true"></span>
@@ -1178,7 +1173,7 @@
                             </ul>
                         </li>
                         <li class="has-children">
-                            <a href="shop-pc.html?productType=trousers" data-product-type="trousers">
+                            <a href="/shop-pc?productType=trousers" data-product-type="trousers">
                                 <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Trousers.png" alt="" aria-hidden="true">
                                 <span class="category-text">Work Trousers</span>
                                 <span class="category-caret" aria-hidden="true"></span>
@@ -1198,7 +1193,7 @@
                             </ul>
                         </li>
                         <li class="has-children">
-                            <a href="shop-pc.html?productType=aprons" data-product-type="aprons">
+                            <a href="/shop-pc?productType=aprons" data-product-type="aprons">
                                 <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Apron.png" alt="" aria-hidden="true">
                                 <span class="category-text">Work &amp; Uniforms</span>
                                 <span class="category-caret" aria-hidden="true"></span>
@@ -1210,13 +1205,13 @@
                                         <li><a href="#">Workwear Jackets</a></li>
                                         <li><a href="#">Workwear Hoodies</a></li>
                                         <li><a href="#">Work Accessories</a></li>
-                                        <li><a href="shop.html?category=aprons">Aprons</a></li>
+                                        <li><a href="/shop?category=aprons">Aprons</a></li>
                                     </ul>
                                 </li>
                             </ul>
                         </li>
                         <li class="has-children">
-                            <a href="shop-pc.html?productType=fleece" data-product-type="fleece">
+                            <a href="/shop-pc?productType=fleece" data-product-type="fleece">
                                 <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Fleece.png" alt="" aria-hidden="true">
                                 <span class="category-text">Fleeces</span>
                                 <span class="category-caret" aria-hidden="true"></span>
@@ -1235,7 +1230,7 @@
                             </ul>
                         </li>
                         <li class="has-children">
-                            <a href="shop-pc.html?productType=caps" data-product-type="caps">
+                            <a href="/shop-pc?productType=caps" data-product-type="caps">
                                 <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Cap.png" alt="" aria-hidden="true">
                                 <span class="category-text">Headwear / Accessories</span>
                                 <span class="category-caret" aria-hidden="true"></span>
@@ -1255,7 +1250,7 @@
                             </ul>
                         </li>
                         <li class="has-children">
-                            <a href="shop-pc.html?accreditation=recycled" data-accreditation="recycled">
+                            <a href="/shop-pc?accreditation=recycled" data-accreditation="recycled">
                                 <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Recycle.png" alt="" aria-hidden="true">
                                 <span class="category-text">Sustainable / Recycled &amp; Organic</span>
                                 <span class="category-caret" aria-hidden="true"></span>
@@ -1324,7 +1319,7 @@
                             </ul>
                         </li>
                         <li>
-                            <a href="shop-pc.html" class="view-all-link">
+                            <a href="/shop-pc" class="view-all-link">
                                 <span class="category-text">View All Categories</span>
                                 <span class="category-caret" aria-hidden="true"></span>
                             </a>
@@ -1344,7 +1339,7 @@
                             <li class="brand-heading">A</li>
                             <li><a href="#">Accessories</a></li>
                             <li><a href="#">Anti Static / ESD</a></li>
-                            <li><a href="shop.html?category=aprons">Aprons</a></li>
+                            <li><a href="/shop?category=aprons">Aprons</a></li>
                             <li><a href="#">Arc Flash</a></li>
                             <li><a href="#">Autumn Workwear</a></li>
                             <li class="brand-heading">B</li>
@@ -1483,49 +1478,49 @@
                         <div class="exclusives-dropdown" role="region" aria-label="Exclusive brands">
                             <div class="exclusives-dropdown-title">Exclusives</div>
                             <div class="exclusives-grid">
-                                <a href="shop-pc.html?brand=adidas®" class="exclusive-brand" title="Adidas">
+                                <a href="/shop-pc?brand=adidas®" class="exclusive-brand" title="Adidas">
                                     <img src="../brandedukv15-child/assets/images/brands/adidas.jpg" alt="Adidas">
                                 </a>
-                                <a href="shop-pc.html?brand=b%26c-collection" class="exclusive-brand" title="B&C Collection">
+                                <a href="/shop-pc?brand=b%26c-collection" class="exclusive-brand" title="B&C Collection">
                                     <img src="../brandedukv15-child/assets/images/brands/bandc-collection.png" alt="B&C">
                                 </a>
-                                <a href="shop-pc.html?brand=build-your-brand" class="exclusive-brand" title="Build Your Brand">
+                                <a href="/shop-pc?brand=build-your-brand" class="exclusive-brand" title="Build Your Brand">
                                     <img src="../brandedukv15-child/assets/images/brands/build-your-brand.png" alt="Build Your Brand">
                                 </a>
-                                <a href="shop-pc.html?brand=build-your-brand-basic" class="exclusive-brand" title="Build Your Brand Basic">
+                                <a href="/shop-pc?brand=build-your-brand-basic" class="exclusive-brand" title="Build Your Brand Basic">
                                     <img src="../brandedukv15-child/assets/images/brands/build-your-brand-basic-logo-web-2021.jpg" alt="Build Your Brand Basic">
                                 </a>
-                                <a href="shop-pc.html?brand=build-your-brandit" class="exclusive-brand" title="Brandit">
+                                <a href="/shop-pc?brand=build-your-brandit" class="exclusive-brand" title="Brandit">
                                     <img src="../brandedukv15-child/assets/images/brands/build-your-brandit-logo.jpeg" alt="Brandit">
                                 </a>
-                                <a href="shop-pc.html?brand=comfort-colors®" class="exclusive-brand" title="Comfort Colors">
+                                <a href="/shop-pc?brand=comfort-colors®" class="exclusive-brand" title="Comfort Colors">
                                     <img src="../brandedukv15-child/assets/images/brands/comfort-colors.webp" alt="Comfort Colors">
                                 </a>
-                                <a href="shop-pc.html?brand=new-morning-studios" class="exclusive-brand" title="New Morning Studios">
+                                <a href="/shop-pc?brand=new-morning-studios" class="exclusive-brand" title="New Morning Studios">
                                     <img src="../brandedukv15-child/assets/images/brands/web-logo-new-morning-studios.png" alt="New Morning Studios">
                                 </a>
-                                <a href="shop-pc.html?brand=nimbus" class="exclusive-brand" title="Nimbus">
+                                <a href="/shop-pc?brand=nimbus" class="exclusive-brand" title="Nimbus">
                                     <img src="../brandedukv15-child/assets/images/brands/nimbus2020.webp" alt="Nimbus">
                                 </a>
-                                <a href="shop-pc.html?brand=nutshell®" class="exclusive-brand" title="Nutshell">
+                                <a href="/shop-pc?brand=nutshell®" class="exclusive-brand" title="Nutshell">
                                     <img src="../brandedukv15-child/assets/images/brands/nutshell-bag2020.webp" alt="Nutshell">
                                 </a>
-                                <a href="shop-pc.html?brand=ogio" class="exclusive-brand" title="OGIO">
+                                <a href="/shop-pc?brand=ogio" class="exclusive-brand" title="OGIO">
                                     <img src="../brandedukv15-child/assets/images/brands/ogio2020.webp" alt="OGIO">
                                 </a>
-                                <a href="shop-pc.html?brand=rhino" class="exclusive-brand" title="Rhino">
+                                <a href="/shop-pc?brand=rhino" class="exclusive-brand" title="Rhino">
                                     <img src="../brandedukv15-child/assets/images/brands/rhino2020.jpg" alt="Rhino">
                                 </a>
-                                <a href="shop-pc.html?brand=ribbon" class="exclusive-brand" title="Ribbon">
+                                <a href="/shop-pc?brand=ribbon" class="exclusive-brand" title="Ribbon">
                                     <img src="../brandedukv15-child/assets/images/brands/brand-logo-ribbon.jpg" alt="Ribbon">
                                 </a>
-                                <a href="shop-pc.html?brand=tridri®" class="exclusive-brand" title="TriDri">
+                                <a href="/shop-pc?brand=tridri®" class="exclusive-brand" title="TriDri">
                                     <img src="../brandedukv15-child/assets/images/brands/tridri.webp" alt="Tri Dri">
                                 </a>
-                                <a href="shop-pc.html?brand=under-armour" class="exclusive-brand" title="Under Armour">
+                                <a href="/shop-pc?brand=under-armour" class="exclusive-brand" title="Under Armour">
                                     <img src="../brandedukv15-child/assets/images/brands/under-armour.webp" alt="Under Armour">
                                 </a>
-                                <a href="shop-pc.html?brand=wombat" class="exclusive-brand" title="Wombat">
+                                <a href="/shop-pc?brand=wombat" class="exclusive-brand" title="Wombat">
                                     <img src="../brandedukv15-child/assets/images/brands/wombat.jpg" alt="Wombat">
                                 </a>
                             </div>
@@ -1573,7 +1568,7 @@
 <div class="breadcrumb-bar">
     <div class="header-container">
         <nav class="breadcrumb-nav" aria-label="Breadcrumb">
-            <a href="index.html" class="breadcrumb-link">Home</a>
+            <a href="/" class="breadcrumb-link">Home</a>
             <span class="breadcrumb-separator">></span>
             <a id="breadcrumbBrandLink" href="#" class="breadcrumb-link">Brand</a>
             <span class="breadcrumb-separator">></span>
@@ -1780,7 +1775,7 @@
                             </div>
                             
                             <!-- Continue Shopping Button -->
-                            <button id="continueShoppingBtnSummary" onclick="window.location.href=(window.innerWidth<700?'/shop?category=all':'/shop-pc.html?category=all')" style="width:100%; padding:14px 24px; border-radius:12px; font-size:1rem; font-weight:700; cursor:pointer; border:2px solid #273469; background:#fff; color:#273469; display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:10px; transition: all 0.2s ease;">
+                            <button id="continueShoppingBtnSummary" onclick="window.location.href=(window.innerWidth<700?'/shop?category=all':'/shop-pc?category=all')" style="width:100%; padding:14px 24px; border-radius:12px; font-size:1rem; font-weight:700; cursor:pointer; border:2px solid #273469; background:#fff; color:#273469; display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:10px; transition: all 0.2s ease;">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M19 12H5"></path>
                                     <path d="M12 19l-7-7 7-7"></path>
@@ -2384,21 +2379,21 @@
                 <div class="footer-col">
                     <h4>Quick Links</h4>
                     <ul>
-                        <li><a href="shop.html">All Products</a></li>
-                        <li><a href="services.html">Embroidery</a></li>
-                        <li><a href="services.html">Printing</a></li>
-                        <li><a href="bundles.html">Bulk Orders</a></li>
+                        <li><a href="/shop">All Products</a></li>
+                        <li><a href="/services">Embroidery</a></li>
+                        <li><a href="/services">Printing</a></li>
+                        <li><a href="/bundles">Bulk Orders</a></li>
                         <li><a href="#">Track Order</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
                     <h4>Categories</h4>
                     <ul>
-                        <li><a href="polos.html">Polo Shirts</a></li>
-                        <li><a href="hoodies.html">Hoodies</a></li>
-                        <li><a href="jackets.html">Jackets</a></li>
-                        <li><a href="hivis.html">Hi-Vis</a></li>
-                        <li><a href="workwear.html">Workwear</a></li>
+                        <li><a href="/polos">Polo Shirts</a></li>
+                        <li><a href="/hoodies">Hoodies</a></li>
+                        <li><a href="/jackets">Jackets</a></li>
+                        <li><a href="/hivis">Hi-Vis</a></li>
+                        <li><a href="/workwear">Workwear</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
@@ -2423,8 +2418,8 @@
             <div class="footer-container">
                 <p>&copy; 2026 BrandedUK. All rights reserved.</p>
                 <div class="footer-links">
-                    <a href="privacy-policy.html">Privacy Policy</a>
-                    <a href="terms-and-conditions.html">Terms &amp; Conditions</a>
+                    <a href="/privacy-policy">Privacy Policy</a>
+                    <a href="/terms-and-conditions">Terms &amp; Conditions</a>
                     <a href="#">Cookie Policy</a>
                 </div>
             </div>
@@ -3714,7 +3709,7 @@
         
         if (brandLink && brand) {
             // Link to shop filtered by brand
-            brandLink.href = 'shop-pc.html?brand=' + encodeURIComponent(brand);
+            brandLink.href='/shop-pc?brand=' + encodeURIComponent(brand);
             brandLink.textContent = brand;
         }
         
@@ -4002,7 +3997,7 @@
                     const searchQuery = e.target.value.trim();
                     if (searchQuery) {
                         // Redirect to shop page with search query parameter
-                        window.location.href = 'shop-pc.html?q=' + encodeURIComponent(searchQuery);
+                        window.location.href='/shop-pc?q=' + encodeURIComponent(searchQuery);
                     }
                 }
             });
@@ -4058,7 +4053,7 @@
 
     <!-- Bottom Navigation -->
     <nav class="bottom-nav">
-        <a href="shop.html" class="nav-item">
+        <a href="/shop" class="nav-item">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="3" y="3" width="7" height="7"/>
                 <rect x="14" y="3" width="7" height="7"/>

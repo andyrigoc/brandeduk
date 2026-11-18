@@ -124,7 +124,7 @@
     function configureBasket(header) {
         header.querySelectorAll('.header-top-basket-link').forEach(function (basket) {
             basket.removeAttribute('onclick');
-            basket.href = new URL('basket.html', projectRoot).href;
+            basket.href = new URL('/basket', projectRoot).href;
             // The small top-bar cart goes to the basket page; the Basket link opens the side summary.
             if (!basket.classList.contains('header-util-link')) {
                 basket.setAttribute('aria-label', 'View basket');

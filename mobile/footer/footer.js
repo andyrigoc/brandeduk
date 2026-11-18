@@ -119,7 +119,7 @@
     if (alreadyHasHome) return;
 
     var home = document.createElement('a');
-    home.href = '/index-mobile.html?force=mobile';
+    home.href = '/';
     home.className = 'nav-item';
     home.setAttribute('data-home-nav', '');
     home.setAttribute('aria-label', 'Home');

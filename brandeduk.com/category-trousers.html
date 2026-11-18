@@ -12,17 +12,17 @@
       const isMobile = window.innerWidth < 700;
 
       if (force === 'mobile' || (force !== 'desktop' && isMobile)) {
-        window.location.replace('../category-trousers.html?force=mobile');
+        window.location.replace('/brandeduk.com/category-trousers?force=mobile');
         return;
       }
 
-      window.location.replace('shop-pc.html?category=trousers&demo=1');
+      window.location.replace('/shop-pc?category=trousers&demo=1');
     })();
   </script>
 </head>
 <body>
   <noscript>
-    <a href="shop-pc.html?category=trousers&demo=1">Continue to Trousers</a>
+    <a href="/shop-pc?category=trousers&demo=1">Continue to Trousers</a>
   </noscript>
 </body>
 </html>

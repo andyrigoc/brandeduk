@@ -1189,9 +1189,9 @@
     byId("guidedRetryBtn").disabled = false;
     render();
   });
-  byId("guidedBackBtn").addEventListener("click", () => saveAndGo("../basket.html"));
-  byId("guidedGoToBasket").addEventListener("click", () => saveAndGo("../basket.html"));
-  byId("guidedAddProduct").addEventListener("click", () => saveAndGo("../mobile/shop-mobile.html"));
+  byId("guidedBackBtn").addEventListener("click", () => saveAndGo("/basket"));
+  byId("guidedGoToBasket").addEventListener("click", () => saveAndGo("/basket"));
+  byId("guidedAddProduct").addEventListener("click", () => saveAndGo("/mobile/shop-mobile"));
   document.querySelectorAll(".guided-header a").forEach((link) => {
     link.addEventListener("click", (event) => { event.preventDefault(); saveAndGo(link.href); });
   });

@@ -444,7 +444,7 @@ const PHONE_PATH = 'M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.
 function mobileHeader() {
     return `    <header class="mobile-header mobile-header--v2">
         <div class="mh-bar">
-            <a href="/index-mobile.html?force=mobile" class="mobile-logo-center mh-logo" aria-label="brandedUK home">
+            <a href="/" class="mobile-logo-center mh-logo" aria-label="brandedUK home">
                 <img class="mobile-logo-badge" src="/brandedukv15-child/assets/videos/use-the-provided-circular-1727756126.gif?v=20261001-newgif" alt="" width="64" height="64">
                 <img class="mobile-logo-word" src="/brandedukv15-child/assets/images/ui/Branded UK Logo on Transparent Background.png?v=20261002-logocombo" alt="branded" width="120" height="52">
             </a>
@@ -454,7 +454,7 @@ function mobileHeader() {
                         <path d="${PHONE_PATH}"></path>
                     </svg>
                 </a>
-                <a href="/basket.html#orderSummary" class="mh-icon-btn mh-cart" aria-label="View basket">
+                <a href="/basket#orderSummary" class="mh-icon-btn mh-cart" aria-label="View basket">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <circle cx="9" cy="21" r="1"></circle>
                         <circle cx="20" cy="21" r="1"></circle>
@@ -496,17 +496,17 @@ function pageEnd(options) {
     <div data-mobile-footer></div>
 
     <nav class="bottom-nav" aria-label="Mobile navigation">
-        <a href="/index-mobile.html?force=mobile" class="nav-item" data-home-nav>
+        <a href="/" class="nav-item" data-home-nav>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M3 11 12 3l9 8"></path><path d="M5 10v10h14V10"></path><path d="M9 20v-6h6v6"></path>
             </svg>
             <span class="nav-item-label">Home</span>
         </a>
-        <a href="/shop.html" class="nav-item">
+        <a href="/shop" class="nav-item">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg>
             <span class="nav-item-label">Shop</span>
         </a>${filterButton}
-        <a href="/profile.html" class="nav-item">
+        <a href="/profile" class="nav-item">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
             <span class="nav-item-label">Account</span>
         </a>
@@ -898,7 +898,7 @@ ${mobileHeader()}
                 <p class="ind-meta">${styles(totalStyles)} &middot; Prices shown <span data-ind-vat-label>ex VAT</span> &middot; Standard production 7&ndash;10 working days after artwork approval</p>
                 <div class="ind-cta-row">
                     <a class="ind-btn ind-btn--primary" href="/bulk-orders" data-open-contact="1" data-contact-message="${esc(quoteMessage)}">Get a bulk quote</a>
-                    <a class="ind-btn ind-btn--ghost" href="/index.html#industries">All industries</a>
+                    <a class="ind-btn ind-btn--ghost" href="/#industries">All industries</a>
                 </div>
             </div>
             <div class="ind-hero__media">

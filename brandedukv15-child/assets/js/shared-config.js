@@ -710,8 +710,8 @@ window.BrandedConfig = (function () {
             enabled: true,
             views: ['pc', 'mobile'],
             kind: 'branded',
-            hrefPc: 'shop-pc.html?productType=tshirts',
-            hrefMobile: 'shop.html?category=t-shirts',
+            hrefPc: '/shop-pc?productType=tshirts',
+            hrefMobile: '/shop?category=t-shirts',
             label: 'Show Branded banner'
         },
         {
@@ -747,8 +747,8 @@ window.BrandedConfig = (function () {
             },
             cta: {
                 label: 'Shop Premier Aprons',
-                hrefPc: 'shop-pc.html?productType=aprons&brand=premier',
-                hrefMobile: 'shop.html?category=aprons&brand=premier',
+                hrefPc: '/shop-pc?productType=aprons&brand=premier',
+                hrefMobile: '/shop?category=aprons&brand=premier',
                 pc: { left: '67.2%', top: '58.5%', width: '23.2%', height: '12%' },
                 mobile: { left: '11%', top: '58%', width: '82%', height: '13%' }
             }
@@ -768,8 +768,8 @@ window.BrandedConfig = (function () {
             enabled: true,
             views: ['pc', 'mobile'],
             kind: 'image',
-            hrefPc: 'shop-pc.html?brand=regatta-professional',
-            hrefMobile: 'shop.html?brand=regatta-professional',
+            hrefPc: '/shop-pc?brand=regatta-professional',
+            hrefMobile: '/shop?brand=regatta-professional',
             label: 'Show Regatta banner',
             alt: 'Regatta Professional Dover jacket offer',
             pc: { src: 'brandeduk.com/assets/ral17774-regatta-1.50-off-banners-dropbox-12.webp' },
@@ -781,8 +781,8 @@ window.BrandedConfig = (function () {
             enabled: false,
             views: ['pc', 'mobile'],
             kind: 'image',
-            hrefPc: 'shop-pc.html?brand=awdis',
-            hrefMobile: 'shop.html?brand=awdis',
+            hrefPc: '/shop-pc?brand=awdis',
+            hrefMobile: '/shop?brand=awdis',
             label: 'Show AWDis banner',
             alt: 'AWDis College Hoodie 2.0',
             pc: { src: 'brandeduk.com/assets/ral17788---the-best-got-bigger_desktop-banner-1.webp' },
@@ -793,8 +793,8 @@ window.BrandedConfig = (function () {
             enabled: true,
             views: ['pc', 'mobile'],
             kind: 'image',
-            hrefPc: 'shop-pc.html?brand=mumbles',
-            hrefMobile: 'shop.html?brand=mumbles',
+            hrefPc: '/shop-pc?brand=mumbles',
+            hrefMobile: '/shop?brand=mumbles',
             label: 'Show Mumbles banner',
             alt: 'Mumbles Halloween plush collection',
             pc: { src: 'brandeduk.com/assets/ral17790---mumbles-halloween_banner.webp' },
@@ -805,8 +805,8 @@ window.BrandedConfig = (function () {
             enabled: true,
             views: ['pc', 'mobile'],
             kind: 'image',
-            hrefPc: 'shop-pc.html?brand=anthem',
-            hrefMobile: 'shop.html?brand=anthem',
+            hrefPc: '/shop-pc?brand=anthem',
+            hrefMobile: '/shop?brand=anthem',
             label: 'Show Anthem banner',
             alt: 'Anthem heavy bass hoodie collection',
             pc: { src: 'brandeduk.com/assets/ral17804-anthem-hoodies-banners-v3_01_1920-x-630.webp' },
@@ -828,7 +828,7 @@ window.BrandedConfig = (function () {
             enabled: true,
             views: ['pc'],
             kind: 'image',
-            hrefPc: 'shop-pc.html?brand=gildan',
+            hrefPc: '/shop-pc?brand=gildan',
             label: 'Show Gildan industry classics banner',
             alt: 'Gildan five industry classics offer: GD001, GD002, GD005, GD056 and GD057',
             pc: { src: 'brandeduk.com/assets/gildan-uk-desk-gif.webp' }
@@ -838,7 +838,7 @@ window.BrandedConfig = (function () {
             enabled: true,
             views: ['pc'],
             kind: 'image',
-            hrefPc: 'shop-pc.html?brand=awdis-just-hoods',
+            hrefPc: '/shop-pc?brand=awdis-just-hoods',
             label: 'Show AWDis JH501 decoration banner',
             alt: 'AWDis JH501 College Hoodie 2.0 designed for decoration',
             pc: { src: 'brandeduk.com/assets/ral17819-jh501-hood-banner-desktop.webp' }
@@ -848,7 +848,7 @@ window.BrandedConfig = (function () {
             enabled: true,
             views: ['pc'],
             kind: 'image',
-            hrefPc: 'shop-pc.html?brand=awdis-just-hoods',
+            hrefPc: '/shop-pc?brand=awdis-just-hoods',
             label: 'Show AWDis JH501 College Hoodie 2.0 banner',
             alt: 'AWDis JH501 College Hoodie 2.0',
             pc: { src: 'brandeduk.com/assets/ral17829-jh501-banner-refresh.webp' }
@@ -869,8 +869,8 @@ window.BrandedConfig = (function () {
             enabled: false,
             views: ['pc', 'mobile'],
             kind: 'awesome',
-            hrefPc: 'shop-pc.html',
-            hrefMobile: 'shop.html',
+            hrefPc: '/shop-pc',
+            hrefMobile: '/shop',
             label: 'Show Make Awesome banner'
         },
         {

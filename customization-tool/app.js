@@ -1199,7 +1199,7 @@ function requestBasketNavigation() {
     window.parent.postMessage({ type: "brandeduk:customizer-view-basket" }, window.location.origin);
     return;
   }
-  window.location.href = "../basket.html";
+  window.location.href = "/basket";
 }
 
 function setupCustomizerBreadcrumb() {
@@ -1207,17 +1207,17 @@ function setupCustomizerBreadcrumb() {
   const from = String(params.get("from") || "").toLowerCase();
   const code = String(params.get("code") || "").trim();
 
-  let fallbackTarget = "../mobile/shop-mobile.html";
+  let fallbackTarget = "/mobile/shop-mobile";
   let label = "Home > Logo Tool";
 
   if (from === "basket" || sessionStorage.getItem("returnAfterCustomize") === "basket") {
-    fallbackTarget = "../basket.html";
+    fallbackTarget = "/basket";
     label = "Home > Quote Basket > Logo Tool";
   } else if (from === "customize-mobile") {
-    fallbackTarget = code ? `../mobile/customize-mobile.html?code=${encodeURIComponent(code)}` : "../mobile/customize-mobile.html";
+    fallbackTarget = code ? `/mobile/customize-mobile?code=${encodeURIComponent(code)}` : "/mobile/customize-mobile";
     label = "Home > Customize > Logo Tool";
   } else if (from === "customize-pc" || isDesktopToolExperience()) {
-    fallbackTarget = code ? `../product-detail.html?code=${encodeURIComponent(code)}` : "../shop.html";
+    fallbackTarget = code ? `/product/${encodeURIComponent(code)}` : "/shop";
     label = "Shop > Product > Customise";
   }
 
@@ -1259,7 +1259,7 @@ function setupCustomizerBreadcrumb() {
 
   // When leaving to sign in, remember this exact page so the post-login
   // redirect brings the user back here (basket is never cleared by login).
-  const signInLink = document.querySelector('.tool-bottom-nav a[href$="profile.html"]');
+  const signInLink = document.querySelector('.tool-bottom-nav a[href$="/profile"]');
   if (signInLink) {
     signInLink.addEventListener("click", () => {
       try {
@@ -7529,8 +7529,8 @@ const postConfirmContinueShoppingBtn = document.getElementById("postConfirmConti
 if (postConfirmContinueShoppingBtn) {
   postConfirmContinueShoppingBtn.addEventListener("click", () => {
     window.location.href = isDesktopToolExperience()
-      ? "../shop.html"
-      : "../mobile/shop-mobile.html";
+      ? "/shop"
+      : "/mobile/shop-mobile";
   });
 }
 
@@ -8847,7 +8847,7 @@ if (buyBtn) {
   });
 }
 
-document.querySelectorAll('.tool-bottom-nav a[href$="basket.html"]').forEach((link) => {
+document.querySelectorAll('.tool-bottom-nav a[href$="/basket"]').forEach((link) => {
   link.addEventListener("click", (event) => {
     event.preventDefault();
     if (confirmQualityBtn && !confirmQualityBtn.disabled) {
@@ -8869,7 +8869,7 @@ function setupToolHeaderSearch() {
 
   const runSearch = () => {
     const query = searchInput.value.trim();
-    const baseUrl = "../shop.html";
+    const baseUrl = "/shop";
     const target = query ? `${baseUrl}?q=${encodeURIComponent(query)}` : baseUrl;
     window.location.href = target;
   };
@@ -9433,7 +9433,7 @@ document.getElementById("straightenBtn").addEventListener("click", () => {
       return;
     }
     if (document.referrer) history.back();
-    else window.location.href = "../shop-pc.html";
+    else window.location.href = "/shop-pc";
   });
 
   const nextBtn = document.createElement("button");

@@ -33,9 +33,9 @@
     var pathname = String(window.location && window.location.pathname ? window.location.pathname : '').replace(/\\/g, '/');
     // Pages under these folders need to go one level up to reach basket.html
     if (/\/brandeduk\.com(-pc-OLD)?\//.test(pathname) || /\/mobile\//.test(pathname)) {
-      return '../basket.html#orderSummary';
+      return '/basket#orderSummary';
     }
-    return 'basket.html#orderSummary';
+    return '/basket#orderSummary';
   }
 
   function getBasketSafe() {

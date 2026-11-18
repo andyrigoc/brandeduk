@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <script>window.location.replace('../basket.html' + window.location.search + window.location.hash);</script>
+    <script>window.location.replace('/basket' + window.location.search + window.location.hash);</script>
     <!-- Google Consent Mode v2 defaults (must stay before the Google tag) -->
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -944,7 +944,7 @@
     <div class="header-with-promo">
     <header class="mobile-header mobile-header--v2">
         <div class="mh-bar">
-            <a href="/index-mobile.html?force=mobile" class="mobile-logo-center mh-logo" aria-label="brandedUK home">
+            <a href="/" class="mobile-logo-center mh-logo" aria-label="brandedUK home">
                 <img class="mobile-logo-badge" src="/brandedukv15-child/assets/videos/use-the-provided-circular-1727756126.gif?v=20261001-newgif" alt="" width="64" height="64">
                 <img class="mobile-logo-word" src="/brandedukv15-child/assets/images/ui/Branded UK Logo on Transparent Background.png?v=20261002-logocombo" alt="branded" width="120" height="52">
             </a>
@@ -954,7 +954,7 @@
                         <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
                     </svg>
                 </a>
-                <a href="/basket.html#orderSummary" class="mh-icon-btn mh-cart" aria-label="View basket">
+                <a href="/basket#orderSummary" class="mh-icon-btn mh-cart" aria-label="View basket">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <circle cx="9" cy="21" r="1"></circle>
                         <circle cx="20" cy="21" r="1"></circle>
@@ -1009,7 +1009,7 @@
             </div>
             <h2>Your basket is empty</h2>
             <p>Add some products to get started with your quote</p>
-            <a href="home-mobile.html" class="start-btn">
+            <a href="/" class="start-btn">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
                 </svg>
@@ -1351,7 +1351,7 @@
                             <h4>${title}</h4>
                             <p>${number}</p>
                             ${logoHtml}
-                            <a href="/bundles.html?force=mobile&amp;bundle=${editKey}&amp;edit=${editId}">Modifica bundle</a>
+                            <a href="/bundles?force=mobile&amp;bundle=${editKey}&amp;edit=${editId}">Modifica bundle</a>
                         </div>
                         <button type="button" class="basket-item-remove" data-index="${index}" onclick="event.stopPropagation()">Remove</button>
                     </div>`;
@@ -1677,7 +1677,7 @@
                         if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
                         
                         // Force hard refresh to reset everything
-                        window.location.href = 'customize-mobile.html';
+                        window.location.href='/mobile/customize-mobile';
                     }
                 });
             }
@@ -2022,7 +2022,7 @@
             // Product image/name opens the product detail flow. Logo editing
             // remains available through the separate customization action.
             if (productCode) {
-                window.location.href = `product-mobile.html?code=${encodeURIComponent(productCode)}`;
+                window.location.href = `/product-mobile?code=${encodeURIComponent(productCode)}`;
                 return;
             }
             
@@ -2039,7 +2039,7 @@
             }));
             
             // Navigate to customize positions page
-            window.location.href = 'customize-mobile.html';
+            window.location.href='/mobile/customize-mobile';
         }
         
         // Customize multiple selected items with the same logo
@@ -2083,7 +2083,7 @@
             if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
             
             // Navigate to customize positions page
-            window.location.href = 'customize-mobile.html';
+            window.location.href='/mobile/customize-mobile';
         }
     </script>
     <script src="../brandedukv15-child/assets/js/api-config.js?v=20260530"></script>

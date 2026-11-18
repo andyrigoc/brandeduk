@@ -1859,8 +1859,12 @@
             // storage is only the fallback for opens that have no code in the URL.
             let productCode = null;
             try {
-                const urlParams = new URLSearchParams(window.location.search);
-                productCode = urlParams.get('code') || null;
+                const pathCode = (window.location.pathname || '').match(/^\/product\/([^/]+)\/?$/i);
+                if (pathCode) productCode = decodeURIComponent(pathCode[1]);
+                if (!productCode) {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    productCode = urlParams.get('code') || null;
+                }
                 if (productCode) {
                     debugLog('🔗 Product code from URL parameter:', productCode);
                 }
@@ -1978,7 +1982,9 @@
             const finalCode = productData.code || productData.productCode || productData.sku || productData.id;
             if (finalCode) {
                 const url = new URL(window.location);
-                if (url.searchParams.get('code') !== finalCode) {
+                const pathCode = url.pathname.match(/^\/product\/([^/]+)\/?$/i);
+                const pathAlready = pathCode && decodeURIComponent(pathCode[1]) === String(finalCode);
+                if (!pathAlready && url.searchParams.get('code') !== finalCode) {
                     url.searchParams.set('code', finalCode);
                     history.replaceState(null, '', url);
                 }
@@ -1993,6 +1999,9 @@
             }
             state.product.sku = productData.sku || productData.code || productData.productCode || productData.id || state.product.sku;
             state.product.name = productData.name || productData.title || productData.productName || productData.displayName || state.product.name;
+            if (/^\/product\/[^/]+\/?$/i.test(location.pathname) && state.product.name) {
+                document.title = String(state.product.name).replace(/\s+/g, ' ').trim() + ' | Branded UK';
+            }
             state.product.basePrice = Number(productData.price || productData.basePrice || productData.startPrice || productData.startingPrice) || state.product.basePrice;
             state.product.brand = productData.brand || productData.brand_name || state.product.brand;
             state.product.sizes = normalizeProductSizesFromApi(productData);
@@ -4160,7 +4169,7 @@
                             }
                             
                             // Redirect to homepage (use absolute path from root)
-                            window.location.replace('/index-mobile.html');
+                            window.location.replace('/');
                         }, 1500);
                     } else {
                         throw new Error(result.message || 'Unknown error');
@@ -4234,7 +4243,7 @@
                     if (window.parent !== window && typeof window.parent.closeCustomizePopup === 'function') {
                         window.parent.closeCustomizePopup();
                     } else {
-                        window.location.href = '../basket.html';
+                        window.location.href = '/basket';
                     }
                 }, 800);
                 return;
@@ -4244,10 +4253,10 @@
             if (state.quantity > 0) {
                 showToast('Added to basket! Redirecting to shop…');
                 setTimeout(() => {
-                    window.location.href = '../shop.html?bestsellers=1';
+                    window.location.href = '/shop?bestsellers=1';
                 }, 1200);
             } else {
-                window.location.href = '../shop.html?bestsellers=1';
+                window.location.href = '/shop?bestsellers=1';
             }
         });
     }
@@ -6012,7 +6021,7 @@
         bar.querySelector('.bundle-builder-bar__close').addEventListener('click', function () {
             const slug = job.slug || job.bundleId || '';
             if (job.returnToBasket) {
-                window.location.href = '/basket.html#orderSummary';
+                window.location.href = '/basket#orderSummary';
                 return;
             }
             window.location.href = '/bundle-configurator/?force=mobile' + (slug ? '&bundle=' + encodeURIComponent(slug) : '');
@@ -9674,7 +9683,7 @@
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                window.location.href = '../basket.html';
+                window.location.href = '/basket';
             });
         });
         
@@ -9972,7 +9981,7 @@
         doneBar.querySelector('button').addEventListener('click', () => {
             closePositionsPopup();
             autoSaveToBasket();
-            window.location.href = '../basket.html';
+            window.location.href = '/basket';
         });
 
         popup.appendChild(popupHeader);
@@ -12209,7 +12218,7 @@
                 if (window.parent !== window && typeof window.parent.closeCustomizePopup === 'function') {
                     window.parent.closeCustomizePopup();
                 } else {
-                    window.location.href = '../basket.html';
+                    window.location.href = '/basket';
                 }
             }, 800);
             return;
@@ -12463,7 +12472,7 @@
             if (productCode) queryParts.unshift('code=' + productCode);
             if (toolProduct) queryParts.push('product=' + encodeURIComponent(toolProduct));
             const query = '?' + queryParts.join('&');
-            window.location.href = '../customization-tool-mobile/index.html' + query;
+            window.location.href = '/customization-tool-mobile/' + query;
         });
 
         // View Basket — basket quick-logo popup if item still needs logo
@@ -12473,7 +12482,7 @@
             if (!basketItemHasLogo(item) && item.id) {
                 sessionStorage.setItem('pendingLogoPromptId', item.id);
             }
-            window.location.href = '../basket.html?promptLogo=1';
+            window.location.href = '/basket?promptLogo=1';
         });
         
         // Continue Shopping
@@ -12567,13 +12576,13 @@
                     event.preventDefault();
                     sessionStorage.removeItem('customizingBasketIndex');
                     sessionStorage.removeItem('returnAfterCustomize');
-                    window.location.href = '../basket.html';
+                    window.location.href = '/basket';
                 } else {
                     // Otherwise, go back in history or to shop
                     if (window.history.length > 1) {
                         window.history.back();
                     } else {
-                        window.location.href = '../shop.html';
+                        window.location.href = '/shop';
                     }
                 }
             });

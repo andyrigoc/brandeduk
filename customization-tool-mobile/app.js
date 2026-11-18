@@ -1106,17 +1106,17 @@ function setupCustomizerBreadcrumb() {
   const from = String(params.get("from") || "").toLowerCase();
   const code = String(params.get("code") || "").trim();
 
-  let fallbackTarget = "../mobile/shop-mobile.html";
+  let fallbackTarget = "/mobile/shop-mobile";
   let label = "Home > Logo Tool";
 
   if (from === "basket" || sessionStorage.getItem("returnAfterCustomize") === "basket") {
-    fallbackTarget = "../basket.html";
+    fallbackTarget = "/basket";
     label = "Home > Quote Basket > Logo Tool";
   } else if (from === "customize-mobile") {
-    fallbackTarget = code ? `../mobile/customize-mobile.html?code=${encodeURIComponent(code)}` : "../mobile/customize-mobile.html";
+    fallbackTarget = code ? `/mobile/customize-mobile?code=${encodeURIComponent(code)}` : "/mobile/customize-mobile";
     label = "Home > Customize > Logo Tool";
   } else if (from === "customize-pc" || isDesktopToolExperience()) {
-    fallbackTarget = code ? `../product-detail.html?code=${encodeURIComponent(code)}` : "../shop.html";
+    fallbackTarget = code ? `/product/${encodeURIComponent(code)}` : "/shop";
     label = "Shop > Product > Customise";
   }
 
@@ -1144,7 +1144,7 @@ function setupCustomizerBreadcrumb() {
 
   // When leaving to sign in, remember this exact page so the post-login
   // redirect brings the user back here (basket is never cleared by login).
-  const signInLink = document.querySelector('.tool-bottom-nav a[href$="profile.html"]');
+  const signInLink = document.querySelector('.tool-bottom-nav a[href$="/profile"]');
   if (signInLink) {
     signInLink.addEventListener("click", () => {
       try {
@@ -5420,15 +5420,15 @@ const postConfirmContinueShoppingBtn = document.getElementById("postConfirmConti
 if (postConfirmContinueShoppingBtn) {
   postConfirmContinueShoppingBtn.addEventListener("click", () => {
     window.location.href = isDesktopToolExperience()
-      ? "../shop.html"
-      : "../mobile/shop-mobile.html";
+      ? "/shop"
+      : "/mobile/shop-mobile";
   });
 }
 
 const postConfirmViewBasketBtn = document.getElementById("postConfirmViewBasket");
 if (postConfirmViewBasketBtn) {
   postConfirmViewBasketBtn.addEventListener("click", () => {
-    window.location.href = "../basket.html";
+    window.location.href = "/basket";
   });
 }
 
@@ -6515,7 +6515,7 @@ document.getElementById("previewModal").addEventListener("click", (e) => {
   if (e.target === e.currentTarget) e.currentTarget.classList.remove("open");
 });
 document.getElementById("basketBtn").addEventListener("click", () => {
-  window.location.href = "../basket.html";
+  window.location.href = "/basket";
 });
 
 document.getElementById("priceBtn").addEventListener("click", () => {
@@ -6545,7 +6545,7 @@ if (buyBtn) {
     basket.push(buildBasketItemFromState());
     writeQuoteBasket(basket);
     updateBasketUIFromStorage();
-    window.location.href = "../basket.html";
+    window.location.href = "/basket";
   });
 }
 
@@ -6557,7 +6557,7 @@ function setupToolHeaderSearch() {
 
   const runSearch = () => {
     const query = searchInput.value.trim();
-    const baseUrl = "../shop.html";
+    const baseUrl = "/shop";
     const target = query ? `${baseUrl}?q=${encodeURIComponent(query)}` : baseUrl;
     window.location.href = target;
   };

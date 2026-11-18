@@ -3,9 +3,9 @@ function getHomePageUrl() {
     const path = window.location.pathname;
     // If we're in a subfolder (e.g., brandeduk.com/), go up one level
     if (path.includes('/brandeduk.com/')) {
-        return '../index.html';
+        return '/';
     }
-    return 'index.html';
+    return '/';
 }
 
 // Toast notification function
@@ -796,7 +796,7 @@ function loadBasketData() {
             proceedBtn.disabled = false;
             proceedBtn.classList.add('active');
             proceedBtn.onclick = () => {
-                window.location.href = 'customize-detail.html';
+                window.location.href = '/customize-detail';
             };
         } else {
             proceedBtn.disabled = true;
@@ -3775,5 +3775,5 @@ function proceedToCustomization() {
     sessionStorage.setItem('currentPositionIndex', '0');
     
     // Go to first customization page
-    window.location.href = 'customize-detail.html';
+    window.location.href = '/customize-detail';
 }

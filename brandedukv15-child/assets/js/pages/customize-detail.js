@@ -249,7 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function loadSelectedPositions() {
     const stored = sessionStorage.getItem('selectedPositions');
     if (!stored) {
-        window.location.href = 'customize-positions.html';
+        window.location.href = '/customize-positions';
         return;
     }
     
@@ -280,7 +280,7 @@ function loadBasketData() {
 
     if (basket.length === 0) {
         alert('No items in basket. Please add products first.');
-        window.location.href = 'index.html';
+        window.location.href = '/';
         return;
     }
 
@@ -435,7 +435,7 @@ function updateItemQuantity(index, delta, size) {
         sessionStorage.removeItem('positionCustomizations');
         sessionStorage.removeItem('currentPositionIndex');
         sessionStorage.removeItem('customizingProduct');
-        window.location.href = 'index.html';
+        window.location.href = '/';
     } else {
         loadBasketData();
     }
@@ -503,7 +503,7 @@ function confirmRemove() {
             sessionStorage.removeItem('positionCustomizations');
             sessionStorage.removeItem('currentPositionIndex');
             sessionStorage.removeItem('customizingProduct');
-            window.location.href = 'index.html';
+            window.location.href = '/';
         } else {
             loadBasketData();
         }
@@ -926,7 +926,7 @@ function validateAndNext() {
     } else {
         // Go to basket
         console.log('All positions done, going to basket');
-        window.location.href = 'basket.html';
+        window.location.href = '/basket';
     }
 }
 
@@ -951,5 +951,5 @@ function goBackToPositions() {
     
     // Keep selectedPositions and positionMethods in sessionStorage - DON'T remove them
     // Just go back to positions page
-    window.location.href = 'customize-positions.html';
+    window.location.href = '/customize-positions';
 }

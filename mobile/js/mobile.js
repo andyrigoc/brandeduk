@@ -36,7 +36,7 @@ function initMobileNavigation() {
     const shop = nav && Array.from(nav.querySelectorAll('a.nav-item')).find((item) => {
         return item.textContent.trim() === 'Shop';
     });
-    if (shop) shop.href = '/mobile/shop-categories-mobile.html?force=mobile';
+    if (shop) shop.href = '/mobile/shop-categories-mobile?force=mobile';
 
     let account = nav && Array.from(nav.querySelectorAll('a.nav-item')).find((item) => {
         return item.id === 'accountNavBtn' || item.textContent.trim() === 'Account';
@@ -50,12 +50,12 @@ function initMobileNavigation() {
     if (!account) {
         account = document.createElement('a');
         account.className = 'nav-item';
-        account.href = '/profile.html';
+        account.href = '/profile';
         account.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>';
     }
 
     if (!document.getElementById('accountPanel') && account.getAttribute('href') === '#') {
-        account.href = '/profile.html';
+        account.href = '/profile';
     }
     account.id = 'accountNavBtn';
     account.classList.add('mh-icon-btn', 'mh-account');
@@ -394,7 +394,7 @@ async function submitMobileSearch(input, query) {
         sessionStorage.setItem('selectedProductData', JSON.stringify({ code, name: product.label || '' }));
         sessionStorage.setItem('customizeFreshItem', '1');
     } catch (e) { /* the ?code= in the URL is enough */ }
-    window.location.href = `${getMobileBaseUrl()}customize-mobile.html?code=${encodeURIComponent(code)}`;
+    window.location.href = `/${getMobileBaseUrl()}customize-mobile?code=${encodeURIComponent(code)}`;
 }
 
 function initSearch() {
@@ -484,7 +484,7 @@ function initSearch() {
             if (products.length) html += '<div class="suggestion-group-title">Product Results</div>';
 
             products.slice(0, 8).forEach(product => {
-                const detailUrl = `${baseUrl}customize-mobile.html?code=${product.value}`;
+                const detailUrl = `/${baseUrl}customize-mobile?code=${product.value}`;
                 const imgUrl = product.image || '/brandedukv15-child/assets/images/ui/no-image.png';
                 const safeName = (product.label || '').replace(/'/g, "\\'");
                 const brand = product.brand || product.brand_name || '';
@@ -762,9 +762,9 @@ function currentBukSection() {
     if (isBundleBuildDocument()) return 'bundles';
     const path = (window.location.pathname || '/').replace(/\\/g, '/').toLowerCase();
     const file = path.split('/').filter(Boolean).pop() || '';
-    if (path.indexOf('/bundle-configurator') !== -1 || file === 'bundles.html' || file === 'bundles') return 'bundles';
-    if (file.indexOf('shop-categories-mobile') !== -1 || file.indexOf('shop-mobile') !== -1 || file === 'shop.html' || file === 'shop') return 'shop';
-    if (file === 'index-mobile.html' || file === 'home-mobile.html' || file === 'index.html' || file === '') return 'home';
+    if (path.indexOf('/bundle-configurator') !== -1 || file === '/bundles' || file === 'bundles') return 'bundles';
+    if (file.indexOf('shop-categories-mobile') !== -1 || file.indexOf('shop-mobile') !== -1 || file === '/shop' || file === 'shop') return 'shop';
+    if (file === '/' || file === '/' || file === '/' || file === '') return 'home';
     return '';
 }
 
@@ -987,8 +987,8 @@ function upgradeBukNav(nav) {
     const count = nav.querySelector('#bundleFilterCount');
     if (count) count.remove();
 
-    const homeHref = (homeNode && homeNode.getAttribute('href')) || '/index-mobile.html?force=mobile';
-    const shopHref = (shopNode && shopNode.getAttribute('href')) || '/mobile/shop-categories-mobile.html?force=mobile';
+    const homeHref = (homeNode && homeNode.getAttribute('href')) || '/';
+    const shopHref = (shopNode && shopNode.getAttribute('href')) || '/mobile/shop-categories-mobile?force=mobile';
     const bundlesHref = (bundlesNode && bundlesNode.getAttribute('href')) || '/bundle-configurator/?force=mobile';
 
     nav.classList.add('bottom-nav', 'bottom-nav--v2', 'buk-nav', 'nav', 'dark');
@@ -1821,7 +1821,7 @@ function mountBukNavIndicators() {
 
 function initBottomNav() {
     const navItems = document.querySelectorAll('.bottom-nav:not(.buk-nav) .nav-item');
-    const currentPage = window.location.pathname.split('/').pop() || 'home-mobile.html';
+    const currentPage = window.location.pathname.split('/').pop() || '/';
 
     navItems.forEach(item => {
         const href = item.getAttribute('href');
@@ -3288,8 +3288,8 @@ function bootBrandedNav() {
             return;
         }
         const hrefs = {
-            home: '/index-mobile.html?force=mobile',
-            shop: '/mobile/shop-categories-mobile.html?force=mobile',
+            home: '/',
+            shop: '/mobile/shop-categories-mobile?force=mobile',
             bundles: '/bundle-configurator/?force=mobile'
         };
         if (!hrefs[page]) return;

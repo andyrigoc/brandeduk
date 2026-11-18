@@ -209,7 +209,7 @@
             "@type": "SearchAction",
             "target": {
               "@type": "EntryPoint",
-              "urlTemplate": "https://www.brandeduk.com/shop.html?search={search_term_string}"
+              "urlTemplate": "https://www.brandeduk.com/shop?search={search_term_string}"
             },
             "query-input": "required name=search_term_string"
           }
@@ -223,61 +223,61 @@
               "@type": "SiteNavigationElement",
               "position": 1,
               "name": "Shop",
-              "url": "https://www.brandeduk.com/shop.html"
+              "url": "https://www.brandeduk.com/shop"
             },
             {
               "@type": "SiteNavigationElement",
               "position": 2,
               "name": "T-Shirts",
-              "url": "https://www.brandeduk.com/tshirts.html"
+              "url": "https://www.brandeduk.com/tshirts"
             },
             {
               "@type": "SiteNavigationElement",
               "position": 3,
               "name": "Polo Shirts",
-              "url": "https://www.brandeduk.com/polos.html"
+              "url": "https://www.brandeduk.com/polos"
             },
             {
               "@type": "SiteNavigationElement",
               "position": 4,
               "name": "Hoodies",
-              "url": "https://www.brandeduk.com/hoodies.html"
+              "url": "https://www.brandeduk.com/hoodies"
             },
             {
               "@type": "SiteNavigationElement",
               "position": 5,
               "name": "Hi-Vis",
-              "url": "https://www.brandeduk.com/hivis.html"
+              "url": "https://www.brandeduk.com/hivis"
             },
             {
               "@type": "SiteNavigationElement",
               "position": 6,
               "name": "Jackets",
-              "url": "https://www.brandeduk.com/jackets.html"
+              "url": "https://www.brandeduk.com/jackets"
             },
             {
               "@type": "SiteNavigationElement",
               "position": 7,
               "name": "Workwear",
-              "url": "https://www.brandeduk.com/workwear.html"
+              "url": "https://www.brandeduk.com/workwear"
             },
             {
               "@type": "SiteNavigationElement",
               "position": 8,
               "name": "Services",
-              "url": "https://www.brandeduk.com/services.html"
+              "url": "https://www.brandeduk.com/services"
             },
             {
               "@type": "SiteNavigationElement",
               "position": 9,
               "name": "Bundles",
-              "url": "https://www.brandeduk.com/bundles.html"
+              "url": "https://www.brandeduk.com/bundles"
             },
             {
               "@type": "SiteNavigationElement",
               "position": 10,
               "name": "Bulk Orders",
-              "url": "https://www.brandeduk.com/bulk-orders.html"
+              "url": "https://www.brandeduk.com/bulk-orders"
             }
           ]
         }
@@ -289,7 +289,7 @@
         // servers so relative assets and links continue resolving under /brandeduk/.
         var isBrandedProductionHost = /(^|\.)brandeduk\.com$/i.test(window.location.hostname);
         if (isBrandedProductionHost && window.location.pathname !== '/') {
-            history.replaceState(null, '', '/');
+            history.replaceState(null, '', '/' + window.location.search + window.location.hash);
         }
     </script>
     <!-- Mobile-First CSS -->
@@ -800,7 +800,7 @@
                                 <span class="header-top-vat-toggle__label header-top-vat-toggle__label--inc" data-vat-inc>INC VAT</span>
                             </button>
                         </div>
-                        <a class="header-top-basket-link" href="basket.html#orderSummary" aria-label="View quote">
+                        <a class="header-top-basket-link" href="/basket#orderSummary" aria-label="View quote">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M6 6h15l-1.5 9h-12z"/>
                                 <circle cx="9" cy="20" r="1"/>
@@ -818,7 +818,7 @@
         <div class="searchbar-header">
             <div class="searchbar-header__surface">
                 <div class="searchbar-header__inner">
-                    <a class="searchbar-header__brand" href="index.html" aria-label="brandedUK home">
+                    <a class="searchbar-header__brand" href="/" aria-label="brandedUK home">
                         <img class="searchbar-header__brand-img" src="brandedukv15-child/assets/images/ui/branded-uk-logo-black-padded.png?v=20260927-logoblack" alt="BrandedUK" width="1662" height="812">
                     </a>
 
@@ -873,7 +873,7 @@
                     <div class="dropdown-box" role="region" aria-label="Browse categories">
                         <ul class="menu vertical-menu category-menu">
                             <li class="has-children">
-                                <a href="shop.html?category=t-shirts">
+                                <a href="/shop?category=t-shirts">
                                     <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/icon-shirt-71%201.png" alt="" aria-hidden="true" width="2000" height="2000">
                                     <span class="category-text">T-Shirts</span>
                                     <span class="category-caret" aria-hidden="true"></span>
@@ -881,24 +881,24 @@
                                 <ul class="megamenu">
                                     <li>
                                         <ul>
-                                            <li><a href="shop.html?category=t-shirts&sub=crew-neck">Crew Neck</a></li>
-                                            <li><a href="shop.html?category=t-shirts&sub=heavyweight">Heavyweight / Workwear</a></li>
-                                            <li><a href="shop.html?category=t-shirts&sub=kids">Kids T-shirts</a></li>
-                                            <li><a href="shop.html?category=t-shirts&sub=lightweight">Lightweight</a></li>
-                                            <li><a href="shop.html?category=t-shirts&sub=long-sleeve">Long Sleeve T-shirts</a></li>
-                                            <li><a href="shop.html?category=t-shirts&sub=performance">Performance / Sports</a></li>
-                                            <li><a href="customization-tool/index.html?code=8700M&from=short-sleeve&product=tshirt">Short Sleeve T-shirts</a></li>
-                                            <li><a href="shop.html?category=t-shirts&sub=tank-tops">Tank Tops</a></li>
-                                            <li><a href="shop.html?category=t-shirts&sub=embroidery">T-shirts for Embroidery</a></li>
-                                            <li><a href="shop.html?category=t-shirts&sub=print">T-shirts for Print</a></li>
-                                            <li><a href="shop.html?category=t-shirts&sub=v-neck">V-Neck</a></li>
-                                            <li><a href="shop.html?category=t-shirts&sub=womens">Women's T-shirts</a></li>
+                                            <li><a href="/shop?category=t-shirts&sub=crew-neck">Crew Neck</a></li>
+                                            <li><a href="/shop?category=t-shirts&sub=heavyweight">Heavyweight / Workwear</a></li>
+                                            <li><a href="/shop?category=t-shirts&sub=kids">Kids T-shirts</a></li>
+                                            <li><a href="/shop?category=t-shirts&sub=lightweight">Lightweight</a></li>
+                                            <li><a href="/shop?category=t-shirts&sub=long-sleeve">Long Sleeve T-shirts</a></li>
+                                            <li><a href="/shop?category=t-shirts&sub=performance">Performance / Sports</a></li>
+                                            <li><a href="/customization-tool/?code=8700M&from=short-sleeve&product=tshirt">Short Sleeve T-shirts</a></li>
+                                            <li><a href="/shop?category=t-shirts&sub=tank-tops">Tank Tops</a></li>
+                                            <li><a href="/shop?category=t-shirts&sub=embroidery">T-shirts for Embroidery</a></li>
+                                            <li><a href="/shop?category=t-shirts&sub=print">T-shirts for Print</a></li>
+                                            <li><a href="/shop?category=t-shirts&sub=v-neck">V-Neck</a></li>
+                                            <li><a href="/shop?category=t-shirts&sub=womens">Women's T-shirts</a></li>
                                         </ul>
                                     </li>
                                 </ul>
                             </li>
                             <li class="has-children">
-                                <a href="shop.html?category=polos">
+                                <a href="/shop?category=polos">
                                     <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Polo.png" alt="" aria-hidden="true" width="2000" height="2000">
                                     <span class="category-text">Polo Shirts</span>
                                     <span class="category-caret" aria-hidden="true"></span>
@@ -906,21 +906,21 @@
                                 <ul class="megamenu">
                                     <li>
                                         <ul>
-                                            <li><a href="shop.html?category=polos&sub=classic-cotton">Classic Cotton Polos</a></li>
-                                            <li><a href="shop.html?category=polos&sub=kids">Kids Polos</a></li>
-                                            <li><a href="shop.html?category=polos&sub=long-sleeve">Long Sleeve Polos</a></li>
-                                            <li><a href="shop.html?category=polos&sub=performance">Performance Polos</a></li>
-                                            <li><a href="shop.html?category=polos&sub=poly-cotton">Poly Cotton Polos</a></li>
-                                            <li><a href="shop.html?category=polos&sub=embroidery">Polos for Embroidery</a></li>
-                                            <li><a href="shop.html?category=polos&sub=short-sleeve">Short Sleeve Polos</a></li>
-                                            <li><a href="shop.html?category=polos&sub=slim-fit">Slim Fit Polos</a></li>
-                                            <li><a href="shop.html?category=polos&sub=womens">Women's Polos</a></li>
+                                            <li><a href="/shop?category=polos&sub=classic-cotton">Classic Cotton Polos</a></li>
+                                            <li><a href="/shop?category=polos&sub=kids">Kids Polos</a></li>
+                                            <li><a href="/shop?category=polos&sub=long-sleeve">Long Sleeve Polos</a></li>
+                                            <li><a href="/shop?category=polos&sub=performance">Performance Polos</a></li>
+                                            <li><a href="/shop?category=polos&sub=poly-cotton">Poly Cotton Polos</a></li>
+                                            <li><a href="/shop?category=polos&sub=embroidery">Polos for Embroidery</a></li>
+                                            <li><a href="/shop?category=polos&sub=short-sleeve">Short Sleeve Polos</a></li>
+                                            <li><a href="/shop?category=polos&sub=slim-fit">Slim Fit Polos</a></li>
+                                            <li><a href="/shop?category=polos&sub=womens">Women's Polos</a></li>
                                         </ul>
                                     </li>
                                 </ul>
                             </li>
                             <li class="has-children">
-                                <a href="shop.html?category=hoodies">
+                                <a href="/shop?category=hoodies">
                                     <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/icon-hoodies-71%201.png" alt="" aria-hidden="true" width="2000" height="2000">
                                     <span class="category-text">Hoodies &amp; Sweatshirts</span>
                                     <span class="category-caret" aria-hidden="true"></span>
@@ -928,20 +928,20 @@
                                 <ul class="megamenu">
                                     <li>
                                         <ul>
-                                            <li><a href="shop.html?category=hoodies&sub=heavyweight">Heavyweight Hoodies</a></li>
-                                            <li><a href="shop.html?category=hoodies&sub=kids">Kids Hoodies</a></li>
-                                            <li><a href="shop.html?category=hoodies&sub=lightweight">Lightweight Hoodies</a></li>
-                                            <li><a href="shop.html?category=hoodies&sub=premium">Premium / Workwear Hoodies</a></li>
-                                            <li><a href="shop.html?category=hoodies&sub=pullover">Pullover Hoodies</a></li>
-                                            <li><a href="shop.html?category=hoodies&sub=sweatshirts">Sweatshirts (Crew Neck)</a></li>
-                                            <li><a href="shop.html?category=hoodies&sub=womens">Women's Hoodies</a></li>
-                                            <li><a href="shop.html?category=hoodies&sub=zip">Zip Hoodies</a></li>
+                                            <li><a href="/shop?category=hoodies&sub=heavyweight">Heavyweight Hoodies</a></li>
+                                            <li><a href="/shop?category=hoodies&sub=kids">Kids Hoodies</a></li>
+                                            <li><a href="/shop?category=hoodies&sub=lightweight">Lightweight Hoodies</a></li>
+                                            <li><a href="/shop?category=hoodies&sub=premium">Premium / Workwear Hoodies</a></li>
+                                            <li><a href="/shop?category=hoodies&sub=pullover">Pullover Hoodies</a></li>
+                                            <li><a href="/shop?category=hoodies&sub=sweatshirts">Sweatshirts (Crew Neck)</a></li>
+                                            <li><a href="/shop?category=hoodies&sub=womens">Women's Hoodies</a></li>
+                                            <li><a href="/shop?category=hoodies&sub=zip">Zip Hoodies</a></li>
                                         </ul>
                                     </li>
                                 </ul>
                             </li>
                             <li class="has-children">
-                                <a href="shop.html?category=jackets">
+                                <a href="/shop?category=jackets">
                                     <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Jacket.png" alt="" aria-hidden="true" width="2000" height="2000">
                                     <span class="category-text">Jackets &amp; Softshell</span>
                                     <span class="category-caret" aria-hidden="true"></span>
@@ -949,21 +949,21 @@
                                 <ul class="megamenu">
                                     <li>
                                         <ul>
-                                            <li><a href="shop.html?category=jackets&sub=bodywarmers">Bodywarmers / Gilets</a></li>
-                                            <li><a href="shop.html?category=jackets&sub=bomber">Bomber Jackets</a></li>
-                                            <li><a href="shop.html?category=jackets&sub=fleece">Fleece Jackets</a></li>
-                                            <li><a href="shop.html?category=jackets&sub=high-performance">High-performance Jackets</a></li>
-                                            <li><a href="shop.html?category=jackets&sub=softshell">Softshell Jackets</a></li>
-                                            <li><a href="shop.html?category=jackets&sub=waterproof">Waterproof Jackets</a></li>
-                                            <li><a href="shop.html?category=jackets&sub=windbreakers">Windbreakers</a></li>
-                                            <li><a href="shop.html?category=jackets&sub=womens">Women's Jackets</a></li>
-                                            <li><a href="shop.html?category=jackets&sub=workwear">Workwear Jackets</a></li>
+                                            <li><a href="/shop?category=jackets&sub=bodywarmers">Bodywarmers / Gilets</a></li>
+                                            <li><a href="/shop?category=jackets&sub=bomber">Bomber Jackets</a></li>
+                                            <li><a href="/shop?category=jackets&sub=fleece">Fleece Jackets</a></li>
+                                            <li><a href="/shop?category=jackets&sub=high-performance">High-performance Jackets</a></li>
+                                            <li><a href="/shop?category=jackets&sub=softshell">Softshell Jackets</a></li>
+                                            <li><a href="/shop?category=jackets&sub=waterproof">Waterproof Jackets</a></li>
+                                            <li><a href="/shop?category=jackets&sub=windbreakers">Windbreakers</a></li>
+                                            <li><a href="/shop?category=jackets&sub=womens">Women's Jackets</a></li>
+                                            <li><a href="/shop?category=jackets&sub=workwear">Workwear Jackets</a></li>
                                         </ul>
                                     </li>
                                 </ul>
                             </li>
                             <li class="has-children">
-                                <a href="shop.html?category=hi-vis">
+                                <a href="/shop?category=hi-vis">
                                     <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Hi%20Vis.png" alt="" aria-hidden="true" width="2000" height="2000">
                                     <span class="category-text">Hi-Vis Clothing</span>
                                     <span class="category-caret" aria-hidden="true"></span>
@@ -971,21 +971,21 @@
                                 <ul class="megamenu">
                                     <li>
                                         <ul>
-                                            <li><a href="shop.html?category=hi-vis&sub=en-iso">EN ISO 20471 Certified</a></li>
-                                            <li><a href="shop.html?category=hi-vis&sub=hoodies">Hi-vis Hoodies</a></li>
-                                            <li><a href="shop.html?category=hi-vis&sub=jackets">Hi-vis Jackets</a></li>
-                                            <li><a href="shop.html?category=hi-vis&sub=polos">Hi-vis Polos</a></li>
-                                            <li><a href="shop.html?category=hi-vis&sub=t-shirts">Hi-vis T-shirts</a></li>
-                                            <li><a href="shop.html?category=hi-vis&sub=trousers">Hi-vis Trousers</a></li>
-                                            <li><a href="shop.html?category=hi-vis&sub=vests">Hi-vis Vests</a></li>
-                                            <li><a href="shop.html?category=hi-vis&sub=rail">RIS-3279 Rail</a></li>
-                                            <li><a href="shop.html?category=hi-vis&sub=waterproof">Waterproof Hi-Vis</a></li>
+                                            <li><a href="/shop?category=hi-vis&sub=en-iso">EN ISO 20471 Certified</a></li>
+                                            <li><a href="/shop?category=hi-vis&sub=hoodies">Hi-vis Hoodies</a></li>
+                                            <li><a href="/shop?category=hi-vis&sub=jackets">Hi-vis Jackets</a></li>
+                                            <li><a href="/shop?category=hi-vis&sub=polos">Hi-vis Polos</a></li>
+                                            <li><a href="/shop?category=hi-vis&sub=t-shirts">Hi-vis T-shirts</a></li>
+                                            <li><a href="/shop?category=hi-vis&sub=trousers">Hi-vis Trousers</a></li>
+                                            <li><a href="/shop?category=hi-vis&sub=vests">Hi-vis Vests</a></li>
+                                            <li><a href="/shop?category=hi-vis&sub=rail">RIS-3279 Rail</a></li>
+                                            <li><a href="/shop?category=hi-vis&sub=waterproof">Waterproof Hi-Vis</a></li>
                                         </ul>
                                     </li>
                                 </ul>
                             </li>
                             <li class="has-children">
-                                <a href="shop.html?category=trousers">
+                                <a href="/shop?category=trousers">
                                     <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Trousers.png" alt="" aria-hidden="true" width="391" height="651">
                                     <span class="category-text">Work Trousers</span>
                                     <span class="category-caret" aria-hidden="true"></span>
@@ -993,19 +993,19 @@
                                 <ul class="megamenu">
                                     <li>
                                         <ul>
-                                            <li><a href="shop.html?category=trousers&sub=cargo">Cargo Pants</a></li>
-                                            <li><a href="shop.html?category=trousers&sub=ripstop">Ripstop Trousers</a></li>
-                                            <li><a href="shop.html?category=trousers&sub=stretch">Stretch Work Trousers</a></li>
-                                            <li><a href="shop.html?category=trousers&sub=waterproof">Waterproof / Over-trousers</a></li>
-                                            <li><a href="shop.html?category=trousers&sub=shorts">Work Shorts</a></li>
-                                            <li><a href="shop.html?category=trousers&sub=work">Work Trousers</a></li>
-                                            <li><a href="shop.html?category=trousers&sub=womens">Women's Work Trousers</a></li>
+                                            <li><a href="/shop?category=trousers&sub=cargo">Cargo Pants</a></li>
+                                            <li><a href="/shop?category=trousers&sub=ripstop">Ripstop Trousers</a></li>
+                                            <li><a href="/shop?category=trousers&sub=stretch">Stretch Work Trousers</a></li>
+                                            <li><a href="/shop?category=trousers&sub=waterproof">Waterproof / Over-trousers</a></li>
+                                            <li><a href="/shop?category=trousers&sub=shorts">Work Shorts</a></li>
+                                            <li><a href="/shop?category=trousers&sub=work">Work Trousers</a></li>
+                                            <li><a href="/shop?category=trousers&sub=womens">Women's Work Trousers</a></li>
                                         </ul>
                                     </li>
                                 </ul>
                             </li>
                             <li class="has-children">
-                                <a href="shop.html?category=workwear">
+                                <a href="/shop?category=workwear">
                                     <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Apron.png" alt="" aria-hidden="true" width="2000" height="2000">
                                     <span class="category-text">Work &amp; Uniforms</span>
                                     <span class="category-caret" aria-hidden="true"></span>
@@ -1013,17 +1013,17 @@
                                 <ul class="megamenu">
                                     <li>
                                         <ul>
-                                            <li><a href="shop.html?category=workwear&sub=trousers">Work Trousers</a></li>
-                                            <li><a href="shop.html?category=workwear&sub=jackets">Workwear Jackets</a></li>
-                                            <li><a href="shop.html?category=workwear&sub=hoodies">Workwear Hoodies</a></li>
-                                            <li><a href="shop.html?category=workwear&sub=accessories">Work Accessories</a></li>
-                                            <li><a href="shop.html?category=aprons">Aprons</a></li>
+                                            <li><a href="/shop?category=workwear&sub=trousers">Work Trousers</a></li>
+                                            <li><a href="/shop?category=workwear&sub=jackets">Workwear Jackets</a></li>
+                                            <li><a href="/shop?category=workwear&sub=hoodies">Workwear Hoodies</a></li>
+                                            <li><a href="/shop?category=workwear&sub=accessories">Work Accessories</a></li>
+                                            <li><a href="/shop?category=aprons">Aprons</a></li>
                                         </ul>
                                     </li>
                                 </ul>
                             </li>
                             <li class="has-children">
-                                <a href="shop.html?category=fleece">
+                                <a href="/shop?category=fleece">
                                     <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Fleece.png" alt="" aria-hidden="true" width="2000" height="2000">
                                     <span class="category-text">Fleeces</span>
                                     <span class="category-caret" aria-hidden="true"></span>
@@ -1031,18 +1031,18 @@
                                 <ul class="megamenu">
                                     <li>
                                         <ul>
-                                            <li><a href="shop.html?category=fleece&sub=full-zip">Full Zip Fleece</a></li>
-                                            <li><a href="shop.html?category=fleece&sub=half-zip">Half Zip Fleece</a></li>
-                                            <li><a href="shop.html?category=fleece&sub=heavy">Heavy Fleece</a></li>
-                                            <li><a href="shop.html?category=fleece&sub=kids">Kids Fleece</a></li>
-                                            <li><a href="shop.html?category=fleece&sub=microfleece">Microfleece Jackets</a></li>
-                                            <li><a href="shop.html?category=fleece&sub=womens">Women's Fleece</a></li>
+                                            <li><a href="/shop?category=fleece&sub=full-zip">Full Zip Fleece</a></li>
+                                            <li><a href="/shop?category=fleece&sub=half-zip">Half Zip Fleece</a></li>
+                                            <li><a href="/shop?category=fleece&sub=heavy">Heavy Fleece</a></li>
+                                            <li><a href="/shop?category=fleece&sub=kids">Kids Fleece</a></li>
+                                            <li><a href="/shop?category=fleece&sub=microfleece">Microfleece Jackets</a></li>
+                                            <li><a href="/shop?category=fleece&sub=womens">Women's Fleece</a></li>
                                         </ul>
                                     </li>
                                 </ul>
                             </li>
                             <li class="has-children">
-                                <a href="shop.html?category=headwear">
+                                <a href="/shop?category=headwear">
                                     <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Cap.png" alt="" aria-hidden="true" width="2000" height="2000">
                                     <span class="category-text">Headwear / Accessories</span>
                                     <span class="category-caret" aria-hidden="true"></span>
@@ -1050,48 +1050,48 @@
                                 <ul class="megamenu">
                                     <li>
                                         <ul>
-                                            <li><a href="shop.html?category=headwear&sub=beanies">Beanies</a></li>
-                                            <li><a href="shop.html?category=headwear&sub=caps">Caps</a></li>
-                                            <li><a href="shop.html?category=headwear&sub=gloves-scarves">Gloves &amp; Scarves</a></li>
-                                            <li><a href="shop.html?category=headwear&sub=hi-vis">Hi-Vis Headwear</a></li>
-                                            <li><a href="shop.html?category=headwear&sub=kids">Kids Headwear</a></li>
-                                            <li><a href="shop.html?category=headwear&sub=accessories">Work Accessories</a></li>
+                                            <li><a href="/shop?category=headwear&sub=beanies">Beanies</a></li>
+                                            <li><a href="/shop?category=headwear&sub=caps">Caps</a></li>
+                                            <li><a href="/shop?category=headwear&sub=gloves-scarves">Gloves &amp; Scarves</a></li>
+                                            <li><a href="/shop?category=headwear&sub=hi-vis">Hi-Vis Headwear</a></li>
+                                            <li><a href="/shop?category=headwear&sub=kids">Kids Headwear</a></li>
+                                            <li><a href="/shop?category=headwear&sub=accessories">Work Accessories</a></li>
                                         </ul>
                                     </li>
                                 </ul>
                             </li>
                             <li class="has-children">
-                                <a href="shop.html?category=sustainable">
+                                <a href="/shop?category=sustainable">
                                     <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Recycle.png" alt="" aria-hidden="true" width="334" height="317">
                                     <span class="category-text">Sustainable / Recycled &amp; Organic</span>
                                     <span class="category-caret" aria-hidden="true"></span>
                                 </a>
                                 <ul class="megamenu brand-grid">
                                     <li class="brand-heading">0 - 9</li>
-                                    <li><a href="shop.html?brand=2786">2786</a></li>
+                                    <li><a href="/shop?brand=2786">2786</a></li>
                                     <li class="brand-heading">A</li>
-                                    <li><a href="shop.html?brand=adidas">Adidas</a></li>
-                                    <li><a href="shop.html?brand=asquith-fox">Asquith &amp; Fox</a></li>
-                                    <li><a href="shop.html?brand=awdis-just-cool">AWDis Just Cool</a></li>
-                                    <li><a href="shop.html?brand=awdis-just-hoods">AWDis Just Hoods</a></li>
+                                    <li><a href="/shop?brand=adidas">Adidas</a></li>
+                                    <li><a href="/shop?brand=asquith-fox">Asquith &amp; Fox</a></li>
+                                    <li><a href="/shop?brand=awdis-just-cool">AWDis Just Cool</a></li>
+                                    <li><a href="/shop?brand=awdis-just-hoods">AWDis Just Hoods</a></li>
                                     <li class="brand-heading">B</li>
-                                    <li><a href="shop.html?brand=bc-collection">B&amp;C Collection</a></li>
-                                    <li><a href="shop.html?brand=bagbase">Bagbase</a></li>
-                                    <li><a href="shop.html?brand=beechfield">Beechfield</a></li>
-                                    <li><a href="shop.html?brand=build-your-brand">Build Your Brand</a></li>
+                                    <li><a href="/shop?brand=bc-collection">B&amp;C Collection</a></li>
+                                    <li><a href="/shop?brand=bagbase">Bagbase</a></li>
+                                    <li><a href="/shop?brand=beechfield">Beechfield</a></li>
+                                    <li><a href="/shop?brand=build-your-brand">Build Your Brand</a></li>
                                     <li class="brand-heading">N</li>
-                                    <li><a href="shop.html?brand=nike">Nike</a></li>
-                                    <li><a href="shop.html?brand=nimbus">Nimbus</a></li>
+                                    <li><a href="/shop?brand=nike">Nike</a></li>
+                                    <li><a href="/shop?brand=nimbus">Nimbus</a></li>
                                     <li class="brand-heading">P</li>
-                                    <li><a href="shop.html?brand=portwest">Portwest</a></li>
-                                    <li><a href="shop.html?brand=premier">Premier</a></li>
+                                    <li><a href="/shop?brand=portwest">Portwest</a></li>
+                                    <li><a href="/shop?brand=premier">Premier</a></li>
                                     <li class="brand-heading">R</li>
-                                    <li><a href="shop.html?brand=regatta">Regatta Professional</a></li>
-                                    <li><a href="shop.html?brand=result">Result</a></li>
+                                    <li><a href="/shop?brand=regatta">Regatta Professional</a></li>
+                                    <li><a href="/shop?brand=result">Result</a></li>
                                 </ul>
                             </li>
                             <li>
-                                <a href="shop.html" class="view-all-link">
+                                <a href="/shop" class="view-all-link">
                                     <span class="category-text">View All Categories</span>
                                     <span class="category-caret" aria-hidden="true"></span>
                                 </a>
@@ -1103,55 +1103,55 @@
                 <nav class="main-nav" aria-label="primary navigation">
                     <ul class="menu">
                         <li class="has-megamenu">
-                            <a href="shop.html" aria-haspopup="true">
+                            <a href="/shop" aria-haspopup="true">
                                 All Products
                                 <span class="nav-caret" aria-hidden="true"></span>
                             </a>
                             <ul class="nav-megamenu brand-grid">
                                 <li class="brand-heading">A</li>
-                                <li><a href="shop.html?category=accessories">Accessories</a></li>
-                                <li><a href="shop.html?category=aprons">Aprons</a></li>
-                                <li><a href="shop.html?category=autumn-workwear">Autumn Workwear</a></li>
+                                <li><a href="/shop?category=accessories">Accessories</a></li>
+                                <li><a href="/shop?category=aprons">Aprons</a></li>
+                                <li><a href="/shop?category=autumn-workwear">Autumn Workwear</a></li>
                                 <li class="brand-heading">B</li>
-                                <li><a href="shop.html?category=bags">Bags</a></li>
-                                <li><a href="shop.html?category=beanies">Beanies</a></li>
-                                <li><a href="shop.html?category=bodywarmers">Bodywarmers &amp; Gilets</a></li>
+                                <li><a href="/shop?category=bags">Bags</a></li>
+                                <li><a href="/shop?category=beanies">Beanies</a></li>
+                                <li><a href="/shop?category=bodywarmers">Bodywarmers &amp; Gilets</a></li>
                                 <li class="brand-heading">C</li>
-                                <li><a href="shop.html?category=caps">Caps</a></li>
-                                <li><a href="shop.html?category=chefswear">Chefswear</a></li>
-                                <li><a href="shop.html?category=coats-jackets">Coats &amp; Jackets</a></li>
-                                <li><a href="shop.html?category=coveralls">Coveralls</a></li>
+                                <li><a href="/shop?category=caps">Caps</a></li>
+                                <li><a href="/shop?category=chefswear">Chefswear</a></li>
+                                <li><a href="/shop?category=coats-jackets">Coats &amp; Jackets</a></li>
+                                <li><a href="/shop?category=coveralls">Coveralls</a></li>
                                 <li class="brand-heading">F</li>
-                                <li><a href="shop.html?category=fleece">Fleece Jackets</a></li>
-                                <li><a href="shop.html?category=footwear">Footwear</a></li>
+                                <li><a href="/shop?category=fleece">Fleece Jackets</a></li>
+                                <li><a href="/shop?category=footwear">Footwear</a></li>
                                 <li class="brand-heading">G</li>
-                                <li><a href="shop.html?category=gilets">Gilets</a></li>
-                                <li><a href="shop.html?category=gloves">Gloves</a></li>
+                                <li><a href="/shop?category=gilets">Gilets</a></li>
+                                <li><a href="/shop?category=gloves">Gloves</a></li>
                                 <li class="brand-heading">H</li>
-                                <li><a href="shop.html?category=headwear">Headwear</a></li>
-                                <li><a href="shop.html?category=hi-vis">Hi-Vis</a></li>
-                                <li><a href="shop.html?category=hoodies">Hoodies</a></li>
-                                <li><a href="shop.html?category=hospitality">Hospitality</a></li>
+                                <li><a href="/shop?category=headwear">Headwear</a></li>
+                                <li><a href="/shop?category=hi-vis">Hi-Vis</a></li>
+                                <li><a href="/shop?category=hoodies">Hoodies</a></li>
+                                <li><a href="/shop?category=hospitality">Hospitality</a></li>
                                 <li class="brand-heading">J</li>
-                                <li><a href="shop.html?category=jackets">Jackets</a></li>
-                                <li><a href="shop.html?category=joggers">Joggers</a></li>
+                                <li><a href="/shop?category=jackets">Jackets</a></li>
+                                <li><a href="/shop?category=joggers">Joggers</a></li>
                                 <li class="brand-heading">K</li>
-                                <li><a href="shop.html?category=knitwear">Knitwear</a></li>
+                                <li><a href="/shop?category=knitwear">Knitwear</a></li>
                                 <li class="brand-heading">P</li>
-                                <li><a href="shop.html?category=polos">Polo Shirts</a></li>
-                                <li><a href="shop.html?category=ppe">PPE &amp; Safety Wear</a></li>
+                                <li><a href="/shop?category=polos">Polo Shirts</a></li>
+                                <li><a href="/shop?category=ppe">PPE &amp; Safety Wear</a></li>
                                 <li class="brand-heading">S</li>
-                                <li><a href="shop.html?category=shirts">Shirts</a></li>
-                                <li><a href="shop.html?category=shorts">Shorts</a></li>
-                                <li><a href="shop.html?category=softshell">Softshell Jackets</a></li>
-                                <li><a href="shop.html?category=sports">Sports &amp; Teamwear</a></li>
-                                <li><a href="shop.html?category=sustainable">Sustainable</a></li>
-                                <li><a href="shop.html?category=sweatshirts">Sweatshirts</a></li>
+                                <li><a href="/shop?category=shirts">Shirts</a></li>
+                                <li><a href="/shop?category=shorts">Shorts</a></li>
+                                <li><a href="/shop?category=softshell">Softshell Jackets</a></li>
+                                <li><a href="/shop?category=sports">Sports &amp; Teamwear</a></li>
+                                <li><a href="/shop?category=sustainable">Sustainable</a></li>
+                                <li><a href="/shop?category=sweatshirts">Sweatshirts</a></li>
                                 <li class="brand-heading">T</li>
-                                <li><a href="shop.html?category=t-shirts">T-Shirts</a></li>
-                                <li><a href="shop.html?category=trousers">Trousers</a></li>
+                                <li><a href="/shop?category=t-shirts">T-Shirts</a></li>
+                                <li><a href="/shop?category=trousers">Trousers</a></li>
                                 <li class="brand-heading">W</li>
-                                <li><a href="shop.html?category=winter-workwear">Winter Workwear</a></li>
+                                <li><a href="/shop?category=winter-workwear">Winter Workwear</a></li>
                             </ul>
                         </li>
                         <li><a href="#">BrandedUK</a></li>
@@ -1198,56 +1198,56 @@
                             <div class="exclusives-dropdown" role="region" aria-label="Exclusive brands">
                                 <div class="exclusives-dropdown-title">Exclusives</div>
                                 <div class="exclusives-grid">
-                                    <a href="shop.html?brand=adidas%C2%AE" class="exclusive-brand" title="Adidas">
+                                    <a href="/shop?brand=adidas%C2%AE" class="exclusive-brand" title="Adidas">
                                         <img src="brandedukv15-child/assets/images/brands/adidas.jpg" alt="Adidas" width="1920" height="1571">
                                     </a>
-                                    <a href="shop.html?brand=b%26c-collection" class="exclusive-brand" title="B&C Collection">
+                                    <a href="/shop?brand=b%26c-collection" class="exclusive-brand" title="B&C Collection">
                                         <img src="brandedukv15-child/assets/images/brands/bandc-collection.png" alt="B&C" width="116" height="116">
                                     </a>
-                                    <a href="shop.html?brand=build-your-brand" class="exclusive-brand" title="Build Your Brand">
+                                    <a href="/shop?brand=build-your-brand" class="exclusive-brand" title="Build Your Brand">
                                         <img src="brandedukv15-child/assets/images/brands/build-your-brand.png" alt="Build Your Brand" width="475" height="106">
                                     </a>
-                                    <a href="shop.html?brand=build-your-brand-basic" class="exclusive-brand" title="Build Your Brand Basic">
+                                    <a href="/shop?brand=build-your-brand-basic" class="exclusive-brand" title="Build Your Brand Basic">
                                         <img src="brandedukv15-child/assets/images/brands/build-your-brand-basic-logo-web-2021.jpg" alt="Build Your Brand Basic" width="150" height="50">
                                     </a>
-                                    <a href="shop.html?brand=build-your-brandit" class="exclusive-brand" title="Brandit">
+                                    <a href="/shop?brand=build-your-brandit" class="exclusive-brand" title="Brandit">
                                         <img src="brandedukv15-child/assets/images/brands/build-your-brandit-logo.jpeg" alt="Brandit" width="650" height="650">
                                     </a>
-                                    <a href="shop.html?brand=comfort-colors%C2%AE" class="exclusive-brand" title="Comfort Colors">
+                                    <a href="/shop?brand=comfort-colors%C2%AE" class="exclusive-brand" title="Comfort Colors">
                                         <img src="brandedukv15-child/assets/images/brands/comfort-colors.webp" alt="Comfort Colors" width="150" height="50">
                                     </a>
-                                    <a href="shop.html?brand=new-morning-studios" class="exclusive-brand" title="New Morning Studios">
+                                    <a href="/shop?brand=new-morning-studios" class="exclusive-brand" title="New Morning Studios">
                                         <img src="brandedukv15-child/assets/images/brands/web-logo-new-morning-studios.png" alt="New Morning Studios" width="150" height="75">
                                     </a>
-                                    <a href="shop.html?brand=nimbus" class="exclusive-brand" title="Nimbus">
+                                    <a href="/shop?brand=nimbus" class="exclusive-brand" title="Nimbus">
                                         <img src="brandedukv15-child/assets/images/brands/nimbus2020.webp" alt="Nimbus" width="135" height="116">
                                     </a>
-                                    <a href="shop.html?brand=nutshell%C2%AE" class="exclusive-brand" title="Nutshell">
+                                    <a href="/shop?brand=nutshell%C2%AE" class="exclusive-brand" title="Nutshell">
                                         <img src="brandedukv15-child/assets/images/brands/nutshell-bag2020.webp" alt="Nutshell" width="103" height="116">
                                     </a>
-                                    <a href="shop.html?brand=ogio" class="exclusive-brand" title="OGIO">
+                                    <a href="/shop?brand=ogio" class="exclusive-brand" title="OGIO">
                                         <img src="brandedukv15-child/assets/images/brands/ogio2020.webp" alt="OGIO" width="147" height="116">
                                     </a>
-                                    <a href="shop.html?brand=rhino" class="exclusive-brand" title="Rhino">
+                                    <a href="/shop?brand=rhino" class="exclusive-brand" title="Rhino">
                                         <img src="brandedukv15-child/assets/images/brands/rhino2020.jpg" alt="Rhino" width="144" height="116">
                                     </a>
-                                    <a href="shop.html?brand=ribbon" class="exclusive-brand" title="Ribbon">
+                                    <a href="/shop?brand=ribbon" class="exclusive-brand" title="Ribbon">
                                         <img src="brandedukv15-child/assets/images/brands/brand-logo-ribbon.jpg" alt="Ribbon" width="150" height="96">
                                     </a>
-                                    <a href="shop.html?brand=tridri%C2%AE" class="exclusive-brand" title="TriDri">
+                                    <a href="/shop?brand=tridri%C2%AE" class="exclusive-brand" title="TriDri">
                                         <img src="brandedukv15-child/assets/images/brands/tridri.webp" alt="Tri Dri" width="150" height="75">
                                     </a>
-                                    <a href="shop.html?brand=under-armour" class="exclusive-brand" title="Under Armour">
+                                    <a href="/shop?brand=under-armour" class="exclusive-brand" title="Under Armour">
                                         <img src="brandedukv15-child/assets/images/brands/under-armour.webp" alt="Under Armour" width="145" height="116">
                                     </a>
-                                    <a href="shop.html?brand=wombat" class="exclusive-brand" title="Wombat">
+                                    <a href="/shop?brand=wombat" class="exclusive-brand" title="Wombat">
                                         <img src="brandedukv15-child/assets/images/brands/wombat.jpg" alt="Wombat" width="150" height="80">
                                     </a>
                                 </div>
                             </div>
                         </li>
                         <li><a href="#" style="color:#e53e3e;font-weight:700">More</a></li>
-                        <li><a href="services.html">Services</a></li>
+                        <li><a href="/services">Services</a></li>
                         <li><a href="#">About</a></li>
                     </ul>
                 </nav>
@@ -1308,7 +1308,7 @@
     <div class="header-with-promo">
     <header class="mobile-header mobile-header--v2">
         <div class="mh-bar">
-            <a href="/index-mobile.html?force=mobile" class="mobile-logo-center mh-logo" aria-label="brandedUK home">
+            <a href="/" class="mobile-logo-center mh-logo" aria-label="brandedUK home">
                 <img class="mobile-logo-badge" src="brandedukv15-child/assets/videos/use-the-provided-circular-1727756126.gif?v=20261001-newgif" alt="" width="64" height="64">
                 <img class="mobile-logo-word" src="brandedukv15-child/assets/images/ui/Branded UK Logo on Transparent Background.png?v=20261002-logocombo" alt="branded" width="120" height="52">
             </a>
@@ -1318,7 +1318,7 @@
                         <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
                     </svg>
                 </a>
-                <a href="basket.html#orderSummary" class="mh-icon-btn mh-cart" aria-label="View basket">
+                <a href="/basket#orderSummary" class="mh-icon-btn mh-cart" aria-label="View basket">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <circle cx="9" cy="21" r="1"></circle>
                         <circle cx="20" cy="21" r="1"></circle>
@@ -1372,7 +1372,7 @@
                                 </div>
                                 <div class="hero-el__content">
                                     <div class="hero-el__text">Custom T-Shirts</div>
-                                    <a href="mobile/shop-mobile.html?category=tshirts&amp;force=mobile" class="hero-el__cta">Shop Now</a>
+                                    <a href="/mobile/shop-mobile?category=tshirts&amp;force=mobile" class="hero-el__cta">Shop Now</a>
                                     <div class="hero-el__close-btn"></div>
                                 </div>
                             </div>
@@ -1387,7 +1387,7 @@
                                 </div>
                                 <div class="hero-el__content">
                                     <div class="hero-el__text">Custom Hoodies</div>
-                                    <a href="mobile/shop-mobile.html?category=hoodies&amp;force=mobile" class="hero-el__cta">Shop Now</a>
+                                    <a href="/mobile/shop-mobile?category=hoodies&amp;force=mobile" class="hero-el__cta">Shop Now</a>
                                     <div class="hero-el__close-btn"></div>
                                 </div>
                             </div>
@@ -1402,7 +1402,7 @@
                                 </div>
                                 <div class="hero-el__content">
                                     <div class="hero-el__text">Custom Headwear</div>
-                                    <a href="mobile/shop-mobile.html?productType=beanies&amp;productType=caps&amp;productType=hats&amp;force=mobile" class="hero-el__cta">Shop Now</a>
+                                    <a href="/mobile/shop-mobile?productType=beanies&amp;productType=caps&amp;productType=hats&amp;force=mobile" class="hero-el__cta">Shop Now</a>
                                     <div class="hero-el__close-btn"></div>
                                 </div>
                             </div>
@@ -1417,7 +1417,7 @@
                                 </div>
                                 <div class="hero-el__content">
                                     <div class="hero-el__text">Custom Bags</div>
-                                    <a href="mobile/shop-mobile.html?category=bags&amp;force=mobile" class="hero-el__cta">Shop Now</a>
+                                    <a href="/mobile/shop-mobile?category=bags&amp;force=mobile" class="hero-el__cta">Shop Now</a>
                                     <div class="hero-el__close-btn"></div>
                                 </div>
                             </div>
@@ -1432,7 +1432,7 @@
                                 </div>
                                 <div class="hero-el__content">
                                     <div class="hero-el__text">Custom Aprons</div>
-                                    <a href="mobile/shop-mobile.html?category=aprons&amp;force=mobile" class="hero-el__cta">Shop Now</a>
+                                    <a href="/mobile/shop-mobile?category=aprons&amp;force=mobile" class="hero-el__cta">Shop Now</a>
                                     <div class="hero-el__close-btn"></div>
                                 </div>
                             </div>
@@ -1447,7 +1447,7 @@
                                 </div>
                                 <div class="hero-el__content">
                                     <div class="hero-el__text">Custom Hi-Viz</div>
-                                    <a href="mobile/shop-mobile.html?category=hi-vis&amp;force=mobile" class="hero-el__cta">Shop Now</a>
+                                    <a href="/mobile/shop-mobile?category=hi-vis&amp;force=mobile" class="hero-el__cta">Shop Now</a>
                                     <div class="hero-el__close-btn"></div>
                                 </div>
                             </div>
@@ -1462,7 +1462,7 @@
                                 </div>
                                 <div class="hero-el__content">
                                     <div class="hero-el__text">Custom Polo</div>
-                                    <a href="mobile/shop-mobile.html?category=polos&amp;force=mobile" class="hero-el__cta">Shop Now</a>
+                                    <a href="/mobile/shop-mobile?category=polos&amp;force=mobile" class="hero-el__cta">Shop Now</a>
                                     <div class="hero-el__close-btn"></div>
                                 </div>
                             </div>
@@ -1477,7 +1477,7 @@
                                 </div>
                                 <div class="hero-el__content">
                                     <div class="hero-el__text">Jackets &amp; Softshell</div>
-                                    <a href="mobile/shop-mobile.html?category=jackets&amp;force=mobile" class="hero-el__cta">Shop Now</a>
+                                    <a href="/mobile/shop-mobile?category=jackets&amp;force=mobile" class="hero-el__cta">Shop Now</a>
                                     <div class="hero-el__close-btn"></div>
                                 </div>
                             </div>
@@ -1492,7 +1492,7 @@
                                 </div>
                                 <div class="hero-el__content">
                                     <div class="hero-el__text">Eco-Friendly Products</div>
-                                    <a href="mobile/shop-mobile.html?flag=recycled-organic&amp;force=mobile" class="hero-el__cta">Shop Now</a>
+                                    <a href="/mobile/shop-mobile?flag=recycled-organic&amp;force=mobile" class="hero-el__cta">Shop Now</a>
                                     <div class="hero-el__close-btn"></div>
                                 </div>
                             </div>
@@ -1507,7 +1507,7 @@
                                 </div>
                                 <div class="hero-el__content">
                                     <div class="hero-el__text">Work Trousers</div>
-                                    <a href="mobile/shop-mobile.html?category=trousers&amp;force=mobile" class="hero-el__cta">Shop Now</a>
+                                    <a href="/mobile/shop-mobile?category=trousers&amp;force=mobile" class="hero-el__cta">Shop Now</a>
                                     <div class="hero-el__close-btn"></div>
                                 </div>
                             </div>
@@ -1522,13 +1522,13 @@
             <div class="hero-banners-container" data-hero-banners>
                 <a class="hero-banner hero-banner--active" href="https://www.onlyboards.co.uk/" target="_blank" rel="noopener" aria-label="Visit Only Boards"><img src="brandeduk.com/assets/ChatGPT%20Image%20Sep%2023%2C%202026%2C%2011_18_04%20AM.png" alt="Only Boards partner banner" width="1145" height="1374" onerror="this.onerror=null;this.src='brandeduk.com/assets/ChatGPT%20Image%20Sep%2015%2C%202026%2C%2001_39_25%20PM.png';"></a>
             <div class="hero-banner" aria-label="Branded Digital websites for your industry"><img src="brandeduk.com/assets/ChatGPT%20Image%20Sep%2021%2C%202026%2C%2011_50_14%20PM.png" alt="Branded Digital - Websites for ambitious local businesses" width="1145" height="1374"></div>
-                <a class="hero-banner hero-banner-regatta-mobile" href="shop.html?brand=regatta-professional" aria-label="Shop Regatta Professional"><img src="brandeduk.com/assets/Screenshot%202026-09-15%20190009.png" alt="Regatta Professional Dover jacket offer" width="503" height="605"></a>
-                <a class="hero-banner" href="shop.html?brand=awdis" aria-label="Shop AWDis"><img src="brandeduk.com/assets/Screenshot%202026-09-15%20185936.png" alt="AWDis College Hoodie 2.0" width="496" height="605"></a>
-                <a class="hero-banner" href="shop.html?brand=mumbles" aria-label="Shop Mumbles"><img src="brandeduk.com/assets/Screenshot%202026-09-15%20185849.png" alt="Mumbles Halloween plush collection" width="490" height="602"></a>
-                <a class="hero-banner" href="shop.html?brand=anthem" aria-label="Shop Anthem"><img src="brandeduk.com/assets/Screenshot%202026-09-15%20185951.png" alt="Anthem heavy bass hoodie collection" width="496" height="604"></a>
-                <a class="hero-banner" href="shop.html?category=t-shirts" aria-label="Shop branded T-shirts"><div class="hero-bounce-container"><div class="hero-bounce-headline" data-bounce-text>branded</div></div></a>
+                <a class="hero-banner hero-banner-regatta-mobile" href="/shop?brand=regatta-professional" aria-label="Shop Regatta Professional"><img src="brandeduk.com/assets/Screenshot%202026-09-15%20190009.png" alt="Regatta Professional Dover jacket offer" width="503" height="605"></a>
+                <a class="hero-banner" href="/shop?brand=awdis" aria-label="Shop AWDis"><img src="brandeduk.com/assets/Screenshot%202026-09-15%20185936.png" alt="AWDis College Hoodie 2.0" width="496" height="605"></a>
+                <a class="hero-banner" href="/shop?brand=mumbles" aria-label="Shop Mumbles"><img src="brandeduk.com/assets/Screenshot%202026-09-15%20185849.png" alt="Mumbles Halloween plush collection" width="490" height="602"></a>
+                <a class="hero-banner" href="/shop?brand=anthem" aria-label="Shop Anthem"><img src="brandeduk.com/assets/Screenshot%202026-09-15%20185951.png" alt="Anthem heavy bass hoodie collection" width="496" height="604"></a>
+                <a class="hero-banner" href="/shop?category=t-shirts" aria-label="Shop branded T-shirts"><div class="hero-bounce-container"><div class="hero-bounce-headline" data-bounce-text>branded</div></div></a>
                 <a class="hero-banner hero-banner--clickable" href="#" data-open-contact="1" aria-label="Request a quote"><div class="neon-container"><div class="neon-text">GET IN</div><div class="flux-text">TOUCH</div></div></a>
-                <a class="hero-banner" href="shop.html" aria-label="Browse all products"><div class="hero-text-container"><div class="hero-text-make">MAKE</div><div class="hero-flip-wrapper"><div class="hero-flip-word flip-work">WORK</div><div class="hero-flip-word flip-lifestyle">LIFESTYLE</div><div class="hero-flip-word flip-everything">EVERYTHING</div></div><div class="hero-text-awesome">AWESOME!</div></div></a>
+                <a class="hero-banner" href="/shop" aria-label="Browse all products"><div class="hero-text-container"><div class="hero-text-make">MAKE</div><div class="hero-flip-wrapper"><div class="hero-flip-word flip-work">WORK</div><div class="hero-flip-word flip-lifestyle">LIFESTYLE</div><div class="hero-flip-word flip-everything">EVERYTHING</div></div><div class="hero-text-awesome">AWESOME!</div></div></a>
             </div>
 
             <!-- Banner Dots Navigation -->
@@ -1549,42 +1549,42 @@
         <section class="section-block home-category-section home-industry-section" id="industries" aria-labelledby="mobileShopIndustriesTitle">
             <div class="section-header">
                 <h2 class="section-title" id="mobileShopIndustriesTitle">Shop by Industry</h2>
-                <a href="industries.html" class="see-all-link">View all</a>
+                <a href="/industries" class="see-all-link">View all</a>
             </div>
             <div class="categories-scroll-auto" id="categoriesScroller">
-                <a href="industries/construction.html" class="home-industry home-industry--construction">
+                <a href="/industries/construction" class="home-industry home-industry--construction">
                     <img src="brandedukv15-child/assets/images/industries/construction-800.webp" alt="" width="800" height="450" loading="lazy" decoding="async">
                     <span>Construction</span>
                 </a>
-                <a href="industries/hospitality.html" class="home-industry home-industry--hospitality">
+                <a href="/industries/hospitality" class="home-industry home-industry--hospitality">
                     <img src="brandedukv15-child/assets/images/industries/hospitality-800.webp" alt="" width="800" height="450" loading="lazy" decoding="async">
                     <span>Hospitality</span>
                 </a>
-                <a href="industries/cleaning.html" class="home-industry home-industry--cleaning">
+                <a href="/industries/cleaning" class="home-industry home-industry--cleaning">
                     <img src="brandedukv15-child/assets/images/industries/cleaning-800.webp" alt="" width="800" height="450" loading="lazy" decoding="async">
                     <span>Cleaning</span>
                 </a>
-                <a href="industries/sports.html" class="home-industry home-industry--sports">
+                <a href="/industries/sports" class="home-industry home-industry--sports">
                     <img src="brandedukv15-child/assets/images/industries/sports-800.webp" alt="" width="800" height="450" loading="lazy" decoding="async">
                     <span>Sport</span>
                 </a>
-                <a href="industries/healthcare.html" class="home-industry home-industry--healthcare">
+                <a href="/industries/healthcare" class="home-industry home-industry--healthcare">
                     <img src="brandedukv15-child/assets/images/industries/healthcare-800.webp" alt="" width="800" height="450" loading="lazy" decoding="async">
                     <span>Healthcare</span>
                 </a>
-                <a href="industries/logistics.html" class="home-industry home-industry--logistics">
+                <a href="/industries/logistics" class="home-industry home-industry--logistics">
                     <img src="brandedukv15-child/assets/images/industries/logistics-800.webp" alt="" width="800" height="450" loading="lazy" decoding="async">
                     <span>Logistics</span>
                 </a>
-                <a href="industries/corporate.html" class="home-industry home-industry--corporate">
+                <a href="/industries/corporate" class="home-industry home-industry--corporate">
                     <img src="brandedukv15-child/assets/images/industries/corporate-800.webp" alt="" width="800" height="450" loading="lazy" decoding="async">
                     <span>Corporate</span>
                 </a>
-                <a href="industries/education.html" class="home-industry home-industry--education">
+                <a href="/industries/education" class="home-industry home-industry--education">
                     <img src="brandedukv15-child/assets/images/industries/education-800.webp" alt="" width="800" height="450" loading="lazy" decoding="async">
                     <span>Education</span>
                 </a>
-                <a href="industries/retail.html" class="home-industry home-industry--retail">
+                <a href="/industries/retail" class="home-industry home-industry--retail">
                     <img src="brandedukv15-child/assets/images/industries/retail-800.webp" alt="" width="800" height="450" loading="lazy" decoding="async">
                     <span>Retail</span>
                 </a>
@@ -1599,7 +1599,7 @@
                     <span class="featured-intro__eyebrow">Our collection</span>
                     <h2 class="featured-intro__title">Featured Products</h2>
                     <p class="featured-intro__text">Popular styles, trusted by businesses, teams and organisations.</p>
-                    <a href="shop.html?sort=featured" class="featured-intro__cta">View all products <span aria-hidden="true">&rarr;</span></a>
+                    <a href="/shop?sort=featured" class="featured-intro__cta">View all products <span aria-hidden="true">&rarr;</span></a>
                 </div>
                 <div class="featured-products-wrapper">
                     <div class="featured-products-carousel carousel-track" id="featuredProductsCarousel">
@@ -1850,7 +1850,7 @@
             var card = e.target.closest('.brand-card');
             if (!card) return;
             var brand = card.textContent.trim();
-            if (brand) window.location.href = 'shop.html?brand=' + encodeURIComponent(brand);
+            if (brand) window.location.href='/shop?brand=' + encodeURIComponent(brand);
         });
         </script>
 
@@ -1887,7 +1887,7 @@
                     </div>
                     <div class="faq-row">
                         <div class="faq-question">Best garments for embroidery?</div>
-                        <div class="faq-answer"><a href="polos.html" style="color: #007bff; text-decoration: none;">Polo shirts</a>, <a href="hoodies.html" style="color: #007bff; text-decoration: none;">hoodies</a>, <a href="jackets.html" style="color: #007bff; text-decoration: none;">jackets</a>, caps and fleeces work best. Perfect for <a href="workwear.html" style="color: #007bff; text-decoration: none;">corporate workwear</a> and professional uniforms. NOT suitable for hi-vis due to reflective material.</div>
+                        <div class="faq-answer"><a href="/polos" style="color: #007bff; text-decoration: none;">Polo shirts</a>, <a href="/hoodies" style="color: #007bff; text-decoration: none;">hoodies</a>, <a href="/jackets" style="color: #007bff; text-decoration: none;">jackets</a>, caps and fleeces work best. Perfect for <a href="/workwear" style="color: #007bff; text-decoration: none;">corporate workwear</a> and professional uniforms. NOT suitable for hi-vis due to reflective material.</div>
                     </div>
                     <div class="faq-row">
                         <div class="faq-question">Logo size limits?</div>
@@ -1899,7 +1899,7 @@
                     </div>
                     <div class="faq-row">
                         <div class="faq-question">Wash durability</div>
-                        <div class="faq-answer">Embroidery is the most durable decoration method. Ideal for <a href="workwear.html" style="color: #007bff; text-decoration: none;">trade workwear</a>, restaurant uniforms and <a href="jackets.html" style="color: #007bff; text-decoration: none;">outdoor jackets</a>. Withstands industrial washing, tumble drying and years of heavy use without fading or peeling.</div>
+                        <div class="faq-answer">Embroidery is the most durable decoration method. Ideal for <a href="/workwear" style="color: #007bff; text-decoration: none;">trade workwear</a>, restaurant uniforms and <a href="/jackets" style="color: #007bff; text-decoration: none;">outdoor jackets</a>. Withstands industrial washing, tumble drying and years of heavy use without fading or peeling.</div>
                     </div>
                     <div class="faq-row">
                         <div class="faq-question">Setup cost?</div>
@@ -1914,7 +1914,7 @@
                 <div class="faq-panel" id="dtf">
                     <div class="faq-row">
                         <div class="faq-question">What is DTF printing?</div>
-                        <div class="faq-answer">Direct-to-Film (DTF) printing creates full-colour transfers that are heat-pressed onto garments. Perfect for <a href="tshirts.html" style="color: #007bff; text-decoration: none;">event t-shirts</a>, <a href="hoodies.html" style="color: #007bff; text-decoration: none;">branded hoodies</a> and complex logos on any fabric colour. Check our <a href="bundles.html" style="color: #007bff; text-decoration: none;">bundles</a> for package deals.</div>
+                        <div class="faq-answer">Direct-to-Film (DTF) printing creates full-colour transfers that are heat-pressed onto garments. Perfect for <a href="/tshirts" style="color: #007bff; text-decoration: none;">event t-shirts</a>, <a href="/hoodies" style="color: #007bff; text-decoration: none;">branded hoodies</a> and complex logos on any fabric colour. Check our <a href="/bundles" style="color: #007bff; text-decoration: none;">bundles</a> for package deals.</div>
                     </div>
                     <div class="faq-row">
                         <div class="faq-question">Is it suitable for cotton?</div>
@@ -1934,7 +1934,7 @@
                     </div>
                     <div class="faq-row">
                         <div class="faq-question">Small quantities?</div>
-                        <div class="faq-answer">Perfect for small runs, with a low minimum order of just £50 + VAT (goods only). Ideal for <a href="tshirts.html" style="color: #007bff; text-decoration: none;">pub t-shirts</a>, <a href="hoodies.html" style="color: #007bff; text-decoration: none;">team hoodies</a>, event merchandise and samples. Start with our <a href="bundles.html" style="color: #007bff; text-decoration: none;">Starter Bundle</a> from £24.99.</div>
+                        <div class="faq-answer">Perfect for small runs, with a low minimum order of just £50 + VAT (goods only). Ideal for <a href="/tshirts" style="color: #007bff; text-decoration: none;">pub t-shirts</a>, <a href="/hoodies" style="color: #007bff; text-decoration: none;">team hoodies</a>, event merchandise and samples. Start with our <a href="/bundles" style="color: #007bff; text-decoration: none;">Starter Bundle</a> from £24.99.</div>
                     </div>
                     <div class="faq-row">
                         <div class="faq-question">Setup costs</div>
@@ -1953,11 +1953,11 @@
                     </div>
                     <div class="faq-row">
                         <div class="faq-question">Best use cases</div>
-                        <div class="faq-answer">Ideal for names, numbers, simple logos on <a href="tshirts.html" style="color: #007bff; text-decoration: none;">team t-shirts</a>, <a href="hoodies.html" style="color: #007bff; text-decoration: none;">sports hoodies</a> and <a href="workwear.html" style="color: #007bff; text-decoration: none;">restaurant uniforms</a>. Popular for sports kits, hen parties and personalised <a href="tshirts.html" style="color: #007bff; text-decoration: none;">pub t-shirts</a>.</div>
+                        <div class="faq-answer">Ideal for names, numbers, simple logos on <a href="/tshirts" style="color: #007bff; text-decoration: none;">team t-shirts</a>, <a href="/hoodies" style="color: #007bff; text-decoration: none;">sports hoodies</a> and <a href="/workwear" style="color: #007bff; text-decoration: none;">restaurant uniforms</a>. Popular for sports kits, hen parties and personalised <a href="/tshirts" style="color: #007bff; text-decoration: none;">pub t-shirts</a>.</div>
                     </div>
                     <div class="faq-row">
                         <div class="faq-question">Names & numbers</div>
-                        <div class="faq-answer">Perfect for individual names and numbers on <a href="tshirts.html" style="color: #007bff; text-decoration: none;">team t-shirts</a> and <a href="hoodies.html" style="color: #007bff; text-decoration: none;">hoodies</a>. Each item can be unique at no extra setup cost - great for sports kits, schools and events.</div>
+                        <div class="faq-answer">Perfect for individual names and numbers on <a href="/tshirts" style="color: #007bff; text-decoration: none;">team t-shirts</a> and <a href="/hoodies" style="color: #007bff; text-decoration: none;">hoodies</a>. Each item can be unique at no extra setup cost - great for sports kits, schools and events.</div>
                     </div>
                     <div class="faq-row">
                         <div class="faq-question">Colour options</div>
@@ -1984,15 +1984,15 @@
                 <div class="faq-panel" id="screen">
                     <div class="faq-row">
                         <div class="faq-question">What is screen printing?</div>
-                        <div class="faq-answer">Screen printing pushes ink through mesh screens onto fabric. Best for bulk <a href="tshirts.html" style="color: #007bff; text-decoration: none;">t-shirts</a>, <a href="hoodies.html" style="color: #007bff; text-decoration: none;">hoodies</a> and <a href="hivis.html" style="color: #007bff; text-decoration: none;">hi-vis workwear</a>. The ONLY method suitable for hi-vis reflective material. Get up to 30% OFF with <a href="bulk-orders.html" style="color: #007bff; text-decoration: none;">bulk orders</a>.</div>
+                        <div class="faq-answer">Screen printing pushes ink through mesh screens onto fabric. Best for bulk <a href="/tshirts" style="color: #007bff; text-decoration: none;">t-shirts</a>, <a href="/hoodies" style="color: #007bff; text-decoration: none;">hoodies</a> and <a href="/hivis" style="color: #007bff; text-decoration: none;">hi-vis workwear</a>. The ONLY method suitable for hi-vis reflective material. Get up to 30% OFF with <a href="/bulk-orders" style="color: #007bff; text-decoration: none;">bulk orders</a>.</div>
                     </div>
                     <div class="faq-row">
                         <div class="faq-question">Minimum quantity</div>
-                        <div class="faq-answer">We recommend 25+ pieces to be cost-effective due to screen setup. Perfect for <a href="tshirts.html" style="color: #007bff; text-decoration: none;">restaurant staff t-shirts</a>, <a href="hivis.html" style="color: #007bff; text-decoration: none;">contractor hi-vis</a> and <a href="hoodies.html" style="color: #007bff; text-decoration: none;">team hoodies</a>. For smaller quantities, consider DTF or vinyl instead.</div>
+                        <div class="faq-answer">We recommend 25+ pieces to be cost-effective due to screen setup. Perfect for <a href="/tshirts" style="color: #007bff; text-decoration: none;">restaurant staff t-shirts</a>, <a href="/hivis" style="color: #007bff; text-decoration: none;">contractor hi-vis</a> and <a href="/hoodies" style="color: #007bff; text-decoration: none;">team hoodies</a>. For smaller quantities, consider DTF or vinyl instead.</div>
                     </div>
                     <div class="faq-row">
                         <div class="faq-question">Best for bulk orders</div>
-                        <div class="faq-answer">Perfect for <a href="tshirts.html" style="color: #007bff; text-decoration: none;">event t-shirts</a> 25+, <a href="hoodies.html" style="color: #007bff; text-decoration: none;">team hoodies</a> 50+ and <a href="hivis.html" style="color: #007bff; text-decoration: none;">hi-vis workwear</a> for construction/trade. Get 20-30% OFF with our <a href="bulk-orders.html" style="color: #007bff; text-decoration: none;">bulk order discounts</a>. Economical at 100+ pieces with significant savings.</div>
+                        <div class="faq-answer">Perfect for <a href="/tshirts" style="color: #007bff; text-decoration: none;">event t-shirts</a> 25+, <a href="/hoodies" style="color: #007bff; text-decoration: none;">team hoodies</a> 50+ and <a href="/hivis" style="color: #007bff; text-decoration: none;">hi-vis workwear</a> for construction/trade. Get 20-30% OFF with our <a href="/bulk-orders" style="color: #007bff; text-decoration: none;">bulk order discounts</a>. Economical at 100+ pieces with significant savings.</div>
                     </div>
                     <div class="faq-row">
                         <div class="faq-question">Colour limits</div>
@@ -2985,7 +2985,7 @@
                     acItems.forEach(function(item) {
                         item.addEventListener('click', function() {
                             closeAC();
-                            window.location.href = 'shop.html?q=' + encodeURIComponent(item.dataset.label);
+                            window.location.href='/shop?q=' + encodeURIComponent(item.dataset.label);
                         });
                     });
                 }
@@ -3022,7 +3022,7 @@
                         closeAC();
                         var searchQuery = input.value.trim();
                         if (searchQuery) {
-                            window.location.href = 'shop.html?q=' + encodeURIComponent(searchQuery);
+                            window.location.href='/shop?q=' + encodeURIComponent(searchQuery);
                         }
                     }
                 });
@@ -3178,8 +3178,19 @@
 
             function maybeRedirectToDesktop() {
                 if (!isDesktopViewport() || isPhoneUa()) return;
-                var contact = /[?&]contact=1(?:&|$)/.test(window.location.search) ? '?contact=1' : '';
-                window.location.replace('home-pc.html' + contact);
+                var path = window.location.pathname || '/';
+                var force = '';
+                try { force = (new URLSearchParams(window.location.search).get('force') || '').toLowerCase(); } catch (e) {}
+                if ((path === '/' || path === '') && force === 'desktop') return;
+                var target = new URL('/', window.location.origin);
+                try {
+                    var cur = new URLSearchParams(window.location.search);
+                    cur.forEach(function (value, key) {
+                        if (key !== 'force') target.searchParams.append(key, value);
+                    });
+                } catch (e2) {}
+                target.searchParams.set('force', 'desktop');
+                window.location.replace(target.pathname + target.search + (window.location.hash || ''));
             }
 
             setTimeout(maybeRedirectToDesktop, 0);
@@ -3336,7 +3347,7 @@
     function buildCard(item, index, isDuplicate) {
         var card = document.createElement('a');
         card.className = 'carousel-item';
-        card.href = 'mobile/customize-mobile.html?code=' + encodeURIComponent(item.style_code || '');
+        card.href='/mobile/customize-mobile?code=' + encodeURIComponent(item.style_code || '');
         card.style.setProperty('--i', String(index + 1));
         if (isDuplicate) {
             card.setAttribute('aria-hidden', 'true');

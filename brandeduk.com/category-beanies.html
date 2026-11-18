@@ -12,17 +12,17 @@
       const isMobile = window.innerWidth < 700;
 
       if (force === 'mobile' || (force !== 'desktop' && isMobile)) {
-        window.location.replace('../category-beanies.html?force=mobile');
+        window.location.replace('/brandeduk.com/category-beanies?force=mobile');
         return;
       }
 
-      window.location.replace('shop-pc.html?category=beanies&demo=1');
+      window.location.replace('/shop-pc?category=beanies&demo=1');
     })();
   </script>
 </head>
 <body>
   <noscript>
-    <a href="shop-pc.html?category=beanies&demo=1">Continue to Beanies</a>
+    <a href="/shop-pc?category=beanies&demo=1">Continue to Beanies</a>
   </noscript>
 </body>
 </html>

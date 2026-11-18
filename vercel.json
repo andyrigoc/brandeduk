@@ -29,10 +29,6 @@
   },
 
   "rewrites": [
-    { "source": "/", "destination": "/index.html" },
-
-    { "source": "/m", "destination": "/index-mobile.html" },
-    { "source": "/home", "destination": "/home-pc.html" },
     { "source": "/shop", "destination": "/shop.html" },
     { "source": "/shop-pc", "destination": "/shop-pc.html" },
 
@@ -80,6 +76,13 @@
   ],
 
   "redirects": [
+    { "source": "/home-pc", "destination": "/", "permanent": true },
+    { "source": "/home-pc.html", "destination": "/", "permanent": true },
+    { "source": "/index-mobile", "destination": "/", "permanent": true },
+    { "source": "/index-mobile.html", "destination": "/", "permanent": true },
+    { "source": "/home", "destination": "/", "permanent": true },
+    { "source": "/m", "destination": "/", "permanent": true },
+    { "source": "/index.html", "destination": "/", "permanent": true },
     { "source": "/quote", "destination": "/?contact=1", "permanent": false },
     { "source": "/quote-form", "destination": "/?contact=1", "permanent": false },
     { "source": "/quote-form.html", "destination": "/?contact=1", "permanent": false },

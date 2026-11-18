@@ -116,7 +116,7 @@
             "@type": "SearchAction",
             "target": {
               "@type": "EntryPoint",
-              "urlTemplate": "https://www.brandeduk.com/shop-pc.html?search={search_term_string}"
+              "urlTemplate": "https://www.brandeduk.com/shop-pc?search={search_term_string}"
             },
             "query-input": "required name=search_term_string"
           }
@@ -130,61 +130,61 @@
               "@type": "SiteNavigationElement",
               "position": 1,
               "name": "Shop",
-              "url": "https://www.brandeduk.com/shop-pc.html"
+              "url": "https://www.brandeduk.com/shop-pc"
             },
             {
               "@type": "SiteNavigationElement",
               "position": 2,
               "name": "T-Shirts",
-              "url": "https://www.brandeduk.com/tshirts.html"
+              "url": "https://www.brandeduk.com/tshirts"
             },
             {
               "@type": "SiteNavigationElement",
               "position": 3,
               "name": "Polo Shirts",
-              "url": "https://www.brandeduk.com/polos.html"
+              "url": "https://www.brandeduk.com/polos"
             },
             {
               "@type": "SiteNavigationElement",
               "position": 4,
               "name": "Hoodies",
-              "url": "https://www.brandeduk.com/hoodies.html"
+              "url": "https://www.brandeduk.com/hoodies"
             },
             {
               "@type": "SiteNavigationElement",
               "position": 5,
               "name": "Hi-Vis",
-              "url": "https://www.brandeduk.com/hivis.html"
+              "url": "https://www.brandeduk.com/hivis"
             },
             {
               "@type": "SiteNavigationElement",
               "position": 6,
               "name": "Jackets",
-              "url": "https://www.brandeduk.com/jackets.html"
+              "url": "https://www.brandeduk.com/jackets"
             },
             {
               "@type": "SiteNavigationElement",
               "position": 7,
               "name": "Workwear",
-              "url": "https://www.brandeduk.com/workwear.html"
+              "url": "https://www.brandeduk.com/workwear"
             },
             {
               "@type": "SiteNavigationElement",
               "position": 8,
               "name": "Services",
-              "url": "https://www.brandeduk.com/services.html"
+              "url": "https://www.brandeduk.com/services"
             },
             {
               "@type": "SiteNavigationElement",
               "position": 9,
               "name": "Bundles",
-              "url": "https://www.brandeduk.com/bundles.html"
+              "url": "https://www.brandeduk.com/bundles"
             },
             {
               "@type": "SiteNavigationElement",
               "position": 10,
               "name": "Bulk Orders",
-              "url": "https://www.brandeduk.com/bulk-orders.html"
+              "url": "https://www.brandeduk.com/bulk-orders"
             }
           ]
         }
@@ -198,8 +198,19 @@
         if (isBrandedProductionHost && window.location.pathname !== '/') {
             history.replaceState(null, '', '/' + window.location.search + window.location.hash);
         }
-        // Redirect narrow phones to mobile. Never keep a phone on PC via force=desktop.
-        // Tablets (>=700) stay on the PC experience.
+        // Phones and narrow windows stay on /, switching interface with ?force=
+        // only. Never navigate to another homepage pathname.
+        function brandedForceHome(mode) {
+            var target = new URL('/', window.location.origin);
+            try {
+                var cur = new URLSearchParams(window.location.search);
+                cur.forEach(function (value, key) {
+                    if (key !== 'force') target.searchParams.append(key, value);
+                });
+            } catch (e) {}
+            target.searchParams.set('force', mode);
+            return target.pathname + target.search + (window.location.hash || '');
+        }
         var forceParam = '';
         try {
             forceParam = (new URLSearchParams(window.location.search).get('force') || '').toLowerCase();
@@ -216,9 +227,9 @@
             var isTabletUA = isIPad || isAndroidTablet || ua.indexOf('tablet') !== -1 || ua.indexOf('silk') !== -1;
             return !isTabletUA && (uaDataMobile || isIPhone || (isAndroid && ua.indexOf('mobile') !== -1));
         })();
-        // Phones always go to mobile (ignore force=desktop).
-        if (isPhoneUa || (!isForcedDesktop && window.innerWidth < 700)) {
-            window.location.href = 'index-mobile.html?force=mobile' + (/[?&]contact=1(?:&|$)/.test(window.location.search) ? '&contact=1' : '');
+        var onHomeRoot = window.location.pathname === '/' || window.location.pathname === '';
+        if ((isPhoneUa || (!isForcedDesktop && window.innerWidth < 700)) && !(onHomeRoot && forceParam === 'mobile')) {
+            window.location.replace(brandedForceHome('mobile'));
         }
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -1506,7 +1517,7 @@
                             <span class="header-top-vat-toggle__thumb" aria-hidden="true"></span>
                         </button>
                     </div>
-                    <a class="header-top-basket-link" href="basket.html" aria-label="View basket">
+                    <a class="header-top-basket-link" href="/basket" aria-label="View basket">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M6 6h15l-1.5 9h-12z"/>
                             <circle cx="9" cy="20" r="1"/>
@@ -1523,7 +1534,7 @@
     <div class="searchbar-header">
         <div class="searchbar-header__surface">
             <div class="searchbar-header__inner">
-                <a class="searchbar-header__brand" href="index.html" aria-label="brandedUK home">
+                <a class="searchbar-header__brand" href="/" aria-label="brandedUK home">
                     <span class="searchbar-header__brand-badge-wrap">
                         <img class="searchbar-header__brand-badge" src="brandedukv15-child/assets/videos/use-the-provided-circular-1727756126.gif?v=20261001-newgif" alt="" aria-hidden="true">
                     </span>
@@ -1567,7 +1578,7 @@
                 <div class="dropdown-box" role="region" aria-label="Browse categories">
                     <ul class="menu vertical-menu category-menu">
                         <li class="has-children">
-                            <a href="shop-pc.html?productType=tshirts" data-product-type="t-shirts">
+                            <a href="/shop-pc?productType=tshirts" data-product-type="t-shirts">
                                 <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/icon-shirt-71%201.png" alt="" aria-hidden="true">
                                 <span class="category-text">T-Shirts</span>
                                 <span class="category-caret" aria-hidden="true"></span>
@@ -1575,24 +1586,24 @@
                             <ul class="megamenu">
                                 <li>
                                     <ul>
-                                        <li><a href="shop-pc.html?productType=tshirts&amp;neckline[]=crew-neck&amp;neckline[]=crew-neck-2">Crew Neck</a></li>
-                                        <li><a href="shop-pc.html?productType=tshirts&amp;feature[]=heavyweight">Heavyweight</a></li>
-                                        <li><a href="shop-pc.html?productType=tshirts&amp;ageGroup[]=kids">Kids</a></li>
-                                        <li><a href="shop-pc.html?productType=tshirts&amp;feature[]=lightweight">Lightweight</a></li>
-                                        <li><a href="shop-pc.html?productType=tshirts&amp;sleeve[]=long-sleeve">Long sleeve</a></li>
-                                        <li><a href="shop-pc.html?productType=tshirts&amp;sector[]=Sport">Performance</a></li>
-                                        <li><a href="shop-pc.html?productType=tshirts&amp;sleeve[]=short-sleeve">Short sleeve</a></li>
-                                        <li><a href="shop-pc.html?productType=vests-t-shirt">Tank tops</a></li>
-                                        <li><a href="shop-pc.html?productType=tshirts">Embroidery-ready</a></li>
-                                        <li><a href="shop-pc.html?productType=tshirts">Print-ready</a></li>
-                                        <li><a href="shop-pc.html?productType=tshirts&amp;neckline[]=v-neck">V-neck</a></li>
-                                        <li><a href="shop-pc.html?productType=tshirts&amp;gender[]=female">Women's</a></li>
+                                        <li><a href="/shop-pc?productType=tshirts&amp;neckline[]=crew-neck&amp;neckline[]=crew-neck-2">Crew Neck</a></li>
+                                        <li><a href="/shop-pc?productType=tshirts&amp;feature[]=heavyweight">Heavyweight</a></li>
+                                        <li><a href="/shop-pc?productType=tshirts&amp;ageGroup[]=kids">Kids</a></li>
+                                        <li><a href="/shop-pc?productType=tshirts&amp;feature[]=lightweight">Lightweight</a></li>
+                                        <li><a href="/shop-pc?productType=tshirts&amp;sleeve[]=long-sleeve">Long sleeve</a></li>
+                                        <li><a href="/shop-pc?productType=tshirts&amp;sector[]=Sport">Performance</a></li>
+                                        <li><a href="/shop-pc?productType=tshirts&amp;sleeve[]=short-sleeve">Short sleeve</a></li>
+                                        <li><a href="/shop-pc?productType=vests-t-shirt">Tank tops</a></li>
+                                        <li><a href="/shop-pc?productType=tshirts">Embroidery-ready</a></li>
+                                        <li><a href="/shop-pc?productType=tshirts">Print-ready</a></li>
+                                        <li><a href="/shop-pc?productType=tshirts&amp;neckline[]=v-neck">V-neck</a></li>
+                                        <li><a href="/shop-pc?productType=tshirts&amp;gender[]=female">Women's</a></li>
                                     </ul>
                                 </li>
                             </ul>
                         </li>
                         <li class="has-children">
-                            <a href="shop-pc.html?productType=polos" data-product-type="polos">
+                            <a href="/shop-pc?productType=polos" data-product-type="polos">
                                 <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Polo.png" alt="" aria-hidden="true">
                                 <span class="category-text">Polo Shirts</span>
                                 <span class="category-caret" aria-hidden="true"></span>
@@ -1600,21 +1611,21 @@
                             <ul class="megamenu">
                                 <li>
                                     <ul>
-                                        <li><a href="shop-pc.html?productType=polos&amp;fabric[]=cotton">Classic cotton</a></li>
-                                        <li><a href="shop-pc.html?productType=polos&amp;ageGroup[]=kids">Kids</a></li>
-                                        <li><a href="shop-pc.html?productType=polos&amp;sleeve[]=long-sleeve">Long sleeve</a></li>
-                                        <li><a href="shop-pc.html?productType=polos&amp;feature[]=breathable">Performance</a></li>
-                                        <li><a href="shop-pc.html?productType=polos&amp;fabric[]=cotton-blend">Poly cotton</a></li>
-                                        <li><a href="shop-pc.html?productType=polos">Embroidery-ready</a></li>
-                                        <li><a href="shop-pc.html?productType=polos&amp;sleeve[]=short-sleeve">Short sleeve</a></li>
-                                        <li><a href="shop-pc.html?productType=polos&amp;fit[]=slim-fit">Slim fit</a></li>
-                                        <li><a href="shop-pc.html?productType=polos&amp;gender[]=female">Women's</a></li>
+                                        <li><a href="/shop-pc?productType=polos&amp;fabric[]=cotton">Classic cotton</a></li>
+                                        <li><a href="/shop-pc?productType=polos&amp;ageGroup[]=kids">Kids</a></li>
+                                        <li><a href="/shop-pc?productType=polos&amp;sleeve[]=long-sleeve">Long sleeve</a></li>
+                                        <li><a href="/shop-pc?productType=polos&amp;feature[]=breathable">Performance</a></li>
+                                        <li><a href="/shop-pc?productType=polos&amp;fabric[]=cotton-blend">Poly cotton</a></li>
+                                        <li><a href="/shop-pc?productType=polos">Embroidery-ready</a></li>
+                                        <li><a href="/shop-pc?productType=polos&amp;sleeve[]=short-sleeve">Short sleeve</a></li>
+                                        <li><a href="/shop-pc?productType=polos&amp;fit[]=slim-fit">Slim fit</a></li>
+                                        <li><a href="/shop-pc?productType=polos&amp;gender[]=female">Women's</a></li>
                                     </ul>
                                 </li>
                             </ul>
                         </li>
                         <li class="has-children">
-                            <a href="shop-pc.html?productType[]=hoodies&amp;productType[]=sweatshirts" data-product-type="hoodies">
+                            <a href="/shop-pc?productType[]=hoodies&amp;productType[]=sweatshirts" data-product-type="hoodies">
                                 <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/icon-hoodies-71%201.png" alt="" aria-hidden="true">
                                 <span class="category-text">Hoodies &amp; Sweatshirts</span>
                                 <span class="category-caret" aria-hidden="true"></span>
@@ -1622,20 +1633,20 @@
                             <ul class="megamenu">
                                 <li>
                                     <ul>
-                                        <li><a href="shop-pc.html?productType=hoodies&amp;feature[]=heavyweight">Heavyweight</a></li>
-                                        <li><a href="shop-pc.html?productType=hoodies&amp;ageGroup[]=kids">Kids</a></li>
-                                        <li><a href="shop-pc.html?productType=hoodies&amp;feature[]=lightweight">Lightweight</a></li>
-                                        <li><a href="shop-pc.html?productType=hoodies&amp;sector[]=Safety">Workwear</a></li>
-                                        <li><a href="shop-pc.html?productType=hoodies&amp;style[]=hooded">Pullover</a></li>
-                                        <li><a href="shop-pc.html?productType=sweatshirts&amp;neckline[]=crew-neck&amp;neckline[]=crew-neck-2">Crew sweatshirts</a></li>
-                                        <li><a href="shop-pc.html?productType=hoodies&amp;gender[]=female">Women's</a></li>
-                                        <li><a href="shop-pc.html?productType=hoodies&amp;neckline[]=zip-neck">Zip-up</a></li>
+                                        <li><a href="/shop-pc?productType=hoodies&amp;feature[]=heavyweight">Heavyweight</a></li>
+                                        <li><a href="/shop-pc?productType=hoodies&amp;ageGroup[]=kids">Kids</a></li>
+                                        <li><a href="/shop-pc?productType=hoodies&amp;feature[]=lightweight">Lightweight</a></li>
+                                        <li><a href="/shop-pc?productType=hoodies&amp;sector[]=Safety">Workwear</a></li>
+                                        <li><a href="/shop-pc?productType=hoodies&amp;style[]=hooded">Pullover</a></li>
+                                        <li><a href="/shop-pc?productType=sweatshirts&amp;neckline[]=crew-neck&amp;neckline[]=crew-neck-2">Crew sweatshirts</a></li>
+                                        <li><a href="/shop-pc?productType=hoodies&amp;gender[]=female">Women's</a></li>
+                                        <li><a href="/shop-pc?productType=hoodies&amp;neckline[]=zip-neck">Zip-up</a></li>
                                     </ul>
                                 </li>
                             </ul>
                         </li>
                         <li class="has-children">
-                            <a href="shop-pc.html?productType[]=jackets&amp;productType[]=softshells" data-product-type="jackets">
+                            <a href="/shop-pc?productType[]=jackets&amp;productType[]=softshells" data-product-type="jackets">
                                 <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Jacket.png" alt="" aria-hidden="true">
                                 <span class="category-text">Jackets &amp; Softshell</span>
                                 <span class="category-caret" aria-hidden="true"></span>
@@ -1643,21 +1654,21 @@
                             <ul class="megamenu">
                                 <li>
                                     <ul>
-                                        <li><a href="shop-pc.html?productType=gilets-body-warmers">Bodywarmers</a></li>
-                                        <li><a href="shop-pc.html?productType=jackets">Bomber Jackets</a></li>
-                                        <li><a href="shop-pc.html?productType=fleece">Fleece Jackets</a></li>
-                                        <li><a href="shop-pc.html?productType=jackets&amp;feature[]=breathable">High-performance Jackets</a></li>
-                                        <li><a href="shop-pc.html?productType=softshells">Softshell Jackets</a></li>
-                                        <li><a href="shop-pc.html?productType=jackets&amp;feature[]=waterproof">Waterproof Jackets</a></li>
-                                        <li><a href="shop-pc.html?productType=jackets&amp;feature[]=windproof">Windbreakers</a></li>
-                                        <li><a href="shop-pc.html?productType=jackets&amp;gender[]=female">Women's Jackets</a></li>
-                                        <li><a href="shop-pc.html?productType=jackets&amp;sector[]=Safety">Workwear Jackets</a></li>
+                                        <li><a href="/shop-pc?productType=gilets-body-warmers">Bodywarmers</a></li>
+                                        <li><a href="/shop-pc?productType=jackets">Bomber Jackets</a></li>
+                                        <li><a href="/shop-pc?productType=fleece">Fleece Jackets</a></li>
+                                        <li><a href="/shop-pc?productType=jackets&amp;feature[]=breathable">High-performance Jackets</a></li>
+                                        <li><a href="/shop-pc?productType=softshells">Softshell Jackets</a></li>
+                                        <li><a href="/shop-pc?productType=jackets&amp;feature[]=waterproof">Waterproof Jackets</a></li>
+                                        <li><a href="/shop-pc?productType=jackets&amp;feature[]=windproof">Windbreakers</a></li>
+                                        <li><a href="/shop-pc?productType=jackets&amp;gender[]=female">Women's Jackets</a></li>
+                                        <li><a href="/shop-pc?productType=jackets&amp;sector[]=Safety">Workwear Jackets</a></li>
                                     </ul>
                                 </li>
                             </ul>
                         </li>
                         <li class="has-children">
-                            <a href="shop-pc.html?productType=safety-vests" data-product-type="safety-vests">
+                            <a href="/shop-pc?productType=safety-vests" data-product-type="safety-vests">
                                 <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Hi%20Vis.png" alt="" aria-hidden="true">
                                 <span class="category-text">Hi-Vis Clothing</span>
                                 <span class="category-caret" aria-hidden="true"></span>
@@ -1665,21 +1676,21 @@
                             <ul class="megamenu">
                                 <li>
                                     <ul>
-                                        <li><a href="shop-pc.html?productType=safety-vests">EN ISO 20471 Certified</a></li>
-                                        <li><a href="shop-pc.html?productType=hoodies&amp;feature[]=high-visibility">Hi-vis Hoodies</a></li>
-                                        <li><a href="shop-pc.html?productType=jackets&amp;feature[]=high-visibility">Hi-vis Jackets</a></li>
-                                        <li><a href="shop-pc.html?productType=polos&amp;feature[]=high-visibility">Hi-vis Polos</a></li>
-                                        <li><a href="shop-pc.html?productType=tshirts&amp;feature[]=high-visibility">Hi-vis T-shirts</a></li>
-                                        <li><a href="shop-pc.html?productType=trousers&amp;feature[]=high-visibility">Hi-vis Trousers</a></li>
-                                        <li><a href="shop-pc.html?productType=safety-vests">Hi-vis Vests</a></li>
-                                        <li><a href="shop-pc.html?productType=safety-vests">RIS-3279 Rail</a></li>
-                                        <li><a href="shop-pc.html?productType=safety-vests&amp;feature[]=waterproof">Waterproof Hi-Vis</a></li>
+                                        <li><a href="/shop-pc?productType=safety-vests">EN ISO 20471 Certified</a></li>
+                                        <li><a href="/shop-pc?productType=hoodies&amp;feature[]=high-visibility">Hi-vis Hoodies</a></li>
+                                        <li><a href="/shop-pc?productType=jackets&amp;feature[]=high-visibility">Hi-vis Jackets</a></li>
+                                        <li><a href="/shop-pc?productType=polos&amp;feature[]=high-visibility">Hi-vis Polos</a></li>
+                                        <li><a href="/shop-pc?productType=tshirts&amp;feature[]=high-visibility">Hi-vis T-shirts</a></li>
+                                        <li><a href="/shop-pc?productType=trousers&amp;feature[]=high-visibility">Hi-vis Trousers</a></li>
+                                        <li><a href="/shop-pc?productType=safety-vests">Hi-vis Vests</a></li>
+                                        <li><a href="/shop-pc?productType=safety-vests">RIS-3279 Rail</a></li>
+                                        <li><a href="/shop-pc?productType=safety-vests&amp;feature[]=waterproof">Waterproof Hi-Vis</a></li>
                                     </ul>
                                 </li>
                             </ul>
                         </li>
                         <li class="has-children">
-                            <a href="shop-pc.html?productType=trousers" data-product-type="trousers">
+                            <a href="/shop-pc?productType=trousers" data-product-type="trousers">
                                 <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Trousers.png" alt="" aria-hidden="true">
                                 <span class="category-text">Work Trousers</span>
                                 <span class="category-caret" aria-hidden="true"></span>
@@ -1687,19 +1698,19 @@
                             <ul class="megamenu">
                                 <li>
                                     <ul>
-                                        <li><a href="shop-pc.html?productType=trousers">Cargo Pants</a></li>
-                                        <li><a href="shop-pc.html?productType=trousers">Ripstop Trousers</a></li>
-                                        <li><a href="shop-pc.html?productType=trousers">Stretch Work Trousers</a></li>
-                                        <li><a href="shop-pc.html?productType=trousers&amp;feature[]=waterproof">Over-trousers</a></li>
-                                        <li><a href="shop-pc.html?productType=shorts">Work Shorts</a></li>
-                                        <li><a href="shop-pc.html?productType=trousers">Work Trousers</a></li>
-                                        <li><a href="shop-pc.html?productType=trousers&amp;gender[]=female">Women's Work Trousers</a></li>
+                                        <li><a href="/shop-pc?productType=trousers">Cargo Pants</a></li>
+                                        <li><a href="/shop-pc?productType=trousers">Ripstop Trousers</a></li>
+                                        <li><a href="/shop-pc?productType=trousers">Stretch Work Trousers</a></li>
+                                        <li><a href="/shop-pc?productType=trousers&amp;feature[]=waterproof">Over-trousers</a></li>
+                                        <li><a href="/shop-pc?productType=shorts">Work Shorts</a></li>
+                                        <li><a href="/shop-pc?productType=trousers">Work Trousers</a></li>
+                                        <li><a href="/shop-pc?productType=trousers&amp;gender[]=female">Women's Work Trousers</a></li>
                                     </ul>
                                 </li>
                             </ul>
                         </li>
                         <li class="has-children">
-                            <a href="shop-pc.html?productType=aprons" data-product-type="aprons">
+                            <a href="/shop-pc?productType=aprons" data-product-type="aprons">
                                 <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Apron.png" alt="" aria-hidden="true">
                                 <span class="category-text">Work &amp; Uniforms</span>
                                 <span class="category-caret" aria-hidden="true"></span>
@@ -1707,17 +1718,17 @@
                             <ul class="megamenu">
                                 <li>
                                     <ul>
-                                        <li><a href="shop-pc.html?productType=trousers">Work Trousers</a></li>
-                                        <li><a href="shop-pc.html?productType=jackets&amp;sector[]=Safety">Workwear Jackets</a></li>
-                                        <li><a href="shop-pc.html?productType=hoodies&amp;sector[]=Safety">Workwear Hoodies</a></li>
-                                        <li><a href="shop-pc.html?productType=accessories">Work Accessories</a></li>
-                                        <li><a href="shop-pc.html?productType=aprons">Aprons</a></li>
+                                        <li><a href="/shop-pc?productType=trousers">Work Trousers</a></li>
+                                        <li><a href="/shop-pc?productType=jackets&amp;sector[]=Safety">Workwear Jackets</a></li>
+                                        <li><a href="/shop-pc?productType=hoodies&amp;sector[]=Safety">Workwear Hoodies</a></li>
+                                        <li><a href="/shop-pc?productType=accessories">Work Accessories</a></li>
+                                        <li><a href="/shop-pc?productType=aprons">Aprons</a></li>
                                     </ul>
                                 </li>
                             </ul>
                         </li>
                         <li class="has-children">
-                            <a href="shop-pc.html?productType=fleece" data-product-type="fleece">
+                            <a href="/shop-pc?productType=fleece" data-product-type="fleece">
                                 <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Fleece.png" alt="" aria-hidden="true">
                                 <span class="category-text">Fleeces</span>
                                 <span class="category-caret" aria-hidden="true"></span>
@@ -1725,18 +1736,18 @@
                             <ul class="megamenu">
                                 <li>
                                     <ul>
-                                        <li><a href="shop-pc.html?productType=fleece">Full Zip Fleece</a></li>
-                                        <li><a href="shop-pc.html?productType=fleece&amp;neckline[]=zip-neck">Half Zip Fleece</a></li>
-                                        <li><a href="shop-pc.html?productType=fleece&amp;feature[]=heavyweight">Heavy Fleece</a></li>
-                                        <li><a href="shop-pc.html?productType=fleece&amp;ageGroup[]=kids">Kids Fleece</a></li>
-                                        <li><a href="shop-pc.html?productType=fleece&amp;feature[]=lightweight">Microfleece Jackets</a></li>
-                                        <li><a href="shop-pc.html?productType=fleece&amp;gender[]=female">Women's Fleece</a></li>
+                                        <li><a href="/shop-pc?productType=fleece">Full Zip Fleece</a></li>
+                                        <li><a href="/shop-pc?productType=fleece&amp;neckline[]=zip-neck">Half Zip Fleece</a></li>
+                                        <li><a href="/shop-pc?productType=fleece&amp;feature[]=heavyweight">Heavy Fleece</a></li>
+                                        <li><a href="/shop-pc?productType=fleece&amp;ageGroup[]=kids">Kids Fleece</a></li>
+                                        <li><a href="/shop-pc?productType=fleece&amp;feature[]=lightweight">Microfleece Jackets</a></li>
+                                        <li><a href="/shop-pc?productType=fleece&amp;gender[]=female">Women's Fleece</a></li>
                                     </ul>
                                 </li>
                             </ul>
                         </li>
                         <li class="has-children">
-                            <a href="shop-pc.html?productType=caps" data-product-type="caps">
+                            <a href="/shop-pc?productType=caps" data-product-type="caps">
                                 <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Cap.png" alt="" aria-hidden="true">
                                 <span class="category-text">Headwear</span>
                                 <span class="category-caret" aria-hidden="true"></span>
@@ -1744,88 +1755,88 @@
                             <ul class="megamenu">
                                 <li>
                                     <ul>
-                                        <li><a href="shop-pc.html?productType=beanies">Beanies</a></li>
-                                        <li><a href="shop-pc.html?productType=hats">Bucket Hats</a></li>
-                                        <li><a href="shop-pc.html?productType=caps">Caps</a></li>
-                                        <li><a href="shop-pc.html?productType[]=gloves&amp;productType[]=scarves">Gloves &amp; Scarves</a></li>
-                                        <li><a href="shop-pc.html?productType[]=caps&amp;productType[]=hats&amp;productType[]=beanies&amp;feature[]=high-visibility">Hi-Vis Headwear</a></li>
-                                        <li><a href="shop-pc.html?productType[]=caps&amp;productType[]=hats&amp;productType[]=beanies&amp;ageGroup[]=kids">Kids Headwear</a></li>
-                                        <li><a href="shop-pc.html?productType=accessories">Work Accessories</a></li>
+                                        <li><a href="/shop-pc?productType=beanies">Beanies</a></li>
+                                        <li><a href="/shop-pc?productType=hats">Bucket Hats</a></li>
+                                        <li><a href="/shop-pc?productType=caps">Caps</a></li>
+                                        <li><a href="/shop-pc?productType[]=gloves&amp;productType[]=scarves">Gloves &amp; Scarves</a></li>
+                                        <li><a href="/shop-pc?productType[]=caps&amp;productType[]=hats&amp;productType[]=beanies&amp;feature[]=high-visibility">Hi-Vis Headwear</a></li>
+                                        <li><a href="/shop-pc?productType[]=caps&amp;productType[]=hats&amp;productType[]=beanies&amp;ageGroup[]=kids">Kids Headwear</a></li>
+                                        <li><a href="/shop-pc?productType=accessories">Work Accessories</a></li>
                                     </ul>
                                 </li>
                             </ul>
                         </li>
                         <li class="has-children">
-                            <a href="shop-pc.html?accreditation=recycled" data-accreditation="recycled">
+                            <a href="/shop-pc?accreditation=recycled" data-accreditation="recycled">
                                 <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Recycle.png" alt="" aria-hidden="true">
                                 <span class="category-text">Sustainable / Recycled &amp; Organic</span>
                                 <span class="category-caret" aria-hidden="true"></span>
                             </a>
                             <ul class="megamenu brand-grid">
                                 <li class="brand-heading">0 - 9</li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=2786">2786</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=2786">2786</a></li>
                                 <li class="brand-heading">A</li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=adidasr">Adidas</a></li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=asquith-%26-fox">Asquith &amp; Fox</a></li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=awdis-just-cool">AWDis Just Cool</a></li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=awdis-just-hoods">AWDis Just Hoods</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=adidasr">Adidas</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=asquith-%26-fox">Asquith &amp; Fox</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=awdis-just-cool">AWDis Just Cool</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=awdis-just-hoods">AWDis Just Hoods</a></li>
                                 <li class="brand-heading">B</li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=b%26c-collection">B&amp;C Collection</a></li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=bagbase">Bagbase</a></li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=beechfield">Beechfield</a></li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=build-your-brand">Build Your Brand</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=b%26c-collection">B&amp;C Collection</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=bagbase">Bagbase</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=beechfield">Beechfield</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=build-your-brand">Build Your Brand</a></li>
                                 <li class="brand-heading">C</li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=callaway">Callaway</a></li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=craghoppers">Craghoppers</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=callaway">Callaway</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=craghoppers">Craghoppers</a></li>
                                 <li class="brand-heading">F</li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=finden-%26-hales">Finden &amp; Hales</a></li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=flexfit-by-yupoong">Flexfit by Yupoong</a></li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=front-row">Front Row</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=finden-%26-hales">Finden &amp; Hales</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=flexfit-by-yupoong">Flexfit by Yupoong</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=front-row">Front Row</a></li>
                                 <li class="brand-heading">H</li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=henbury">Henbury</a></li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=home-%26-living">Home &amp; Living</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=henbury">Henbury</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=home-%26-living">Home &amp; Living</a></li>
                                 <li class="brand-heading">K</li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=kariban">Kariban</a></li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=kimood">KiMood</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=kariban">Kariban</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=kimood">KiMood</a></li>
                                 <li class="brand-heading">L</li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=larkwood">Larkwood</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=larkwood">Larkwood</a></li>
                                 <li class="brand-heading">M</li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=madeira">Madeira</a></li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=mumbles">Mumbles</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=madeira">Madeira</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=mumbles">Mumbles</a></li>
                                 <li class="brand-heading">N</li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=new-morning-studios">New Morning Studios</a></li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=nike">Nike</a></li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=nimbus">Nimbus</a></li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=nutshellr">Nutshell</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=new-morning-studios">New Morning Studios</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=nike">Nike</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=nimbus">Nimbus</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=nutshellr">Nutshell</a></li>
                                 <li class="brand-heading">P</li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=portwest">Portwest</a></li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=premier">Premier</a></li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=prortx">Pro RTX</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=portwest">Portwest</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=premier">Premier</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=prortx">Pro RTX</a></li>
                                 <li class="brand-heading">Q</li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=quadra">Quadra</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=quadra">Quadra</a></li>
                                 <li class="brand-heading">R</li>
-                                <li><a href="shop-pc.html?accreditation=recycled">RalaFlex</a></li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=regatta-junior">Regatta Junior</a></li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=regatta-professional">Regatta Professional</a></li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=result">Result</a></li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=russell-athletic">Russell Athletic&reg;</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled">RalaFlex</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=regatta-junior">Regatta Junior</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=regatta-professional">Regatta Professional</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=result">Result</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=russell-athletic">Russell Athletic&reg;</a></li>
                                 <li class="brand-heading">S</li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=scruffs">Scruffs</a></li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=sf">SF</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=scruffs">Scruffs</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=sf">SF</a></li>
                                 <li class="brand-heading">T</li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=stormtech">Stormtech</a></li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=tee-jays">Tee Jays</a></li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=tombo">Tombo</a></li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=tridrir">TriDri</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=stormtech">Stormtech</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=tee-jays">Tee Jays</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=tombo">Tombo</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=tridrir">TriDri</a></li>
                                 <li class="brand-heading">W</li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=westford-mill">Westford Mill</a></li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=wombat">Wombat</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=westford-mill">Westford Mill</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=wombat">Wombat</a></li>
                                 <li class="brand-heading">Y</li>
-                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=yoko">Yoko</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled&amp;brand=yoko">Yoko</a></li>
                             </ul>
                         </li>
                         <li>
-                            <a href="shop-pc.html" class="view-all-link">
+                            <a href="/shop-pc" class="view-all-link">
                                 <span class="category-text">View All Categories</span>
                                 <span class="category-caret" aria-hidden="true"></span>
                             </a>
@@ -1843,103 +1854,103 @@
                         </a>
                         <div class="nav-megamenu allprod-megamenu" data-mega-key="allproducts">
                             <ul class="allprod-list" data-product-types-menu aria-label="Product categories">
-                                <li class="allprod-view-all"><a href="shop-pc.html">View all products</a></li>
+                                <li class="allprod-view-all"><a href="/shop-pc">View all products</a></li>
                                 <li class="brand-heading">A</li>
-                                <li data-catdesc="Complete your branded uniform with practical accessories for staff, events and daily workwear. From bags to small add-ons, these items help keep your team looking organised and professional. Ideal for corporate, hospitality, schools, clubs and promotional use."><a href="shop-pc.html?productType=accessories">Accessories</a></li>
-                                <li><a href="shop-pc.html?productType=anti-static">Anti Static / ESD</a></li>
-                                <li data-catdesc="Personalised aprons are ideal for restaurants, cafés, bars, salons, workshops and catering teams. Add your logo with embroidery or print for a clean, professional look. Choose from bib aprons, waist aprons and durable workwear styles built for daily use."><a href="shop-pc.html?productType=aprons">Aprons</a></li>
-                                <li><a href="shop-pc.html?productType=arc-flash">Arc Flash</a></li>
-                                <li><a href="shop-pc.html?productType=autumn-workwear">Autumn Workwear</a></li>
+                                <li data-catdesc="Complete your branded uniform with practical accessories for staff, events and daily workwear. From bags to small add-ons, these items help keep your team looking organised and professional. Ideal for corporate, hospitality, schools, clubs and promotional use."><a href="/shop-pc?productType=accessories">Accessories</a></li>
+                                <li><a href="/shop-pc?productType=anti-static">Anti Static / ESD</a></li>
+                                <li data-catdesc="Personalised aprons are ideal for restaurants, cafés, bars, salons, workshops and catering teams. Add your logo with embroidery or print for a clean, professional look. Choose from bib aprons, waist aprons and durable workwear styles built for daily use."><a href="/shop-pc?productType=aprons">Aprons</a></li>
+                                <li><a href="/shop-pc?productType=arc-flash">Arc Flash</a></li>
+                                <li><a href="/shop-pc?productType=autumn-workwear">Autumn Workwear</a></li>
                                 <li class="brand-heading">B</li>
-                                <li data-catdesc="Branded bags are a practical way to promote your company while giving staff, customers or event teams something useful. Choose from gym bags, tote bags, backpacks and work bags suitable for schools, corporate teams, clubs and promotions."><a href="shop-pc.html?productType=bags">Bags</a></li>
-                                <li data-catdesc="Custom beanies are a simple and effective choice for winter workwear, outdoor teams, events and promotional merchandise. Add embroidery for a premium finish that keeps your brand visible in colder weather. Suitable for construction, logistics, schools and clubs."><a href="shop-pc.html?productType=beanies">Beanies</a></li>
-                                <li><a href="shop-pc.html?productType=bib-brace-overalls">Bib &amp; Brace Overalls</a></li>
-                                <li data-catdesc="Branded blouses give office, hospitality, reception and customer-facing teams a smart and professional appearance. Available in styles suitable for corporate uniforms and front-of-house staff. Add subtle embroidery for a refined branded finish."><a href="shop-pc.html?productType=blouses">Blouses</a></li>
-                                <li data-catdesc="Personalised bodywarmers and gilets are ideal for staff who need warmth without restricting movement. Perfect for trades, warehouses, outdoor teams, events and hospitality. Add embroidery or print for a practical uniform layer with strong brand visibility."><a href="shop-pc.html?productType=bodywarmers">Bodywarmers &amp; Gilets</a></li>
+                                <li data-catdesc="Branded bags are a practical way to promote your company while giving staff, customers or event teams something useful. Choose from gym bags, tote bags, backpacks and work bags suitable for schools, corporate teams, clubs and promotions."><a href="/shop-pc?productType=bags">Bags</a></li>
+                                <li data-catdesc="Custom beanies are a simple and effective choice for winter workwear, outdoor teams, events and promotional merchandise. Add embroidery for a premium finish that keeps your brand visible in colder weather. Suitable for construction, logistics, schools and clubs."><a href="/shop-pc?productType=beanies">Beanies</a></li>
+                                <li><a href="/shop-pc?productType=bib-brace-overalls">Bib &amp; Brace Overalls</a></li>
+                                <li data-catdesc="Branded blouses give office, hospitality, reception and customer-facing teams a smart and professional appearance. Available in styles suitable for corporate uniforms and front-of-house staff. Add subtle embroidery for a refined branded finish."><a href="/shop-pc?productType=blouses">Blouses</a></li>
+                                <li data-catdesc="Personalised bodywarmers and gilets are ideal for staff who need warmth without restricting movement. Perfect for trades, warehouses, outdoor teams, events and hospitality. Add embroidery or print for a practical uniform layer with strong brand visibility."><a href="/shop-pc?productType=bodywarmers">Bodywarmers &amp; Gilets</a></li>
                                 <li class="brand-heading">C</li>
-                                <li data-catdesc="Personalised caps are a popular choice for workwear, events, hospitality, clubs and promotional campaigns. Add embroidery or print to create a clean branded finish. Available in styles suitable for staff uniforms, outdoor work and team merchandise."><a href="shop-pc.html?productType=caps">Caps</a></li>
-                                <li><a href="shop-pc.html?productType=chainsaw-forestry">Chainsaw and Forestry</a></li>
-                                <li data-catdesc="Personalised chef jackets are designed for kitchens, restaurants, hotels, catering teams and food service professionals. Add your logo or staff name with embroidery for a premium finish. Choose durable garments that maintain a clean and professional appearance."><a href="shop-pc.html?productType=chefswear">Chefswear</a></li>
-                                <li><a href="shop-pc.html?productType=chem-splash">Chem Splash</a></li>
-                                <li data-catdesc="Personalised jackets are ideal for keeping staff warm, dry and professional in all working conditions. Suitable for construction, logistics, hospitality, events and corporate teams. Choose from softshells, waterproofs, fleeces and insulated styles with embroidery or print."><a href="shop-pc.html?productType=jackets">Coats &amp; Jackets</a></li>
-                                <li><a href="shop-pc.html?productType=coldstore">Coldstore</a></li>
-                                <li><a href="shop-pc.html?productType=construction">Construction</a></li>
-                                <li data-catdesc="Personalised coveralls are built for trades, mechanics, engineering, maintenance and industrial work. They provide full-body protection while helping your team look organised and professional. Add embroidery or print to create durable branded workwear."><a href="shop-pc.html?productType=coveralls">Coveralls</a></li>
-                                <li><a href="shop-pc.html?productType=covid-test-kit">Covid Test Kit</a></li>
+                                <li data-catdesc="Personalised caps are a popular choice for workwear, events, hospitality, clubs and promotional campaigns. Add embroidery or print to create a clean branded finish. Available in styles suitable for staff uniforms, outdoor work and team merchandise."><a href="/shop-pc?productType=caps">Caps</a></li>
+                                <li><a href="/shop-pc?productType=chainsaw-forestry">Chainsaw and Forestry</a></li>
+                                <li data-catdesc="Personalised chef jackets are designed for kitchens, restaurants, hotels, catering teams and food service professionals. Add your logo or staff name with embroidery for a premium finish. Choose durable garments that maintain a clean and professional appearance."><a href="/shop-pc?productType=chefswear">Chefswear</a></li>
+                                <li><a href="/shop-pc?productType=chem-splash">Chem Splash</a></li>
+                                <li data-catdesc="Personalised jackets are ideal for keeping staff warm, dry and professional in all working conditions. Suitable for construction, logistics, hospitality, events and corporate teams. Choose from softshells, waterproofs, fleeces and insulated styles with embroidery or print."><a href="/shop-pc?productType=jackets">Coats &amp; Jackets</a></li>
+                                <li><a href="/shop-pc?productType=coldstore">Coldstore</a></li>
+                                <li><a href="/shop-pc?productType=construction">Construction</a></li>
+                                <li data-catdesc="Personalised coveralls are built for trades, mechanics, engineering, maintenance and industrial work. They provide full-body protection while helping your team look organised and professional. Add embroidery or print to create durable branded workwear."><a href="/shop-pc?productType=coveralls">Coveralls</a></li>
+                                <li><a href="/shop-pc?productType=covid-test-kit">Covid Test Kit</a></li>
                                 <li class="brand-heading">D</li>
-                                <li><a href="shop-pc.html?productType=disposable">Disposable</a></li>
-                                <li data-catdesc="Workwear dresses offer a smart and polished option for hospitality, beauty, healthcare, reception and corporate teams. Comfortable and professional, they help create a consistent brand image. Suitable for staff uniforms in customer-facing environments."><a href="shop-pc.html?productType=dresses">Dresses</a></li>
-                                <li><a href="shop-pc.html?productType=dtf-supplies">DTF Supplies</a></li>
+                                <li><a href="/shop-pc?productType=disposable">Disposable</a></li>
+                                <li data-catdesc="Workwear dresses offer a smart and polished option for hospitality, beauty, healthcare, reception and corporate teams. Comfortable and professional, they help create a consistent brand image. Suitable for staff uniforms in customer-facing environments."><a href="/shop-pc?productType=dresses">Dresses</a></li>
+                                <li><a href="/shop-pc?productType=dtf-supplies">DTF Supplies</a></li>
                                 <li class="brand-heading">F</li>
-                                <li><a href="shop-pc.html?productType=face-masks">Face Masks &amp; Covers</a></li>
-                                <li><a href="shop-pc.html?productType=flame-retardant">Flame Retardant</a></li>
-                                <li data-catdesc="Personalised fleeces are a versatile uniform layer for staff working indoors or outdoors. Warm, comfortable and easy to brand, they are ideal for trades, schools, hospitality, clubs and corporate teams. Add embroidery for a professional long-lasting finish."><a href="shop-pc.html?productType=fleece">Fleeces</a></li>
-                                <li data-catdesc="Work boots and shoes are designed for protection, durability and comfort across demanding environments. Suitable for construction, warehouse, industrial and outdoor teams. Choose reliable footwear options to support staff safety and everyday performance."><a href="shop-pc.html?productType=footwear">Footwear</a></li>
+                                <li><a href="/shop-pc?productType=face-masks">Face Masks &amp; Covers</a></li>
+                                <li><a href="/shop-pc?productType=flame-retardant">Flame Retardant</a></li>
+                                <li data-catdesc="Personalised fleeces are a versatile uniform layer for staff working indoors or outdoors. Warm, comfortable and easy to brand, they are ideal for trades, schools, hospitality, clubs and corporate teams. Add embroidery for a professional long-lasting finish."><a href="/shop-pc?productType=fleece">Fleeces</a></li>
+                                <li data-catdesc="Work boots and shoes are designed for protection, durability and comfort across demanding environments. Suitable for construction, warehouse, industrial and outdoor teams. Choose reliable footwear options to support staff safety and everyday performance."><a href="/shop-pc?productType=footwear">Footwear</a></li>
                                 <li class="brand-heading">G</li>
-                                <li data-catdesc="Personalised bodywarmers and gilets are ideal for staff who need warmth without restricting movement. Perfect for trades, warehouses, outdoor teams, events and hospitality. Add embroidery or print for a practical uniform layer with strong brand visibility."><a href="shop-pc.html?productType=bodywarmers">Gilets</a></li>
-                                <li><a href="shop-pc.html?productType=golf">Golf</a></li>
-                                <li data-catdesc="Work gloves help protect staff across construction, warehouse, logistics, catering, cleaning and outdoor environments. Choose from practical styles designed for comfort, grip and durability. Ideal for completing safety-focused workwear packages."><a href="shop-pc.html?productType=gloves">Work gloves</a></li>
-                                <li data-catdesc="Work gloves help protect staff across construction, warehouse, logistics, catering, cleaning and outdoor environments. Choose from practical styles designed for comfort, grip and durability. Ideal for completing safety-focused workwear packages."><a href="shop-pc.html?productType=gloves">Winter gloves</a></li>
+                                <li data-catdesc="Personalised bodywarmers and gilets are ideal for staff who need warmth without restricting movement. Perfect for trades, warehouses, outdoor teams, events and hospitality. Add embroidery or print for a practical uniform layer with strong brand visibility."><a href="/shop-pc?productType=bodywarmers">Gilets</a></li>
+                                <li><a href="/shop-pc?productType=golf">Golf</a></li>
+                                <li data-catdesc="Work gloves help protect staff across construction, warehouse, logistics, catering, cleaning and outdoor environments. Choose from practical styles designed for comfort, grip and durability. Ideal for completing safety-focused workwear packages."><a href="/shop-pc?productType=gloves">Work gloves</a></li>
+                                <li data-catdesc="Work gloves help protect staff across construction, warehouse, logistics, catering, cleaning and outdoor environments. Choose from practical styles designed for comfort, grip and durability. Ideal for completing safety-focused workwear packages."><a href="/shop-pc?productType=gloves">Winter gloves</a></li>
                                 <li class="brand-heading">H</li>
-                                <li data-catdesc="Personalised hats and headwear are ideal for staff uniforms, outdoor work, schools, clubs and promotional campaigns. Add embroidery or print to create practical branded headwear. Choose from styles suitable for both everyday workwear and seasonal use."><a href="shop-pc.html?productType[]=Caps&amp;productType[]=Hats&amp;productType[]=Beanies">Headwear</a></li>
-                                <li><a href="shop-pc.html?productType=healthcare">Healthcare</a></li>
-                                <li data-catdesc="Safety helmets are essential for construction, site work, maintenance and industrial environments. They help protect staff while supporting workplace safety requirements. Suitable for contractors, site teams and trade professionals."><a href="shop-pc.html?productType=helmets">Helmets</a></li>
-                                <li data-catdesc="Safety vests are essential for visibility in construction, logistics, warehousing, events and site work. Add your logo or staff role for clear identification. A practical and cost-effective option for branded PPE and compliant workwear."><a href="shop-pc.html?productType=Hi%20Vis">Hi-Vis</a></li>
-                                <li data-catdesc="Personalised hoodies are a popular choice for staff uniforms, schools, trades, clubs and promotional clothing. Comfortable and easy to brand, they work well for casual workwear or teamwear. Add embroidery or print for a professional branded finish."><a href="shop-pc.html?productType=hoodies">Hoodies</a></li>
-                                <li><a href="shop-pc.html?productType=hospitality">Hospitality</a></li>
+                                <li data-catdesc="Personalised hats and headwear are ideal for staff uniforms, outdoor work, schools, clubs and promotional campaigns. Add embroidery or print to create practical branded headwear. Choose from styles suitable for both everyday workwear and seasonal use."><a href="/shop-pc?productType[]=Caps&amp;productType[]=Hats&amp;productType[]=Beanies">Headwear</a></li>
+                                <li><a href="/shop-pc?productType=healthcare">Healthcare</a></li>
+                                <li data-catdesc="Safety helmets are essential for construction, site work, maintenance and industrial environments. They help protect staff while supporting workplace safety requirements. Suitable for contractors, site teams and trade professionals."><a href="/shop-pc?productType=helmets">Helmets</a></li>
+                                <li data-catdesc="Safety vests are essential for visibility in construction, logistics, warehousing, events and site work. Add your logo or staff role for clear identification. A practical and cost-effective option for branded PPE and compliant workwear."><a href="/shop-pc?productType=Hi%20Vis">Hi-Vis</a></li>
+                                <li data-catdesc="Personalised hoodies are a popular choice for staff uniforms, schools, trades, clubs and promotional clothing. Comfortable and easy to brand, they work well for casual workwear or teamwear. Add embroidery or print for a professional branded finish."><a href="/shop-pc?productType=hoodies">Hoodies</a></li>
+                                <li><a href="/shop-pc?productType=hospitality">Hospitality</a></li>
                                 <li class="brand-heading">J</li>
-                                <li data-catdesc="Personalised jackets are ideal for keeping staff warm, dry and professional in all working conditions. Suitable for construction, logistics, hospitality, events and corporate teams. Choose from softshells, waterproofs, fleeces and insulated styles with embroidery or print."><a href="shop-pc.html?productType=jackets">Jackets</a></li>
-                                <li data-catdesc="Personalised sweatpants and joggers are ideal for schools, clubs, gyms, sports teams and casual staff uniforms. Comfortable and practical, they work well with hoodies, t-shirts and jackets. Add print or embroidery for a complete branded teamwear look."><a href="shop-pc.html?productType=joggers">Joggers</a></li>
+                                <li data-catdesc="Personalised jackets are ideal for keeping staff warm, dry and professional in all working conditions. Suitable for construction, logistics, hospitality, events and corporate teams. Choose from softshells, waterproofs, fleeces and insulated styles with embroidery or print."><a href="/shop-pc?productType=jackets">Jackets</a></li>
+                                <li data-catdesc="Personalised sweatpants and joggers are ideal for schools, clubs, gyms, sports teams and casual staff uniforms. Comfortable and practical, they work well with hoodies, t-shirts and jackets. Add print or embroidery for a complete branded teamwear look."><a href="/shop-pc?productType=joggers">Joggers</a></li>
                                 <li class="brand-heading">K</li>
-                                <li data-catdesc="Knitted jumpers offer a smart and comfortable uniform layer for offices, schools, hospitality and customer-facing teams. Add embroidery for a clean branded finish. Ideal for professional environments where warmth and presentation are both important."><a href="shop-pc.html?productType=knitwear">Knitwear</a></li>
+                                <li data-catdesc="Knitted jumpers offer a smart and comfortable uniform layer for offices, schools, hospitality and customer-facing teams. Add embroidery for a clean branded finish. Ideal for professional environments where warmth and presentation are both important."><a href="/shop-pc?productType=knitwear">Knitwear</a></li>
                                 <li class="brand-heading">L</li>
-                                <li><a href="shop-pc.html?productType=lab-coats">Lab / Medical Coats</a></li>
-                                <li><a href="shop-pc.html?productType=lateral-flow-tests">Lateral Flow Tests</a></li>
-                                <li><a href="shop-pc.html?productType=lounge-underwear">Loungewear</a></li>
+                                <li><a href="/shop-pc?productType=lab-coats">Lab / Medical Coats</a></li>
+                                <li><a href="/shop-pc?productType=lateral-flow-tests">Lateral Flow Tests</a></li>
+                                <li><a href="/shop-pc?productType=lounge-underwear">Loungewear</a></li>
                                 <li class="brand-heading">M</li>
-                                <li><a href="shop-pc.html?productType=maternity">Maternity</a></li>
+                                <li><a href="/shop-pc?productType=maternity">Maternity</a></li>
                                 <li class="brand-heading">O</li>
-                                <li><a href="shop-pc.html?productType=offshore">Offshore Clothing</a></li>
-                                <li><a href="shop-pc.html?productType=overalls">Overalls</a></li>
+                                <li><a href="/shop-pc?productType=offshore">Offshore Clothing</a></li>
+                                <li><a href="/shop-pc?productType=overalls">Overalls</a></li>
                                 <li class="brand-heading">P</li>
-                                <li><a href="shop-pc.html?productType=painter-decorator">Painter &amp; Decorator Clothing</a></li>
-                                <li><a href="shop-pc.html?productType=plus-size">Plus Size</a></li>
-                                <li data-catdesc="Personalised polo shirts are one of the most versatile uniform options for businesses, schools, hospitality, trades and events. Smart, comfortable and easy to brand, they work well with embroidery or print. Ideal for professional staff uniforms and teamwear."><a href="shop-pc.html?productType=polos">Polo Shirts</a></li>
-                                <li><a href="shop-pc.html?productType=ppe">PPE &amp; Safety Wear</a></li>
+                                <li><a href="/shop-pc?productType=painter-decorator">Painter &amp; Decorator Clothing</a></li>
+                                <li><a href="/shop-pc?productType=plus-size">Plus Size</a></li>
+                                <li data-catdesc="Personalised polo shirts are one of the most versatile uniform options for businesses, schools, hospitality, trades and events. Smart, comfortable and easy to brand, they work well with embroidery or print. Ideal for professional staff uniforms and teamwear."><a href="/shop-pc?productType=polos">Polo Shirts</a></li>
+                                <li><a href="/shop-pc?productType=ppe">PPE &amp; Safety Wear</a></li>
                                 <li class="brand-heading">R</li>
-                                <li><a href="shop-pc.html?productType=rail-spec">Rail Spec</a></li>
+                                <li><a href="/shop-pc?productType=rail-spec">Rail Spec</a></li>
                                 <li class="brand-heading">S</li>
-                                <li data-catdesc="Branded scarves are suitable for schools, clubs, sports teams, events and winter merchandise. They offer warmth while keeping your identity visible. Ideal for seasonal uniforms, supporter merchandise and promotional campaigns."><a href="shop-pc.html?productType=scarves">Scarves</a></li>
-                                <li><a href="shop-pc.html?productType=schoolwear">Schoolwear</a></li>
-                                <li><a href="shop-pc.html?productType=scrubs">Scrubs</a></li>
-                                <li><a href="shop-pc.html?productType=security">Security</a></li>
-                                <li data-catdesc="Personalised shirts are ideal for corporate, hospitality, reception, retail and front-of-house teams. Smart and professional, they help create a consistent brand image. Add embroidery for a subtle and durable uniform finish."><a href="shop-pc.html?productType=shirts">Shirts</a></li>
-                                <li data-catdesc="Workwear shorts are suitable for warmer conditions, outdoor teams, trades, schools, sports and hospitality staff. Comfortable and practical, they pair well with branded polos, t-shirts and jackets. Ideal for seasonal uniforms and active work environments."><a href="shop-pc.html?productType=shorts">Shorts</a></li>
-                                <li data-catdesc="Uniform skirts provide a smart option for corporate, school, hospitality and front-of-house teams. Comfortable and professional, they help maintain a consistent appearance. Suitable for staff uniforms where presentation is important."><a href="shop-pc.html?productType=skirts">Skirts</a></li>
-                                <li data-catdesc="Personalised socks are suitable for sports teams, schools, clubs, promotions and branded merchandise. Comfortable and practical, they can complete a uniform or teamwear package. Ideal for events, gifts and retail-style campaigns."><a href="shop-pc.html?productType=socks">Socks</a></li>
-                                <li data-catdesc="Personalised softshell jackets are a smart and practical choice for trades, outdoor teams, hospitality, events and corporate uniforms. They offer warmth, comfort and weather resistance without bulk. Add embroidery for a premium professional finish."><a href="shop-pc.html?productType=softshells">Softshells</a></li>
-                                <li data-catdesc="Sports overtop garments are ideal for clubs, schools, teams and training sessions. Lightweight and practical, they help create a consistent team appearance. Add logos, names or numbers for a professional branded sportswear finish."><a href="shop-pc.html?productType=sports-teamwear">Sports &amp; Teamwear</a></li>
-                                <li><a href="shop-pc.html?productType=spring-workwear">Spring Workwear</a></li>
-                                <li><a href="shop-pc.html?productType=suits">Suits &amp; Tailoring</a></li>
-                                <li><a href="shop-pc.html?productType=summer-workwear">Summer Workwear</a></li>
-                                <li><a href="shop-pc.html?accreditation=recycled">Sustainable</a></li>
-                                <li data-catdesc="Branded sweatshirts are a versatile uniform option for schools, trades, clubs, offices and promotional clothing. Comfortable and durable, they are suitable for everyday use. Add embroidery or print for a clean and professional branded finish."><a href="shop-pc.html?productType=sweatshirts">Sweatshirts</a></li>
+                                <li data-catdesc="Branded scarves are suitable for schools, clubs, sports teams, events and winter merchandise. They offer warmth while keeping your identity visible. Ideal for seasonal uniforms, supporter merchandise and promotional campaigns."><a href="/shop-pc?productType=scarves">Scarves</a></li>
+                                <li><a href="/shop-pc?productType=schoolwear">Schoolwear</a></li>
+                                <li><a href="/shop-pc?productType=scrubs">Scrubs</a></li>
+                                <li><a href="/shop-pc?productType=security">Security</a></li>
+                                <li data-catdesc="Personalised shirts are ideal for corporate, hospitality, reception, retail and front-of-house teams. Smart and professional, they help create a consistent brand image. Add embroidery for a subtle and durable uniform finish."><a href="/shop-pc?productType=shirts">Shirts</a></li>
+                                <li data-catdesc="Workwear shorts are suitable for warmer conditions, outdoor teams, trades, schools, sports and hospitality staff. Comfortable and practical, they pair well with branded polos, t-shirts and jackets. Ideal for seasonal uniforms and active work environments."><a href="/shop-pc?productType=shorts">Shorts</a></li>
+                                <li data-catdesc="Uniform skirts provide a smart option for corporate, school, hospitality and front-of-house teams. Comfortable and professional, they help maintain a consistent appearance. Suitable for staff uniforms where presentation is important."><a href="/shop-pc?productType=skirts">Skirts</a></li>
+                                <li data-catdesc="Personalised socks are suitable for sports teams, schools, clubs, promotions and branded merchandise. Comfortable and practical, they can complete a uniform or teamwear package. Ideal for events, gifts and retail-style campaigns."><a href="/shop-pc?productType=socks">Socks</a></li>
+                                <li data-catdesc="Personalised softshell jackets are a smart and practical choice for trades, outdoor teams, hospitality, events and corporate uniforms. They offer warmth, comfort and weather resistance without bulk. Add embroidery for a premium professional finish."><a href="/shop-pc?productType=softshells">Softshells</a></li>
+                                <li data-catdesc="Sports overtop garments are ideal for clubs, schools, teams and training sessions. Lightweight and practical, they help create a consistent team appearance. Add logos, names or numbers for a professional branded sportswear finish."><a href="/shop-pc?productType=sports-teamwear">Sports &amp; Teamwear</a></li>
+                                <li><a href="/shop-pc?productType=spring-workwear">Spring Workwear</a></li>
+                                <li><a href="/shop-pc?productType=suits">Suits &amp; Tailoring</a></li>
+                                <li><a href="/shop-pc?productType=summer-workwear">Summer Workwear</a></li>
+                                <li><a href="/shop-pc?accreditation=recycled">Sustainable</a></li>
+                                <li data-catdesc="Branded sweatshirts are a versatile uniform option for schools, trades, clubs, offices and promotional clothing. Comfortable and durable, they are suitable for everyday use. Add embroidery or print for a clean and professional branded finish."><a href="/shop-pc?productType=sweatshirts">Sweatshirts</a></li>
                                 <li class="brand-heading">T</li>
-                                <li data-catdesc="Tabards are ideal for cleaning teams, care homes, schools, catering, salons and service staff. Practical and easy to wear, they help identify roles clearly. Add embroidery or print to create a professional branded uniform."><a href="shop-pc.html?productType=tabards">Tabards</a></li>
-                                <li data-catdesc="Personalised baselayers are designed for comfort, performance and warmth during work, sport or outdoor activity. Ideal for teams, clubs, security staff and outdoor workers. Add your logo for a consistent branded look underneath jackets, uniforms or sportswear."><a href="shop-pc.html?productType=baselayers">Thermals &amp; Base Layers</a></li>
-                                <li data-catdesc="Personalised or coordinated ties help complete a smart uniform for corporate, hospitality, school and front-of-house teams. They add a professional finish to shirts and formal workwear. Suitable for reception, events and customer-facing staff."><a href="shop-pc.html?productType=ties">Ties</a></li>
-                                <li data-catdesc="Branded bags are a practical way to promote your company while giving staff, customers or event teams something useful. Choose from gym bags, tote bags, backpacks and work bags suitable for schools, corporate teams, clubs and promotions."><a href="shop-pc.html?productType=bags">Tote Bags</a></li>
-                                <li data-catdesc="Branded towels are ideal for gyms, spas, hotels, salons, sports clubs and promotional gift sets. Add embroidery for a premium, long-lasting finish. Suitable for hospitality, wellness and leisure businesses looking for professional branded products."><a href="shop-pc.html?productType=towels">Towels</a></li>
-                                <li><a href="shop-pc.html?productType=trades">Trades</a></li>
-                                <li data-catdesc="Work trousers are essential for trades, warehouses, logistics, hospitality, healthcare and general staff uniforms. Durable and practical, they support comfort and movement throughout the working day. Pair with branded tops and jackets for a complete uniform."><a href="shop-pc.html?productType=trousers">Trousers</a></li>
-                                <li data-catdesc="Personalised t-shirts are perfect for staff uniforms, events, promotions, clubs, schools and casual workwear. Easy to brand with print or embroidery, they offer a cost-effective way to promote your business. Choose from a wide range of colours and fits."><a href="shop-pc.html?productType=t-shirts">T-Shirts</a></li>
-                                <li data-catdesc="Tunics are ideal for healthcare, beauty, spa, salon and care environments. Smart, comfortable and practical, they help staff maintain a professional appearance. Add embroidery for a clean branded uniform finish."><a href="shop-pc.html?productType=tunics">Tunics</a></li>
+                                <li data-catdesc="Tabards are ideal for cleaning teams, care homes, schools, catering, salons and service staff. Practical and easy to wear, they help identify roles clearly. Add embroidery or print to create a professional branded uniform."><a href="/shop-pc?productType=tabards">Tabards</a></li>
+                                <li data-catdesc="Personalised baselayers are designed for comfort, performance and warmth during work, sport or outdoor activity. Ideal for teams, clubs, security staff and outdoor workers. Add your logo for a consistent branded look underneath jackets, uniforms or sportswear."><a href="/shop-pc?productType=baselayers">Thermals &amp; Base Layers</a></li>
+                                <li data-catdesc="Personalised or coordinated ties help complete a smart uniform for corporate, hospitality, school and front-of-house teams. They add a professional finish to shirts and formal workwear. Suitable for reception, events and customer-facing staff."><a href="/shop-pc?productType=ties">Ties</a></li>
+                                <li data-catdesc="Branded bags are a practical way to promote your company while giving staff, customers or event teams something useful. Choose from gym bags, tote bags, backpacks and work bags suitable for schools, corporate teams, clubs and promotions."><a href="/shop-pc?productType=bags">Tote Bags</a></li>
+                                <li data-catdesc="Branded towels are ideal for gyms, spas, hotels, salons, sports clubs and promotional gift sets. Add embroidery for a premium, long-lasting finish. Suitable for hospitality, wellness and leisure businesses looking for professional branded products."><a href="/shop-pc?productType=towels">Towels</a></li>
+                                <li><a href="/shop-pc?productType=trades">Trades</a></li>
+                                <li data-catdesc="Work trousers are essential for trades, warehouses, logistics, hospitality, healthcare and general staff uniforms. Durable and practical, they support comfort and movement throughout the working day. Pair with branded tops and jackets for a complete uniform."><a href="/shop-pc?productType=trousers">Trousers</a></li>
+                                <li data-catdesc="Personalised t-shirts are perfect for staff uniforms, events, promotions, clubs, schools and casual workwear. Easy to brand with print or embroidery, they offer a cost-effective way to promote your business. Choose from a wide range of colours and fits."><a href="/shop-pc?productType=t-shirts">T-Shirts</a></li>
+                                <li data-catdesc="Tunics are ideal for healthcare, beauty, spa, salon and care environments. Smart, comfortable and practical, they help staff maintain a professional appearance. Add embroidery for a clean branded uniform finish."><a href="/shop-pc?productType=tunics">Tunics</a></li>
                                 <li class="brand-heading">U</li>
-                                <li data-catdesc="Branded umbrellas are practical promotional products for events, corporate gifts, hospitality and outdoor teams. They keep your brand visible in everyday use while offering real value to customers or staff. Ideal for seasonal campaigns and premium giveaways."><a href="shop-pc.html?productType=umbrellas">Umbrellas</a></li>
+                                <li data-catdesc="Branded umbrellas are practical promotional products for events, corporate gifts, hospitality and outdoor teams. They keep your brand visible in everyday use while offering real value to customers or staff. Ideal for seasonal campaigns and premium giveaways."><a href="/shop-pc?productType=umbrellas">Umbrellas</a></li>
                                 <li class="brand-heading">W</li>
-                                <li data-catdesc="Waistcoats are a smart option for hospitality, events, corporate, reception and front-of-house teams. They help create a polished and consistent uniform appearance. Suitable for hotels, restaurants, venues and formal customer-facing roles."><a href="shop-pc.html?productType=waistcoats">Waistcoats</a></li>
-                                <li><a href="shop-pc.html?productType=welding">Welding Workwear</a></li>
-                                <li><a href="shop-pc.html?productType=winter-workwear">Winter Workwear</a></li>
+                                <li data-catdesc="Waistcoats are a smart option for hospitality, events, corporate, reception and front-of-house teams. They help create a polished and consistent uniform appearance. Suitable for hotels, restaurants, venues and formal customer-facing roles."><a href="/shop-pc?productType=waistcoats">Waistcoats</a></li>
+                                <li><a href="/shop-pc?productType=welding">Welding Workwear</a></li>
+                                <li><a href="/shop-pc?productType=winter-workwear">Winter Workwear</a></li>
                             </ul>
                             <aside class="mega-help-panel allprod-desc-panel">
                                 <div class="mega-help-default">
@@ -1967,58 +1978,58 @@
                         <div class="nav-megamenu industries-megamenu" data-mega-key="industries" role="region" aria-label="Industries">
                             <div class="mega-drop-inner industries-grid">
                                 <div class="industries-col">
-                                    <a class="industries-col-title" href="shop-pc.html?productType[]=Polos&amp;productType[]=T-Shirts&amp;productType[]=Shirts&amp;productType[]=Blouses&amp;productType[]=Jackets&amp;productType[]=Fleece&amp;sector[]=Corporate"><i data-mega-icon="corporate" aria-hidden="true"></i>Corporate</a>
+                                    <a class="industries-col-title" href="/shop-pc?productType[]=Polos&amp;productType[]=T-Shirts&amp;productType[]=Shirts&amp;productType[]=Blouses&amp;productType[]=Jackets&amp;productType[]=Fleece&amp;sector[]=Corporate"><i data-mega-icon="corporate" aria-hidden="true"></i>Corporate</a>
                                     <ul>
-                                        <li><a href="shop-pc.html?productType=Polos&amp;sector=Corporate">Polo Shirts</a></li>
-                                        <li><a href="shop-pc.html?productType=T-Shirts&amp;sector=Corporate">T-Shirts</a></li>
-                                        <li><a href="shop-pc.html?productType=Shirts&amp;sector=Corporate">Shirts</a></li>
-                                        <li><a href="shop-pc.html?productType=Blouses&amp;sector=Corporate">Blouses</a></li>
-                                        <li><a href="shop-pc.html?productType=Jackets&amp;sector=Corporate">Jackets</a></li>
-                                        <li><a href="shop-pc.html?productType=Fleece&amp;sector=Corporate">Fleeces</a></li>
+                                        <li><a href="/shop-pc?productType=Polos&amp;sector=Corporate">Polo Shirts</a></li>
+                                        <li><a href="/shop-pc?productType=T-Shirts&amp;sector=Corporate">T-Shirts</a></li>
+                                        <li><a href="/shop-pc?productType=Shirts&amp;sector=Corporate">Shirts</a></li>
+                                        <li><a href="/shop-pc?productType=Blouses&amp;sector=Corporate">Blouses</a></li>
+                                        <li><a href="/shop-pc?productType=Jackets&amp;sector=Corporate">Jackets</a></li>
+                                        <li><a href="/shop-pc?productType=Fleece&amp;sector=Corporate">Fleeces</a></li>
                                     </ul>
                                 </div>
                                 <div class="industries-col">
-                                    <a class="industries-col-title" href="shop-pc.html?productType[]=T-Shirts&amp;productType[]=Polos&amp;productType[]=Shirts&amp;productType[]=Aprons&amp;productType[]=Chef%20Jackets&amp;productType[]=Tunics&amp;sector[]=Hospitality"><i data-mega-icon="hospitality" aria-hidden="true"></i>Hospitality</a>
+                                    <a class="industries-col-title" href="/shop-pc?productType[]=T-Shirts&amp;productType[]=Polos&amp;productType[]=Shirts&amp;productType[]=Aprons&amp;productType[]=Chef%20Jackets&amp;productType[]=Tunics&amp;sector[]=Hospitality"><i data-mega-icon="hospitality" aria-hidden="true"></i>Hospitality</a>
                                     <ul>
-                                        <li><a href="shop-pc.html?productType=Polos&amp;sector=Hospitality">Polo Shirts</a></li>
-                                        <li><a href="shop-pc.html?productType=T-Shirts&amp;sector=Hospitality">T-Shirts</a></li>
-                                        <li><a href="shop-pc.html?productType=Shirts&amp;sector=Hospitality">Shirts</a></li>
-                                        <li><a href="shop-pc.html?productType=Aprons&amp;sector=Hospitality">Aprons</a></li>
-                                        <li><a href="shop-pc.html?productType=Chef%20Jackets&amp;sector=Hospitality">Chef Jackets</a></li>
-                                        <li><a href="shop-pc.html?productType=Tunics&amp;sector=Hospitality">Tunics</a></li>
+                                        <li><a href="/shop-pc?productType=Polos&amp;sector=Hospitality">Polo Shirts</a></li>
+                                        <li><a href="/shop-pc?productType=T-Shirts&amp;sector=Hospitality">T-Shirts</a></li>
+                                        <li><a href="/shop-pc?productType=Shirts&amp;sector=Hospitality">Shirts</a></li>
+                                        <li><a href="/shop-pc?productType=Aprons&amp;sector=Hospitality">Aprons</a></li>
+                                        <li><a href="/shop-pc?productType=Chef%20Jackets&amp;sector=Hospitality">Chef Jackets</a></li>
+                                        <li><a href="/shop-pc?productType=Tunics&amp;sector=Hospitality">Tunics</a></li>
                                     </ul>
                                 </div>
                                 <div class="industries-col">
-                                    <a class="industries-col-title" href="shop-pc.html?productType[]=T-Shirts&amp;productType[]=Hoodies&amp;productType[]=Sweatshirts&amp;sector[]=School"><i data-mega-icon="school" aria-hidden="true"></i>School</a>
+                                    <a class="industries-col-title" href="/shop-pc?productType[]=T-Shirts&amp;productType[]=Hoodies&amp;productType[]=Sweatshirts&amp;sector[]=School"><i data-mega-icon="school" aria-hidden="true"></i>School</a>
                                     <ul>
-                                        <li><a href="shop-pc.html?productType=T-Shirts&amp;sector=School">T-Shirts</a></li>
-                                        <li><a href="shop-pc.html?productType=Hoodies&amp;sector=School">Hoodies</a></li>
-                                        <li><a href="shop-pc.html?productType=Sweatshirts&amp;sector=School">Sweatshirts</a></li>
+                                        <li><a href="/shop-pc?productType=T-Shirts&amp;sector=School">T-Shirts</a></li>
+                                        <li><a href="/shop-pc?productType=Hoodies&amp;sector=School">Hoodies</a></li>
+                                        <li><a href="/shop-pc?productType=Sweatshirts&amp;sector=School">Sweatshirts</a></li>
                                     </ul>
-                                    <a class="industries-col-title industries-col-title--stacked" href="shop-pc.html?productType[]=Hi%20Vis&amp;productType[]=Jackets&amp;productType[]=Trousers&amp;productType[]=Polos&amp;productType[]=T-Shirts&amp;sector[]=Safety"><i data-mega-icon="safety" aria-hidden="true"></i>Safety</a>
+                                    <a class="industries-col-title industries-col-title--stacked" href="/shop-pc?productType[]=Hi%20Vis&amp;productType[]=Jackets&amp;productType[]=Trousers&amp;productType[]=Polos&amp;productType[]=T-Shirts&amp;sector[]=Safety"><i data-mega-icon="safety" aria-hidden="true"></i>Safety</a>
                                     <ul>
-                                        <li><a href="shop-pc.html?productType=Hi%20Vis&amp;sector=Safety">Hi-Vis</a></li>
-                                        <li><a href="shop-pc.html?productType=Jackets&amp;sector=Safety">Jackets</a></li>
-                                        <li><a href="shop-pc.html?productType=Trousers&amp;sector=Safety">Trousers</a></li>
-                                        <li><a href="shop-pc.html?productType=Polos&amp;sector=Safety">Polo Shirts</a></li>
-                                        <li><a href="shop-pc.html?productType=T-Shirts&amp;sector=Safety">T-Shirts</a></li>
+                                        <li><a href="/shop-pc?productType=Hi%20Vis&amp;sector=Safety">Hi-Vis</a></li>
+                                        <li><a href="/shop-pc?productType=Jackets&amp;sector=Safety">Jackets</a></li>
+                                        <li><a href="/shop-pc?productType=Trousers&amp;sector=Safety">Trousers</a></li>
+                                        <li><a href="/shop-pc?productType=Polos&amp;sector=Safety">Polo Shirts</a></li>
+                                        <li><a href="/shop-pc?productType=T-Shirts&amp;sector=Safety">T-Shirts</a></li>
                                     </ul>
                                 </div>
                                 <div class="industries-col">
-                                    <a class="industries-col-title" href="shop-pc.html?productType[]=T-Shirts&amp;productType[]=Polos&amp;productType[]=Shorts&amp;productType[]=Hoodies&amp;productType[]=Sports%20Overtops&amp;productType[]=Caps&amp;sector[]=Sport"><i data-mega-icon="sport" aria-hidden="true"></i>Sport</a>
+                                    <a class="industries-col-title" href="/shop-pc?productType[]=T-Shirts&amp;productType[]=Polos&amp;productType[]=Shorts&amp;productType[]=Hoodies&amp;productType[]=Sports%20Overtops&amp;productType[]=Caps&amp;sector[]=Sport"><i data-mega-icon="sport" aria-hidden="true"></i>Sport</a>
                                     <ul>
-                                        <li><a href="shop-pc.html?productType=T-Shirts&amp;sector=Sport">T-Shirts</a></li>
-                                        <li><a href="shop-pc.html?productType=Polos&amp;sector=Sport">Polo Shirts</a></li>
-                                        <li><a href="shop-pc.html?productType=Shorts&amp;sector=Sport">Shorts</a></li>
-                                        <li><a href="shop-pc.html?productType=Hoodies&amp;sector=Sport">Hoodies</a></li>
-                                        <li><a href="shop-pc.html?productType=Sports%20Overtops&amp;sector=Sport">Sports Overtops</a></li>
-                                        <li><a href="shop-pc.html?productType=Caps&amp;sector=Sport">Caps</a></li>
+                                        <li><a href="/shop-pc?productType=T-Shirts&amp;sector=Sport">T-Shirts</a></li>
+                                        <li><a href="/shop-pc?productType=Polos&amp;sector=Sport">Polo Shirts</a></li>
+                                        <li><a href="/shop-pc?productType=Shorts&amp;sector=Sport">Shorts</a></li>
+                                        <li><a href="/shop-pc?productType=Hoodies&amp;sector=Sport">Hoodies</a></li>
+                                        <li><a href="/shop-pc?productType=Sports%20Overtops&amp;sector=Sport">Sports Overtops</a></li>
+                                        <li><a href="/shop-pc?productType=Caps&amp;sector=Sport">Caps</a></li>
                                     </ul>
-                                    <a class="industries-col-title industries-col-title--stacked" href="shop-pc.html?productType[]=Jackets&amp;productType[]=Fleece&amp;productType[]=Gilets%20%26%20Body%20Warmers&amp;sector[]=Outdoor"><i data-mega-icon="outdoor" aria-hidden="true"></i>Outdoor</a>
+                                    <a class="industries-col-title industries-col-title--stacked" href="/shop-pc?productType[]=Jackets&amp;productType[]=Fleece&amp;productType[]=Gilets%20%26%20Body%20Warmers&amp;sector[]=Outdoor"><i data-mega-icon="outdoor" aria-hidden="true"></i>Outdoor</a>
                                     <ul>
-                                        <li><a href="shop-pc.html?productType=Jackets&amp;sector=Outdoor">Jackets</a></li>
-                                        <li><a href="shop-pc.html?productType=Fleece&amp;sector=Outdoor">Fleeces</a></li>
-                                        <li><a href="shop-pc.html?productType=Gilets%20%26%20Body%20Warmers&amp;sector=Outdoor">Bodywarmers</a></li>
+                                        <li><a href="/shop-pc?productType=Jackets&amp;sector=Outdoor">Jackets</a></li>
+                                        <li><a href="/shop-pc?productType=Fleece&amp;sector=Outdoor">Fleeces</a></li>
+                                        <li><a href="/shop-pc?productType=Gilets%20%26%20Body%20Warmers&amp;sector=Outdoor">Bodywarmers</a></li>
                                     </ul>
                                 </div>
                                 <aside class="mega-help-panel">
@@ -2035,7 +2046,7 @@
                         </div>
                     </li>
                     <li class="has-megamenu cat-menu">
-                        <a href="shop-pc.html?productType=T-Shirts" aria-haspopup="true">
+                        <a href="/shop-pc?productType=T-Shirts" aria-haspopup="true">
                             T-Shirts
                             <span class="nav-caret" aria-hidden="true"></span>
                         </a>
@@ -2046,34 +2057,34 @@
                                     <p class="mega-hero-kicker">T-Shirts range</p>
                                     <h3 class="mega-hero-title">T-Shirts for every team.</h3>
                                     <p class="mega-hero-text">Quality custom T-shirts for staff, events and promotions.</p>
-                                    <a class="mega-hero-cta" href="shop-pc.html?productType=T-Shirts">Shop T-Shirts <span aria-hidden="true">&rarr;</span></a>
+                                    <a class="mega-hero-cta" href="/shop-pc?productType=T-Shirts">Shop T-Shirts <span aria-hidden="true">&rarr;</span></a>
                                 </div>
                                 <div class="mega-cols">
                                     <div class="mega-col">
                                         <p class="mega-col-title"><i data-mega-icon="fit" aria-hidden="true"></i>Shop by fit</p>
                                         <ul>
-                                            <li><a href="shop-pc.html?productType=T-Shirts&amp;gender=male">Men</a></li>
-                                            <li><a href="shop-pc.html?productType=T-Shirts&amp;gender=female">Women</a></li>
-                                            <li><a href="shop-pc.html?productType=T-Shirts&amp;gender=unisex">Unisex</a></li>
-                                            <li><a href="shop-pc.html?productType=T-Shirts&amp;ageGroup=kids">Kids</a></li>
+                                            <li><a href="/shop-pc?productType=T-Shirts&amp;gender=male">Men</a></li>
+                                            <li><a href="/shop-pc?productType=T-Shirts&amp;gender=female">Women</a></li>
+                                            <li><a href="/shop-pc?productType=T-Shirts&amp;gender=unisex">Unisex</a></li>
+                                            <li><a href="/shop-pc?productType=T-Shirts&amp;ageGroup=kids">Kids</a></li>
                                         </ul>
                                     </div>
                                     <div class="mega-col">
                                         <p class="mega-col-title"><i data-mega-icon="type" aria-hidden="true"></i>Shop by type</p>
                                         <ul>
-                                            <li><a href="shop-pc.html?productType=T-Shirts&amp;feature=heavyweight">Heavyweight</a></li>
-                                            <li><a href="shop-pc.html?productType=T-Shirts&amp;accreditation=organic">Organic</a></li>
-                                            <li><a href="shop-pc.html?productType=T-Shirts&amp;sleeve=long-sleeve-2">Long sleeve</a></li>
-                                            <li><a href="shop-pc.html?productType=T-Shirts&amp;style=oversized">Oversized</a></li>
+                                            <li><a href="/shop-pc?productType=T-Shirts&amp;feature=heavyweight">Heavyweight</a></li>
+                                            <li><a href="/shop-pc?productType=T-Shirts&amp;accreditation=organic">Organic</a></li>
+                                            <li><a href="/shop-pc?productType=T-Shirts&amp;sleeve=long-sleeve-2">Long sleeve</a></li>
+                                            <li><a href="/shop-pc?productType=T-Shirts&amp;style=oversized">Oversized</a></li>
                                         </ul>
                                     </div>
                                     <div class="mega-col">
                                         <p class="mega-col-title"><i data-mega-icon="brands" aria-hidden="true"></i>Popular brands</p>
                                         <ul>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?productType=T-Shirts&amp;brand=gildan" title="Gildan"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/gildan2020.webp?v=20261006-megabrand" alt="Gildan" loading="lazy" width="128" height="22"></a></li>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?productType=T-Shirts&amp;brand=uneek" title="Uneek"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/uneek.svg?v=20261006-megabrand" alt="Uneek" loading="lazy" width="128" height="22"></a></li>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?productType=T-Shirts&amp;brand=pro-rtx" title="Pro RTX"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/pro-rtx2020.jpg?v=20261006-megabrand" alt="Pro RTX" loading="lazy" width="128" height="22"></a></li>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?productType=T-Shirts&amp;brand=fruit-of-the-loom" title="Fruit of the Loom"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/fruit-of-the-loom.jpg?v=20261006-megabrand" alt="Fruit of the Loom" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?productType=T-Shirts&amp;brand=gildan" title="Gildan"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/gildan2020.webp?v=20261006-megabrand" alt="Gildan" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?productType=T-Shirts&amp;brand=uneek" title="Uneek"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/uneek.svg?v=20261006-megabrand" alt="Uneek" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?productType=T-Shirts&amp;brand=pro-rtx" title="Pro RTX"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/pro-rtx2020.jpg?v=20261006-megabrand" alt="Pro RTX" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?productType=T-Shirts&amp;brand=fruit-of-the-loom" title="Fruit of the Loom"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/fruit-of-the-loom.jpg?v=20261006-megabrand" alt="Fruit of the Loom" loading="lazy" width="128" height="22"></a></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -2091,7 +2102,7 @@
                         </div>
                     </li>
                     <li class="has-megamenu cat-menu">
-                        <a href="shop-pc.html?productType=Polos" aria-haspopup="true">
+                        <a href="/shop-pc?productType=Polos" aria-haspopup="true">
                             Polo Shirts
                             <span class="nav-caret" aria-hidden="true"></span>
                         </a>
@@ -2102,35 +2113,35 @@
                                     <p class="mega-hero-kicker">Polo Shirts range</p>
                                     <h3 class="mega-hero-title">Polo Shirts for every team.</h3>
                                     <p class="mega-hero-text">Smart branded polos for staff, hospitality and corporate teams.</p>
-                                    <a class="mega-hero-cta" href="shop-pc.html?productType=Polos">Shop Polo Shirts <span aria-hidden="true">&rarr;</span></a>
+                                    <a class="mega-hero-cta" href="/shop-pc?productType=Polos">Shop Polo Shirts <span aria-hidden="true">&rarr;</span></a>
                                 </div>
                                 <div class="mega-cols">
                                     <div class="mega-col">
                                         <p class="mega-col-title"><i data-mega-icon="fit" aria-hidden="true"></i>Shop by fit</p>
                                         <ul>
-                                            <li><a href="shop-pc.html?productType=Polos&amp;gender=male">Men</a></li>
-                                            <li><a href="shop-pc.html?productType=Polos&amp;gender=female">Women</a></li>
-                                            <li><a href="shop-pc.html?productType=Polos&amp;gender=unisex">Unisex</a></li>
-                                            <li><a href="shop-pc.html?productType=Polos&amp;ageGroup=kids">Kids</a></li>
+                                            <li><a href="/shop-pc?productType=Polos&amp;gender=male">Men</a></li>
+                                            <li><a href="/shop-pc?productType=Polos&amp;gender=female">Women</a></li>
+                                            <li><a href="/shop-pc?productType=Polos&amp;gender=unisex">Unisex</a></li>
+                                            <li><a href="/shop-pc?productType=Polos&amp;ageGroup=kids">Kids</a></li>
                                         </ul>
                                     </div>
                                     <div class="mega-col">
                                         <p class="mega-col-title"><i data-mega-icon="type" aria-hidden="true"></i>Shop by type</p>
                                         <ul>
-                                            <li><a href="shop-pc.html?productType=Polos&amp;fit=classic">Classic</a></li>
-                                            <li><a href="shop-pc.html?productType=Polos&amp;feature=heavyweight">Heavyweight</a></li>
-                                            <li><a href="shop-pc.html?productType=Polos&amp;sleeve=long-sleeve-2">Long sleeve</a></li>
-                                            <li><a href="shop-pc.html?productType=Polos&amp;accreditation=organic">Organic</a></li>
-                                            <li><a href="shop-pc.html?productType=Polos&amp;sport=golf">Golf</a></li>
+                                            <li><a href="/shop-pc?productType=Polos&amp;fit=classic">Classic</a></li>
+                                            <li><a href="/shop-pc?productType=Polos&amp;feature=heavyweight">Heavyweight</a></li>
+                                            <li><a href="/shop-pc?productType=Polos&amp;sleeve=long-sleeve-2">Long sleeve</a></li>
+                                            <li><a href="/shop-pc?productType=Polos&amp;accreditation=organic">Organic</a></li>
+                                            <li><a href="/shop-pc?productType=Polos&amp;sport=golf">Golf</a></li>
                                         </ul>
                                     </div>
                                     <div class="mega-col">
                                         <p class="mega-col-title"><i data-mega-icon="brands" aria-hidden="true"></i>Popular brands</p>
                                         <ul>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?productType=Polos&amp;brand=henbury" title="Henbury"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/henbury2020.webp?v=20261006-megabrand" alt="Henbury" loading="lazy" width="128" height="22"></a></li>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?productType=Polos&amp;brand=uneek" title="Uneek"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/uneek.svg?v=20261006-megabrand" alt="Uneek" loading="lazy" width="128" height="22"></a></li>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?productType=Polos&amp;brand=pro-rtx" title="Pro RTX"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/pro-rtx2020.jpg?v=20261006-megabrand" alt="Pro RTX" loading="lazy" width="128" height="22"></a></li>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?productType=Polos&amp;brand=gildan" title="Gildan"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/gildan2020.webp?v=20261006-megabrand" alt="Gildan" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?productType=Polos&amp;brand=henbury" title="Henbury"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/henbury2020.webp?v=20261006-megabrand" alt="Henbury" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?productType=Polos&amp;brand=uneek" title="Uneek"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/uneek.svg?v=20261006-megabrand" alt="Uneek" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?productType=Polos&amp;brand=pro-rtx" title="Pro RTX"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/pro-rtx2020.jpg?v=20261006-megabrand" alt="Pro RTX" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?productType=Polos&amp;brand=gildan" title="Gildan"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/gildan2020.webp?v=20261006-megabrand" alt="Gildan" loading="lazy" width="128" height="22"></a></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -2148,7 +2159,7 @@
                         </div>
                     </li>
                     <li class="has-megamenu cat-menu">
-                        <a href="shop-pc.html?productType=Hoodies" aria-haspopup="true">
+                        <a href="/shop-pc?productType=Hoodies" aria-haspopup="true">
                             Hoodies
                             <span class="nav-caret" aria-hidden="true"></span>
                         </a>
@@ -2159,35 +2170,35 @@
                                     <p class="mega-hero-kicker">Hoodies range</p>
                                     <h3 class="mega-hero-title">Hoodies built for teams.</h3>
                                     <p class="mega-hero-text">Premium custom hoodies for workwear, schools and events.</p>
-                                    <a class="mega-hero-cta" href="shop-pc.html?productType=Hoodies">Shop Hoodies <span aria-hidden="true">&rarr;</span></a>
+                                    <a class="mega-hero-cta" href="/shop-pc?productType=Hoodies">Shop Hoodies <span aria-hidden="true">&rarr;</span></a>
                                 </div>
                                 <div class="mega-cols">
                                     <div class="mega-col">
                                         <p class="mega-col-title"><i data-mega-icon="fit" aria-hidden="true"></i>Shop by fit</p>
                                         <ul>
-                                            <li><a href="shop-pc.html?productType=Hoodies&amp;gender=male">Men</a></li>
-                                            <li><a href="shop-pc.html?productType=Hoodies&amp;gender=female">Women</a></li>
-                                            <li><a href="shop-pc.html?productType=Hoodies&amp;gender=unisex">Unisex</a></li>
-                                            <li><a href="shop-pc.html?productType=Hoodies&amp;ageGroup=kids">Kids</a></li>
+                                            <li><a href="/shop-pc?productType=Hoodies&amp;gender=male">Men</a></li>
+                                            <li><a href="/shop-pc?productType=Hoodies&amp;gender=female">Women</a></li>
+                                            <li><a href="/shop-pc?productType=Hoodies&amp;gender=unisex">Unisex</a></li>
+                                            <li><a href="/shop-pc?productType=Hoodies&amp;ageGroup=kids">Kids</a></li>
                                         </ul>
                                     </div>
                                     <div class="mega-col">
                                         <p class="mega-col-title"><i data-mega-icon="type" aria-hidden="true"></i>Shop by type</p>
                                         <ul>
-                                            <li><a href="shop-pc.html?productType=Hoodies&amp;style=hooded-1">Pullover</a></li>
-                                            <li><a href="shop-pc.html?productType=Hoodies&amp;style=zipped">Zip-up</a></li>
-                                            <li><a href="shop-pc.html?productType=Hoodies&amp;feature=heavyweight">Heavyweight</a></li>
-                                            <li><a href="shop-pc.html?productType=Hoodies&amp;accreditation=organic">Organic</a></li>
-                                            <li><a href="shop-pc.html?productType=Hoodies&amp;style=oversized">Oversized</a></li>
+                                            <li><a href="/shop-pc?productType=Hoodies&amp;style=hooded-1">Pullover</a></li>
+                                            <li><a href="/shop-pc?productType=Hoodies&amp;style=zipped">Zip-up</a></li>
+                                            <li><a href="/shop-pc?productType=Hoodies&amp;feature=heavyweight">Heavyweight</a></li>
+                                            <li><a href="/shop-pc?productType=Hoodies&amp;accreditation=organic">Organic</a></li>
+                                            <li><a href="/shop-pc?productType=Hoodies&amp;style=oversized">Oversized</a></li>
                                         </ul>
                                     </div>
                                     <div class="mega-col">
                                         <p class="mega-col-title"><i data-mega-icon="brands" aria-hidden="true"></i>Popular brands</p>
                                         <ul>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?productType=Hoodies&amp;brand=awdis" title="AWDis"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/awdis.webp?v=20261006-megabrand" alt="AWDis" loading="lazy" width="128" height="22"></a></li>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?productType=Hoodies&amp;brand=gildan" title="Gildan"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/gildan2020.webp?v=20261006-megabrand" alt="Gildan" loading="lazy" width="128" height="22"></a></li>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?productType=Hoodies&amp;brand=uneek" title="Uneek"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/uneek.svg?v=20261006-megabrand" alt="Uneek" loading="lazy" width="128" height="22"></a></li>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?productType=Hoodies&amp;brand=fruit-of-the-loom" title="Fruit of the Loom"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/fruit-of-the-loom.jpg?v=20261006-megabrand" alt="Fruit of the Loom" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?productType=Hoodies&amp;brand=awdis" title="AWDis"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/awdis.webp?v=20261006-megabrand" alt="AWDis" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?productType=Hoodies&amp;brand=gildan" title="Gildan"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/gildan2020.webp?v=20261006-megabrand" alt="Gildan" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?productType=Hoodies&amp;brand=uneek" title="Uneek"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/uneek.svg?v=20261006-megabrand" alt="Uneek" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?productType=Hoodies&amp;brand=fruit-of-the-loom" title="Fruit of the Loom"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/fruit-of-the-loom.jpg?v=20261006-megabrand" alt="Fruit of the Loom" loading="lazy" width="128" height="22"></a></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -2205,7 +2216,7 @@
                         </div>
                     </li>
                     <li class="has-megamenu cat-menu">
-                        <a href="shop-pc.html?productType=Sweatshirts" aria-haspopup="true">
+                        <a href="/shop-pc?productType=Sweatshirts" aria-haspopup="true">
                             Sweatshirts
                             <span class="nav-caret" aria-hidden="true"></span>
                         </a>
@@ -2216,35 +2227,35 @@
                                     <p class="mega-hero-kicker">Sweatshirts range</p>
                                     <h3 class="mega-hero-title">Sweatshirts for every season.</h3>
                                     <p class="mega-hero-text">Comfortable embroidered and printed sweatshirts for teams.</p>
-                                    <a class="mega-hero-cta" href="shop-pc.html?productType=Sweatshirts">Shop Sweatshirts <span aria-hidden="true">&rarr;</span></a>
+                                    <a class="mega-hero-cta" href="/shop-pc?productType=Sweatshirts">Shop Sweatshirts <span aria-hidden="true">&rarr;</span></a>
                                 </div>
                                 <div class="mega-cols">
                                     <div class="mega-col">
                                         <p class="mega-col-title"><i data-mega-icon="fit" aria-hidden="true"></i>Shop by fit</p>
                                         <ul>
-                                            <li><a href="shop-pc.html?productType=Sweatshirts&amp;gender=male">Men</a></li>
-                                            <li><a href="shop-pc.html?productType=Sweatshirts&amp;gender=female">Women</a></li>
-                                            <li><a href="shop-pc.html?productType=Sweatshirts&amp;gender=unisex">Unisex</a></li>
-                                            <li><a href="shop-pc.html?productType=Sweatshirts&amp;ageGroup=kids">Kids</a></li>
+                                            <li><a href="/shop-pc?productType=Sweatshirts&amp;gender=male">Men</a></li>
+                                            <li><a href="/shop-pc?productType=Sweatshirts&amp;gender=female">Women</a></li>
+                                            <li><a href="/shop-pc?productType=Sweatshirts&amp;gender=unisex">Unisex</a></li>
+                                            <li><a href="/shop-pc?productType=Sweatshirts&amp;ageGroup=kids">Kids</a></li>
                                         </ul>
                                     </div>
                                     <div class="mega-col">
                                         <p class="mega-col-title"><i data-mega-icon="type" aria-hidden="true"></i>Shop by type</p>
                                         <ul>
-                                            <li><a href="shop-pc.html?productType=Sweatshirts&amp;neckline=crew-neck-2">Crew</a></li>
-                                            <li><a href="shop-pc.html?productType=Sweatshirts&amp;style=zipped">Zip-up</a></li>
-                                            <li><a href="shop-pc.html?productType=Sweatshirts&amp;accreditation=organic">Organic</a></li>
-                                            <li><a href="shop-pc.html?productType=Sweatshirts&amp;style=oversized">Oversized</a></li>
-                                            <li><a href="shop-pc.html?productType=Sweatshirts&amp;accreditation=recycled">Recycled</a></li>
+                                            <li><a href="/shop-pc?productType=Sweatshirts&amp;neckline=crew-neck-2">Crew</a></li>
+                                            <li><a href="/shop-pc?productType=Sweatshirts&amp;style=zipped">Zip-up</a></li>
+                                            <li><a href="/shop-pc?productType=Sweatshirts&amp;accreditation=organic">Organic</a></li>
+                                            <li><a href="/shop-pc?productType=Sweatshirts&amp;style=oversized">Oversized</a></li>
+                                            <li><a href="/shop-pc?productType=Sweatshirts&amp;accreditation=recycled">Recycled</a></li>
                                         </ul>
                                     </div>
                                     <div class="mega-col">
                                         <p class="mega-col-title"><i data-mega-icon="brands" aria-hidden="true"></i>Popular brands</p>
                                         <ul>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?productType=Sweatshirts&amp;brand=awdis" title="AWDis"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/awdis.webp?v=20261006-megabrand" alt="AWDis" loading="lazy" width="128" height="22"></a></li>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?productType=Sweatshirts&amp;brand=uneek" title="Uneek"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/uneek.svg?v=20261006-megabrand" alt="Uneek" loading="lazy" width="128" height="22"></a></li>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?productType=Sweatshirts&amp;brand=fruit-of-the-loom" title="Fruit of the Loom"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/fruit-of-the-loom.jpg?v=20261006-megabrand" alt="Fruit of the Loom" loading="lazy" width="128" height="22"></a></li>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?productType=Sweatshirts&amp;brand=gildan" title="Gildan"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/gildan2020.webp?v=20261006-megabrand" alt="Gildan" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?productType=Sweatshirts&amp;brand=awdis" title="AWDis"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/awdis.webp?v=20261006-megabrand" alt="AWDis" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?productType=Sweatshirts&amp;brand=uneek" title="Uneek"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/uneek.svg?v=20261006-megabrand" alt="Uneek" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?productType=Sweatshirts&amp;brand=fruit-of-the-loom" title="Fruit of the Loom"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/fruit-of-the-loom.jpg?v=20261006-megabrand" alt="Fruit of the Loom" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?productType=Sweatshirts&amp;brand=gildan" title="Gildan"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/gildan2020.webp?v=20261006-megabrand" alt="Gildan" loading="lazy" width="128" height="22"></a></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -2262,7 +2273,7 @@
                         </div>
                     </li>
                     <li class="has-megamenu cat-menu">
-                        <a href="shop-pc.html?productType=Jackets" aria-haspopup="true">
+                        <a href="/shop-pc?productType=Jackets" aria-haspopup="true">
                             Jackets
                             <span class="nav-caret" aria-hidden="true"></span>
                         </a>
@@ -2273,33 +2284,33 @@
                                     <p class="mega-hero-kicker">Jackets range</p>
                                     <h3 class="mega-hero-title">Jackets for every team.</h3>
                                     <p class="mega-hero-text">Custom jackets and outerwear for work and outdoor teams.</p>
-                                    <a class="mega-hero-cta" href="shop-pc.html?productType=Jackets">Shop Jackets <span aria-hidden="true">&rarr;</span></a>
+                                    <a class="mega-hero-cta" href="/shop-pc?productType=Jackets">Shop Jackets <span aria-hidden="true">&rarr;</span></a>
                                 </div>
                                 <div class="mega-cols">
                                     <div class="mega-col">
                                         <p class="mega-col-title"><i data-mega-icon="fit" aria-hidden="true"></i>Shop by fit</p>
                                         <ul>
-                                            <li><a href="shop-pc.html?productType=Jackets&amp;gender=male">Men</a></li>
-                                            <li><a href="shop-pc.html?productType=Jackets&amp;gender=female">Women</a></li>
-                                            <li><a href="shop-pc.html?productType=Jackets&amp;gender=unisex">Unisex</a></li>
-                                            <li><a href="shop-pc.html?productType=Jackets&amp;feature=water-resistant">Waterproof</a></li>
+                                            <li><a href="/shop-pc?productType=Jackets&amp;gender=male">Men</a></li>
+                                            <li><a href="/shop-pc?productType=Jackets&amp;gender=female">Women</a></li>
+                                            <li><a href="/shop-pc?productType=Jackets&amp;gender=unisex">Unisex</a></li>
+                                            <li><a href="/shop-pc?productType=Jackets&amp;feature=water-resistant">Waterproof</a></li>
                                         </ul>
                                     </div>
                                     <div class="mega-col">
                                         <p class="mega-col-title"><i data-mega-icon="type" aria-hidden="true"></i>Shop by type</p>
                                         <ul>
-                                            <li><a href="shop-pc.html?productType=Jackets">Jackets</a></li>
-                                            <li><a href="shop-pc.html?productType=Softshells">Softshells</a></li>
-                                            <li><a href="shop-pc.html?productType=Fleece">Fleeces</a></li>
-                                            <li><a href="shop-pc.html?productType=Gilets%20%26%20Body%20Warmers">Bodywarmers</a></li>
+                                            <li><a href="/shop-pc?productType=Jackets">Jackets</a></li>
+                                            <li><a href="/shop-pc?productType=Softshells">Softshells</a></li>
+                                            <li><a href="/shop-pc?productType=Fleece">Fleeces</a></li>
+                                            <li><a href="/shop-pc?productType=Gilets%20%26%20Body%20Warmers">Bodywarmers</a></li>
                                         </ul>
                                     </div>
                                     <div class="mega-col">
                                         <p class="mega-col-title"><i data-mega-icon="brands" aria-hidden="true"></i>Popular brands</p>
                                         <ul>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?productType=Jackets&amp;brand=regatta" title="Regatta"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/regatta.webp?v=20261006-megabrand" alt="Regatta" loading="lazy" width="128" height="22"></a></li>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?productType=Jackets&amp;brand=result" title="Result"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/result2020.webp?v=20261006-megabrand" alt="Result" loading="lazy" width="128" height="22"></a></li>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?productType=Jackets&amp;brand=portwest" title="Portwest"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/portwest.webp?v=20261006-megabrand" alt="Portwest" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?productType=Jackets&amp;brand=regatta" title="Regatta"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/regatta.webp?v=20261006-megabrand" alt="Regatta" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?productType=Jackets&amp;brand=result" title="Result"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/result2020.webp?v=20261006-megabrand" alt="Result" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?productType=Jackets&amp;brand=portwest" title="Portwest"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/portwest.webp?v=20261006-megabrand" alt="Portwest" loading="lazy" width="128" height="22"></a></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -2317,7 +2328,7 @@
                         </div>
                     </li>
                     <li class="has-megamenu cat-menu">
-                        <a href="shop-pc.html?productType=Hi%20Vis" aria-haspopup="true">
+                        <a href="/shop-pc?productType=Hi%20Vis" aria-haspopup="true">
                             Hi-Vis
                             <span class="nav-caret" aria-hidden="true"></span>
                         </a>
@@ -2328,33 +2339,33 @@
                                     <p class="mega-hero-kicker">Hi-Vis range</p>
                                     <h3 class="mega-hero-title">Hi-Vis for every site.</h3>
                                     <p class="mega-hero-text">Certified high-visibility clothing for construction and logistics.</p>
-                                    <a class="mega-hero-cta" href="shop-pc.html?productType=Hi%20Vis">Shop Hi-Vis <span aria-hidden="true">&rarr;</span></a>
+                                    <a class="mega-hero-cta" href="/shop-pc?productType=Hi%20Vis">Shop Hi-Vis <span aria-hidden="true">&rarr;</span></a>
                                 </div>
                                 <div class="mega-cols">
                                     <div class="mega-col">
                                         <p class="mega-col-title"><i data-mega-icon="fit" aria-hidden="true"></i>Shop by fit</p>
                                         <ul>
-                                            <li><a href="shop-pc.html?productType=Hi%20Vis&amp;gender=male">Men</a></li>
-                                            <li><a href="shop-pc.html?productType=Hi%20Vis&amp;gender=female">Women</a></li>
-                                            <li><a href="shop-pc.html?productType=Hi%20Vis&amp;gender=unisex">Unisex</a></li>
+                                            <li><a href="/shop-pc?productType=Hi%20Vis&amp;gender=male">Men</a></li>
+                                            <li><a href="/shop-pc?productType=Hi%20Vis&amp;gender=female">Women</a></li>
+                                            <li><a href="/shop-pc?productType=Hi%20Vis&amp;gender=unisex">Unisex</a></li>
                                         </ul>
                                     </div>
                                     <div class="mega-col">
                                         <p class="mega-col-title"><i data-mega-icon="type" aria-hidden="true"></i>Shop by type</p>
                                         <ul>
-                                            <li><a href="shop-pc.html?productType=Hi%20Vis">Hi-Vis</a></li>
-                                            <li><a href="shop-pc.html?productType=Jackets&amp;sector=Safety">Jackets</a></li>
-                                            <li><a href="shop-pc.html?productType=Trousers&amp;sector=Safety">Trousers</a></li>
-                                            <li><a href="shop-pc.html?productType=Polos&amp;sector=Safety">Polo Shirts</a></li>
-                                            <li><a href="shop-pc.html?productType=T-Shirts&amp;sector=Safety">T-Shirts</a></li>
+                                            <li><a href="/shop-pc?productType=Hi%20Vis">Hi-Vis</a></li>
+                                            <li><a href="/shop-pc?productType=Jackets&amp;sector=Safety">Jackets</a></li>
+                                            <li><a href="/shop-pc?productType=Trousers&amp;sector=Safety">Trousers</a></li>
+                                            <li><a href="/shop-pc?productType=Polos&amp;sector=Safety">Polo Shirts</a></li>
+                                            <li><a href="/shop-pc?productType=T-Shirts&amp;sector=Safety">T-Shirts</a></li>
                                         </ul>
                                     </div>
                                     <div class="mega-col">
                                         <p class="mega-col-title"><i data-mega-icon="brands" aria-hidden="true"></i>Popular brands</p>
                                         <ul>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?productType=Hi%20Vis&amp;brand=portwest" title="Portwest"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/portwest.webp?v=20261006-megabrand" alt="Portwest" loading="lazy" width="128" height="22"></a></li>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?productType=Hi%20Vis&amp;brand=result" title="Result"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/result2020.webp?v=20261006-megabrand" alt="Result" loading="lazy" width="128" height="22"></a></li>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?productType=Hi%20Vis&amp;brand=yoko" title="Yoko"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/yoko.webp?v=20261006-megabrand" alt="Yoko" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?productType=Hi%20Vis&amp;brand=portwest" title="Portwest"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/portwest.webp?v=20261006-megabrand" alt="Portwest" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?productType=Hi%20Vis&amp;brand=result" title="Result"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/result2020.webp?v=20261006-megabrand" alt="Result" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?productType=Hi%20Vis&amp;brand=yoko" title="Yoko"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/yoko.webp?v=20261006-megabrand" alt="Yoko" loading="lazy" width="128" height="22"></a></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -2383,46 +2394,46 @@
                                     <p class="mega-hero-kicker">Workwear range</p>
                                     <h3 class="mega-hero-title">Tough workwear for every team.</h3>
                                     <p class="mega-hero-text">Durable workwear with your logo, built for the job.</p>
-                                    <a class="mega-hero-cta" href="shop-pc.html?productType[]=Trousers&amp;productType[]=Hi%20Vis&amp;productType[]=Softshells&amp;productType[]=Fleece&amp;productType[]=Gilets%20%26%20Body%20Warmers&amp;productType[]=Jackets">Shop workwear <span aria-hidden="true">&rarr;</span></a>
+                                    <a class="mega-hero-cta" href="/shop-pc?productType[]=Trousers&amp;productType[]=Hi%20Vis&amp;productType[]=Softshells&amp;productType[]=Fleece&amp;productType[]=Gilets%20%26%20Body%20Warmers&amp;productType[]=Jackets">Shop workwear <span aria-hidden="true">&rarr;</span></a>
                                 </div>
                                 <div class="mega-cols">
                                     <div class="mega-col">
                                         <p class="mega-col-title"><i data-mega-icon="fit" aria-hidden="true"></i>Shop by fit</p>
                                         <ul>
-                                            <li><a href="shop-pc.html?productType=Trousers&amp;gender=male">Men</a></li>
-                                            <li><a href="shop-pc.html?productType=Trousers&amp;gender=female">Women</a></li>
-                                            <li><a href="shop-pc.html?productType=Trousers&amp;gender=unisex">Unisex</a></li>
+                                            <li><a href="/shop-pc?productType=Trousers&amp;gender=male">Men</a></li>
+                                            <li><a href="/shop-pc?productType=Trousers&amp;gender=female">Women</a></li>
+                                            <li><a href="/shop-pc?productType=Trousers&amp;gender=unisex">Unisex</a></li>
                                         </ul>
                                     </div>
                                     <div class="mega-col">
                                         <p class="mega-col-title"><i data-mega-icon="type" aria-hidden="true"></i>Shop by type</p>
                                         <ul>
-                                            <li><a href="shop-pc.html?productType=aprons">Aprons</a></li>
-                                            <li><a href="shop-pc.html?productType=chefswear">Chefswear</a></li>
-                                            <li><a href="shop-pc.html?productType=Fleece">Fleeces</a></li>
-                                            <li><a href="shop-pc.html?productType=Softshells">Softshells</a></li>
-                                            <li><a href="shop-pc.html?productType=Gilets%20%26%20Body%20Warmers">Bodywarmers</a></li>
-                                            <li><a href="shop-pc.html?productType=footwear">Footwear</a></li>
-                                            <li><a href="shop-pc.html?productType[]=Polos&amp;productType[]=T-Shirts&amp;productType[]=Shirts&amp;productType[]=Blouses&amp;productType[]=Jackets&amp;productType[]=Fleece&amp;sector[]=Corporate">Corporate</a></li>
-                                            <li><a href="shop-pc.html?productType=healthcare">Healthcare</a></li>
-                                            <li><a href="shop-pc.html?productType=hospitality">Hospitality</a></li>
-                                            <li><a href="shop-pc.html?productType=veterinary">Petcare</a></li>
-                                            <li><a href="shop-pc.html?productType=Hi%20Vis">Hi-Vis</a></li>
-                                            <li><a href="shop-pc.html?productType=overalls">Overalls</a></li>
-                                            <li><a href="shop-pc.html?productType=Trousers">Trousers</a></li>
-                                            <li><a href="shop-pc.html?productType=Jackets">Jackets</a></li>
-                                            <li><a href="shop-pc.html?productType=ppe">PPE &amp; Safety Wear</a></li>
-                                            <li><a href="shop-pc.html?productType[]=Shirts&amp;productType[]=Blouses">Shirts &amp; Blouses</a></li>
+                                            <li><a href="/shop-pc?productType=aprons">Aprons</a></li>
+                                            <li><a href="/shop-pc?productType=chefswear">Chefswear</a></li>
+                                            <li><a href="/shop-pc?productType=Fleece">Fleeces</a></li>
+                                            <li><a href="/shop-pc?productType=Softshells">Softshells</a></li>
+                                            <li><a href="/shop-pc?productType=Gilets%20%26%20Body%20Warmers">Bodywarmers</a></li>
+                                            <li><a href="/shop-pc?productType=footwear">Footwear</a></li>
+                                            <li><a href="/shop-pc?productType[]=Polos&amp;productType[]=T-Shirts&amp;productType[]=Shirts&amp;productType[]=Blouses&amp;productType[]=Jackets&amp;productType[]=Fleece&amp;sector[]=Corporate">Corporate</a></li>
+                                            <li><a href="/shop-pc?productType=healthcare">Healthcare</a></li>
+                                            <li><a href="/shop-pc?productType=hospitality">Hospitality</a></li>
+                                            <li><a href="/shop-pc?productType=veterinary">Petcare</a></li>
+                                            <li><a href="/shop-pc?productType=Hi%20Vis">Hi-Vis</a></li>
+                                            <li><a href="/shop-pc?productType=overalls">Overalls</a></li>
+                                            <li><a href="/shop-pc?productType=Trousers">Trousers</a></li>
+                                            <li><a href="/shop-pc?productType=Jackets">Jackets</a></li>
+                                            <li><a href="/shop-pc?productType=ppe">PPE &amp; Safety Wear</a></li>
+                                            <li><a href="/shop-pc?productType[]=Shirts&amp;productType[]=Blouses">Shirts &amp; Blouses</a></li>
                                         </ul>
                                     </div>
                                     <div class="mega-col">
                                         <p class="mega-col-title"><i data-mega-icon="brands" aria-hidden="true"></i>Popular brands</p>
                                         <ul>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?brand=portwest" title="Portwest"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/portwest.webp?v=20261006-megabrand" alt="Portwest" loading="lazy" width="128" height="22"></a></li>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?brand=pro-rtx" title="Pro RTX"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/pro-rtx2020.jpg?v=20261006-megabrand" alt="Pro RTX" loading="lazy" width="128" height="22"></a></li>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?brand=result" title="Result"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/result2020.webp?v=20261006-megabrand" alt="Result" loading="lazy" width="128" height="22"></a></li>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?brand=regatta" title="Regatta"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/regatta.webp?v=20261006-megabrand" alt="Regatta" loading="lazy" width="128" height="22"></a></li>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?brand=uneek" title="Uneek"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/uneek.svg?v=20261006-megabrand" alt="Uneek" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?brand=portwest" title="Portwest"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/portwest.webp?v=20261006-megabrand" alt="Portwest" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?brand=pro-rtx" title="Pro RTX"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/pro-rtx2020.jpg?v=20261006-megabrand" alt="Pro RTX" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?brand=result" title="Result"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/result2020.webp?v=20261006-megabrand" alt="Result" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?brand=regatta" title="Regatta"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/regatta.webp?v=20261006-megabrand" alt="Regatta" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?brand=uneek" title="Uneek"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/uneek.svg?v=20261006-megabrand" alt="Uneek" loading="lazy" width="128" height="22"></a></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -2440,7 +2451,7 @@
                         </div>
                     </li>
                     <li class="has-megamenu cat-menu">
-                        <a href="shop-pc.html?productType[]=Caps&amp;productType[]=Hats&amp;productType[]=Beanies" aria-haspopup="true">
+                        <a href="/shop-pc?productType[]=Caps&amp;productType[]=Hats&amp;productType[]=Beanies" aria-haspopup="true">
                             Headwear
                             <span class="nav-caret" aria-hidden="true"></span>
                         </a>
@@ -2451,30 +2462,30 @@
                                     <p class="mega-hero-kicker">Headwear range</p>
                                     <h3 class="mega-hero-title">Headwear for every team.</h3>
                                     <p class="mega-hero-text">Caps, hats and beanies with embroidery or print.</p>
-                                    <a class="mega-hero-cta" href="shop-pc.html?productType[]=Caps&amp;productType[]=Hats&amp;productType[]=Beanies">Shop Headwear <span aria-hidden="true">&rarr;</span></a>
+                                    <a class="mega-hero-cta" href="/shop-pc?productType[]=Caps&amp;productType[]=Hats&amp;productType[]=Beanies">Shop Headwear <span aria-hidden="true">&rarr;</span></a>
                                 </div>
                                 <div class="mega-cols">
                                     <div class="mega-col">
                                         <p class="mega-col-title"><i data-mega-icon="fit" aria-hidden="true"></i>Shop by fit</p>
                                         <ul>
-                                            <li><a href="shop-pc.html?productType[]=Caps&amp;productType[]=Hats&amp;productType[]=Beanies&amp;gender=unisex">Unisex</a></li>
-                                            <li><a href="shop-pc.html?productType[]=Caps&amp;productType[]=Hats&amp;productType[]=Beanies&amp;ageGroup=kids">Kids</a></li>
+                                            <li><a href="/shop-pc?productType[]=Caps&amp;productType[]=Hats&amp;productType[]=Beanies&amp;gender=unisex">Unisex</a></li>
+                                            <li><a href="/shop-pc?productType[]=Caps&amp;productType[]=Hats&amp;productType[]=Beanies&amp;ageGroup=kids">Kids</a></li>
                                         </ul>
                                     </div>
                                     <div class="mega-col">
                                         <p class="mega-col-title"><i data-mega-icon="type" aria-hidden="true"></i>Shop by type</p>
                                         <ul>
-                                            <li><a href="shop-pc.html?productType=Caps">Caps</a></li>
-                                            <li><a href="shop-pc.html?productType=Hats">Hats</a></li>
-                                            <li><a href="shop-pc.html?productType=Beanies">Beanies</a></li>
+                                            <li><a href="/shop-pc?productType=Caps">Caps</a></li>
+                                            <li><a href="/shop-pc?productType=Hats">Hats</a></li>
+                                            <li><a href="/shop-pc?productType=Beanies">Beanies</a></li>
                                         </ul>
                                     </div>
                                     <div class="mega-col">
                                         <p class="mega-col-title"><i data-mega-icon="brands" aria-hidden="true"></i>Popular brands</p>
                                         <ul>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?productType=Caps&amp;brand=beechfield" title="Beechfield"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/beechfield.jpeg?v=20261006-megabrand" alt="Beechfield" loading="lazy" width="128" height="22"></a></li>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?productType=Caps&amp;brand=result" title="Result"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/result2020.webp?v=20261006-megabrand" alt="Result" loading="lazy" width="128" height="22"></a></li>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?productType=Caps&amp;brand=flexfit" title="Flexfit"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/flexfit.webp?v=20261006-megabrand" alt="Flexfit" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?productType=Caps&amp;brand=beechfield" title="Beechfield"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/beechfield.jpeg?v=20261006-megabrand" alt="Beechfield" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?productType=Caps&amp;brand=result" title="Result"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/result2020.webp?v=20261006-megabrand" alt="Result" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?productType=Caps&amp;brand=flexfit" title="Flexfit"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/flexfit.webp?v=20261006-megabrand" alt="Flexfit" loading="lazy" width="128" height="22"></a></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -2492,7 +2503,7 @@
                         </div>
                     </li>
                     <li class="has-megamenu cat-menu">
-                        <a href="shop-pc.html?productType[]=bags&amp;productType[]=accessories&amp;productType[]=gloves&amp;productType[]=scarves&amp;productType[]=socks&amp;productType[]=ties&amp;productType[]=footwear&amp;productType[]=towels&amp;productType[]=lounge-underwear&amp;productType[]=aprons" aria-haspopup="true">
+                        <a href="/shop-pc?productType[]=bags&amp;productType[]=accessories&amp;productType[]=gloves&amp;productType[]=scarves&amp;productType[]=socks&amp;productType[]=ties&amp;productType[]=footwear&amp;productType[]=towels&amp;productType[]=lounge-underwear&amp;productType[]=aprons" aria-haspopup="true">
                             Accessories
                             <span class="nav-caret" aria-hidden="true"></span>
                         </a>
@@ -2503,46 +2514,46 @@
                                     <p class="mega-hero-kicker">Accessories range</p>
                                     <h3 class="mega-hero-title">Accessories that finish the look.</h3>
                                     <p class="mega-hero-text">Bags, headwear extras and everyday kit with your logo.</p>
-                                    <a class="mega-hero-cta" href="shop-pc.html?productType[]=bags&amp;productType[]=accessories&amp;productType[]=gloves&amp;productType[]=scarves&amp;productType[]=socks&amp;productType[]=ties&amp;productType[]=footwear&amp;productType[]=towels&amp;productType[]=lounge-underwear&amp;productType[]=aprons">Shop Accessories <span aria-hidden="true">&rarr;</span></a>
+                                    <a class="mega-hero-cta" href="/shop-pc?productType[]=bags&amp;productType[]=accessories&amp;productType[]=gloves&amp;productType[]=scarves&amp;productType[]=socks&amp;productType[]=ties&amp;productType[]=footwear&amp;productType[]=towels&amp;productType[]=lounge-underwear&amp;productType[]=aprons">Shop Accessories <span aria-hidden="true">&rarr;</span></a>
                                 </div>
                                 <div class="mega-cols">
                                     <div class="mega-col">
                                         <p class="mega-col-title"><i data-mega-icon="fit" aria-hidden="true"></i>Shop by fit</p>
                                         <ul>
-                                            <li><a href="shop-pc.html?productType=accessories&amp;gender=male">Men</a></li>
-                                            <li><a href="shop-pc.html?productType=accessories&amp;gender=female">Women</a></li>
-                                            <li><a href="shop-pc.html?productType=accessories&amp;gender=unisex">Unisex</a></li>
+                                            <li><a href="/shop-pc?productType=accessories&amp;gender=male">Men</a></li>
+                                            <li><a href="/shop-pc?productType=accessories&amp;gender=female">Women</a></li>
+                                            <li><a href="/shop-pc?productType=accessories&amp;gender=unisex">Unisex</a></li>
                                         </ul>
                                     </div>
                                     <div class="mega-col">
                                         <p class="mega-col-title"><i data-mega-icon="type" aria-hidden="true"></i>Shop by type</p>
                                         <ul>
-                                            <li><a href="shop-pc.html?productType=bags">Bags &amp; Totes</a></li>
-                                            <li><a href="shop-pc.html?productType=Caps">Caps</a></li>
-                                            <li><a href="shop-pc.html?productType=Beanies">Beanies</a></li>
-                                            <li><a href="shop-pc.html?productType=gloves">Gloves</a></li>
-                                            <li><a href="shop-pc.html?productType=scarves">Scarves</a></li>
-                                            <li><a href="shop-pc.html?productType=socks">Socks</a></li>
-                                            <li><a href="shop-pc.html?productType=ties">Ties</a></li>
-                                            <li><a href="shop-pc.html?productType=footwear">Footwear</a></li>
-                                            <li><a href="shop-pc.html?productType=towels">Towels</a></li>
-                                            <li><a href="shop-pc.html?productType=lounge-underwear">Loungewear</a></li>
-                                            <li><a href="shop-pc.html?productType=aprons">Aprons</a></li>
+                                            <li><a href="/shop-pc?productType=bags">Bags &amp; Totes</a></li>
+                                            <li><a href="/shop-pc?productType=Caps">Caps</a></li>
+                                            <li><a href="/shop-pc?productType=Beanies">Beanies</a></li>
+                                            <li><a href="/shop-pc?productType=gloves">Gloves</a></li>
+                                            <li><a href="/shop-pc?productType=scarves">Scarves</a></li>
+                                            <li><a href="/shop-pc?productType=socks">Socks</a></li>
+                                            <li><a href="/shop-pc?productType=ties">Ties</a></li>
+                                            <li><a href="/shop-pc?productType=footwear">Footwear</a></li>
+                                            <li><a href="/shop-pc?productType=towels">Towels</a></li>
+                                            <li><a href="/shop-pc?productType=lounge-underwear">Loungewear</a></li>
+                                            <li><a href="/shop-pc?productType=aprons">Aprons</a></li>
                                         </ul>
                                     </div>
                                     <div class="mega-col">
                                         <p class="mega-col-title"><i data-mega-icon="brands" aria-hidden="true"></i>Popular brands</p>
                                         <ul>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?brand=bagbase" title="BagBase"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/bagbase.jpeg?v=20261006-megabrand" alt="BagBase" loading="lazy" width="128" height="22"></a></li>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?brand=nutshell" title="Nutshell"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/nutshell-bag2020.webp?v=20261006-megabrand" alt="Nutshell" loading="lazy" width="128" height="22"></a></li>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?brand=ogio" title="Ogio"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/ogio2020.webp?v=20261006-megabrand" alt="Ogio" loading="lazy" width="128" height="22"></a></li>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?brand=quadra" title="Quadra"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/quadra-2020.webp?v=20261006-megabrand" alt="Quadra" loading="lazy" width="128" height="22"></a></li>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?brand=stanley-stella" title="Stanley/Stella"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/stanley-stella.webp?v=20261006-megabrand" alt="Stanley/Stella" loading="lazy" width="128" height="22"></a></li>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?brand=westford-mill" title="Westford Mill"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/westford-mill-2020.webp?v=20261006-megabrand" alt="Westford Mill" loading="lazy" width="128" height="22"></a></li>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?brand=beechfield" title="Beechfield"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/beechfield.jpeg?v=20261006-megabrand" alt="Beechfield" loading="lazy" width="128" height="22"></a></li>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?brand=flexfit" title="Flexfit"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/flexfit.webp?v=20261006-megabrand" alt="Flexfit" loading="lazy" width="128" height="22"></a></li>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?brand=portwest" title="Portwest"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/portwest.webp?v=20261006-megabrand" alt="Portwest" loading="lazy" width="128" height="22"></a></li>
-                                            <li><a class="mega-brand-link" href="shop-pc.html?brand=result" title="Result"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/result2020.webp?v=20261006-megabrand" alt="Result" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?brand=bagbase" title="BagBase"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/bagbase.jpeg?v=20261006-megabrand" alt="BagBase" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?brand=nutshell" title="Nutshell"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/nutshell-bag2020.webp?v=20261006-megabrand" alt="Nutshell" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?brand=ogio" title="Ogio"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/ogio2020.webp?v=20261006-megabrand" alt="Ogio" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?brand=quadra" title="Quadra"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/quadra-2020.webp?v=20261006-megabrand" alt="Quadra" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?brand=stanley-stella" title="Stanley/Stella"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/stanley-stella.webp?v=20261006-megabrand" alt="Stanley/Stella" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?brand=westford-mill" title="Westford Mill"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/westford-mill-2020.webp?v=20261006-megabrand" alt="Westford Mill" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?brand=beechfield" title="Beechfield"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/beechfield.jpeg?v=20261006-megabrand" alt="Beechfield" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?brand=flexfit" title="Flexfit"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/flexfit.webp?v=20261006-megabrand" alt="Flexfit" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?brand=portwest" title="Portwest"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/portwest.webp?v=20261006-megabrand" alt="Portwest" loading="lazy" width="128" height="22"></a></li>
+                                            <li><a class="mega-brand-link" href="/shop-pc?brand=result" title="Result"><img class="mega-brand-logo" src="brandedukv15-child/assets/images/brands/result2020.webp?v=20261006-megabrand" alt="Result" loading="lazy" width="128" height="22"></a></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -2560,7 +2571,7 @@
                         </div>
                     </li>
                     <li>
-                        <a href="/bundles.html">Bundles</a>
+                        <a href="/bundles">Bundles</a>
                     </li>
                     <li class="nav-more" hidden>
                         <a class="nav-more-toggle" href="#" aria-haspopup="true" aria-expanded="false" aria-controls="primary-nav-more-panel">
@@ -3062,7 +3073,7 @@
     <section class="hero-banners-section">
         <div class="hero-banners-container" data-hero-banners>
             <!-- Original banner 2 - Branded -->
-            <a class="hero-banner hero-banner--active" id="heroBanner4" href="shop-pc.html?productType=tshirts" aria-label="Shop branded T-shirts">
+            <a class="hero-banner hero-banner--active" id="heroBanner4" href="/shop-pc?productType=tshirts" aria-label="Shop branded T-shirts">
                 <div class="hero-bounce-container">
                     <div class="hero-bounce-headline" data-bounce-text="branded">branded</div>
                 </div>
@@ -3073,25 +3084,25 @@
             </div>
 
             <!-- New catalogue banners -->
-            <a class="hero-banner hero-banner-image" href="shop-pc.html?brand=regatta-professional" aria-label="Shop Regatta Professional">
+            <a class="hero-banner hero-banner-image" href="/shop-pc?brand=regatta-professional" aria-label="Shop Regatta Professional">
                 <img class="onlyboards-banner-image" src="brandeduk.com/assets/ral17774-regatta-1.50-off-banners-dropbox-12.webp" alt="Regatta Professional Dover jacket offer">
             </a>
-            <a class="hero-banner hero-banner-image" href="shop-pc.html?brand=mumbles" aria-label="Shop Mumbles">
+            <a class="hero-banner hero-banner-image" href="/shop-pc?brand=mumbles" aria-label="Shop Mumbles">
                 <img class="onlyboards-banner-image" src="brandeduk.com/assets/ral17790---mumbles-halloween_banner.webp" alt="Mumbles Halloween plush collection">
             </a>
-            <a class="hero-banner hero-banner-image" href="shop-pc.html?brand=anthem" aria-label="Shop Anthem">
+            <a class="hero-banner hero-banner-image" href="/shop-pc?brand=anthem" aria-label="Shop Anthem">
                 <img class="onlyboards-banner-image" src="brandeduk.com/assets/ral17804-anthem-hoodies-banners-v3_01_1920-x-630.webp" alt="Anthem heavy bass hoodie collection">
             </a>
             <a class="hero-banner hero-banner-image" href="#" data-open-contact="1" aria-label="DTF printing service">
                 <img class="onlyboards-banner-image" src="brandeduk.com/assets/DTF%20Printing%20Service%20Studio%20Banner.png" alt="DTF printing service — full-colour Direct to Film prints for custom workwear and apparel">
             </a>
-            <a class="hero-banner hero-banner-image" href="shop-pc.html?brand=gildan" aria-label="Shop Gildan industry classics">
+            <a class="hero-banner hero-banner-image" href="/shop-pc?brand=gildan" aria-label="Shop Gildan industry classics">
                 <img class="onlyboards-banner-image" src="brandeduk.com/assets/gildan-uk-desk-gif.webp" alt="Gildan five industry classics offer: GD001, GD002, GD005, GD056 and GD057">
             </a>
-            <a class="hero-banner hero-banner-image" href="shop-pc.html?brand=awdis-just-hoods" aria-label="Shop AWDis Just Hoods">
+            <a class="hero-banner hero-banner-image" href="/shop-pc?brand=awdis-just-hoods" aria-label="Shop AWDis Just Hoods">
                 <img class="onlyboards-banner-image" src="brandeduk.com/assets/ral17819-jh501-hood-banner-desktop.webp" alt="AWDis JH501 College Hoodie 2.0 designed for decoration">
             </a>
-            <a class="hero-banner hero-banner-image" href="shop-pc.html?brand=awdis-just-hoods" aria-label="Shop AWDis Just Hoods">
+            <a class="hero-banner hero-banner-image" href="/shop-pc?brand=awdis-just-hoods" aria-label="Shop AWDis Just Hoods">
                 <img class="onlyboards-banner-image" src="brandeduk.com/assets/ral17829-jh501-banner-refresh.webp" alt="AWDis JH501 College Hoodie 2.0">
             </a>
 
@@ -3172,7 +3183,7 @@
                     <p class="uniform-cube__copy uniform-cube__reveal">Bring the whole year together with something students actually want to wear.<br><br>Custom leavers wear creates a shared identity — and turns the final year into something they can take with them.</p>
                     <div class="uniform-cube__actions uniform-cube__reveal">
                         <a class="uniform-cube__next" href="#uc-together">Discover</a>
-                        <a class="uniform-cube__shop" href="shop-pc.html?productType=hoodies">Shop leavers</a>
+                        <a class="uniform-cube__shop" href="/shop-pc?productType=hoodies">Shop leavers</a>
                     </div>
                 </div>
             </article>
@@ -3184,7 +3195,7 @@
                     <p class="uniform-cube__copy uniform-cube__reveal">A consistent uniform does more than make people look professional.<br><br>It brings different roles together, strengthens team identity and gives everyone a shared sense of belonging.</p>
                     <div class="uniform-cube__actions uniform-cube__reveal">
                         <a class="uniform-cube__next" href="#uc-warehouse">Turn</a>
-                        <a class="uniform-cube__shop" href="shop-pc.html">Shop uniforms</a>
+                        <a class="uniform-cube__shop" href="/shop-pc">Shop uniforms</a>
                     </div>
                 </div>
             </article>
@@ -3196,7 +3207,7 @@
                     <p class="uniform-cube__copy uniform-cube__reveal">Warehouse teams need workwear that feels practical while keeping everyone looking consistent and organised.<br><br>Branded polos create a clean, professional image across every shift.</p>
                     <div class="uniform-cube__actions uniform-cube__reveal">
                         <a class="uniform-cube__next" href="#uc-hivis">Turn</a>
-                        <a class="uniform-cube__shop" href="shop-pc.html?productType=polos">Shop polos</a>
+                        <a class="uniform-cube__shop" href="/shop-pc?productType=polos">Shop polos</a>
                     </div>
                 </div>
             </article>
@@ -3208,7 +3219,7 @@
                     <p class="uniform-cube__copy uniform-cube__reveal">On site, workwear has a job to do.<br><br>The right hi-vis clothing helps your team stay visible while presenting a consistent, professional image from builders to engineers.</p>
                     <div class="uniform-cube__actions uniform-cube__reveal">
                         <a class="uniform-cube__next" href="#uc-aprons">Turn</a>
-                        <a class="uniform-cube__shop" href="hivis.html">Shop hi-vis</a>
+                        <a class="uniform-cube__shop" href="/hivis">Shop hi-vis</a>
                     </div>
                 </div>
             </article>
@@ -3220,7 +3231,7 @@
                     <p class="uniform-cube__copy uniform-cube__reveal">In hospitality, your team is part of the customer experience.<br><br>Coordinated aprons create a welcoming, recognisable look while giving busy teams the practicality they need.</p>
                     <div class="uniform-cube__actions uniform-cube__reveal">
                         <a class="uniform-cube__next" href="#uc-chefwear">Turn</a>
-                        <a class="uniform-cube__shop" href="shop-pc.html?productType=aprons">Shop aprons</a>
+                        <a class="uniform-cube__shop" href="/shop-pc?productType=aprons">Shop aprons</a>
                     </div>
                 </div>
             </article>
@@ -3231,7 +3242,7 @@
                     <h2 class="uniform-cube__title uniform-cube__reveal">LOOK SHARP.<br>FEEL<br>READY.</h2>
                     <p class="uniform-cube__copy uniform-cube__reveal">Professional chefwear combines comfort, durability and a polished image for every service.<br><br>Coordinated uniforms help kitchen teams look confident, work as one and represent the business behind every plate.</p>
                     <div class="uniform-cube__actions uniform-cube__reveal">
-                        <a class="uniform-cube__shop" href="shop-pc.html?productType=chef-jackets">Shop chefwear</a>
+                        <a class="uniform-cube__shop" href="/shop-pc?productType=chef-jackets">Shop chefwear</a>
                         <a class="uniform-cube__next" href="#" data-open-contact="1">Get a quote</a>
                     </div>
                 </div>
@@ -3294,7 +3305,7 @@
                 <span class="featured-intro__eyebrow">Our collection</span>
                 <h2 class="featured-intro__title">Featured Products</h2>
                 <p class="featured-intro__text">Popular styles, trusted by businesses, teams and organisations.</p>
-                <a href="shop-pc.html?sort=featured" class="featured-intro__cta">View all products <span aria-hidden="true">&rarr;</span></a>
+                <a href="/shop-pc?sort=featured" class="featured-intro__cta">View all products <span aria-hidden="true">&rarr;</span></a>
             </div>
             <div class="featured-products-wrapper">
                 <div class="featured-products-carousel carousel-track" id="featuredProductsCarousel">
@@ -3452,13 +3463,13 @@
             </div>
 
             <div class="tb-featured">
-                <a class="tb-feature" href="shop-pc.html?brand=Portwest">
+                <a class="tb-feature" href="/shop-pc?brand=Portwest">
                     <img src="brandedukv15-child/assets/images/trusted-brands/portwest.webp?v=20260927-hq" alt="Portwest - Built for a safer tomorrow" loading="lazy">
                 </a>
-                <a class="tb-feature" href="shop-pc.html?brand=Premier">
+                <a class="tb-feature" href="/shop-pc?brand=Premier">
                     <img src="brandedukv15-child/assets/images/trusted-brands/premier.webp?v=20260927-hq" alt="Premier - Uniforms that work for you" loading="lazy">
                 </a>
-                <a class="tb-feature" href="shop-pc.html?brand=ProRTX">
+                <a class="tb-feature" href="/shop-pc?brand=ProRTX">
                     <img src="brandedukv15-child/assets/images/trusted-brands/pro-rtx.webp?v=20260927-hq" alt="Pro RTX - High visibility, high performance" loading="lazy">
                 </a>
             </div>
@@ -3577,7 +3588,7 @@
         document.querySelector('.brands-section').addEventListener('click', event => {
             const card = event.target.closest('.brand-card');
             const brand = card?.dataset.brand || card?.textContent.trim();
-            if (brand) window.location.href = 'shop-pc.html?brand=' + encodeURIComponent(apiBrands[brand] || brand);
+            if (brand) window.location.href='/shop-pc?brand=' + encodeURIComponent(apiBrands[brand] || brand);
         });
 
         const track = document.querySelector('.brands-section .tb-track');
@@ -3667,7 +3678,7 @@
                     </div>
                     <div class="faq-row">
                         <div class="faq-question">Best garments for embroidery?</div>
-                        <div class="faq-answer"><a href="polos.html" style="color: #007bff; text-decoration: none;">Polo shirts</a>, <a href="hoodies.html" style="color: #007bff; text-decoration: none;">hoodies</a>, <a href="jackets.html" style="color: #007bff; text-decoration: none;">jackets</a>, caps and fleeces work best. Perfect for <a href="workwear.html" style="color: #007bff; text-decoration: none;">corporate workwear</a> and professional uniforms. NOT suitable for hi-vis due to reflective material.</div>
+                        <div class="faq-answer"><a href="/polos" style="color: #007bff; text-decoration: none;">Polo shirts</a>, <a href="/hoodies" style="color: #007bff; text-decoration: none;">hoodies</a>, <a href="/jackets" style="color: #007bff; text-decoration: none;">jackets</a>, caps and fleeces work best. Perfect for <a href="/workwear" style="color: #007bff; text-decoration: none;">corporate workwear</a> and professional uniforms. NOT suitable for hi-vis due to reflective material.</div>
                     </div>
                     <div class="faq-row">
                         <div class="faq-question">Logo size limits?</div>
@@ -3679,7 +3690,7 @@
                     </div>
                     <div class="faq-row">
                         <div class="faq-question">Wash durability</div>
-                        <div class="faq-answer">Embroidery is the most durable decoration method. Ideal for <a href="workwear.html" style="color: #007bff; text-decoration: none;">trade workwear</a>, restaurant uniforms and <a href="jackets.html" style="color: #007bff; text-decoration: none;">outdoor jackets</a>. Withstands industrial washing, tumble drying and years of heavy use without fading or peeling.</div>
+                        <div class="faq-answer">Embroidery is the most durable decoration method. Ideal for <a href="/workwear" style="color: #007bff; text-decoration: none;">trade workwear</a>, restaurant uniforms and <a href="/jackets" style="color: #007bff; text-decoration: none;">outdoor jackets</a>. Withstands industrial washing, tumble drying and years of heavy use without fading or peeling.</div>
                     </div>
                     <div class="faq-row">
                         <div class="faq-question">Setup cost?</div>
@@ -3695,7 +3706,7 @@
                 <div class="faq-panel" id="dtf">
                     <div class="faq-row">
                         <div class="faq-question">What is DTF printing?</div>
-                        <div class="faq-answer">Direct-to-Film (DTF) printing creates full-colour transfers that are heat-pressed onto garments. Perfect for <a href="tshirts.html" style="color: #007bff; text-decoration: none;">event t-shirts</a>, <a href="hoodies.html" style="color: #007bff; text-decoration: none;">branded hoodies</a> and complex logos on any fabric colour. Check our <a href="bundles.html" style="color: #007bff; text-decoration: none;">bundles</a> for package deals.</div>
+                        <div class="faq-answer">Direct-to-Film (DTF) printing creates full-colour transfers that are heat-pressed onto garments. Perfect for <a href="/tshirts" style="color: #007bff; text-decoration: none;">event t-shirts</a>, <a href="/hoodies" style="color: #007bff; text-decoration: none;">branded hoodies</a> and complex logos on any fabric colour. Check our <a href="/bundles" style="color: #007bff; text-decoration: none;">bundles</a> for package deals.</div>
                     </div>
                     <div class="faq-row">
                         <div class="faq-question">Is it suitable for cotton?</div>
@@ -3715,7 +3726,7 @@
                     </div>
                     <div class="faq-row">
                         <div class="faq-question">Small quantities?</div>
-                        <div class="faq-answer">Perfect for small runs, with a low minimum order of just £50 + VAT (goods only). Ideal for <a href="tshirts.html" style="color: #007bff; text-decoration: none;">pub t-shirts</a>, <a href="hoodies.html" style="color: #007bff; text-decoration: none;">team hoodies</a>, event merchandise and samples. Start with our <a href="bundles.html" style="color: #007bff; text-decoration: none;">Starter Bundle</a> from £24.99.</div>
+                        <div class="faq-answer">Perfect for small runs, with a low minimum order of just £50 + VAT (goods only). Ideal for <a href="/tshirts" style="color: #007bff; text-decoration: none;">pub t-shirts</a>, <a href="/hoodies" style="color: #007bff; text-decoration: none;">team hoodies</a>, event merchandise and samples. Start with our <a href="/bundles" style="color: #007bff; text-decoration: none;">Starter Bundle</a> from £24.99.</div>
                     </div>
                     <div class="faq-row">
                         <div class="faq-question">Setup costs</div>
@@ -3735,11 +3746,11 @@
                     </div>
                     <div class="faq-row">
                         <div class="faq-question">Best use cases</div>
-                        <div class="faq-answer">Ideal for names, numbers, simple logos on <a href="tshirts.html" style="color: #007bff; text-decoration: none;">team t-shirts</a>, <a href="hoodies.html" style="color: #007bff; text-decoration: none;">sports hoodies</a> and <a href="workwear.html" style="color: #007bff; text-decoration: none;">restaurant uniforms</a>. Popular for sports kits, hen parties and personalised <a href="tshirts.html" style="color: #007bff; text-decoration: none;">pub t-shirts</a>.</div>
+                        <div class="faq-answer">Ideal for names, numbers, simple logos on <a href="/tshirts" style="color: #007bff; text-decoration: none;">team t-shirts</a>, <a href="/hoodies" style="color: #007bff; text-decoration: none;">sports hoodies</a> and <a href="/workwear" style="color: #007bff; text-decoration: none;">restaurant uniforms</a>. Popular for sports kits, hen parties and personalised <a href="/tshirts" style="color: #007bff; text-decoration: none;">pub t-shirts</a>.</div>
                     </div>
                     <div class="faq-row">
                         <div class="faq-question">Names & numbers</div>
-                        <div class="faq-answer">Perfect for individual names and numbers on <a href="tshirts.html" style="color: #007bff; text-decoration: none;">team t-shirts</a> and <a href="hoodies.html" style="color: #007bff; text-decoration: none;">hoodies</a>. Each item can be unique at no extra setup cost - great for sports kits, schools and events.</div>
+                        <div class="faq-answer">Perfect for individual names and numbers on <a href="/tshirts" style="color: #007bff; text-decoration: none;">team t-shirts</a> and <a href="/hoodies" style="color: #007bff; text-decoration: none;">hoodies</a>. Each item can be unique at no extra setup cost - great for sports kits, schools and events.</div>
                     </div>
                     <div class="faq-row">
                         <div class="faq-question">Colour options</div>
@@ -3767,15 +3778,15 @@
                 <div class="faq-panel" id="screen">
                     <div class="faq-row">
                         <div class="faq-question">What is screen printing?</div>
-                        <div class="faq-answer">Screen printing pushes ink through mesh screens onto fabric. Best for bulk <a href="tshirts.html" style="color: #007bff; text-decoration: none;">t-shirts</a>, <a href="hoodies.html" style="color: #007bff; text-decoration: none;">hoodies</a> and <a href="hivis.html" style="color: #007bff; text-decoration: none;">hi-vis workwear</a>. The ONLY method suitable for hi-vis reflective material. Get up to 30% OFF with <a href="bulk-orders.html" style="color: #007bff; text-decoration: none;">bulk orders</a>.</div>
+                        <div class="faq-answer">Screen printing pushes ink through mesh screens onto fabric. Best for bulk <a href="/tshirts" style="color: #007bff; text-decoration: none;">t-shirts</a>, <a href="/hoodies" style="color: #007bff; text-decoration: none;">hoodies</a> and <a href="/hivis" style="color: #007bff; text-decoration: none;">hi-vis workwear</a>. The ONLY method suitable for hi-vis reflective material. Get up to 30% OFF with <a href="/bulk-orders" style="color: #007bff; text-decoration: none;">bulk orders</a>.</div>
                     </div>
                     <div class="faq-row">
                         <div class="faq-question">Minimum quantity</div>
-                        <div class="faq-answer">We recommend 25+ pieces to be cost-effective due to screen setup. Perfect for <a href="tshirts.html" style="color: #007bff; text-decoration: none;">restaurant staff t-shirts</a>, <a href="hivis.html" style="color: #007bff; text-decoration: none;">contractor hi-vis</a> and <a href="hoodies.html" style="color: #007bff; text-decoration: none;">team hoodies</a>. For smaller quantities, consider DTF or vinyl instead.</div>
+                        <div class="faq-answer">We recommend 25+ pieces to be cost-effective due to screen setup. Perfect for <a href="/tshirts" style="color: #007bff; text-decoration: none;">restaurant staff t-shirts</a>, <a href="/hivis" style="color: #007bff; text-decoration: none;">contractor hi-vis</a> and <a href="/hoodies" style="color: #007bff; text-decoration: none;">team hoodies</a>. For smaller quantities, consider DTF or vinyl instead.</div>
                     </div>
                     <div class="faq-row">
                         <div class="faq-question">Best for bulk orders</div>
-                        <div class="faq-answer">Perfect for <a href="tshirts.html" style="color: #007bff; text-decoration: none;">event t-shirts</a> 25+, <a href="hoodies.html" style="color: #007bff; text-decoration: none;">team hoodies</a> 50+ and <a href="hivis.html" style="color: #007bff; text-decoration: none;">hi-vis workwear</a> for construction/trade. Get 20-30% OFF with our <a href="bulk-orders.html" style="color: #007bff; text-decoration: none;">bulk order discounts</a>. Economical at 100+ pieces with significant savings.</div>
+                        <div class="faq-answer">Perfect for <a href="/tshirts" style="color: #007bff; text-decoration: none;">event t-shirts</a> 25+, <a href="/hoodies" style="color: #007bff; text-decoration: none;">team hoodies</a> 50+ and <a href="/hivis" style="color: #007bff; text-decoration: none;">hi-vis workwear</a> for construction/trade. Get 20-30% OFF with our <a href="/bulk-orders" style="color: #007bff; text-decoration: none;">bulk order discounts</a>. Economical at 100+ pieces with significant savings.</div>
                     </div>
                     <div class="faq-row">
                         <div class="faq-question">Colour limits</div>
@@ -4345,9 +4356,20 @@ document.addEventListener('DOMContentLoaded', function() {
 })();
 
 // Responsive routing: phones → mobile always. force=desktop never keeps a phone on PC.
+// The address stays on /. Only the force query changes.
 (function() {
     var BREAKPOINT = 700;
-    var mobileUrl = 'index-mobile.html?force=mobile' + (/[?&]contact=1(?:&|$)/.test(window.location.search) ? '&contact=1' : '');
+    function mobileUrl() {
+        var target = new URL('/', window.location.origin);
+        try {
+            var cur = new URLSearchParams(window.location.search);
+            cur.forEach(function (value, key) {
+                if (key !== 'force') target.searchParams.append(key, value);
+            });
+        } catch (e) {}
+        target.searchParams.set('force', 'mobile');
+        return target.pathname + target.search + (window.location.hash || '');
+    }
 
     function isPhoneUa() {
         var ua = (navigator.userAgent || '').toLowerCase();
@@ -4377,13 +4399,17 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function maybeRedirectToMobile() {
+        var path = window.location.pathname || '/';
+        var force = '';
+        try { force = (new URLSearchParams(window.location.search).get('force') || '').toLowerCase(); } catch (e) {}
+        if ((path === '/' || path === '') && force === 'mobile') return;
         if (isPhoneUa()) {
-            window.location.replace(mobileUrl);
+            window.location.replace(mobileUrl());
             return;
         }
         if (isForcedDesktop()) return;
         if (!isMobileViewport()) return;
-        window.location.replace(mobileUrl);
+        window.location.replace(mobileUrl());
     }
 
     setTimeout(maybeRedirectToMobile, 0);
@@ -4639,7 +4665,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var searchQuery = input.value.trim();
             if (searchQuery) {
                 closeAC();
-                window.location.href = 'shop-pc.html?q=' + encodeURIComponent(searchQuery);
+                window.location.href='/shop-pc?q=' + encodeURIComponent(searchQuery);
             }
         }
 
@@ -4731,7 +4757,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function buildCard(item, index, isDuplicate) {
         var card = document.createElement('a');
         card.className = 'carousel-item';
-        card.href = 'shop-pc.html?product=' + encodeURIComponent(item.style_code || '');
+        card.href='/shop-pc?product=' + encodeURIComponent(item.style_code || '');
         card.style.setProperty('--i', String(index + 1));
         if (isDuplicate) {
             card.setAttribute('aria-hidden', 'true');

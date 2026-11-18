@@ -25,13 +25,13 @@ window.BrandedAccount = (function () {
 
     function pageHref(name) {
         var routes = {
-            basket: isLocalHost() ? '/basket.html' : '/basket',
-            checkout: isLocalHost() ? '/checkout.html' : '/checkout',
-            home: isLocalHost() ? '/home-pc.html' : '/',
-            profile: isLocalHost() ? '/profile.html' : '/profile',
-            orders: isLocalHost() ? '/orders.html' : '/orders',
-            orderDetail: isLocalHost() ? '/order-detail.html' : '/order-detail',
-            trackOrder: isLocalHost() ? '/track-order.html' : '/track-order',
+            basket: isLocalHost() ? '/basket' : '/basket',
+            checkout: isLocalHost() ? '/checkout' : '/checkout',
+            home: isLocalHost() ? '/' : '/',
+            profile: isLocalHost() ? '/profile' : '/profile',
+            orders: isLocalHost() ? '/orders' : '/orders',
+            orderDetail: isLocalHost() ? '/order-detail' : '/order-detail',
+            trackOrder: isLocalHost() ? '/track-order' : '/track-order',
         };
         return routes[name] || '/';
     }

@@ -21,13 +21,16 @@ const { URL } = require('url');
 const PORT = Number(process.env.API_PROXY_PORT || 3005);
 const HOST = process.env.API_PROXY_HOST || '127.0.0.1';
 const API_UPSTREAM = (process.env.BRANDED_API_UPSTREAM || 'https://api.brandeduk.com').replace(/\/+$/, '');
+// A phone on the same Wi-Fi opens the preview by the PC's LAN address (API_PROXY_HOST=<that IP>).
+const PRIVATE_LAN_HOST = /^(?:10\.\d{1,3}|192\.168|172\.(?:1[6-9]|2\d|3[01]))\.\d{1,3}\.\d{1,3}$/;
 
 function isLocalDevOrigin(origin) {
     if (!origin) return false;
     try {
         const u = new URL(origin);
         return u.protocol === 'http:' &&
-            (u.hostname === 'localhost' || u.hostname === '127.0.0.1' || u.hostname === '[::1]');
+            (u.hostname === 'localhost' || u.hostname === '127.0.0.1' || u.hostname === '[::1]' ||
+                PRIVATE_LAN_HOST.test(u.hostname));
     } catch (_) {
         return false;
     }

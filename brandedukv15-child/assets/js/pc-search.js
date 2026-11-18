@@ -79,19 +79,19 @@
     }
 
     function productUrl(code) {
-        return new URL('shop-pc.html?product=' + encodeURIComponent(code), projectRoot).href;
+        return new URL('/shop-pc?product=' + encodeURIComponent(code), projectRoot).href;
     }
 
     function shopUrl(query) {
-        return new URL('shop-pc.html?q=' + encodeURIComponent(canonicalSearchQuery(query)), projectRoot).href;
+        return new URL('/shop-pc?q=' + encodeURIComponent(canonicalSearchQuery(query)), projectRoot).href;
     }
 
     function brandUrl(name) {
-        return new URL('shop-pc.html?brand=' + encodeURIComponent(name), projectRoot).href;
+        return new URL('/shop-pc?brand=' + encodeURIComponent(name), projectRoot).href;
     }
 
     function typeUrl(slug) {
-        return new URL('shop-pc.html?productType=' + encodeURIComponent(slug), projectRoot).href;
+        return new URL('/shop-pc?productType=' + encodeURIComponent(slug), projectRoot).href;
     }
 
     function fallbackImage() {

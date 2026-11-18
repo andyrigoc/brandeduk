@@ -730,7 +730,7 @@
         }
       });
       writeQuoteBasket(quote);
-      window.location.href = '../basket.html#orderSummary';
+      window.location.href = '/basket#orderSummary';
     }
 
     function nextStep() {

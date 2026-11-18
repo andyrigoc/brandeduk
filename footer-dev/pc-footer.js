@@ -37,58 +37,58 @@
       {
         title: "Shop",
         links: [
-          ["All Products", "shop-pc.html"],
-          ["T-Shirts & Polos", "tshirts.html"],
-          ["Hoodies & Sweatshirts", "hoodies.html"],
-          ["Jackets & Fleeces", "jackets.html"],
-          ["Hi-Vis & Workwear", "hivis.html"],
-          ["Headwear", "shop-pc.html?productType=caps"]
+          ["All Products", "/shop-pc"],
+          ["T-Shirts & Polos", "/tshirts"],
+          ["Hoodies & Sweatshirts", "/hoodies"],
+          ["Jackets & Fleeces", "/jackets"],
+          ["Hi-Vis & Workwear", "/hivis"],
+          ["Headwear", "/shop-pc?productType=caps"]
         ]
       },
       {
         title: "Industries",
         links: [
-          ["Hospitality & Cafés", "hospitality-workwear.html"],
-          ["Construction & Trades", "construction-workwear.html"],
-          ["Corporate Uniforms", "corporate-uniforms.html"],
-          ["School Uniforms", "school-uniforms.html"],
-          ["Sports Teamwear", "sports-teamwear.html"],
-          ["Outdoor Workwear", "outdoor-workwear.html"]
+          ["Hospitality & Cafés", "/hospitality-workwear"],
+          ["Construction & Trades", "/construction-workwear"],
+          ["Corporate Uniforms", "/corporate-uniforms"],
+          ["School Uniforms", "/school-uniforms"],
+          ["Sports Teamwear", "/sports-teamwear"],
+          ["Outdoor Workwear", "/outdoor-workwear"]
         ]
       },
       {
         title: "Customisation",
         links: [
           ["Our Services", "/services"],
-          ["Embroidery", "embroidery.html"],
-          ["Screen Printing", "screen-printing.html"],
-          ["DTF Printing", "dtf-printing.html"],
-          ["DTG Printing", "dtg-printing.html"],
-          ["Artwork Guidelines", "blog/prepare-logo-printing-embroidery.html"],
-          ["Price guide and Logo Set-up", "pricing-guide.html"]
+          ["Embroidery", "/embroidery"],
+          ["Screen Printing", "/screen-printing"],
+          ["DTF Printing", "/dtf-printing"],
+          ["DTG Printing", "/dtg-printing"],
+          ["Artwork Guidelines", "/blog/prepare-logo-printing-embroidery"],
+          ["Price guide and Logo Set-up", "/pricing-guide"]
         ]
       },
       {
         title: "Help & Orders",
         links: [
-          ["Track Your Order", "track-order.html"],
+          ["Track Your Order", "/track-order"],
           ["Delivery & Lead Times", "/terms-and-conditions#delivery"],
-          ["Returns", "terms-and-conditions.html#returns"],
-          ["Size Guides", "shop-pc.html"],
-          ["FAQs", "home-pc.html#faq"],
-          ["Contact Us", "contact.html"]
+          ["Returns", "/terms-and-conditions#returns"],
+          ["Size Guides", "/shop-pc"],
+          ["FAQs", "/#faq"],
+          ["Contact Us", "/contact"]
         ]
       },
       {
         title: "Business",
         links: [
-          ["About Branded UK", "about.html"],
-          ["Bulk & Corporate Orders", "bulk-orders.html"],
+          ["About Branded UK", "/about"],
+          ["Bulk & Corporate Orders", "/bulk-orders"],
           ["Request a Quote", "#", "contact"],
-          ["Case Studies", "blog/case-study-500-tshirts-london-event.html"],
-          ["Sustainability", "services.html"],
-          ["Blog", "blog/index.html"],
-          ["Terms & Conditions", "terms-and-conditions.html"],
+          ["Case Studies", "/blog/case-study-500-tshirts-london-event"],
+          ["Sustainability", "/services"],
+          ["Blog", "/blog/"],
+          ["Terms & Conditions", "/terms-and-conditions"],
           ["Privacy & Cookies Policy", "/privacy-policy"]
         ]
       }
@@ -155,7 +155,7 @@
           </div>
           <div class="buk-footer__payments" aria-label="Accepted payment methods"></div>
         </div>
-        <a class="buk-footer__watermark" href="home-pc.html" aria-label="Branded UK home"><span>branded</span><span class="buk-footer__watermark-uk">uk</span></a>
+        <a class="buk-footer__watermark" href="/" aria-label="Branded UK home"><span>branded</span><span class="buk-footer__watermark-uk">uk</span></a>
       </footer>`;
 
     frame.querySelector(".buk-footer__eyebrow").textContent = config.brand.eyebrow;
@@ -189,7 +189,7 @@
     const cookieSettings = createLink("Cookie settings", "#cookie-settings");
     cookieSettings.dataset.cookieSettings = "1";
     policies.append(
-      createLink("Terms & Conditions", "terms-and-conditions.html"),
+      createLink("Terms & Conditions", "/terms-and-conditions"),
       createLink("Privacy & Cookies Policy", "/privacy-policy"),
       createLink("Cookie Policy", "/privacy-policy#cookies"),
       cookieSettings
@@ -213,7 +213,7 @@
     });
 
     const watermark = frame.querySelector(".buk-footer__watermark");
-    watermark.href = siteUrl("home-pc.html");
+    watermark.href = siteUrl("/");
     watermark.addEventListener("click", (event) => {
       if (!/home-pc\.html$/.test(window.location.pathname)) return;
       event.preventDefault();

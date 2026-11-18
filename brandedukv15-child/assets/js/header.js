@@ -705,14 +705,10 @@
 
                 // Premium UI for Products
                 const isMobile = window.innerWidth < 700;
-                const inMobileFolder = window.location.pathname.toLowerCase().includes('/mobile/');
-                const mobileBasePath = inMobileFolder ? '' : 'mobile/';
                 let html = '<div class="suggestion-group-title">Product Results</div>';
 
                 products.slice(0, 8).forEach(product => {
-                    const detailUrl = isMobile
-                        ? `${mobileBasePath}customize-mobile.html?code=${encodeURIComponent(product.value)}`
-                        : `product-detail.html?code=${encodeURIComponent(product.value)}`;
+                    const detailUrl = '/product/' + encodeURIComponent(product.value) + (isMobile ? '?force=mobile' : '');
                     const imgUrl = product.image || '/brandedukv15-child/assets/images/ui/no-image.png';
                     const brand = product.brand || product.brand_name || '';
                     const priceVal = Number(product.price);
@@ -737,8 +733,8 @@
 
                 // View all results link
                 const viewAllUrl = isMobile
-                    ? `${mobileBasePath}shop-mobile.html?q=${encodeURIComponent(query)}`
-                    : `shop-pc.html?q=${encodeURIComponent(query)}`;
+                    ? `/mobile/shop-mobile?q=${encodeURIComponent(query)}`
+                    : `/shop-pc?q=${encodeURIComponent(query)}`;
                 html += `
                     <a href="${viewAllUrl}" class="view-all-results">
                         View all results for "${query}" →
@@ -791,11 +787,9 @@
                             ? window.normalizeBrandedProductSearchQuery(query)
                             : query;
                         const isMobile = window.innerWidth < 700;
-                        const inMobileFolder = window.location.pathname.toLowerCase().includes('/mobile/');
-                        const mobileBasePath = inMobileFolder ? '' : 'mobile/';
                         window.location.href = isMobile
-                            ? `${mobileBasePath}shop-mobile.html?q=${encodeURIComponent(searchQuery)}`
-                            : `shop-pc.html?q=${encodeURIComponent(searchQuery)}`;
+                            ? `/mobile/shop-mobile?q=${encodeURIComponent(searchQuery)}`
+                            : `/shop-pc?q=${encodeURIComponent(searchQuery)}`;
                     }
                 }
             });

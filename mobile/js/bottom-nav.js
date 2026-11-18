@@ -48,7 +48,7 @@
       '<div class="start-sheet__panel">' +
         '<button type="button" class="start-sheet__close" data-start-sheet-close aria-label="Close">' + ICON_CLOSE + '</button>' +
         '<h2 class="start-sheet__title" id="startSheetTitle">How would you like to get started?</h2>' +
-        '<a class="start-sheet__option start-sheet__option--shop" href="' + assetUrl('../../shop.html') + '">' +
+        '<a class="start-sheet__option start-sheet__option--shop" href="' + assetUrl('/shop') + '">' +
           '<span class="start-sheet__icon">' + ICON_SHIRT + '</span>' +
           '<span class="start-sheet__text">' +
             '<span class="start-sheet__name">Shop &amp; Customise</span>' +
@@ -127,7 +127,7 @@
       if (ready) {
         window.openContactPopup({ message: QUOTE_MESSAGE });
       } else {
-        window.location.href = assetUrl('../../contact.html');
+        window.location.href = assetUrl('/contact');
       }
     });
   }

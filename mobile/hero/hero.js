@@ -78,8 +78,7 @@
     var href = cta ? cta.getAttribute('href') : '';
     if (!href) {
       var category = $el.getAttribute('data-category') || '';
-      var inMobileFolder = window.location.pathname.toLowerCase().indexOf('/mobile/') !== -1;
-      href = (inMobileFolder ? '' : 'mobile/') + 'shop-mobile.html?category=' + encodeURIComponent(category);
+      href = '/mobile/shop-mobile?category=' + encodeURIComponent(category);
     }
     if (!/[?&]force=mobile(?:&|$)/.test(href)) {
       href += (href.indexOf('?') === -1 ? '?' : '&') + 'force=mobile';

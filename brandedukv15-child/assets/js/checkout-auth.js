@@ -18,7 +18,7 @@
 
     function startGoogleAuth() {
         var basePath = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
-            ? '/checkout.html'
+            ? '/checkout'
             : '/checkout';
         var returnTo = basePath + (location.search || '') + (location.hash || '');
         try {

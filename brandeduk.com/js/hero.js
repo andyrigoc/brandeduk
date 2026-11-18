@@ -52,11 +52,11 @@
         if (!category) return;
         var productTypeSlug = categoryToSlug[category];
         if (category === 'sustainable') {
-            window.location.href = 'shop-pc.html?accreditation=recycled';
+            window.location.href = '/shop-pc?accreditation=recycled';
         } else if (productTypeSlug) {
-            window.location.href = 'shop-pc.html?productType=' + encodeURIComponent(productTypeSlug);
+            window.location.href = '/shop-pc?productType=' + encodeURIComponent(productTypeSlug);
         } else {
-            window.location.href = 'shop-pc.html?category=' + encodeURIComponent(category);
+            window.location.href = '/shop-pc?category=' + encodeURIComponent(category);
         }
     }
 

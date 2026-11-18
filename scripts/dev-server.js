@@ -9,8 +9,13 @@
  * the browser Origin header, so local shop works like production.
  *
  * Usage:
- *   npm run dev
- *   → http://127.0.0.1:5510/shop-pc.html
+ *   node scripts/dev-server.js
+ *   DEV_PORT=5522 node scripts/dev-server.js
+ *   → http://127.0.0.1:<port>/shop-pc.html
+ *
+ * Windows Node does not trust the same roots as the OS. Without the system
+ * CA store, every /__api call dies with
+ * "unable to verify the first certificate" (HTTP 502) even though the API is up.
  *
  * Permanent API fix (DigitalOcean App Platform env):
  *   CORS_ORIGIN=https://www.brandeduk.com,https://brandeduk.com,http://127.0.0.1:5510,http://localhost:5510
@@ -20,6 +25,7 @@
 
 const http = require('http');
 const https = require('https');
+const tls = require('tls');
 const fs = require('fs');
 const path = require('path');
 const { URL } = require('url');
@@ -58,6 +64,23 @@ function send(res, status, headers, body) {
     res.end(body);
 }
 
+function upstreamAgent() {
+    const options = { keepAlive: true };
+    if (typeof tls.getCACertificates === 'function') {
+        try {
+            const bundled = tls.getCACertificates('default') || [];
+            const system = tls.getCACertificates('system') || [];
+            const merged = bundled.concat(system).filter(Boolean);
+            if (merged.length) options.ca = merged;
+        } catch (err) {
+            console.warn('System CA store unavailable:', err.message);
+        }
+    }
+    return new https.Agent(options);
+}
+
+const API_AGENT = upstreamAgent();
+
 function proxyApi(req, res) {
     const incoming = new URL(req.url, `http://${HOST}:${PORT}`);
     const upstreamPath = incoming.pathname.slice(PROXY_PREFIX.length) || '/';
@@ -80,7 +103,8 @@ function proxyApi(req, res) {
 
     const upstreamReq = https.request(target, {
         method: req.method,
-        headers
+        headers,
+        agent: API_AGENT
     }, (upstreamRes) => {
         const outHeaders = { ...upstreamRes.headers };
         // Same-origin to the browser — no CORS dance needed.
@@ -112,11 +136,40 @@ function safeJoin(root, requestPath) {
     return full;
 }
 
+function isPhoneUa(userAgent) {
+    const ua = String(userAgent || '').toLowerCase();
+    const isIPad = ua.indexOf('ipad') !== -1;
+    const isIPhone = ua.indexOf('iphone') !== -1 || ua.indexOf('ipod') !== -1;
+    const isAndroid = ua.indexOf('android') !== -1;
+    const isAndroidTablet = isAndroid && ua.indexOf('mobile') === -1;
+    const isTablet = isIPad || isAndroidTablet || ua.indexOf('tablet') !== -1 || ua.indexOf('silk') !== -1;
+    if (isTablet) return false;
+    if (isIPhone) return true;
+    if (isAndroid && ua.indexOf('mobile') !== -1) return true;
+    return false;
+}
+
+function wantsMobile(req, requestUrl) {
+    const force = (requestUrl.searchParams.get('force') || '').toLowerCase();
+    const phone = isPhoneUa(req.headers['user-agent']);
+    if (phone) return true;
+    return force === 'mobile';
+}
+
 function serveStatic(req, res) {
     const requestUrl = new URL(req.url, `http://${HOST}:${PORT}`);
     const urlPath = decodeURIComponent(requestUrl.pathname);
+    const homeAliases = {
+        '/home': 1, '/home/': 1, '/home-pc': 1, '/home-pc/': 1, '/home-pc.html': 1,
+        '/index-mobile': 1, '/index-mobile/': 1, '/index-mobile.html': 1,
+        '/m': 1, '/m/': 1, '/index.html': 1
+    };
+    if (homeAliases[urlPath]) {
+        send(res, 301, { Location: '/' + requestUrl.search }, '');
+        return;
+    }
     if (urlPath==='/__preview/leave') {
-        send(res,303,{'Set-Cookie':'buk_prechat_preview=; Path=/; Max-Age=0; HttpOnly; SameSite=Strict',Location:'/index-mobile.html'},'');
+        send(res,303,{'Set-Cookie':'buk_prechat_preview=; Path=/; Max-Age=0; HttpOnly; SameSite=Strict',Location:'/?force=mobile'},'');
         return;
     }
     const previewFiles = {
@@ -130,7 +183,16 @@ function serveStatic(req, res) {
         send(res,200,headers,fs.readFileSync(file));
         return;
     }
-    let filePath = safeJoin(ROOT, urlPath === '/' ? '/index.html' : urlPath);
+    let internalPath = urlPath;
+    if (urlPath === '/' || urlPath === '') {
+        internalPath = wantsMobile(req, requestUrl) ? '/index-mobile.html' : '/home-pc.html';
+    } else {
+        const productMatch = urlPath.match(/^\/product\/([^/]+)\/?$/);
+        if (productMatch) {
+            internalPath = wantsMobile(req, requestUrl) ? '/mobile/customize-mobile.html' : '/shop-pc.html';
+        }
+    }
+    let filePath = safeJoin(ROOT, internalPath);
     if (!filePath) {
         send(res, 403, { 'Content-Type': 'text/plain' }, 'Forbidden');
         return;
@@ -142,18 +204,37 @@ function serveStatic(req, res) {
         }
 
         fs.readFile(filePath, (readErr, data) => {
+            if (readErr && !internalPath.endsWith('.html')) {
+                const htmlPath = safeJoin(ROOT, internalPath + '.html');
+                if (!htmlPath) {
+                    send(res, 404, { 'Content-Type': 'text/plain' }, 'Not found: ' + urlPath);
+                    return;
+                }
+                fs.readFile(htmlPath, (htmlErr, htmlData) => {
+                    if (htmlErr) {
+                        send(res, 404, { 'Content-Type': 'text/plain' }, 'Not found: ' + urlPath);
+                        return;
+                    }
+                    sendHtml(htmlPath, htmlData);
+                });
+                return;
+            }
             if (readErr) {
                 send(res, 404, { 'Content-Type': 'text/plain' }, 'Not found: ' + urlPath);
                 return;
             }
+            sendHtml(filePath, data);
+        });
+
+        function sendHtml(servedPath, data) {
             // Explicit local review mode; never included in production HTML.
             // Load before storefront scripts so no real Crisp SDK can initialise.
             const preview=requestUrl.searchParams.get('prechat-preview')==='1'||/(?:^|;\s*)buk_prechat_preview=1(?:;|$)/.test(req.headers.cookie||'');
-            if (preview && path.extname(filePath)==='.html') {
+            if (preview && path.extname(servedPath)==='.html') {
                 data=Buffer.from(data.toString().replace(/<head([^>]*)>/i,'<head$1><script src="/__preview/prechat-adapter.js"></script>'));
             }
-            send(res, 200, { 'Content-Type': contentType(filePath), 'Cache-Control':'no-store' }, data);
-        });
+            send(res, 200, { 'Content-Type': contentType(servedPath), 'Cache-Control':'no-store' }, data);
+        }
     });
 }
 

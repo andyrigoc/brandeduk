@@ -65,6 +65,13 @@
 
     function removeProductFromUrl() {
         var url = new URL(window.location.href);
+        if (/^\/product\/[^/]+\/?$/i.test(url.pathname)) {
+            url.searchParams.delete('product');
+            url.searchParams.delete('code');
+            var qs = url.searchParams.toString();
+            history.replaceState({}, '', '/shop-pc' + (qs ? '?' + qs : '') + url.hash);
+            return;
+        }
         if (!url.searchParams.has('product')) return;
 
         url.searchParams.delete('product');
@@ -215,8 +222,32 @@
         window.openPcProductDetails(code);
     }, true);
 
+    function codeFromLocation(url) {
+        var code = cleanCode(url.searchParams.get('product'));
+        if (code) return code;
+        var pathCode = url.pathname.match(/^\/product\/([^/]+)\/?$/i);
+        if (!pathCode) return '';
+        try { return cleanCode(decodeURIComponent(pathCode[1])); }
+        catch (error) { return cleanCode(pathCode[1]); }
+    }
+
+    function publishProductSeo(code) {
+        if (!/^\/product\/[^/]+\/?$/i.test(location.pathname)) return;
+        var product = getCachedProduct(code) || window.currentOrderProduct || window.productData || {};
+        var name = product.name || product.productName || product.title || '';
+        if (name) document.title = String(name).replace(/\s+/g, ' ').trim() + ' | Branded UK';
+        var canon = 'https://www.brandeduk.com/product/' + encodeURIComponent(code);
+        var link = document.querySelector('link[rel="canonical"]');
+        if (!link) {
+            link = document.createElement('link');
+            link.rel = 'canonical';
+            document.head.appendChild(link);
+        }
+        link.href = canon;
+    }
+
     window.addEventListener('popstate', function () {
-        var code = cleanCode(new URL(window.location.href).searchParams.get('product'));
+        var code = codeFromLocation(new URL(window.location.href));
         var popup = document.getElementById('orderPopup');
         var isOpen = popup && window.getComputedStyle(popup).display !== 'none';
         var openProduct = window.currentOrderProduct || window.productData || {};
@@ -334,7 +365,7 @@
 
     function openRequestedProduct() {
         var url = new URL(window.location.href);
-        var code = cleanCode(url.searchParams.get('product'));
+        var code = codeFromLocation(url);
         if (!code) return;
 
         var editSizes = url.searchParams.get('editSizes') === '1';
@@ -344,6 +375,8 @@
             keepSizeEdit: editSizes
         });
         Promise.resolve(request).then(function () {
+            publishProductSeo(code);
+            setTimeout(function () { publishProductSeo(code); }, 1200);
             if (editSizes) {
                 openBasketSizeEdit(url, code);
             } else {

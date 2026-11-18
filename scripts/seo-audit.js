@@ -28,7 +28,7 @@ const URLS = [
   '/privacy-policy',
   '/terms-and-conditions',
   '/blog/',
-  '/blog/articles/workwear-embroidery-guide.html',
+  '/blog/articles/workwear-embroidery-guide',
   '/sitemap.xml',
   '/robots.txt',
 ];

@@ -23,7 +23,7 @@
 
     function shopPath(query) {
         var q = normalizeQuery(query);
-        return isMobileViewport() ? '/mobile/shop-mobile.html' + q : '/shop-pc.html' + q;
+        return isMobileViewport() ? '/mobile/shop-mobile' + q : '/shop-pc' + q;
     }
 
     w.BrandedShopRoute = {
@@ -36,12 +36,12 @@
         redirectDesktopShopIfMobile: function () {
             if (!isMobileViewport()) return false;
             var q = w.location.search || '?category=all';
-            w.location.replace('/mobile/shop-mobile.html' + (q.charAt(0) === '?' ? q : '?' + q));
+            w.location.replace('/mobile/shop-mobile' + (q.charAt(0) === '?' ? q : '?' + q));
             return true;
         },
         redirectMobileShopIfDesktop: function () {
             if (isMobileViewport()) return false;
-            w.location.replace('/shop-pc.html' + (w.location.search || ''));
+            w.location.replace('/shop-pc' + (w.location.search || ''));
             return true;
         }
     };

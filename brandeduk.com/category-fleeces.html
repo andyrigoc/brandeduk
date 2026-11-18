@@ -12,17 +12,17 @@
       const isMobile = window.innerWidth < 700;
 
       if (force === 'mobile' || (force !== 'desktop' && isMobile)) {
-        window.location.replace('../category-fleeces.html?force=mobile');
+        window.location.replace('/brandeduk.com/category-fleeces?force=mobile');
         return;
       }
 
-      window.location.replace('shop-pc.html?category=fleeces&demo=1');
+      window.location.replace('/shop-pc?category=fleeces&demo=1');
     })();
   </script>
 </head>
 <body>
   <noscript>
-    <a href="shop-pc.html?category=fleeces&demo=1">Continue to Fleeces</a>
+    <a href="/shop-pc?category=fleeces&demo=1">Continue to Fleeces</a>
   </noscript>
 </body>
 </html>

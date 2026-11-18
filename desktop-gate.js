@@ -62,19 +62,20 @@
     var dest;
 
     if (lower.indexOf('shop-mobile') !== -1) {
-        dest = root + '/shop-pc.html' + search;
+        dest = root + '/shop-pc' + search;
     } else if (lower.indexOf('customize-mobile') !== -1) {
-        dest = withParam(root + '/customization-tool/index.html' + search, 'from', 'customize-pc');
+        dest = withParam(root + '/customization-tool/' + search, 'from', 'customize-pc');
     } else if (lower.indexOf('customization-tool-mobile') !== -1) {
         dest = path.replace(/customization-tool-mobile/i, 'customization-tool') + search;
     } else if (lower.indexOf('services-mobile') !== -1) {
-        dest = root + '/services.html' + search;
+        dest = root + '/services' + search;
     } else {
-        // Tablets → PC. Do not use force=desktop here: phones never reach this branch.
-        dest = root + '/home-pc.html' + search;
-        if (/[?&]contact=1(?:&|$)/.test(search) && !/[?&]contact=1(?:&|$)/.test(dest)) {
-            dest += (dest.indexOf('?') === -1 ? '?' : '&') + 'contact=1';
-        }
+        // Tablets and desktops use the PC homepage at /, not a second pathname.
+        var homeParams = new URLSearchParams(search.charAt(0) === '?' ? search.slice(1) : search);
+        homeParams.delete('force');
+        homeParams.set('force', 'desktop');
+        var homeQs = homeParams.toString();
+        dest = root + '/' + (homeQs ? '?' + homeQs : '');
     }
 
     window.location.replace(dest + hash);

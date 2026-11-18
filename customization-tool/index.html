@@ -52,7 +52,7 @@
     // Production may serve this index at `/customization-tool` without the
     // trailing slash. Establish the real folder base before relative CSS, JS,
     // navigation and image paths are resolved. This also preserves local paths
-    // such as `/brandeduk/customization-tool/index.html`.
+    // such as `/brandeduk/customization-tool/`.
     (function setCustomizationToolBasePath() {
       var marker = "/customization-tool";
       var pathname = window.location.pathname || "";
@@ -136,7 +136,7 @@
   </div>
 
   <div class="tool-header-logo-row">
-    <a href="../index.html" class="mobile-logo-center" aria-label="BrandedUK Home">
+    <a href="/" class="mobile-logo-center" aria-label="BrandedUK Home">
       <img src="../brandedukv15-child/assets/images/ui/branded-uk-logo-black-padded.png?v=20260927-logoblack" alt="BrandedUK" class="logo-badge-img">
     </a>
     <div class="search-wrapper-expand">
@@ -167,7 +167,7 @@
       <button class="nav-icon-btn" id="menuBtn" title="Menu" aria-label="Menu">
         <svg width="20" height="16" viewBox="0 0 20 16" fill="none"><rect y="0" width="20" height="2.5" rx="1.25" fill="#222"/><rect y="6.75" width="20" height="2.5" rx="1.25" fill="#222"/><rect y="13.5" width="20" height="2.5" rx="1.25" fill="#222"/></svg>
       </button>
-      <a class="nav-logo" href="../index.html" aria-label="BrandedUK home">
+      <a class="nav-logo" href="/" aria-label="BrandedUK home">
         <img src="../brandedukv15-child/assets/images/ui/brandeduk-logo-full-removebg-preview%20(1).png" alt="BrandedUK">
       </a>
       <div class="nav-spacer"></div>
@@ -1173,15 +1173,15 @@
 </div>
 
 <nav class="tool-bottom-nav" aria-label="Quick navigation">
-  <a class="tool-bottom-nav-item" href="../profile.html">
+  <a class="tool-bottom-nav-item" href="/profile">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21a8 8 0 0 0-16 0"></path><circle cx="12" cy="7" r="4"></circle></svg>
     <span>Sign in</span>
   </a>
-  <a class="tool-bottom-nav-item" href="../shop.html">
+  <a class="tool-bottom-nav-item" href="/shop">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
     <span>Shop</span>
   </a>
-  <a class="tool-bottom-nav-item tool-bottom-nav-item-basket" href="../basket.html">
+  <a class="tool-bottom-nav-item tool-bottom-nav-item-basket" href="/basket">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
     <span>Basket</span>
     <span class="tool-bottom-nav-badge" id="toolBottomBasketBadge">0</span>

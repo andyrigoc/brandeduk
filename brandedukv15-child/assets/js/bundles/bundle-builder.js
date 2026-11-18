@@ -949,7 +949,7 @@
     writeBasket(basket);
     state.confirm = false;
     state.dirty = false;
-    window.location.href = '/basket.html#orderSummary';
+    window.location.href = '/basket#orderSummary';
     }).catch(function () {
       state.saving = false;
       state.message = 'The basket could not be saved. Your configuration is still open. Please try again.';
@@ -1118,7 +1118,7 @@
     root.hidden = true;
     if (state) state.confirm = false;
     document.body.style.overflow = '';
-    if (returnToBasket) window.location.href = '/basket.html#orderSummary';
+    if (returnToBasket) window.location.href = '/basket#orderSummary';
   }
 
   function onClick(event) {

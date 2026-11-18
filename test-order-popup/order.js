@@ -2900,7 +2900,7 @@ $(document).on('click', '#btnP4Next', function() {
     if (params.get('basketEmbed') === '1' && window.parent !== window) {
         window.parent.postMessage({ type: 'closeCustomizePopup' }, window.location.origin);
     } else {
-        window.location.href = 'basket.html';
+        window.location.href = '/basket';
     }
 });
 
@@ -2943,7 +2943,7 @@ function p4QuoteShareApiBase() {
 function p4BasketShareUrl(token) {
     // Match basket.html share URLs so staff can open the same shared basket.
     var local = /^(?:localhost|127\.|0\.0\.0\.0)/.test(window.location.hostname);
-    var pathname = local ? '/brandeduk/basket.html' : '/basket';
+    var pathname = local ? '/brandeduk/basket' : '/basket';
     return window.location.origin + pathname + '?share=' + encodeURIComponent(token);
 }
 
@@ -3546,12 +3546,12 @@ $(document).on('click', '#luaContinue', function() {
 
 // Confirm: Add to Basket
 $(document).on('click', '#luaGoBasket', function() {
-    finalSaveToBasket('basket.html');
+    finalSaveToBasket('/basket');
 });
 
 // Confirm: Proceed to Checkout
 $(document).on('click', '#luaGoCheckout', function() {
-    finalSaveToBasket('checkout.html');
+    finalSaveToBasket('/checkout');
 });
 
 // Confirm: back to upload step

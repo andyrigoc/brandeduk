@@ -271,7 +271,7 @@
 
   function builderHref(bundle) {
     var id = bundle.bundleSlug || bundle.bundleId || '';
-    return '/bundles.html?force=mobile&bundle=' + encodeURIComponent(id);
+    return '/bundles?force=mobile&bundle=' + encodeURIComponent(id);
   }
 
   function choiceHtml(group, item, selected, radio) {

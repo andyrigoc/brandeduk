@@ -55,12 +55,9 @@
         return count + (count === 1 ? ' item' : ' items');
     }
 
-    /* Same destinations product-detail.html redirects /product/<code> to, without the extra hop. */
     function productUrl(code) {
         var safeCode = encodeURIComponent(code);
-        return isMobile()
-            ? '/mobile/customize-mobile.html?code=' + safeCode
-            : '/shop-pc.html?product=' + safeCode;
+        return '/product/' + safeCode + (isMobile() ? '?force=mobile' : '');
     }
 
     function vatIsOn() {
@@ -729,7 +726,7 @@
             .then(setup)
             .catch(function (error) {
                 console.warn('[industries] Filter data not loaded:', error && error.message);
-                if (moreStatus) moreStatus.innerHTML = 'More items could not be loaded. <a href="/shop-pc.html">Browse the full shop</a>.';
+                if (moreStatus) moreStatus.innerHTML = 'More items could not be loaded. <a href="/shop-pc">Browse the full shop</a>.';
             });
     }
 
@@ -769,7 +766,7 @@
         wrapper.appendChild(box);
 
         function shopUrl(query) {
-            return '/mobile/shop-mobile.html?q=' + encodeURIComponent(query) + '&force=mobile';
+            return '/mobile/shop-mobile?q=' + encodeURIComponent(query) + '&force=mobile';
         }
 
         function render(products, query) {

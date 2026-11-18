@@ -142,7 +142,7 @@
 
         document.getElementById('bundleProofPay').addEventListener('click', function () {
             if (!allFull()) return;
-            window.location.href = 'checkout.html';
+            window.location.href = '/checkout';
         });
         render();
     }

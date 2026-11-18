@@ -12,17 +12,17 @@
       const isMobile = window.innerWidth < 700;
 
       if (force === 'mobile' || (force !== 'desktop' && isMobile)) {
-        window.location.replace('../category-hoodies.html?force=mobile');
+        window.location.replace('/brandeduk.com/category-hoodies?force=mobile');
         return;
       }
 
-      window.location.replace('shop-pc.html?category=hoodies&demo=1');
+      window.location.replace('/shop-pc?category=hoodies&demo=1');
     })();
   </script>
 </head>
 <body>
   <noscript>
-    <a href="shop-pc.html?category=hoodies&demo=1">Continue to Hoodies</a>
+    <a href="/shop-pc?category=hoodies&demo=1">Continue to Hoodies</a>
   </noscript>
 </body>
 </html>

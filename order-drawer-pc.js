@@ -101,7 +101,7 @@
                                     <div class="drawer-grand-total"><span>Total (inc. VAT)</span><strong id="basketTotalAmount">£0.00</strong></div>
                                 </div>
                                 <div class="drawer-actions">
-                                    <button class="btn-view-basket" onclick="window.location.href='basket.html'">View basket →</button>
+                                    <button class="btn-view-basket" onclick="window.location.href='/basket'">View basket →</button>
                                     <button class="btn-order-next" id="basketNextBtn">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
                                         Proceed to checkout →
@@ -1322,7 +1322,7 @@
             window.dispatchEvent(new Event('basketUpdated'));
             closeClearConfirmModal();
             closeDrawer();
-            window.location.href = 'home-pc.html';
+            window.location.href = '/';
         }
 
         closeBtn.addEventListener('click', closeDrawer);
@@ -1613,7 +1613,7 @@
                 color: item.color || item.colour || ''
             });
             sessionStorage.setItem('customizingBasketIndex', String(index));
-            window.location.href = 'shop-pc.html?' + params.toString();
+            window.location.href = '/shop-pc?' + params.toString();
         }
 
         function getBasketTotalQuantity(basket) {

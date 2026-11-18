@@ -182,17 +182,17 @@
         <p id="debugInfo" style="display:none;"></p>
     </div>
     <nav class="visually-hidden" aria-label="Shop categories">
-        <a href="home-pc.html">Shop workwear</a>
-        <a href="services.html">Embroidery &amp; printing</a>
-        <a href="polos.html">Polo shirts</a>
-        <a href="hoodies.html">Hoodies</a>
-        <a href="hivis.html">Hi-Vis</a>
-        <a href="workwear.html">Workwear</a>
+        <a href="/">Shop workwear</a>
+        <a href="/services">Embroidery &amp; printing</a>
+        <a href="/polos">Polo shirts</a>
+        <a href="/hoodies">Hoodies</a>
+        <a href="/hivis">Hi-Vis</a>
+        <a href="/workwear">Workwear</a>
     </nav>
     <noscript>
         <p>
-            <a href="index-mobile.html">Mobile</a> | 
-            <a href="home-pc.html">Desktop / tablet</a>
+            <a href="/">Mobile</a> | 
+            <a href="/">Desktop / tablet</a>
         </p>
     </noscript>
 
@@ -214,8 +214,8 @@
                 try {
                     var params = new URLSearchParams(window.location.search);
                     var force = (params.get('force') || '').toLowerCase();
-                    if (force === 'mobile') return 'index-mobile.html';
-                    if (force === 'desktop') return 'home-pc.html';
+                    if (force === 'mobile') return '/';
+                    if (force === 'desktop') return '/';
                 } catch (e) {}
                 return null;
             }
@@ -241,32 +241,46 @@
                     : (window.innerWidth < BREAKPOINT);
                 // Phones always stay on mobile. Tablets/desktops use PC.
                 var shouldUseMobile = isPhoneUA || (!isTabletUA && isViewportMobile);
-                return shouldUseMobile ? 'index-mobile.html' : 'home-pc.html';
+                return shouldUseMobile ? '/' : '/';
+            }
+
+            function buildForceUrl(mode) {
+                var u = new URL('/', window.location.origin || 'https://www.brandeduk.com');
+                try {
+                    var cur = new URLSearchParams(window.location.search);
+                    cur.forEach(function (value, key) {
+                        if (key !== 'force') u.searchParams.append(key, value);
+                    });
+                } catch (e) {}
+                u.searchParams.set('force', mode);
+                return u.pathname + u.search + (window.location.hash || '');
             }
 
             function redirectIfNeeded() {
                 if (redirected) return;
                 var forced = getForcedTarget();
                 var target = forced || computeTargetByDevice();
-                updateDebug(forced ? ('forced:' + forced) : (target.indexOf('mobile') !== -1 ? 'auto:mobile' : 'auto:desktop'));
                 if (!target) return;
-                redirected = true;
-                lastTarget = target;
-                try {
-                    var u = new URL(target, window.location.href);
-                    // Preserve current query (utm, contact, etc.)
-                    var cur = new URLSearchParams(window.location.search);
-                    cur.forEach(function (value, key) {
-                        if (!u.searchParams.has(key)) u.searchParams.set(key, value);
-                    });
-                    // Lock phones on mobile so they are never force=desktop.
-                    if (!forced && target.indexOf('mobile') !== -1) {
-                        u.searchParams.set('force', 'mobile');
+                var mode = target.indexOf('mobile') !== -1 ? 'mobile' : 'desktop';
+                updateDebug('force:' + mode);
+                var path = window.location.pathname || '/';
+                var currentForce = '';
+                try { currentForce = (new URLSearchParams(window.location.search).get('force') || '').toLowerCase(); } catch (e) {}
+                // Static servers without the homepage rewrite still have this splash.
+                // Production must not hop to another pathname: middleware serves the real file at /.
+                if ((path === '/' || path === '/') && currentForce === mode) {
+                    if (!/(^|\.)brandeduk\.com$/i.test(window.location.hostname || '')) {
+                        var fallback = mode === 'mobile' ? '/index-mobile.html' : '/home-pc.html';
+                        var keep = new URLSearchParams(window.location.search);
+                        keep.delete('force');
+                        var qs = keep.toString();
+                        window.location.replace(fallback + (qs ? '?' + qs : '') + (window.location.hash || ''));
                     }
-                    window.location.replace(u.pathname + u.search + (window.location.hash || u.hash || ''));
-                } catch (e) {
-                    window.location.replace(target + window.location.search + window.location.hash);
+                    return;
                 }
+                redirected = true;
+                lastTarget = mode;
+                window.location.replace(buildForceUrl(mode));
             }
 
             redirectIfNeeded();

@@ -1376,7 +1376,7 @@
 
                             const homeHref =
                                 document.querySelector('.searchbar-header__brand')?.getAttribute('href') ||
-                                'home-pc.html';
+                                '/';
 
                             window.location.replace(homeHref);
                         }, 600);

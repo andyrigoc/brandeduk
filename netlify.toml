@@ -32,6 +32,49 @@
   [headers.values]
     Cache-Control = "no-cache, no-store, must-revalidate"
 
+# Homepage aliases. One public URL. Query strings (utm, gclid, contact) are kept.
+[[redirects]]
+  from = "/home-pc"
+  to = "/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/home-pc.html"
+  to = "/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/index-mobile"
+  to = "/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/index-mobile.html"
+  to = "/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/home"
+  to = "/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/m"
+  to = "/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/index.html"
+  to = "/"
+  status = 301
+  force = true
+
 # Hide .html extensions – redirect /page.html → /page (301)
 [[redirects]]
   from = "/shop.html"
@@ -204,3 +247,172 @@
   from = "/catalogue"
   to = "/catalogue.html"
   status = 200
+
+# Same permanent aliases as vercel.json. Query strings are preserved.
+[[redirects]]
+  from = "/brandeduk.com/quote-form-pc"
+  to = "/?contact=1"
+  status = 302
+  force = true
+
+[[redirects]]
+  from = "/contact/"
+  to = "/contact"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/about/"
+  to = "/about"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/embroidery/"
+  to = "/embroidery"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/printing"
+  to = "/services"
+  status = 302
+  force = true
+
+[[redirects]]
+  from = "/printing/"
+  to = "/services"
+  status = 302
+  force = true
+
+[[redirects]]
+  from = "/screen-printing/"
+  to = "/screen-printing"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/dtf-printing/"
+  to = "/dtf-printing"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/dtg-printing/"
+  to = "/dtg-printing"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/school-uniforms/"
+  to = "/school-uniforms"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/sports-teamwear/"
+  to = "/sports-teamwear"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/outdoor-workwear/"
+  to = "/outdoor-workwear"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/mobile"
+  to = "/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/polos.html"
+  to = "/polos"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/hoodies.html"
+  to = "/hoodies"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/tshirts.html"
+  to = "/tshirts"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/hivis.html"
+  to = "/hivis"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/workwear.html"
+  to = "/workwear"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/jackets.html"
+  to = "/jackets"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/bundles.html"
+  to = "/bundles"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/bulk-orders.html"
+  to = "/bulk-orders"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/order-detail.html"
+  to = "/order-detail"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/hospitality-workwear.html"
+  to = "/hospitality-workwear"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/construction-workwear.html"
+  to = "/construction-workwear"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/corporate-uniforms.html"
+  to = "/corporate-uniforms"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/privacy-policy.html"
+  to = "/privacy-policy"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/terms-and-conditions.html"
+  to = "/terms-and-conditions"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/shop/product-detail.html"
+  to = "/product"
+  status = 301
+  force = true

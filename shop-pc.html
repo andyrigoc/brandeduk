@@ -2,6 +2,12 @@
 <html lang="en">
 
 <head>
+    <script>
+    (function () {
+        if (!/^\/product\/[^/]+\/?$/i.test(location.pathname || '')) return;
+        document.write('<base href="/shop-pc">');
+    })();
+    </script>
     <meta charset="UTF-8">
     <!-- Google Consent Mode v2 defaults (must stay before the Google tag) -->
     <script>
@@ -52,6 +58,7 @@
     <meta name="description" content="Browse Custom Workwear - T-Shirts, Polos, Hoodies, Hi-Vis, Jackets with Embroidery or Printing. Instant Quote Calculator. Bulk Discounts from 20% OFF. Tracked UK Delivery £7.95.">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://www.brandeduk.com/shop">
+    <script src="/brandedukv15-child/assets/js/shop-seo.js?v=20261118-seo"></script>
     <script src="brandedukv15-child/assets/js/shop-route.js?v=20260518"></script>
     <script>
         if (window.BrandedShopRoute && BrandedShopRoute.redirectDesktopShopIfMobile()) { /* redirecting */ }
@@ -2193,7 +2200,7 @@
                                     data-vat-inc>inc vat</span>
                             </button>
                         </div>
-                        <a class="header-top-basket-link" href="basket.html" aria-label="View basket">
+                        <a class="header-top-basket-link" href="/basket" aria-label="View basket">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2">
                                 <path d="M6 6h15l-1.5 9h-12z" />
@@ -2211,7 +2218,7 @@
         <div class="searchbar-header">
             <div class="searchbar-header__surface">
                 <div class="searchbar-header__inner">
-                    <a class="searchbar-header__brand" href="index.html" aria-label="brandedUK home">
+                    <a class="searchbar-header__brand" href="/" aria-label="brandedUK home">
                         <img class="searchbar-header__brand-img"
                             src="brandedukv15-child/assets/images/ui/branded-uk-header-logo-black.png?v=20260927-logoblack" alt="brandedUK">
                     </a>
@@ -2294,7 +2301,7 @@
                                             <li><a href="#">Long Sleeve T-shirts</a></li>
                                             <li><a href="#">Performance / Sports</a></li>
                                             <li><a
-                                                    href="customization-tool/index.html?code=8700M&from=short-sleeve&product=tshirt">Short
+                                                    href="/customization-tool/?code=8700M&from=short-sleeve&product=tshirt">Short
                                                     Sleeve T-shirts</a></li>
                                             <li><a href="#">Tank Tops</a></li>
                                             <li><a href="#">T-shirts for Embroidery</a></li>
@@ -2486,7 +2493,7 @@
                                 </ul>
                             </li>
                             <li class="has-children">
-                                <a href="shop-pc.html?accreditation=recycled" data-accreditation="recycled">
+                                <a href="/shop-pc?accreditation=recycled" data-accreditation="recycled">
                                     <img class="category-icon"
                                         src="brandedukv15-child/assets/images/ui/icons/categories/Recycle.png" alt=""
                                         aria-hidden="true">
@@ -2688,7 +2695,7 @@
                                 </div>
                             </div>
                         </li>
-                        <li><a href="index.html">BrandedUK</a></li>
+                        <li><a href="/">BrandedUK</a></li>
                         <li class="has-megamenu exclusives-menu">
                             <a href="#" aria-haspopup="true">
                                 Exclusives
@@ -2747,12 +2754,12 @@
                                     <a href="?brand=tridri" class="exclusive-brand" title="TriDri">
                                         <img src="brandedukv15-child/assets/images/brands/tridri.webp" alt="Tri Dri">
                                     </a>
-                                    <a href="shop-pc.html?brand=under-armour" class="exclusive-brand"
+                                    <a href="/shop-pc?brand=under-armour" class="exclusive-brand"
                                         title="Under Armour">
                                         <img src="brandedukv15-child/assets/images/brands/under-armour.webp"
                                             alt="Under Armour">
                                     </a>
-                                    <a href="shop-pc.html?brand=wombat" class="exclusive-brand" title="Wombat">
+                                    <a href="/shop-pc?brand=wombat" class="exclusive-brand" title="Wombat">
                                         <img src="brandedukv15-child/assets/images/brands/wombat.jpg" alt="Wombat">
                                     </a>
                                 </div>
@@ -2794,7 +2801,7 @@
                             </div>
                         </li>
                         <li><a href="#">More</a></li>
-                        <li><a href="services.html">Services</a></li>
+                        <li><a href="/services">Services</a></li>
                         <li><a href="#">About</a></li>
                     </ul>
                 </nav>
@@ -7333,7 +7340,7 @@
                     } else if (typeof window.openOrderPopup === 'function') {
                         window.openOrderPopup(product.code, product);
                     } else {
-                        window.location.href = 'product-detail.html?code=' + encodeURIComponent(product.code);
+                        window.location.href = '/product/' + encodeURIComponent(product.code);
                     }
                 });
 
@@ -8835,7 +8842,7 @@
                         html += `<div class="brands-letter-heading">${letter}</div>`;
                         html += '<div class="brands-list">';
                     }
-                    html += `<a href="shop-pc.html?brand=${encodeURIComponent(b.slug)}" title="${b.name}">${b.name}</a>`;
+                    html += `<a href="/shop-pc?brand=${encodeURIComponent(b.slug)}" title="${b.name}">${b.name}</a>`;
                 });
                 if (currentLetter) html += '</div>';
 
@@ -8885,7 +8892,7 @@
 
                 <header class="pc-product-flow-header">
                     <div class="pc-product-flow-brand">
-                        <a class="pc-product-flow-logo-link" href="index.html" aria-label="BrandedUK home">
+                        <a class="pc-product-flow-logo-link" href="/" aria-label="BrandedUK home">
                             <img class="pc-product-flow-logo" src="brandedukv15-child/assets/images/ui/branded-uk-header-logo-black.png?v=20260927-logoblack"
                                 alt="BrandedUK">
                         </a>
@@ -8912,7 +8919,7 @@
                         </li>
                     </ol>
                     <div class="pc-product-flow-help">
-                        <a class="pc-flow-basket" href="basket.html" aria-label="View quote basket" data-cart-lottie="show">
+                        <a class="pc-flow-basket" href="/basket" aria-label="View quote basket" data-cart-lottie="show">
                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
                             <span class="pc-flow-basket-badge" id="pcFlowBasketBadge" data-cart-lottie-badge hidden>0</span>
                         </a>
@@ -9642,7 +9649,7 @@
                                             <span>Upload what you have. Our team checks every file before production.</span>
                                         </div>
                                         <button type="button" class="p4-btn-skip" id="btnSkipLogo">Skip (no logo)</button>
-                                        <a class="p4-continue-shopping" id="p4ContinueShopping" href="/shop-pc.html?category=all">Continue shopping</a>
+                                        <a class="p4-continue-shopping" id="p4ContinueShopping" href="/shop-pc?category=all">Continue shopping</a>
                                     </aside>
                                 </div>
 
@@ -9738,7 +9745,7 @@
                 <section id="pcCustomizerPanel" class="pc-customizer-panel" hidden aria-label="Customize your product">
                     <header class="pc-customizer-header">
                         <div class="pc-customizer-left">
-                            <a class="pc-customizer-logo-link" href="index.html" aria-label="BrandedUK home">
+                            <a class="pc-customizer-logo-link" href="/" aria-label="BrandedUK home">
                                 <img class="pc-customizer-logo" src="brandedukv15-child/assets/images/ui/branded-uk-header-logo-black.png?v=20260927-logoblack"
                                     alt="BrandedUK">
                             </a>

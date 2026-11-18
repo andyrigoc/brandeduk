@@ -328,7 +328,7 @@ async function loadProductData() {
     if (!productData) {
         console.error('âŒ No product data available!');
         // No blocking alert – redirect to homepage so user isn't stuck
-        window.location.replace('index.html');
+        window.location.replace('/');
         return false;
     }
 
@@ -606,10 +606,10 @@ function initBreadcrumb() {
     const brandName = PRODUCT_DATA?.brand || '';
 
     if (brandName) {
-        breadcrumbBrandLink.href = `shop-pc.html?brand=${encodeURIComponent(brandName)}`;
+        breadcrumbBrandLink.href = `/shop-pc?brand=${encodeURIComponent(brandName)}`;
         breadcrumbBrandLink.textContent = brandName;
     } else {
-        breadcrumbBrandLink.href = 'shop-pc.html';
+        breadcrumbBrandLink.href = '/shop-pc';
         breadcrumbBrandLink.textContent = 'Brand';
     }
 
@@ -772,7 +772,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const displayBrand = inferredBrand || PRODUCT_DATA.brand;
                 const mappedBrandLogo = resolveBrandLogoPath(displayBrand);
 
-                brandLink.href = `shop-pc.html?brand=${encodeURIComponent(displayBrand)}`;
+                brandLink.href = `/shop-pc?brand=${encodeURIComponent(displayBrand)}`;
                 brandLink.title = `View all ${displayBrand} products`;
                 brandLogo.alt = displayBrand;
                 brandLogo.src = mappedBrandLogo || PRODUCT_DATA.brandLogo || '';
@@ -2464,7 +2464,7 @@ if (continueShoppingButton) {
             var msg = 'You have ' + total + ' items of ' + selectedColorName + ' not added to basket.\nLeave and discard them?';
             if (!confirm(msg)) return;
         }
-        window.location.href = (window.innerWidth < 700) ? '/shop?category=all' : '/shop-pc.html?category=all';
+        window.location.href = (window.innerWidth < 700) ? '/shop?category=all' : '/shop-pc?category=all';
     };
 }
 
@@ -2785,7 +2785,7 @@ const popupViewBasketBtn = document.getElementById('popupViewBasketBtn');
 if (popupViewBasketBtn) {
     popupViewBasketBtn.onclick = function () {
         if (popup) popup.style.display = 'none';
-        window.location.href = 'basket.html?promptLogo=1';
+        window.location.href = '/basket?promptLogo=1';
     };
 }
 
@@ -2816,10 +2816,10 @@ if (popupAddLogoBtn) {
         try { sessionStorage.setItem('customizeFreshItem', '1'); } catch (e) { /* ignore */ }
         const isMobile = window.innerWidth < 700;
         if (isMobile) {
-            window.location.href = 'mobile/customize-mobile.html';
+            window.location.href = '/mobile/customize-mobile';
         } else {
             const code = item && (item.code || item.productCode) || sessionStorage.getItem('selectedProduct') || '';
-            const target = new URL('customization-tool/index.html', window.location.origin);
+            const target = new URL('/customization-tool/', window.location.origin);
             if (code) target.searchParams.set('code', code);
             target.searchParams.set('from', 'customize-pc');
             window.location.href = target.toString();
@@ -3052,7 +3052,7 @@ function addCustomizedItemToBasket() {
 
     // Close modal and redirect to basket
     closeCustomizationModal();
-    window.location.href = 'basket.html';
+    window.location.href = '/basket';
 }
 
 function showValidationError(message) {
