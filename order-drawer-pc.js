@@ -85,6 +85,7 @@
                                         <span>Total quantity <span id="drTotalQty">0</span></span>
                                     </div>
                                     <div class="drawer-summary-row"><span>Product Costs</span><span id="drProductCosts">£0.00</span></div>
+                                    <div id="drBundleLines"></div>
                                     <button type="button" class="drawer-summary-row drawer-summary-row--toggle" data-summary-toggle="logo">
                                         <span>Customisation <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span>
                                         <span id="drLogoCosts">£0.00</span>
@@ -1676,8 +1677,18 @@
         }
 
         // Load basket data
+        function drawerLogoSrc(logo) {
+            const storage = window.BrandedQuoteStorage;
+            const raw = String((logo && (logo.logo || logo.ref)) || '');
+            if (storage && typeof storage.resolveSrc === 'function') {
+                const resolved = storage.resolveSrc(raw, logo && logo.logoId);
+                if (resolved) return resolved;
+            }
+            return safeImageSrc(raw);
+        }
+
         function loadBasketData() {
-            const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+            const basket = readBasket();
             updateDesktopBasketBadge(basket);
             const container = document.getElementById('basketItemsContainer');
             const emptyMsg = document.getElementById('basketEmptyMessage');
@@ -1707,9 +1718,11 @@
 
             let productCosts = 0;
             let logoCosts = 0;
+            let bundleCosts = 0;
             let totalQtyAll = 0;
             let bundleCount = 0;
             let unpricedBundleCount = 0;
+            const bundleSummary = [];
             const uniqueEmbroideryDesigns = new Set();
             let html = '';
 
@@ -1719,22 +1732,36 @@
                     const raw = item.bundlePrice != null ? item.bundlePrice : item.price;
                     const money = raw == null || raw === '' ? null : Number(raw);
                     const priced = Number.isFinite(money);
-                    if (priced) productCosts += money;
+                    if (priced) bundleCosts += money;
                     else unpricedBundleCount += 1;
-                    const chosen = Array.isArray(item.chosenLines) ? item.chosenLines : [];
-                    const linesHtml = chosen.map(line => `<div class="basket-item-meta">${escapeHtml((line.quantity || 0) + ' ' + (line.label || ''))}</div>`).join('');
+                    const slug = String(item.bundleSlug || item.bundleId || '');
+                    const fromSlug = slug.match(/(?:^|-)(\d+)(?:-|$)/);
+                    const number = Number(item.bundleNumber) > 0 ? String(item.bundleNumber) : (fromSlug ? fromSlug[1] : String(bundleCount));
+                    bundleSummary.push({ number, money: priced ? money : null });
                     const priceText = priced ? ('£' + money.toFixed(2)) : '\u2014';
                     totalQtyAll += 1;
+                    const thumbSources = []
+                        .concat(Array.isArray(item.thumbs) ? item.thumbs : [])
+                        .concat(Array.isArray(item.chosenLines) ? item.chosenLines.map(line => line && line.image).filter(Boolean) : [])
+                        .concat(item.image ? [item.image] : []);
+                    const thumbs = [...new Set(thumbSources)].slice(0, 4).map(src => `<img src="${escapeHtml(src)}" alt="">`).join('');
+                    const logo = (Array.isArray(item.logos) && item.logos[0]) || (item.selection && item.selection.logo) || null;
+                    const logoRaw = logo ? String(logo.logo || logo.ref || '') : '';
+                    const logoSrc = logo && window.BrandedQuoteStorage && typeof window.BrandedQuoteStorage.resolveSrc === 'function'
+                        ? (window.BrandedQuoteStorage.resolveSrc(logoRaw, logo.logoId) || (logoRaw.indexOf('bklogo:') === 0 ? '' : logoRaw))
+                        : (logoRaw.indexOf('bklogo:') === 0 ? '' : logoRaw);
+                    const logoHtml = logoSrc ? `<img class="basket-logo-thumb" src="${escapeHtml(logoSrc)}" alt="Your logo">` : '';
                     html += `
                     <div class="basket-item">
+                        ${thumbs ? `<div class="bundle-basket-thumbs">${thumbs}</div>` : ''}
                         <div class="basket-item-main">
                             <div class="basket-item-top">
                                 <div>
-                                    <div class="basket-item-name">${escapeHtml(item.name || 'Bundle')}</div>
-                                    ${linesHtml}
+                                    <div class="basket-item-name">${escapeHtml(item.name || ('Bundle ' + number))}</div>
                                 </div>
                                 <div class="basket-item-price">${priceText}<small>Bundle price</small></div>
                             </div>
+                            ${logoHtml}
                             <div class="basket-item-tools">
                                 <button type="button" class="basket-item-remove" data-drawer-action="remove" data-index="${itemIndex}">Remove</button>
                             </div>
@@ -1801,12 +1828,24 @@
             });
 
             const digitizingFee = uniqueEmbroideryDesigns.size * 25.00;
-            const subtotalExVat = productCosts + logoCosts + digitizingFee;
+            const subtotalExVat = productCosts + bundleCosts + logoCosts + digitizingFee;
             const vatAmount = subtotalExVat * 0.20;
             const grandTotal = subtotalExVat + vatAmount;
-            const unpricedOnly = bundleCount > 0 && unpricedBundleCount === bundleCount && productCosts === 0 && logoCosts === 0 && digitizingFee === 0;
+            const goodsCount = basket.filter(item => item && item.lineType !== 'bundle').length;
+            const unpricedOnly = bundleCount > 0 && unpricedBundleCount === bundleCount && goodsCount === 0 && logoCosts === 0 && digitizingFee === 0;
 
             container.innerHTML = html;
+            const bundleHost = document.getElementById('drBundleLines');
+            if (bundleHost) {
+                bundleHost.innerHTML = bundleSummary.map(line => {
+                    const amount = line.money == null ? '\u2014' : ('£' + line.money.toFixed(2));
+                    return `<div class="drawer-summary-row"><span>Bundle ${escapeHtml(line.number)}</span><span>${amount}</span></div>`;
+                }).join('');
+            }
+            const productRow = document.getElementById('drProductCosts') && document.getElementById('drProductCosts').closest('.drawer-summary-row');
+            const customRow = document.querySelector('[data-summary-toggle="logo"]');
+            if (productRow) productRow.hidden = goodsCount === 0;
+            if (customRow) customRow.hidden = goodsCount === 0;
             if (unpricedOnly) {
                 setEl('drProductCosts', '\u2014');
                 setEl('drLogoCosts', '\u2014');

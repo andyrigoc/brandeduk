@@ -1771,8 +1771,6 @@
 
 @media (min-width: 700px) {
     .ind-page .mobile-header,
-    .ind-page .slide-menu,
-    .ind-page .menu-overlay,
     .ind-page .bottom-nav,
     .ind-page [data-mobile-footer] {
         display: none !important;

@@ -11,6 +11,9 @@
     "api/upload-logo.js": {
       "maxDuration": 15
     },
+    "api/prechat-upload.js": {
+      "maxDuration": 15
+    },
     "api/quotes/stripe/payment-intent.js": {
       "maxDuration": 10
     },

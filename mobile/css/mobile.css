@@ -1496,6 +1496,80 @@ a {
     border-bottom: 1px solid var(--gray-200);
 }
 
+.size-picker__copy {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.size-picker__aside {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 0 0 auto;
+}
+
+.size-picker__colour-box,
+.size-picker__identity {
+    width: 52px;
+    height: 52px;
+    box-sizing: border-box;
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    background: var(--white);
+    overflow: hidden;
+}
+
+.size-picker__colour-box[hidden],
+.size-picker__identity[hidden],
+.size-picker__brand[hidden],
+.size-picker__code[hidden] {
+    display: none !important;
+}
+
+.size-picker__colour-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.size-picker__identity {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 3px;
+    text-align: center;
+}
+
+.size-picker__brand,
+.size-picker__code {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    line-height: 1.05;
+}
+
+.size-picker__brand {
+    color: var(--gray-800);
+    font-size: 9px;
+    font-weight: 800;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+.size-picker__code {
+    color: var(--gray-500);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
 .size-picker__title {
     font-size: 18px;
     font-weight: 600;
@@ -1505,6 +1579,22 @@ a {
     margin-top: 2px;
     font-size: 13px;
     color: var(--gray-500);
+}
+
+.size-picker__change-colour {
+    margin-top: 6px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #2151c2;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.size-picker__change-colour:active {
+    opacity: 0.75;
 }
 
 .size-picker__close {
@@ -1578,6 +1668,34 @@ a {
     background: var(--gray-200);
 }
 
+.size-picker.is-qty-full .size-picker__step[data-step="1"] {
+    color: var(--gray-300);
+    background: #e7e5ee;
+    cursor: default;
+}
+
+.size-picker.is-qty-full .size-picker__step[data-step="1"]:active {
+    background: #e7e5ee;
+}
+
+.size-picker__stepper.is-shaking {
+    animation: size-picker-shake 0.36s ease-in-out;
+}
+
+@keyframes size-picker-shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-4px); }
+    40% { transform: translateX(4px); }
+    60% { transform: translateX(-3px); }
+    80% { transform: translateX(2px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .size-picker__stepper.is-shaking {
+        animation: none;
+    }
+}
+
 .size-picker__row:not(.has-qty) .size-picker__step[data-step="-1"] {
     color: var(--gray-300);
 }
@@ -1628,8 +1746,155 @@ a {
     font-weight: 700;
 }
 
-.size-picker__done:active {
-    background: #c2410c;
+.size-picker__done:disabled {
+    background: #d1d5db;
+    color: #6b7280;
+}
+
+.size-picker__total strong.is-met { color: #16a34a; }
+
+/* Build Your Bundle chrome on the colour/size detour */
+.bundle-builder-bar {
+    position: relative;
+    z-index: 20;
+    background: #fff;
+    border-bottom: 1px solid #e4eaf4;
+    box-shadow: 0 1px 0 rgba(22, 36, 71, 0.04);
+}
+
+.bundle-builder-bar__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px 16px 8px;
+}
+
+.bundle-builder-bar__kicker {
+    margin: 0;
+    color: #7b8bb2;
+    font-size: 0.64rem;
+    font-weight: 730;
+    letter-spacing: 0.12em;
+}
+
+.bundle-builder-bar__title {
+    margin: 4px 0 0;
+    color: #162447;
+    font-size: clamp(1.05rem, 4.4vw, 1.35rem);
+    font-weight: 750;
+    line-height: 1.2;
+    letter-spacing: -0.03em;
+}
+
+.bundle-builder-bar__close {
+    flex: 0 0 auto;
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border: 1px solid #d7deed;
+    border-radius: 10px;
+    background: #fff;
+    color: #162447;
+}
+
+.bundle-builder-bar__steps {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 3px;
+    margin: 0;
+    padding: 7px 11px 10px;
+    list-style: none;
+    border-top: 1px solid #e4eaf4;
+    background: #f8faff;
+}
+
+.bundle-builder-bar__step {
+    display: grid;
+    justify-items: center;
+    gap: 4px;
+    text-align: center;
+    color: #9aa6c2;
+    font-size: 0.62rem;
+    font-weight: 650;
+    line-height: 1.15;
+}
+
+.bundle-builder-bar__num {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    background: #e8eef8;
+    color: #7b8bb2;
+    font-size: 0.78rem;
+    font-weight: 750;
+}
+
+.bundle-builder-bar__step.is-done:not(.is-current) {
+    color: #13764a;
+}
+
+.bundle-builder-bar__step.is-current {
+    color: #ff7a00;
+}
+
+.bundle-builder-bar__step.is-current .bundle-builder-bar__num {
+    background: #ffe3c6;
+    color: #ff7a00;
+}
+
+/* Same green as the bundle sheet (.step.complete / --green, --green-tint). */
+.bundle-builder-bar__step.is-done:not(.is-current) .bundle-builder-bar__num {
+    background: #e7f6ee;
+    color: #13764a;
+}
+
+html.bundle-build #orderSteps,
+body.bundle-build #orderSteps,
+body.bundle-build #orderSteps[data-bundle-sequence="1"] {
+    display: none !important;
+}
+
+html.bundle-build .pricing-section,
+html.bundle-build .action-bar,
+html.bundle-build .action-bar.action-bar--atc,
+html.bundle-build #addToBasketBtn,
+html.bundle-build .delivery-section,
+html.bundle-build #positionsSection,
+html.bundle-build #positionsSectionTitle {
+    display: none !important;
+}
+
+body.bundle-build {
+    --bundle-builder-bar-offset: 0px;
+}
+
+/* Bundles are print only. Hide embroidery choices on the colour detour. */
+body.bundle-build .price-emb,
+body.bundle-build .key-badge.embroidery,
+body.bundle-build #mpEmb {
+    display: none !important;
+}
+
+/* Bundle colour/size step: the large garment photo is unnecessary.
+   Breadcrumb, title, brand mark, and the spec line stay together;
+   colour swatches stay underneath. No empty block where the photo was. */
+html.bundle-build .product-gallery .gallery-main,
+body.bundle-build .product-gallery .gallery-main {
+    display: none !important;
+}
+
+html.bundle-build .product-gallery,
+body.bundle-build .product-gallery {
+    background: #fff;
+}
+
+html.bundle-build .product-info,
+body.bundle-build .product-info {
+    padding-top: 0;
 }
 
 /* === Pricing Tiers Grid (with discounts) === */
@@ -5973,14 +6238,6 @@ a {
     gap: 12px;
 }
 
-.menu-toggle {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
 .header-actions {
     display: flex;
     align-items: center;
@@ -6070,14 +6327,12 @@ a {
     z-index: var(--z-float);
 }
 
-.home-page .menu-overlay,
 .home-page .account-overlay,
 .home-page .popup-overlay,
 .home-page .upload-modal-overlay {
     z-index: var(--z-overlay);
 }
 
-.home-page .slide-menu,
 .home-page .account-panel,
 .home-page .popup-contact,
 .home-page .upload-modal,
@@ -6085,7 +6340,6 @@ a {
     z-index: var(--z-modal);
 }
 
-.home-page .menu-toggle,
 .home-page .header-action,
 .home-page .social-icon,
 .home-page .featured-control,
@@ -8585,98 +8839,6 @@ a {
     width: 24px;
 }
 
-/* Slide Menu */
-.menu-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    opacity: 0;
-    visibility: hidden;
-    transition: all var(--transition);
-    z-index: 200;
-}
-
-.menu-overlay.active {
-    opacity: 1;
-    visibility: visible;
-}
-
-.slide-menu {
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 85%;
-    max-width: 320px;
-    background: var(--white);
-    transform: translateX(-100%);
-    transition: transform var(--transition);
-    z-index: 201;
-    display: flex;
-    flex-direction: column;
-}
-
-.slide-menu.active {
-    transform: translateX(0);
-}
-
-.menu-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--gray-200);
-}
-
-.menu-logo {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.close-menu {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--gray-500);
-}
-
-.menu-content {
-    flex: 1;
-    overflow-y: auto;
-    padding: 8px 0;
-}
-
-.menu-section {
-    padding: 8px 0;
-}
-
-.menu-section-title {
-    padding: 8px 16px;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: var(--gray-400);
-}
-
-.menu-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    font-size: 15px;
-    color: var(--gray-700);
-    text-decoration: none;
-}
-
-.menu-item.active {
-    color: var(--purple);
-    background: var(--gray-50);
-}
-
 /* ============================================
    SHOP MOBILE PAGE - Desktop-like Cards
    ============================================ */
@@ -9468,71 +9630,6 @@ a {
     border-color: #7a2ee6;
     box-shadow: 0 0 0 2px white, 0 0 0 3px #7a2ee6;
     transform: scale(1.05);
-}
-
-
-.menu-item.sub-item {
-    padding-left: 48px;
-    font-size: 14px;
-}
-
-.menu-item svg {
-    width: 20px;
-    height: 20px;
-    color: var(--gray-400);
-}
-
-.menu-item.active svg {
-    color: var(--purple);
-}
-
-.menu-badge {
-    margin-left: auto;
-    min-width: 20px;
-    height: 20px;
-    padding: 0 6px;
-    background: var(--purple);
-    color: var(--white);
-    font-size: 11px;
-    font-weight: 600;
-    border-radius: var(--radius-full);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.menu-divider {
-    height: 1px;
-    background: var(--gray-200);
-    margin: 8px 16px;
-}
-
-.sustainable-link {
-    color: var(--green) !important;
-}
-
-.sustainable-link svg {
-    color: var(--green) !important;
-}
-
-.phone-link {
-    color: var(--teal) !important;
-}
-
-.whatsapp-link {
-    color: #25D366 !important;
-}
-
-.menu-footer {
-    padding: 12px 16px;
-    border-top: 1px solid var(--gray-200);
-    display: flex;
-    gap: 16px;
-}
-
-.menu-footer-link {
-    font-size: 13px;
-    color: var(--gray-500);
 }
 
 /* ============================================
@@ -10974,9 +11071,9 @@ a.continue-shopping {
     bottom: 0;
     width: 80%;
     max-width: 400px;
-    background: rgba(255, 255, 255, 0.60);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: #fff;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     border-radius: 0 16px 16px 0;
     box-shadow: 4px 0 30px rgba(0, 0, 0, 0.15);
     z-index: 1000;

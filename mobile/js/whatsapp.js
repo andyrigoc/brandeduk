@@ -61,8 +61,7 @@
     var IMG = {
         logoGif: assetUrl('../../brandedukv15-child/assets/videos/use-the-provided-circular-1727756126.gif?v=20261002-chatlogo'),
         wordmark: assetUrl('../../brandedukv15-child/assets/images/ui/Branded UK Logo on Transparent Background.png?v=20261002-chatlogo'),
-        mark: assetUrl('../../brandedukv15-child/assets/images/ui/bd-mark-circle.png'),
-        welcome: assetUrl('../../brandedukv15-child/assets/images/ui/chat-welcome-visual.png')
+        mark: assetUrl('../../brandedukv15-child/assets/images/ui/bd-mark-circle.png')
     };
 
     function waLink(text, number) {
@@ -81,6 +80,37 @@
     var RECENT_OUTBOUND_TTL_MS = 8000;
     var CRISP_READY_WAIT_MS = 6000;
     var pendingCrispWatchdogs = {};
+    var confirmedMessages = new Set();
+    var pendingMessages = new Map();
+    var prechatCollecting = true;
+
+    // Use the existing SDK listener, so the questionnaire never replaces the
+    // native reply/delivery hooks. A queued command is not a delivery receipt.
+    function sendConfirmed(text) {
+        var message = String(text || '').trim();
+        if (!message || !isSignedIn() || !isCrispSdkReady() ||
+            !window.BrandedCrispConsent || !window.BrandedCrispConsent.allowed()) {
+            return Promise.reject(new Error('Chat is not ready.'));
+        }
+        if (confirmedMessages.has(message)) return Promise.resolve();
+        if (pendingMessages.has(message)) return pendingMessages.get(message).promise;
+        var entry = {};
+        entry.promise = new Promise(function (resolve, reject) {
+            entry.resolve = resolve;
+            entry.reject = reject;
+        });
+        pendingMessages.set(message, entry);
+        entry.timer = window.setTimeout(function () {
+            pendingMessages.delete(message);
+            entry.reject(new Error('Delivery was not confirmed.'));
+        }, 14000);
+        if (!sendToCrispBackend(message)) {
+            clearTimeout(entry.timer);
+            pendingMessages.delete(message);
+            entry.reject(new Error('Could not send the enquiry.'));
+        }
+        return entry.promise;
+    }
 
     // Self-heal: if footer.js failed to parse/inject crisp-chat.js, load it here.
     function ensureCrispBackendLoader() {
@@ -286,6 +316,15 @@
             forceHideCrispUi();
             var text = extractCrispText(data);
             if (text) wasRecentOutbound(text);
+            if (!data || data.type === 'text' || !data.type) {
+                confirmedMessages.add(text);
+                var entry = pendingMessages.get(text);
+                if (entry) {
+                    clearTimeout(entry.timer);
+                    pendingMessages.delete(text);
+                    entry.resolve();
+                }
+            }
         }]);
 
         window.$crisp.push(['on', 'chat:opened', function () {
@@ -366,15 +405,6 @@
             '      </button>' +
             '    </div>' +
             '  </div>' +
-            '  <div class="wa-popup__welcome">' +
-            '    <div class="wa-popup__agents" aria-hidden="true">' +
-            '      <img class="wa-popup__agents-visual" src="' + IMG.welcome + '" alt="">' +
-            '    </div>' +
-            '    <div class="wa-popup__welcome-copy">' +
-            '      <h3>Hi, welcome to Branded.</h3>' +
-            '      <p>Chat with our team about quotes, products and orders.</p>' +
-            '    </div>' +
-            '  </div>' +
             '  <div class="wa-popup__auth-gate" id="waAuthGate" hidden>' +
             '    <div class="wa-popup__auth-card">' +
             '      <p class="wa-popup__auth-title">Sign in with Google to chat</p>' +
@@ -406,41 +436,6 @@
             '      </button>' +
             '    </div>' +
             '  </div>' +
-            '  <div class="wa-popup__replies" id="waFastReplies" aria-label="Fast replies">' +
-            '    <button type="button" class="wa-popup__reply-chip" data-wa-reply="Hi, I need a quote for branded workwear.">Need a quote</button>' +
-            '    <button type="button" class="wa-popup__reply-chip" data-wa-reply="Hi, I have a question about my order.">Order question</button>' +
-            '    <button type="button" class="wa-popup__reply-chip" data-wa-reply="Hi, can you help with logo placement and pricing?">Logo help</button>' +
-            '  </div>' +
-            '  <div class="wa-popup__actions">' +
-            '    <a class="wa-popup__action wa-popup__action--alt" id="waEmailTeam" href="mailto:info@brandeduk.com?subject=BrandedUK%20Website%20Enquiry">' +
-            '      <span class="wa-popup__action-icon wa-popup__action-icon--email" aria-hidden="true">' +
-            '        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>' +
-            '      </span>' +
-            '      <span class="wa-popup__action-label">EMAIL</span>' +
-            '      <span class="wa-popup__action-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></span>' +
-            '    </a>' +
-            '    <a class="wa-popup__action" id="waCallTeam" href="tel:' + PHONE_TEL + '">' +
-            '      <span class="wa-popup__action-icon wa-popup__action-icon--call" aria-hidden="true">' +
-            '        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.68 2.35a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.75.32 1.54.55 2.35.68A2 2 0 0 1 22 16.92z"/></svg>' +
-            '      </span>' +
-            '      <span class="wa-popup__action-label">Call our team</span>' +
-            '      <span class="wa-popup__action-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></span>' +
-            '    </a>' +
-            '  </div>' +
-            '  <div class="wa-popup__quick">' +
-            '    <button type="button" class="wa-popup__quick-btn" id="waFastRepliesBtn">' +
-            '      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>' +
-            '      Fast replies' +
-            '    </button>' +
-            '    <button type="button" class="wa-popup__quick-btn" id="waQuoteSupport" data-open-contact="1" data-contact-message="Hi, I need quote support for branded workwear / uniforms.">' +
-            '      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>' +
-            '      Quote support' +
-            '    </button>' +
-            '    <button type="button" class="wa-popup__quick-btn" id="waOrderHelp" data-open-contact="1" data-contact-message="Hi, I need help with an existing order.">' +
-            '      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.3 7L12 12l8.7-5M12 22V12"/></svg>' +
-            '      Order help' +
-            '    </button>' +
-            '  </div>' +
             '</div>';
     }
 
@@ -448,7 +443,7 @@
         /* Belt+suspenders: inline size lock so CSS cache cannot leave CTAs unequal/tall */
         var actions = root && root.querySelector
             ? root.querySelector('.wa-popup__actions')
-            : document.getElementById('waFastReplies') && document.querySelector('.wa-popup__actions');
+            : document.querySelector('.wa-popup__actions');
         if (!actions) actions = document.querySelector('.wa-popup__actions');
         if (!actions) return;
         actions.style.cssText =
@@ -735,6 +730,7 @@
 
     function applyAuthGateUi() {
         chatUnlocked = BUK_REQUIRE_AUTH_FOR_COMPOSER ? isSignedIn() : true;
+        var canCompose = chatUnlocked && !prechatCollecting;
         if (popup) {
             popup.classList.toggle('is-locked', !chatUnlocked);
             popup.classList.toggle('is-unlocked', chatUnlocked);
@@ -753,11 +749,12 @@
             composer.setAttribute('aria-hidden', chatUnlocked ? 'false' : 'true');
         }
         if (inputEl) {
-            inputEl.disabled = !chatUnlocked;
-            inputEl.tabIndex = chatUnlocked ? 0 : -1;
-            inputEl.placeholder = chatUnlocked ? 'Write a message…' : 'Sign in with Google to write…';
+            inputEl.disabled = !canCompose;
+            inputEl.tabIndex = canCompose ? 0 : -1;
+            inputEl.placeholder = prechatCollecting ? 'Write a message...' : (chatUnlocked ? 'Write a message...' : 'Sign in with Google to write…');
         }
-        if (sendBtn) sendBtn.disabled = !chatUnlocked;
+        if (sendBtn) sendBtn.disabled = !canCompose;
+        if (composer) composer.inert = prechatCollecting;
         if (fastReplies) {
             fastReplies.hidden = !chatUnlocked;
             fastReplies.setAttribute('aria-hidden', chatUnlocked ? 'false' : 'true');
@@ -800,9 +797,11 @@
         popup.classList.add('is-active');
         popup.setAttribute('aria-hidden', 'false');
         // No auto-greeting on open — wait for the customer's first message.
-        if (chatUnlocked && inputEl) {
-            setTimeout(function () { inputEl.focus(); }, 180);
+        if (chatUnlocked && inputEl && !prechatCollecting) {
+            setTimeout(function () { if (!prechatCollecting) inputEl.focus(); }, 180);
         }
+        window.dispatchEvent(new CustomEvent('branded:chat-opened'));
+        if (typeof window.__bukSyncSpeedPark === 'function') window.__bukSyncSpeedPark();
     }
 
     function closePopup() {
@@ -810,6 +809,7 @@
         popup.classList.remove('is-minimized');
         popup.setAttribute('aria-hidden', 'true');
         if (fastReplies) fastReplies.classList.remove('is-open');
+        if (typeof window.__bukSyncSpeedPark === 'function') window.__bukSyncSpeedPark();
     }
 
     function minimizePopup() {
@@ -901,7 +901,7 @@
     }
 
     function sendToWhatsApp(text) {
-        if (!chatUnlocked) {
+        if (!chatUnlocked || prechatCollecting) {
             applyAuthGateUi();
             return '';
         }
@@ -1159,5 +1159,48 @@
     bindCrispMessageHooks();
     forceHideCrispUi();
     window.openBrandedChat = openPopup;
+    window.closeBrandedChat = closePopup;
     window.openBrandedCrispChat = openCrispChat;
+    window.BrandedOnsiteChat = {
+        isSignedIn: isSignedIn,
+        isReady: isCrispSdkReady,
+        sendConfirmed: sendConfirmed,
+        setCollecting: function (collecting) {
+            prechatCollecting = !!collecting;
+            applyAuthGateUi();
+        },
+        showEnquiry: function (payload) {
+            cancelPendingWelcomeForOperatorReply();
+            if (!chatBody || chatBody.querySelector('.buk-pc-native-summary')) return;
+            var text = typeof payload === 'string' ? payload : (payload && payload.text) || '';
+            var html = payload && typeof payload === 'object' ? String(payload.html || '') : '';
+            if ((!text && !html) || !chatUnlocked) return;
+            var wrap = document.createElement('div');
+            wrap.className = 'wa-msg wa-msg--user buk-pc-native-summary';
+            wrap.innerHTML =
+                '<div class="wa-msg__bubble"></div>' +
+                '<div class="wa-msg__meta"><span></span>' +
+                '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>' +
+                '</div>';
+            var bubble = wrap.querySelector('.wa-msg__bubble');
+            if (html) bubble.innerHTML = html;
+            else bubble.textContent = text;
+            wrap.querySelector('.wa-msg__meta span').textContent = nowLabel();
+            var typing = document.getElementById('waTypingMsg');
+            if (typing && typing.parentNode === chatBody && !typing.hasAttribute('hidden')) chatBody.insertBefore(wrap, typing);
+            else chatBody.appendChild(wrap);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+    };
+    var prechatCss = document.createElement('link');
+    prechatCss.rel = 'stylesheet';
+    prechatCss.href = assetUrl('../css/prechat.css?v=20261116-logo-card');
+    document.head.appendChild(prechatCss);
+    var prechatScript = document.createElement('script');
+    prechatScript.src = assetUrl('prechat.js?v=20261116-logo-card');
+    prechatScript.onerror = function () {
+        prechatCollecting = false;
+        applyAuthGateUi();
+    };
+    document.head.appendChild(prechatScript);
 })();

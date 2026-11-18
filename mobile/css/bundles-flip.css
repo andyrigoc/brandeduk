@@ -6,6 +6,56 @@
     --bf-ink: #14213b;
     --bf-muted: #5c6778;
     --bf-cta: #1f6f6a;
+    /* Closed card. Was 160px; trimmed so the bands above the price and below Bundle n° shrink. */
+    --bf-card-h: 132px;
+  }
+
+  .catalogue .bundle-filter-row {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 10px;
+    padding: 2px 2px 8px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .catalogue .bundle-filter-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  .catalogue .bundle-filter-chip {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 6px;
+    min-height: 34px;
+    padding: 4px 12px 4px 6px;
+    border: 1px solid #c5d0dc;
+    border-radius: 999px;
+    background: #e8eef5;
+    color: #14213b;
+    font: inherit;
+    font-size: 0.78rem;
+    font-weight: 750;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .catalogue .bundle-filter-chip img {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    flex: 0 0 auto;
+  }
+
+  .catalogue .bundle-filter-chip.is-picked {
+    border-color: #1f6f6a;
+    background: #d7ece9;
+    color: #0f4f4b;
   }
 
   .catalogue .bundle-sort-row {
@@ -17,8 +67,12 @@
 
   .catalogue .bundle-sort-chip {
     display: inline-flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
     align-items: center;
     gap: 8px;
+    width: 100%;
+    max-width: 100%;
     min-height: 36px;
     padding: 4px 6px 4px 12px;
     border: 1px solid #c5d0dc;
@@ -27,9 +81,17 @@
     color: #14213b;
     font-size: 0.86rem;
     font-weight: 750;
+    white-space: nowrap;
+  }
+
+  .catalogue .bundle-sort-chip__label {
+    flex: 0 0 auto;
+    white-space: nowrap;
   }
 
   .catalogue .bundle-sort-select {
+    flex: 1 1 auto;
+    min-width: 0;
     min-height: 30px;
     padding: 4px 28px 4px 10px;
     border: 1px solid #b7c2d0;
@@ -37,9 +99,14 @@
     background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%235c6778' d='M1 1l5 5 5-5'/%3E%3C/svg%3E") no-repeat right 10px center;
     color: #14213b;
     font: inherit;
-    font-weight: 750;
+    font-weight: 700;
     appearance: none;
     -webkit-appearance: none;
+    white-space: nowrap;
+  }
+
+  .catalogue .bundle-sort-select option {
+    font-weight: 700;
   }
 
   .catalogue #catalogue-grid.catalogue-grid {
@@ -56,22 +123,24 @@
 
   /*
    * ORIGINAL .card flip — compiled from pasted SCSS with exact durations/transforms:
-   * $cardHeight: 160px;
+   * $cardHeight: var(--bf-card-h) (132px; was 160px);
    * $cardFromToHeight: 70px;   ($cardHeight - $cardSenderHeight)
    * $cardLastPartHeight: 85px; ($cardFromToHeight + 15)
    * $cardMrgBtm: 15px;
-   * $cardStep1MrgBtm: 175px;
-   * $cardStep2MrgBtm: 245px;
-   * $cardStep3MrgBtm: 330px;
+   * $cardStep1MrgBtm: height + 15;
+   * $cardStep2MrgBtm: height + 70 + 15;
+   * $cardStep3MrgBtm: height + 70 + 85 + 15;
    * $cardAnimStep1/2/3: 0.5s;
    * $cardBorderRadius: 11px;
    */
   .catalogue .card {
     --card-accent: #e8a317;
+    /* Reverse face only. Pale wash of this card's accent, seen while the card rolls shut. */
+    --card-back: color-mix(in srgb, var(--card-accent) 18%, white);
     z-index: 1;
     position: relative;
     width: calc(100% - 16px);
-    height: 160px;
+    height: var(--bf-card-h);
     margin-left: 8px;
     margin-right: 8px;
     margin-bottom: 15px;
@@ -116,15 +185,15 @@
   }
 
   .catalogue .card.flip-step1 {
-    margin-bottom: 175px; /* $cardStep1MrgBtm */
+    margin-bottom: calc(var(--bf-card-h) + 15px); /* $cardStep1MrgBtm */
   }
 
   .catalogue .card.flip-step2 {
-    margin-bottom: 245px; /* $cardStep2MrgBtm */
+    margin-bottom: calc(var(--bf-card-h) + 70px + 15px); /* $cardStep2MrgBtm */
   }
 
   .catalogue .card.flip-step3 {
-    margin-bottom: 330px; /* $cardStep3MrgBtm */
+    margin-bottom: calc(var(--bf-card-h) + 70px + 85px + 15px); /* $cardStep3MrgBtm */
   }
 
   /* Second open — compiled from original SCSS ($cardReqAnimStep1/2, margins, part transforms) */
@@ -135,12 +204,12 @@
 
   .catalogue .card.req-active2 {
     transition: margin 0.6s cubic-bezier(0.31, 0.14, 0.48, 1.52); /* $cardReqAnimStep2 */
-    margin-bottom: calc(100dvh - 160px - 30px); /* $cardReqStep2MrgBtm ≈ $screenH - height - mrg*2 */
+    margin-bottom: calc(100dvh - var(--bf-card-h) - 30px); /* $cardReqStep2MrgBtm ≈ $screenH - height - mrg*2 */
   }
 
   .catalogue .card.req-closing1 {
     transition: margin 0.5s; /* $cardReqClosing1 */
-    margin-bottom: 175px; /* $cardHeight + $cardMrgBtm */
+    margin-bottom: calc(var(--bf-card-h) + 15px); /* $cardHeight + $cardMrgBtm */
   }
 
   .catalogue .card.req-closing2 {
@@ -166,7 +235,7 @@
     left: 0;
     top: 0;
     width: 100%;
-    height: 260px; /* $cardMapHeight = $cardHeight + 100px */
+    height: calc(var(--bf-card-h) + 100px); /* $cardMapHeight = $cardHeight + 100px */
     opacity: 0;
     pointer-events: none;
     border-radius: 11px 11px 0 0;
@@ -300,12 +369,12 @@
 
   .catalogue .card.req-active1 .card__part-2 {
     transition: transform 0.6s; /* $cardReqAnimStep1 */
-    transform: translate3d(0, -120px, 0); /* -$cardStatsHeight */
+    transform: translate3d(0, calc(40px - var(--bf-card-h)), 0); /* -$cardStatsHeight = -(height - 40px header) */
   }
 
   .catalogue .card.req-active2 .card__part-2 {
     transition: transform 0.6s cubic-bezier(0.61, 0.14, 0.18, 1.52); /* $cardReqAnimStep2 */
-    transform: translate3d(0, 140px, 0); /* $cardMapHeight - $cardStatsHeight = 260-120 */
+    transform: translate3d(0, 140px, 0); /* (height + 100) - (height - 40) stays 140px */
   }
 
   .catalogue .card.req-closing1 .card__part-2 {
@@ -328,7 +397,7 @@
   }
 
   .catalogue .card__part-3 > .m--back {
-    background: #F7EFF7;
+    background: var(--card-back);
   }
 
   .catalogue .card.flip-step2 .card__part-3 {
@@ -368,7 +437,7 @@
   }
 
   .catalogue .card__part-4 > .m--back {
-    background: #F7EFF7;
+    background: var(--card-back);
   }
 
   .catalogue .card__part-4 > .m--front {
@@ -402,7 +471,7 @@
     align-items: center;
     gap: 8px;
     height: 100%;
-    padding: 10px 12px 10px 0;
+    padding: 8px 12px 8px 0;
     box-shadow: 0 2px 10px rgba(20, 33, 59, 0.08);
   }
 
@@ -412,15 +481,9 @@
     top: 0;
     bottom: 0;
     z-index: 0;
-    width: 7px;
-    background: var(--card-accent);
-    transition: width 0.3s;
-    pointer-events: none;
-  }
-
-  .catalogue .card:not(.active):active .card__face__colored-side,
-  .catalogue .card.is-pressing:not(.active) .card__face__colored-side {
     width: 150px;
+    background: var(--card-accent);
+    pointer-events: none;
   }
 
   .catalogue .card__face__meta {
@@ -434,32 +497,29 @@
     position: relative;
     z-index: 1;
     margin: 0;
-    color: var(--card-accent);
+    color: #fff;
     font-size: 1.15rem;
     font-weight: 800;
     letter-spacing: -0.03em;
     line-height: 1.15;
     white-space: nowrap;
-    transition: color 0.3s;
   }
 
   .catalogue .card__face__price small,
   .catalogue .card__face__price .vat-suffix {
     display: inline;
     margin-left: 0.28em;
-    color: var(--bf-muted);
+    color: #fff;
     font-size: 0.68rem;
     font-weight: 650;
-    transition: color 0.3s;
   }
 
   .catalogue .card__face__team {
     display: block;
     margin-top: 6px;
-    color: var(--bf-ink);
+    color: #fff;
     font-size: 0.72rem;
     font-weight: 650;
-    transition: color 0.3s;
   }
 
   .catalogue .card__face__items {
@@ -472,24 +532,6 @@
     color: var(--bf-ink);
     font-size: 0.68rem;
     font-weight: 750;
-  }
-
-  .catalogue .card:not(.active):active .card__face__price,
-  .catalogue .card:not(.active):active .card__face__price small,
-  .catalogue .card:not(.active):active .card__face__price .vat-suffix,
-  .catalogue .card:not(.active):active .card__face__team,
-  .catalogue .card.is-pressing:not(.active) .card__face__price,
-  .catalogue .card.is-pressing:not(.active) .card__face__price small,
-  .catalogue .card.is-pressing:not(.active) .card__face__price .vat-suffix,
-  .catalogue .card.is-pressing:not(.active) .card__face__team {
-    color: #fff;
-  }
-
-  .catalogue .card:not(.active):active .card__face__items,
-  .catalogue .card.is-pressing:not(.active) .card__face__items {
-    color: var(--bf-ink);
-    background: #f5f7fb;
-    border-color: #d5deec;
   }
 
   .catalogue .card__face__preview {
@@ -553,6 +595,26 @@
     font-weight: 750;
     line-height: 1.2;
     text-align: right;
+  }
+
+  .catalogue .card__face__number {
+    display: block;
+    margin: 6px 0 0;
+    max-width: 100%;
+    overflow: hidden;
+    color: #fff;
+    font-family: Inter, system-ui, sans-serif;
+    font-size: 12px;
+    font-weight: 200;
+    line-height: 1.2;
+    letter-spacing: 0;
+    text-align: left;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .catalogue .card.theme-construction .card__face__number {
+    color: #14213b;
   }
 
   .catalogue .card__face__chev {
@@ -621,7 +683,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    height: calc(160px - 40px);
+    height: calc(var(--bf-card-h) - 40px);
     padding: 10px 12px;
     background: #fff;
   }
@@ -715,11 +777,16 @@
     min-height: 44px;
     border: 0;
     border-radius: 10px;
-    background: var(--bf-cta);
+    background: var(--card-accent);
     color: #fff;
     font-size: 0.9rem;
     font-weight: 750;
     cursor: pointer;
+  }
+
+  /* Construction yellow (#f0c419) is too light for a white label. */
+  .catalogue .card.theme-construction .card__request-btn {
+    color: #14213b;
   }
 
   .catalogue .card__request-btn__text-2 {

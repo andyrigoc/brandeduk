@@ -45,7 +45,7 @@
 
   var CSS =
     '#' + OVERLAY_ID + '{position:fixed;inset:0;z-index:2147483646;display:flex;align-items:center;justify-content:center;' +
-      'background:rgba(255,255,255,.35);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);' +
+      'background:rgba(255,255,255,.35);-webkit-backdrop-filter:none;backdrop-filter:none;filter:none;' +
       'opacity:0;transition:opacity .15s ease;cursor:progress}' +
     '#' + OVERLAY_ID + '.is-active{opacity:1}' +
     '@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){#' + OVERLAY_ID + '{background:rgba(255,255,255,.65)}}' +

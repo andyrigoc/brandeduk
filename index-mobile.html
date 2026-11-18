@@ -2,6 +2,84 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <script>
+    (function () {
+      var BACK = 'buk-z-back';
+      var DIR = 'buk-z-dir';
+      function directionNow() {
+        var type = 'forward';
+        try { type = sessionStorage.getItem(DIR) || 'forward'; } catch (e) {}
+        try {
+          var activation = window.navigation && window.navigation.activation;
+          if (activation && activation.navigationType === 'traverse' && activation.entry && activation.from && typeof activation.entry.index === 'number' && typeof activation.from.index === 'number') {
+            type = activation.entry.index < activation.from.index ? 'back' : 'forward';
+          }
+        } catch (e) {}
+        return type;
+      }
+      document.documentElement.setAttribute('data-z', directionNow());
+      function pageKey(url) {
+        var path = '';
+        try { path = new URL(url, location.href).pathname.toLowerCase(); } catch (e) { return ''; }
+        if (path.indexOf('bundle-configurator') !== -1) return 'bundles';
+        if (path.indexOf('shop-categories-mobile') !== -1) return 'shop';
+        if (path.indexOf('index-mobile') !== -1 || path.indexOf('home-mobile') !== -1 || path === '/' || path === '') return 'home';
+        return '';
+      }
+      function remember(activation) {
+        if (!activation || !activation.entry) return 'forward';
+        var fromKey = pageKey((activation.from && activation.from.url) || '');
+        var toKey = pageKey(activation.entry.url || '');
+        var back = false;
+        if (activation.navigationType === 'traverse' && activation.from && typeof activation.entry.index === 'number' && typeof activation.from.index === 'number') {
+          back = activation.entry.index < activation.from.index;
+        } else {
+          try { back = !!(toKey && toKey === sessionStorage.getItem(BACK)); } catch (e) { back = false; }
+        }
+        try {
+          sessionStorage.setItem(DIR, back ? 'back' : 'forward');
+          if (fromKey) sessionStorage.setItem(BACK, fromKey);
+        } catch (e) {}
+        return back ? 'back' : 'forward';
+      }
+      function arm(vt) {
+        if (!vt) return;
+        window.__bukVt = vt;
+        var timer = setTimeout(function () {
+          try { vt.skipTransition(); } catch (err) {}
+        }, 1200);
+        var clear = function () {
+          clearTimeout(timer);
+          if (window.__bukVt === vt) window.__bukVt = null;
+        };
+        vt.finished.then(clear, clear);
+      }
+      window.addEventListener('pageswap', function (e) {
+        var type = remember(e.activation);
+        if (!e.viewTransition || !e.viewTransition.types) return;
+        try { e.viewTransition.types.add(type); } catch (err) {}
+      });
+      window.addEventListener('pagereveal', function (e) {
+        arm(e.viewTransition);
+        if (!e.viewTransition || !e.viewTransition.types) return;
+        var type = 'forward';
+        try { type = sessionStorage.getItem(DIR) || 'forward'; } catch (err) {}
+        var activation = null;
+        try { activation = window.navigation && window.navigation.activation; } catch (err) {}
+        if (activation && activation.navigationType === 'traverse' && activation.entry && activation.from && typeof activation.entry.index === 'number' && typeof activation.from.index === 'number') {
+          type = activation.entry.index < activation.from.index ? 'back' : 'forward';
+        }
+        try { e.viewTransition.types.add(type); } catch (err) {}
+      });
+    })();
+    </script>
+    <script>
+      try {
+        if (sessionStorage.getItem('buk-centre-enter') === 'customise') {
+          document.documentElement.classList.add('buk-rise-customise');
+        }
+      } catch (e) {}
+    </script>
     <!-- Desktop experience gate: keep this first so desktop visitors never see the live site. -->
     <script data-desktop-experience-gate>
         (function (d) {
@@ -56,7 +134,7 @@
 
       gtag('config', 'AW-438771987');
     </script>
-    <script defer src="/brandedukv15-child/assets/js/cookie-consent.js?v=20261016"></script>
+    <script defer src="/brandedukv15-child/assets/js/cookie-consent.js?v=20261115-noblur"></script>
     <script defer src="/brandedukv15-child/assets/js/ads-conversions.js?v=20261009"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#273469">
@@ -215,14 +293,48 @@
         }
     </script>
     <!-- Mobile-First CSS -->
-    <link rel="stylesheet" href="mobile/css/mobile.css?v=20261112-signinorange">
-    <link rel="stylesheet" href="mobile/css/bottom-nav.css?v=20261112-bundles">
-    <link rel="stylesheet" href="mobile/css/header-v2.css?v=20261112-avatar125">
+    <link rel="stylesheet" href="mobile/css/mobile.css?v=20261116-nohamburger">
+    <link rel="stylesheet" href="mobile/css/bottom-nav.css?v=20261115-corretta2">
+    <link rel="stylesheet" href="mobile/css/header-v2.css?v=20261116-nohamburger">
     <link rel="stylesheet" href="mobile/hero/hero.css?v=20261017-smooth">
     <link rel="stylesheet" href="mobile/css/popup-contact.css?v=20261003-consent">
     <link rel="stylesheet" href="mobile/css/faq.css?v=20261112-faqarrow">
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20261025-worddn">
-    <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20261020-noclose">
+    <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20261116-slimchat">
+    <style id="buk-z">
+      :root { --buk-z-ms: 900ms; }
+      @view-transition { navigation: auto; }
+      ::view-transition { background: transparent; }
+      ::view-transition-group(root) { animation: none; }
+      ::view-transition-old(root) {
+        transform-origin: center center;
+        animation: buk-z-out var(--buk-z-ms) ease-in-out both;
+        mix-blend-mode: normal;
+      }
+      ::view-transition-new(root) {
+        transform-origin: center center;
+        animation: buk-z-in var(--buk-z-ms) ease-in-out both;
+        mix-blend-mode: normal;
+      }
+      :root:active-view-transition-type(back)::view-transition-old(root),
+      html[data-z="back"]::view-transition-old(root) { animation-name: buk-z-out-back; }
+      :root:active-view-transition-type(back)::view-transition-new(root),
+      html[data-z="back"]::view-transition-new(root) { animation-name: buk-z-in-back; }
+      @keyframes buk-z-out { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(1.08); } }
+      @keyframes buk-z-in { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
+      @keyframes buk-z-out-back { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.92); } }
+      @keyframes buk-z-in-back { from { opacity: 0; transform: scale(1.08); } to { opacity: 1; transform: scale(1); } }
+      #branded-nav { view-transition-name: branded-nav; }
+      ::view-transition-group(branded-nav) { animation: none; z-index: 1000; pointer-events: none; }
+      ::view-transition-image-pair(branded-nav) { animation: none; pointer-events: none; }
+      ::view-transition-old(branded-nav) { animation: none; opacity: 1; pointer-events: none; }
+      ::view-transition-new(branded-nav) { animation: none; opacity: 0; display: none; pointer-events: none; }
+      ::view-transition-old(root),
+      ::view-transition-new(root) { pointer-events: none; }
+      @media (prefers-reduced-motion: reduce) {
+        @view-transition { navigation: none; }
+      }
+    </style>
     <link rel="stylesheet" href="mobile/css/upload-logo-modal.css?v=20260413a">
     <link rel="stylesheet" href="mobile/footer/footer.css?v=20260409B">
     <script src="brandedukv15-child/assets/js/shared-config.js?v=20261021-hivis-unified"></script>
@@ -632,6 +744,7 @@
         .home-page .featured-card-skeleton { width: 150px; }
     </style>
     <link rel="stylesheet" href="/mobile/css/chat-nav-icon.css?v=20261112-chatwhite">
+<link rel="preload" as="image" href="/brandedukv15-child/assets/images/ui/navbar/bundles-apron-negativa.png"><link rel="preload" as="image" href="/brandedukv15-child/assets/images/ui/navbar/bundles-apron-positiva.png">
 </head>
 <body class="home-page">
     
@@ -1195,17 +1308,6 @@
     <div class="header-with-promo">
     <header class="mobile-header mobile-header--v2">
         <div class="mh-bar">
-            <button type="button" class="mh-icon-btn" id="menuToggle" aria-label="Open menu" aria-expanded="false" aria-controls="slideMenu">
-                <svg class="mh-icon-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
-                    <line x1="4" y1="7" x2="20" y2="7"></line>
-                    <line x1="4" y1="12" x2="20" y2="12"></line>
-                    <line x1="4" y1="17" x2="20" y2="17"></line>
-                </svg>
-                <svg class="mh-icon-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                </svg>
-            </button>
             <a href="/index-mobile.html?force=mobile" class="mobile-logo-center mh-logo" aria-label="brandedUK home">
                 <img class="mobile-logo-badge" src="brandedukv15-child/assets/videos/use-the-provided-circular-1727756126.gif?v=20261001-newgif" alt="" width="64" height="64">
                 <img class="mobile-logo-word" src="brandedukv15-child/assets/images/ui/Branded UK Logo on Transparent Background.png?v=20261002-logocombo" alt="branded" width="120" height="52">
@@ -1912,170 +2014,18 @@
             </div>
         </section>
 
-        <!-- Newsletter / Contact -->
-        <section class="contact-section">
-            <h2>Need Help?</h2>
-            <p>Our team is ready to assist you with your workwear needs.</p>
-            <div class="contact-buttons">
-                <a href="tel:02089742722" class="contact-btn phone">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path>
-                    </svg>
-                    Call Us
-                </a>
-                <a href="https://wa.me/447447348564" class="contact-btn whatsapp">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                    </svg>
-                    WhatsApp
-                </a>
-                <a href="mailto:info@brandeduk.com" class="contact-btn email">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                        <polyline points="22,6 12,13 2,6"></polyline>
-                    </svg>
-                    Email
-                </a>
-            </div>
-        </section>
-
         <!-- Footer (injected from /mobile/footer/footer.html) -->
         <div data-mobile-footer></div>
             </div>
         </div>
     </main>
 
-    <div class="menu-overlay" id="menuOverlay"></div>
-    <nav class="slide-menu slide-menu--v2" id="slideMenu" aria-label="Menu">
-        <div class="mh-drawer-top">
-            <button type="button" class="mh-icon-btn mh-back" id="mhBack" hidden aria-label="Back to menu">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18 9 12l6-6"></path></svg>
-            </button>
-            <a href="/index-mobile.html?force=mobile" class="mobile-logo-center mh-logo" aria-label="brandedUK home">
-                <img class="mobile-logo-badge" src="brandedukv15-child/assets/videos/use-the-provided-circular-1727756126.gif?v=20261001-newgif" alt="" width="64" height="64">
-                <img class="mobile-logo-word" src="brandedukv15-child/assets/images/ui/Branded UK Logo on Transparent Background.png?v=20261002-logocombo" alt="branded" width="120" height="52">
-            </a>
-            <button type="button" class="mh-icon-btn close-menu" id="closeMenu" aria-label="Close menu">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                </svg>
-            </button>
-        </div>
-        <div class="mh-panels">
-        <div class="mh-view" data-mh-view="main">
-        <div class="mh-view-scroll">
-            <div class="mh-menu-block">
-            <button type="button" class="mh-row" data-mh-open="products"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-product" src="/brandedukv15-child/assets/images/icons/menu/shop-product.png?v=20261016-file" alt="" width="46" height="46"></span>Shop by Product<span class="mh-chev" aria-hidden="true"></span></button>
-            <button type="button" class="mh-row" data-mh-open="industries"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-industry" src="/brandedukv15-child/assets/images/icons/menu/shop-by-industry.png?v=20261016-file" alt="" width="46" height="46"></span>Shop by Industry<span class="mh-chev" aria-hidden="true"></span></button>
-            <a class="mh-row" href="bundles.html"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-deals" src="/brandedukv15-child/assets/images/icons/menu/deals-bundles.png?v=20261016-nobg" alt="" width="46" height="46"></span>Deals &amp; Bundles<span class="mh-chev" aria-hidden="true"></span></a>
-            </div>
-            <div class="mh-menu-block">
-            <button type="button" class="mh-row" data-mh-open="help"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M9.4 9.6a2.6 2.6 0 1 1 3.4 2.5c-.8.4-1.3 1-1.3 1.9"/></svg></span>Help &amp; Support<span class="mh-chev" aria-hidden="true"></span></button>
-            <button type="button" class="mh-row" data-mh-quote><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3.5h7.2L19 8.2V20.5H7z"/><path d="M14.2 3.5V8.2H19"/><path d="M9.5 13h5"/><path d="M9.5 16.5h5"/></svg></span>Request a Quote</button>
-            <a class="mh-row" href="track-order.html"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="2.5" y="8" width="11" height="7.5" rx="1"/><path d="M13.5 11H17l3 2.6v1.9h-6.5"/><circle cx="6.5" cy="17.8" r="1.5"/><circle cx="17.2" cy="17.8" r="1.5"/></svg></span>Track Your Order<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="about.html"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 11v5"/><path d="M12 8h.01"/></svg></span>About Us<span class="mh-chev" aria-hidden="true"></span></a>
-            <button type="button" class="mh-row" data-mh-quote><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>Contact Us</button>
-            <div class="mh-contact-stack">
-            <a class="mh-contact mh-contact--call" href="tel:02089742722">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                <span><strong>Call Us</strong><small>020 8974 2722</small></span>
-            </a>
-            <a class="mh-contact mh-contact--email" href="mailto:info@brandeduk.com">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                <span><strong>Email Us</strong><small>info@brandeduk.com</small></span>
-            </a>
-            </div>
-            </div>
-        </div>
-        </div>
-        <div class="mh-view" data-mh-view="products" hidden>
-            <div class="mh-section-title"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-product" src="/brandedukv15-child/assets/images/icons/menu/shop-product.png?v=20261016-file" alt="" width="46" height="46"></span>Shop by Product</div>
-            <div class="mh-view-scroll">
-            <a class="mh-row" href="shop-pc.html?productType=tshirts"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="brandedukv15-child/assets/images/ui/icons/categories/icon-shirt-71%201.png" alt=""></span>T-Shirts<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="shop-pc.html?productType=polos"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="brandedukv15-child/assets/images/ui/icons/categories/Polo.png" alt=""></span>Polo Shirts<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="shop-pc.html?productType[]=hoodies&amp;productType[]=sweatshirts"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="brandedukv15-child/assets/images/ui/icons/categories/icon-hoodies-71%201.png" alt=""></span>Hoodies &amp; Sweatshirts<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="shop-pc.html?productType[]=jackets&amp;productType[]=softshells"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="brandedukv15-child/assets/images/ui/icons/categories/Jacket.png" alt=""></span>Jackets &amp; Softshell<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="shop-pc.html?productType=safety-vests"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="brandedukv15-child/assets/images/ui/icons/categories/Hi%20Vis.png" alt=""></span>Hi-Vis Clothing<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="shop.html?category=ppe"><span class="mh-row-icon" aria-hidden="true"><i class="fa-solid fa-helmet-safety"></i></span>PPE &amp; Safety Wear<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="shop-pc.html?productType=trousers"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="brandedukv15-child/assets/images/ui/icons/categories/Trousers.png" alt=""></span>Work Trousers<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="shop-pc.html?productType=aprons"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="brandedukv15-child/assets/images/ui/icons/categories/Apron.png" alt=""></span>Work &amp; Uniforms<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="shop-pc.html?productType=fleece"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="brandedukv15-child/assets/images/ui/icons/categories/Fleece.png" alt=""></span>Fleeces<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="shop-pc.html?productType=caps"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="brandedukv15-child/assets/images/ui/icons/categories/Cap.png" alt=""></span>Headwear<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row mh-row--eco" href="shop-pc.html?accreditation=recycled"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="brandedukv15-child/assets/images/ui/icons/categories/Recycle.png" alt=""></span>Sustainable / Recycled &amp; Organic<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="shop-pc.html">View All Categories<span class="mh-chev" aria-hidden="true"></span></a>
-                <div class="mh-sibling-group">
-            <button type="button" class="mh-row" data-mh-open="industries"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-industry" src="/brandedukv15-child/assets/images/icons/menu/shop-by-industry.png?v=20261016-file" alt="" width="46" height="46"></span>Shop by Industry<span class="mh-chev" aria-hidden="true"></span></button>
-            <a class="mh-row" href="bundles.html"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-deals" src="/brandedukv15-child/assets/images/icons/menu/deals-bundles.png?v=20261016-nobg" alt="" width="46" height="46"></span>Deals &amp; Bundles<span class="mh-chev" aria-hidden="true"></span></a>
-            <button type="button" class="mh-row" data-mh-open="help"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M9.4 9.6a2.6 2.6 0 1 1 3.4 2.5c-.8.4-1.3 1-1.3 1.9"/></svg></span>Help &amp; Support<span class="mh-chev" aria-hidden="true"></span></button>
-                </div>
-            </div>
-        </div>
-        <div class="mh-view" data-mh-view="industries" hidden>
-            <div class="mh-section-title"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-industry" src="/brandedukv15-child/assets/images/icons/menu/shop-by-industry.png?v=20261016-file" alt="" width="46" height="46"></span>Shop by Industry</div>
-            <div class="mh-view-scroll">
-            <a class="mh-row" href="industries/construction.html"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 15.5a7 7 0 0 1 14 0"/><path d="M3.5 15.5h17v2.2h-17z"/></svg></span>Construction<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="industries/hospitality.html"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4v6.2a2 2 0 1 0 2 0V4"/><path d="M8 12.2V20"/><path d="M15 4c2.2 1.6 2.2 4 0 5.6V20"/></svg></span>Hospitality<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="industries/healthcare.html"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10 4.5h4v15h-4z"/><path d="M4.5 10h15v4h-15z"/></svg></span>Healthcare<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="industries/education.html"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 6l9 4.5L12 15z"/><path d="M7 12.2v3.6c1.6 1.6 8.4 1.6 10 0v-3.6"/></svg></span>Schools &amp; Leavers<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="industries/corporate.html"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="8" width="17" height="11" rx="1.6"/><path d="M8.5 8V6.2A1.8 1.8 0 0 1 10.3 4.4h3.4A1.8 1.8 0 0 1 15.5 6.2V8"/></svg></span>Corporate<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="industries/sports.html"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 4.5h8v5.2a4 4 0 0 1-8 0z"/><path d="M12 13.7V16.5"/><path d="M9.2 19.5h5.6"/></svg></span>Sports<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="industries/cleaning.html">Cleaning<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="industries/logistics.html">Logistics<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="industries/retail.html">Retail<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="industries.html">View All Industries<span class="mh-chev" aria-hidden="true"></span></a>
-                <div class="mh-sibling-group">
-            <button type="button" class="mh-row" data-mh-open="products"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-product" src="/brandedukv15-child/assets/images/icons/menu/shop-product.png?v=20261016-file" alt="" width="46" height="46"></span>Shop by Product<span class="mh-chev" aria-hidden="true"></span></button>
-            <a class="mh-row" href="bundles.html"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-deals" src="/brandedukv15-child/assets/images/icons/menu/deals-bundles.png?v=20261016-nobg" alt="" width="46" height="46"></span>Deals &amp; Bundles<span class="mh-chev" aria-hidden="true"></span></a>
-            <button type="button" class="mh-row" data-mh-open="help"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M9.4 9.6a2.6 2.6 0 1 1 3.4 2.5c-.8.4-1.3 1-1.3 1.9"/></svg></span>Help &amp; Support<span class="mh-chev" aria-hidden="true"></span></button>
-                </div>
-            </div>
-        </div>
-        <div class="mh-view" data-mh-view="help" hidden>
-            <div class="mh-section-title"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M9.4 9.6a2.6 2.6 0 1 1 3.4 2.5c-.8.4-1.3 1-1.3 1.9"/></svg></span>Help &amp; Support</div>
-            <div class="mh-view-scroll">
-            <a class="mh-row" href="#faq"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M9.4 9.6a2.6 2.6 0 1 1 3.4 2.5c-.8.4-1.3 1-1.3 1.9"/></svg></span>Help &amp; FAQs<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="pricing-guide.html">Delivery &amp; Returns<span class="mh-chev" aria-hidden="true"></span></a>
-                <div class="mh-sibling-group">
-            <button type="button" class="mh-row" data-mh-open="products"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-product" src="/brandedukv15-child/assets/images/icons/menu/shop-product.png?v=20261016-file" alt="" width="46" height="46"></span>Shop by Product<span class="mh-chev" aria-hidden="true"></span></button>
-            <button type="button" class="mh-row" data-mh-open="industries"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-industry" src="/brandedukv15-child/assets/images/icons/menu/shop-by-industry.png?v=20261016-file" alt="" width="46" height="46"></span>Shop by Industry<span class="mh-chev" aria-hidden="true"></span></button>
-            <a class="mh-row" href="bundles.html"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-deals" src="/brandedukv15-child/assets/images/icons/menu/deals-bundles.png?v=20261016-nobg" alt="" width="46" height="46"></span>Deals &amp; Bundles<span class="mh-chev" aria-hidden="true"></span></a>
-                </div>
-            </div>
-        </div>
-        </div>
-    </nav>
-
     <!-- Bottom Navigation -->
-    <nav class="bottom-nav bottom-nav--v2" aria-label="Main navigation">
-        <a href="/index-mobile.html?force=mobile" class="nav-item" data-home-nav aria-label="Home" aria-current="page">
-            <img class="nav-home-icon" src="/brandedukv15-child/assets/images/ui/home-nav.png?v=20261112-home" alt="" width="34" height="34">
-            <span class="nav-item-label">Home</span>
-        </a>
-        <a href="/mobile/shop-categories-mobile.html?force=mobile" class="nav-item">
-            <img class="nav-shop-icon" src="/brandedukv15-child/assets/images/ui/shop-storefront.png?v=20261112-shop" alt="" width="34" height="34">
-            <span class="nav-item-label">Shop</span>
-        </a>
-        <button type="button" class="nav-item nav-item--customise" id="customiseNavBtn" data-start-sheet-trigger aria-haspopup="dialog" aria-expanded="false" aria-controls="startSheet">
-            <span class="nav-customise-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">
-                    <path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/>
-                </svg>
-            </span>
-            <span class="nav-item-label">Customise</span>
-        </button>
-        <a href="#" class="nav-item" id="accountNavBtn">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                <circle cx="12" cy="7" r="4"/>
-            </svg>
-            <span class="nav-item-label">Account</span>
-        </a>
-        <a href="https://wa.me/447447348564" class="nav-item" target="_blank" rel="noopener" data-open-whatsapp aria-label="Chat">
-            <span class="chat-nav-icon" aria-hidden="true"><span class="chat-nav-bubble"><span class="chat-nav-dot"></span><span class="chat-nav-dot"></span><span class="chat-nav-dot"></span></span></span>
-            <span class="nav-item-label">Chat</span>
-        </a>
-    </nav>
+    <nav id="branded-nav" aria-label="Main navigation">
+<svg class="nav-surface" aria-hidden="true" focusable="false" preserveAspectRatio="none"><defs><mask id="branded-nav-cutouts-fixed" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse" x="0" y="0" width="520" height="82" style="mask-type:luminance"><rect width="100%" height="100%" fill="white"/><path class="hole-main" d="M -40 -90 H 40 V 0 C 34 0 30 0 30 6 A 30 30 0 0 1 -30 6 C -30 0 -34 0 -40 0 Z" fill="black"/><path class="hole-filter" d="M -40 -90 H 40 V 0 C 34 0 30 0 30 6 A 30 30 0 0 1 -30 6 C -30 0 -34 0 -40 0 Z" fill="black"/></mask></defs><path class="nav-shape" fill="#0b2d3a" mask="url(#branded-nav-cutouts-fixed)"/></svg>
+<span class="indicator" aria-hidden="true"></span>
+<div class="slot"><button type="button" class="nav-button " data-page="home" ><span class="icon" aria-hidden="true"><svg viewBox="0 0 52 52" aria-hidden="true"><path d="M10 24v20h11V32h10v12h11V24"/><path class="accent" d="m5 25 21-18 21 18M36 14V8h6v11"/></svg></span><span class="label">Home</span></button></div><div class="slot"><button type="button" class="nav-button " data-page="shop" ><span class="icon" aria-hidden="true"><svg viewBox="0 0 52 52" aria-hidden="true"><path d="M10 25v20h32V25M15 45V31h12v14M32 31h6v7h-6z"/><path fill="#ff7a00" d="M10 9H16.4L13.4 24q0 5-4.2 5t-4.2-5Z"/><path fill="#ffffff" d="M16.4 9H22.8L21.8 24q0 5-4.2 5t-4.2-5Z"/><path fill="#ff7a00" d="M22.8 9H29.2L30.2 24q0 5-4.2 5t-4.2-5Z"/><path fill="#ffffff" d="M29.2 9H35.6L38.6 24q0 5-4.2 5t-4.2-5Z"/><path fill="#ff7a00" d="M35.6 9H42L47 24q0 5-4.2 5t-4.2-5Z"/></svg></span><span class="label">Shop</span></button></div><div class="slot swap-slot"><button type="button" class="nav-button swap customise" data-page="customise" ><span class="icon" aria-hidden="true"><svg viewBox="0 0 52 52" aria-hidden="true"><path d="m17 9-10 5-4 10 9 4 3-6v23h22V22l3 6 9-4-4-10-10-5a9 9 0 0 1-18 0Z"/><path class="accent sparkle sparkle-chest" d="M21 29h10M26 24v10"/><path class="accent sparkle sparkle-shoulder" d="m39 5 1.5 4.5L45 11l-4.5 1.5L39 17l-1.5-4.5L33 11l4.5-1.5Z"/><path class="sparkle sparkle-hem" d="m34 35 1 3 3 1-3 1-1 3-1-3-3-1 3-1Z"/></svg></span><span class="label">Customise</span></button><button type="button" class="nav-button swap filters" id="bundleFiltersNav" data-filters aria-controls="bundleRadial" aria-haspopup="dialog" aria-expanded="false" aria-label="Open bundle filters" disabled tabindex="-1" aria-hidden="true"><span class="context-disc" aria-hidden="true"></span><span class="icon nav-customise-icon" aria-hidden="true"><svg viewBox="0 0 52 52" aria-hidden="true"><path d="M12 6v40M26 6v40M40 6v40"/><rect class="orange-fill filter-level level-one" x="7" y="14" width="10" height="8" rx="3"/><rect class="surface-fill filter-level level-two" x="21" y="30" width="10" height="8" rx="3"/><rect class="orange-fill filter-level level-three" x="35" y="10" width="10" height="8" rx="3"/></svg></span><span class="label">Filters</span></button></div><div class="slot"><button type="button" class="nav-button " data-page="bundles" ><span class="icon" aria-hidden="true"><img class="bundle-apron bundle-apron-neg" src="/brandedukv15-child/assets/images/ui/navbar/bundles-apron-negativa.png" alt="" width="39" height="36" draggable="false"><img class="bundle-apron bundle-apron-pos" src="/brandedukv15-child/assets/images/ui/navbar/bundles-apron-positiva.png" alt="" width="39" height="36" draggable="false"></span><span class="label">Bundles</span></button></div><div class="slot"><button type="button" class="nav-button " data-page="chat" ><span class="icon" aria-hidden="true"><svg viewBox="0 0 52 52" aria-hidden="true"><path class="orange-fill" d="M28 23h12a8 8 0 0 1 8 8v6a7 7 0 0 1-5 7l1 6-8-6h-8a8 8 0 0 1-8-8v-5a8 8 0 0 1 8-8Z"/><path class="surface-fill" d="M12 6h22a8 8 0 0 1 8 8v12a8 8 0 0 1-8 8H19l-9 8 1-8a8 8 0 0 1-7-8V14a8 8 0 0 1 8-8Z"/><circle class="chat-dot dot-1" cx="15" cy="20" r="1.8" fill="currentColor" stroke="none"/><circle class="chat-dot dot-2" cx="23" cy="20" r="1.8" fill="currentColor" stroke="none"/><circle class="chat-dot dot-3" cx="31" cy="20" r="1.8" fill="currentColor" stroke="none"/></svg></span><span class="label">Chat</span></button></div>
+</nav>
 
     <!-- Account Panel Overlay -->
     <div class="account-overlay" id="accountOverlay"></div>
@@ -2650,12 +2600,12 @@
     </div>
 
     <script src="brandedukv15-child/assets/js/cart.js?v=20260417"></script>
-    <script src="mobile/js/mobile.js?v=20261112-bundlespage"></script>
+    <script src="mobile/js/mobile.js?v=20261116-fullvt"></script>
     <!-- customize.js only needed on customize pages, not homepage -->
     <script src="mobile/hero/hero.js?v=20261017-nopause"></script>
     <script src="mobile/js/popup-contact.js?v=20261003-consent"></script>
-    <script src="mobile/js/bottom-nav.js?v=20261016-newbar"></script>
-    <script src="mobile/js/header-menu.js?v=20261018-drawer"></script>
+    <script src="mobile/js/bottom-nav.js?v=20261115-x48"></script>
+    <script src="mobile/js/header-menu.js?v=20261116-nohamburger"></script>
     <script src="mobile/js/faq.js?v=20260102"></script>
     <!-- Desktop Header JS -->
     <script src="brandedukv15-child/assets/js/header.js?v=20261021-hivis-unified"></script>
@@ -3568,7 +3518,7 @@
 <!-- Support Chat Popup (markup rebuilt by whatsapp.js) -->
 <div class="wa-popup" id="waPopup" aria-hidden="true"></div>
     <script src="mobile/js/crisp-chat.js?v=20261005-mobilefix" async></script>
-    <script src="mobile/js/whatsapp.js?v=20261027-no-attach"></script>
+    <script src="mobile/js/whatsapp.js?v=20261116-prechat"></script>
 
     <!-- Upload Logo Modal -->
     <div class="upload-modal-overlay" id="uploadModalOverlay"></div>
@@ -3655,8 +3605,6 @@
     <script>
         (function () {
             const modalSelectors = [
-                '#menuOverlay.active',
-                '#sideMenu.active',
                 '#accountOverlay.active',
                 '#accountPanel.active',
                 '#popupOverlay.active',

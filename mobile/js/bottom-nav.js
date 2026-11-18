@@ -33,6 +33,7 @@
   var ICON_SHIRT = SVG_OPEN + '><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg>';
   var ICON_DOC = SVG_OPEN + '><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>';
   var ICON_ARROW = SVG_OPEN + ' class="start-sheet__arrow"><polyline points="9 18 15 12 9 6"/></svg>';
+  var ICON_CLOSE = SVG_OPEN + '><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>';
 
   function buildSheet() {
     if (sheet || !document.body) return;
@@ -45,6 +46,7 @@
     sheet.innerHTML =
       '<div class="start-sheet__backdrop" data-start-sheet-close></div>' +
       '<div class="start-sheet__panel">' +
+        '<button type="button" class="start-sheet__close" data-start-sheet-close aria-label="Close">' + ICON_CLOSE + '</button>' +
         '<h2 class="start-sheet__title" id="startSheetTitle">How would you like to get started?</h2>' +
         '<a class="start-sheet__option start-sheet__option--shop" href="' + assetUrl('../../shop.html') + '">' +
           '<span class="start-sheet__icon">' + ICON_SHIRT + '</span>' +
@@ -74,12 +76,15 @@
     });
   }
 
-  // Leaves the bar itself uncovered: the sheet ends where the bar begins.
+  // 16px of circle above the bar, 2px orange ring, 10px gap.
+  var CIRCLE_CLEARANCE = 28;
+
+  // Leaves the bar and the raised circle uncovered.
   function positionAboveBar() {
     var bar = activeTrigger && activeTrigger.closest('nav');
-    var offset = FALLBACK_BAR_HEIGHT;
+    var offset = FALLBACK_BAR_HEIGHT + CIRCLE_CLEARANCE;
     if (bar) {
-      offset = Math.max(0, Math.round(window.innerHeight - bar.getBoundingClientRect().top));
+      offset = Math.max(0, Math.round(window.innerHeight - bar.getBoundingClientRect().top)) + CIRCLE_CLEARANCE;
     }
     sheet.style.setProperty('--start-sheet-bottom', offset + 'px');
   }
@@ -91,6 +96,7 @@
     positionAboveBar();
     sheet.hidden = false;
     setExpanded(true);
+    if (typeof window.__bukSyncSpeedPark === 'function') window.__bukSyncSpeedPark();
     var first = sheet.querySelector('.start-sheet__option');
     if (first) first.focus({ preventScroll: true });
   }
@@ -99,6 +105,7 @@
     if (!isOpen()) return;
     sheet.hidden = true;
     setExpanded(false);
+    if (typeof window.__bukSyncSpeedPark === 'function') window.__bukSyncSpeedPark();
     if (restoreFocus && activeTrigger) activeTrigger.focus({ preventScroll: true });
     activeTrigger = null;
   }
@@ -162,6 +169,9 @@
   window.addEventListener('pageshow', function (event) {
     if (event.persisted) close(false);
   });
+
+  window.__brandedOpenStartSheet = open;
+  window.__brandedCloseStartSheet = close;
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', buildSheet);

@@ -1,9 +1,11 @@
+import { playBundlesPageIntro } from './bundles-intro.js?v=20261116-bounce';
 import {
   products, registerProduct, fillOptions, sizesFor, skuKey, swatchFor, formatPrice, pieceCount, sum,
   newDraft, choiceValid, quotas, allocated, variantsValid, setChoice, setAllocation,
   acceptedFile, logoValid, readyToAdd
-} from './catalogue.js';
-import { loadBundles, loadDetail, loadAllDetails, loadComponentOptions, validateSelection, availability } from './bundle-api.js';
+} from './catalogue.js?v=20261116-printonly';
+import { loadBundles, loadDetail, loadAllDetails, loadComponentOptions, validateSelection, availability } from './bundle-api.js?v=20261116-printonly';
+playBundlesPageIntro();
 
 const icons = {
   bag: '<path d="M5 8h14l1 13H4L5 8Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/>',
@@ -43,7 +45,12 @@ const title = (heading, copy) => `<div class="step-heading"><h3 tabindex="-1">${
 const thumb = (code, cls = '') => products[code]?.image
   ? `<img class="thumb ${cls}" src="${escape(products[code].image)}" alt="" width="432" height="432" loading="lazy" decoding="async" data-thumb="${escape(code)}">`
   : `<span class="cap-thumb ${cls}">${icon('layers')}</span>`;
-const isInclusion = bundle => bundle.methods.length > 1 ? 'One logo included' : `${bundle.methods[0] === 'Print' ? 'Printing' : 'Embroidery'} included`;
+const isInclusion = () => 'Printing included';
+const printOnlyCopy = text => String(text || '')
+  .replace(/embroidered/gi, word => (/^[A-Z]/.test(word) ? 'Printed' : 'printed'))
+  .replace(/embroidery/gi, word => (/^[A-Z]/.test(word) ? 'Printing' : 'printing'))
+  .replace(/\bPrinted\/Printed\b/g, 'Printed')
+  .replace(/\bprinted\/printed\b/g, 'printed');
 const pluralBundles = n => `${n} ${n === 1 ? 'bundle' : 'bundles'}`;
 const announcement = $('announcement');
 
@@ -137,7 +144,12 @@ let lines = [];
 let storeError = '';
 let saving = false;
 let pendingArtwork = false;
+let pendingLogoFile = null;
 let fileError = '';
+let uploadGeneration = 0;
+let uploadAbort = null;
+let shownProgress = 0;
+let renderingStep = false;
 let builderError = '';
 let variantInputs = {};
 let returnToBasket = false;
@@ -173,6 +185,7 @@ function asBundle(deal) {
     methods: deal.methods,
     delivery: deal.delivery,
     logoCount: deal.logoCount,
+    bundleNumber: deal.bundleNumber || 0,
     art: deal.productType.includes('t-shirts') ? 'tee' : 'outdoor',
     fixed: deal.fixed,
     components: deal.components
@@ -292,7 +305,7 @@ const radialCatalog = [
   {id: 'purpose', title: 'Purpose', iconFile: 'purpose', icon: radialIcon('purpose'), prompt: 'What is the main purpose?', layout: 'radios', values: ['Staff Uniforms', 'New Starter Kits', 'Team / Event', 'Promotional / Branding', 'Workwear / PPE', 'Corporate / Office']},
   {id: 'quantity', title: 'Quantity', iconFile: 'quantity', icon: radialIcon('quantity'), prompt: 'How many items in total?', layout: 'grid2', values: ['Up to 10', '11–25', '26–50', '51–100', '101–250', '250+']},
   {id: 'season', title: 'Season', iconFile: 'season', icon: radialIcon('season'), prompt: 'When will the uniforms be used?', layout: 'grid2', icons: SEASON_ICONS, values: ['Spring', 'Summer', 'Autumn', 'Winter']},
-  {id: 'branding', title: 'Branding', iconFile: 'branding', icon: radialIcon('branding'), prompt: 'How do you want to brand them?', layout: 'stack', values: ['Embroidery', 'Printing (DTF / DTG)', 'Both (Embroidery & Print)', 'No Branding (Plain)']}
+  {id: 'branding', title: 'Branding', iconFile: 'branding', icon: radialIcon('branding'), prompt: 'How do you want to brand them?', layout: 'stack', values: ['Printing (DTF / DTG)', 'No Branding (Plain)']}
 ];
 const appliedBundleFilters = Object.fromEntries(radialCatalog.map(item => [item.id, item.multi ? [] : '']));
 let announceBundleFilters = false;
@@ -419,17 +432,17 @@ function seasonMatches(deal, season) {
   return false;
 }
 
+function isPlainBundle(deal) {
+  const title = deal.title || '';
+  return /no branding|\bplain\b|unbranded/i.test(title) && !/logo|print|dtf|dtg/i.test(title);
+}
+
 function brandingMatches(deal, value) {
   if (!value) return true;
-  const title = deal.title || '';
-  // The decoration methods stored on the bundle win; the title is the fallback.
-  const stored = deal.methods || [];
-  const print = stored.length ? stored.includes('Print') : /print|dtf|dtg/i.test(title);
-  const embroidery = stored.length ? stored.includes('Embroidery') : /embroider|stitch/i.test(title);
-  if (value === 'Embroidery') return embroidery;
-  if (value === 'Printing (DTF / DTG)') return print;
-  if (value === 'Both (Embroidery & Print)') return print && embroidery;
-  if (value === 'No Branding (Plain)') return !print && !embroidery && !/logo/i.test(title);
+  // Older sessions could still have embroidery selected. Bundles are print only.
+  if (value === 'Embroidery' || value === 'Both (Embroidery & Print)') value = 'Printing (DTF / DTG)';
+  if (value === 'No Branding (Plain)') return isPlainBundle(deal);
+  if (value === 'Printing (DTF / DTG)') return !isPlainBundle(deal);
   return false;
 }
 
@@ -551,7 +564,7 @@ function emptyFilterMessage() {
   return 'No bundles match these filters.';
 }
 
-let catalogueSort = 'default';
+let catalogueSort = 'cost';
 
 function accentTheme(deal, index) {
   if (hasSector(deal, 'construction') || hasFeature(deal, 'high-visibility') || hasType(deal, 'safety-vests')) return 'construction';
@@ -569,6 +582,13 @@ function sortCatalogue(list) {
   return sorted;
 }
 
+function bundleFaceNumber(deal) {
+  if (Number(deal.bundleNumber) > 0) return String(deal.bundleNumber);
+  const slug = String(deal.slug || deal.id || '');
+  const match = slug.match(/(?:^|-)(\d+)(?:-|$)/);
+  return match ? match[1] : '';
+}
+
 function flipCardMarkup(deal, index) {
   const bundle = asBundle(deal);
   const items = Object.entries(bundle.fixed);
@@ -576,7 +596,8 @@ function flipCardMarkup(deal, index) {
   const qty = deal.qty || pieceCount(bundle) || 0;
   const team = kitPeople(deal) || qty;
   const theme = accentTheme(deal, index);
-  const shortTitle = bundle.title.length > 42 ? `${bundle.title.slice(0, 40)}…` : bundle.title;
+  const shownTitle = printOnlyCopy(bundle.title);
+  const shortTitle = shownTitle.length > 42 ? `${shownTitle.slice(0, 40)}…` : shownTitle;
   const closedThumbs = closedSkuThumbsHtml(deal);
   const openThumbs = codes => {
     const figs = (codes || []).map(code => {
@@ -597,11 +618,17 @@ function flipCardMarkup(deal, index) {
     : `<li><span>${escape((deal.codes || []).join(', ') || 'See bundle details')}</span></li>`;
   const ctaLabel = build ? 'Build Your Bundle' : availability(deal).label;
   const ctaDisabled = build ? '' : 'disabled';
+  // Same number the basket shows: catalogue bundleNumber (sourceBundleNumber),
+  // otherwise the digits in the slug. No number means no label.
+  const faceNumber = bundleFaceNumber(deal);
+  const faceNumberHtml = faceNumber
+    ? `<p class="card__face__number">Bundle n\u00B0 ${escape(faceNumber)}</p>`
+    : '';
 
   return `<section class="card theme-${theme}${build ? '' : ' is-blocked'}" data-bundle-id="${escape(deal.id)}" data-can-build="${build ? '1' : '0'}" aria-expanded="false">
     <div class="card__map">
       <div class="card__map__inner">
-        <p class="card__map__title">${escape(bundle.title)}</p>
+        <p class="card__map__title">${escape(shownTitle)}</p>
         <p class="card__map__meta">${deal.price ? price(deal.price) : ''} · Team of ${team} · ${qty} items</p>
         <ul class="card__map__list">${includedInline}</ul>
       </div>
@@ -610,7 +637,7 @@ function flipCardMarkup(deal, index) {
       <div class="card__part__inner">
         <div class="card__header__close-btn" role="button" tabindex="0" aria-label="Close bundle details">&times;</div>
         <header class="card__header">
-          <span class="card__header__id">${escape(bundle.title)}</span>
+          <span class="card__header__id">${escape(shownTitle)}</span>
           <span class="card__header__price">${deal.price ? price(deal.price) : ''}</span>
         </header>
         <div class="card__stats-panel">
@@ -632,6 +659,7 @@ function flipCardMarkup(deal, index) {
             <h3 class="card__face__price">${deal.price ? price(deal.price) : ''}</h3>
             <span class="card__face__team">Team of ${team}</span>
             <span class="card__face__items">${qty} items</span>
+            ${faceNumberHtml}
           </div>
           <div class="card__face__preview">
             ${closedThumbs}
@@ -645,7 +673,7 @@ function flipCardMarkup(deal, index) {
       <div class="card__part__side m--front">
         <div class="card__sender">
           <h4 class="card__sender__heading">What's included</h4>
-          <p class="card__sender__name">${escape(bundle.title)}</p>
+          <p class="card__sender__name">${escape(shownTitle)}</p>
           <ul class="card__included-inline">${includedInline}</ul>
         </div>
         <div class="card__from-to">
@@ -775,14 +803,31 @@ async function openBuilder(bundle, source, saved) {
   }
   trigger = source;
   draft = newDraft(bundle, saved);
-  if (saved && !readyToAdd(draft)) draft.step = draft.reached = 0;
   returnToBasket = Boolean(saved);
+  // Editing from basket should open the product colour/size step, not restart at Included.
+  if (saved) {
+    draft.reached = Math.max(2, Number(draft.reached) || 0);
+    if (choiceValid(draft)) draft.reached = Math.max(draft.reached, 2);
+    if (variantsValid(draft)) draft.reached = Math.max(draft.reached, logoValid(draft) ? 4 : 3);
+    if (basket.open) basket.close();
+    variantInputs = {};
+    invalidateLogoUpload();
+    fileError = '';
+    draft.notes = cleanLogoNotes(draft.notes);
+    builderError = '';
+    $('builder-title').textContent = printOnlyCopy(bundle.title);
+    $('builder-kicker').textContent = 'BUILD YOUR BUNDLE';
+    $('builder-price').innerHTML = price(bundle.price);
+    openBundleColourPage();
+    return;
+  }
   if (basket.open) basket.close();
   variantInputs = {};
-  pendingArtwork = false;
+  invalidateLogoUpload();
   fileError = '';
+  draft.notes = cleanLogoNotes(draft.notes);
   builderError = '';
-  $('builder-title').textContent = bundle.title;
+  $('builder-title').textContent = printOnlyCopy(bundle.title);
   $('builder-kicker').textContent = 'BUILD YOUR BUNDLE';
   $('builder-price').innerHTML = price(bundle.price);
   renderStep();
@@ -800,6 +845,7 @@ function focusHeading() {
 }
 
 function closeBuilder(added = false) {
+  invalidateLogoUpload();
   builder.close();
   draft = undefined;
   if (added || returnToBasket) {
@@ -855,8 +901,16 @@ function renderControls() {
   next.disabled = saving || !canLeave(draft.step);
 }
 
-function itemRow(code, qty) {
-  return `<li class="item-row">${thumb(code)}<div><strong>${escape(products[code].name)}</strong><small>${escape(code)}</small></div><span class="row-quantity">× ${qty}</span></li>`;
+function itemRow(code, qty, selected = false) {
+  return `<li class="item-row${selected ? ' is-selected' : ''}"${selected ? ' aria-current="true"' : ''}>${thumb(code)}<div><strong>${escape(products[code].name)}</strong><small>${escape(code)}</small></div><span class="row-quantity">× ${qty}</span></li>`;
+}
+
+function nextFixedItemCode(entries) {
+  const open = entries.filter(([code, qty]) => allocated(draft, code) < Number(qty));
+  const active = open.find(([code]) => code === draft.activeProduct);
+  if (active) return active[0];
+  if (open.length) return open[0][0];
+  return entries[0]?.[0] || '';
 }
 
 function includedMarkup() {
@@ -867,14 +921,16 @@ function includedMarkup() {
       ${group ? `<li class="item-row"><span class="cap-thumb">${icon('layers')}</span><div><strong>${group.name}</strong>
         <small>${group.codes.map(code => products[code].label).join(group.type === 'exclusive' ? ' or ' : ' and ')}</small></div><span class="row-quantity">× ${group.quantity}</span></li>` : ''}
     </ul>
-    <div class="info-panel">${icon('tick')}<div><strong>${isInclusion(bundle)}</strong><small>${bundle.methods.join(' or ')}${bundle.delivery ? ' · Free delivery' : ''}</small></div></div>`;
+    <div class="info-panel">${icon('tick')}<div><strong>${isInclusion()}</strong><small>Printing${bundle.delivery ? ' · Free delivery' : ''}</small></div></div>`;
 }
 
 function groupsMarkup() {
   const group = draft.bundle.group;
   if (!group) {
+    const entries = Object.entries(draft.bundle.fixed);
+    const current = nextFixedItemCode(entries);
     return title('Fixed composition', 'The products and quantities are set for this bundle. Next, choose the colours and sizes.') +
-      `<ul class="item-list">${Object.entries(draft.bundle.fixed).map(([code, qty]) => itemRow(code, qty)).join('')}</ul>`;
+      `<ul class="item-list item-list--cards">${entries.map(([code, qty]) => itemRow(code, qty, code === current)).join('')}</ul>`;
   }
   if (group.type === 'exclusive') {
     return title('Choose one headwear style', `Choose all ${group.quantity} pieces in one style.`) + `<div class="choice-list">${group.codes.map(code => {
@@ -897,34 +953,75 @@ function groupsMarkup() {
       }).join('')}</div>`;
 }
 
+let logoPreviewUrl = '';
+
+function rememberLogoPreview(file) {
+  if (logoPreviewUrl) {
+    URL.revokeObjectURL(logoPreviewUrl);
+    logoPreviewUrl = '';
+  }
+  if (file instanceof File && /\.(png|jpe?g|gif|webp|svg)$/i.test(file.name)) {
+    logoPreviewUrl = URL.createObjectURL(file);
+  }
+}
+
+function logoPreviewSrc(logo) {
+  if (!logo) return '';
+  if (logo instanceof File) return logoPreviewUrl;
+  const storage = window.BrandedQuoteStorage;
+  const raw = String(logo.logo || logo.ref || '');
+  if (storage && typeof storage.resolveSrc === 'function') {
+    const resolved = storage.resolveSrc(raw, logo.logoId);
+    if (resolved && /^(https?:|data:image|blob:)/i.test(resolved)) return resolved;
+  }
+  return /^(https?:|data:image|blob:)/i.test(raw) ? raw : '';
+}
+
+function logoPreviewMarkup(logo, className) {
+  const src = logoPreviewSrc(logo);
+  if (!src) return '';
+  return `<img class="${className}" src="${escape(src)}" alt="Uploaded logo preview">`;
+}
+
 function colourDot(colour) {
   return `<span class="colour-swatch" style="--swatch:${swatchFor(colour)}" aria-hidden="true"></span>`;
 }
 
 function variantForm(code, required) {
   const product = products[code];
-  const remaining = required - allocated(draft, code);
   const options = variantInputs[code] ?? {};
   const colour = product.colours.includes(options.colour) ? options.colour : product.colours[0];
+  variantInputs[code] = {colour};
   const sizes = sizesFor(product, colour);
-  const size = sizes.includes(options.size) ? options.size : sizes[0];
   const rows = draft.allocations[code] ?? [];
+  const qtyFor = size => rows.find(row => row.colour === colour && row.size === size)?.quantity ?? 0;
+  const remaining = required - allocated(draft, code);
+  const colourButtons = product.colours.map(name => {
+    const image = product.images.get(name);
+    const active = name === colour;
+    const face = image
+      ? `<img src="${escape(image)}" alt="">`
+      : `<span class="bundle-colour-swatch" style="--swatch:${swatchFor(name)}"></span>`;
+    return `<button type="button" class="bundle-colour${active ? ' is-active' : ''}" data-action="pick-colour" data-code="${escape(code)}" data-colour="${escape(name)}" aria-pressed="${active}" title="${escape(name)}">${face}<span>${escape(name)}</span></button>`;
+  }).join('');
+  const sizeRows = sizes.map(size => {
+    const qty = qtyFor(size);
+    return `<div class="bundle-size-row">
+      <span>${escape(size)}</span>
+      <button type="button" data-action="size-qty" data-code="${escape(code)}" data-colour="${escape(colour)}" data-size="${escape(size)}" data-delta="-1" aria-label="Decrease ${escape(size)}" ${qty ? '' : 'disabled'}>−</button>
+      <strong>${qty}</strong>
+      <button type="button" data-action="size-qty" data-code="${escape(code)}" data-colour="${escape(colour)}" data-size="${escape(size)}" data-delta="1" aria-label="Increase ${escape(size)}" ${remaining ? '' : 'disabled'}>+</button>
+    </div>`;
+  }).join('');
   return `<div class="variant-body">
     ${rows.length ? `<ul class="allocation-list" aria-label="Selected variants">${rows.map(row => `
       <li>${colourDot(row.colour)}<span>${escape(row.colour)} · ${escape(row.size)}</span><strong>× ${row.quantity}</strong>
         <button class="icon-button small" type="button" data-action="remove-allocation" data-code="${code}" data-colour="${row.colour}" data-size="${row.size}" aria-label="Remove ${row.colour}, ${row.size}, ${row.quantity} pieces">${icon('x')}</button></li>`).join('')}</ul>` : ''}
-    ${remaining ? `<form class="allocation-form" data-code="${code}">
-      <div class="variant-fields">
-        <label>Colour<select name="colour">${product.colours.map(name => `<option ${colour === name ? 'selected' : ''}>${escape(name)}</option>`).join('')}</select></label>
-        <label>Size<select name="size">${sizes.map(name => `<option ${size === name ? 'selected' : ''}>${escape(name)}</option>`).join('')}</select></label>
-        <label>Quantity<input name="quantity" type="number" min="1" max="${remaining}" step="1" inputmode="numeric" required value="1"></label>
-      </div>
-      <p class="inline-error" role="alert" hidden></p>
-      <div class="variant-actions">
-        <button class="button secondary compact" type="submit">Add selection</button>
-        ${remaining > 1 ? `<button class="text-button" type="button" data-action="fill">${rows.length ? `Add remaining ${remaining}` : `Add all ${remaining}`}</button>` : ''}
-      </div>
-    </form>` : ''}
+    <div class="bundle-picker">
+      <div class="bundle-colours">${colourButtons}</div>
+      <p class="bundle-colour-name">${escape(colour)} · ${remaining} still to assign</p>
+      <div class="bundle-sizes">${sizeRows}</div>
+    </div>
   </div>`;
 }
 
@@ -933,7 +1030,7 @@ function variantsMarkup() {
   const total = pieceCount(draft.bundle);
   const selected = sum(items.map(([code]) => allocated(draft, code)));
   const active = draft.activeProduct || items.find(([code, qty]) => allocated(draft, code) < qty)?.[0] || '';
-  return title('Colours & sizes', 'Split each product quantity across the colours and sizes you need.') +
+  return title('Colours & sizes', 'Choose a colour, then set the quantity for each size. Every garment in the bundle must be assigned before the logo step.') +
     `<div class="quantity-status ${selected === total ? 'finished' : ''}">${selected} / ${total} items configured</div>
     <div class="variants-list">${items.map(([code, qty]) => {
       const count = allocated(draft, code);
@@ -943,35 +1040,224 @@ function variantsMarkup() {
           <span class="variant-counter ${count === qty ? 'finished' : ''}">${count === qty ? icon('tick') : ''}${count}/${qty}</span>
           ${icon('chevron', 'chevron')}</summary>${variantForm(code, qty)}</details>`;
     }).join('')}</div>
+    ${draft.logo ? `<div class="logo-preview-slot">${logoPreviewMarkup(draft.logo, 'logo-preview') || icon('file')}<small>${escape(draft.logo.name || draft.logo.filename || 'Uploaded logo')}</small></div>` : ''}
     <p class="small-note">Colours and sizes shown are the live options for each product.</p>`;
 }
 
+const usableImage = value => {
+  const src = String(value || '').trim();
+  return src && src !== 'undefined' && src !== 'null' ? src : '';
+};
+
+function imageForColour(product, colour) {
+  if (!product?.images || !colour) return '';
+  const direct = product.images.get(colour);
+  if (direct) return direct;
+  const wanted = String(colour).trim().toLowerCase();
+  for (const [name, url] of product.images) {
+    if (String(name).trim().toLowerCase() === wanted) return url || '';
+  }
+  return '';
+}
+
+// The colour with the most pieces already assigned. Later edits replace that
+// row, so returning to Logo shows the colour the customer just chose.
+// Pass `rows` to resolve one review line; omit it to read the live draft.
+function dominantColour(code, rows) {
+  const source = Array.isArray(rows) ? rows : (draft?.allocations?.[code] ?? []);
+  const totals = new Map();
+  source.forEach(row => {
+    const quantity = Number(row?.quantity) || 0;
+    const colour = String(row?.colour || '').trim();
+    if (quantity < 1 || !colour) return;
+    const key = colour.toLowerCase();
+    const prev = totals.get(key) || {colour, quantity: 0, image: ''};
+    prev.quantity += quantity;
+    if (!prev.image) prev.image = usableImage(row.image);
+    totals.set(key, prev);
+  });
+  let best = null;
+  totals.forEach(entry => {
+    if (!best || entry.quantity > best.quantity) best = entry;
+  });
+  return best;
+}
+
+function garmentPhoto(code, rows) {
+  const product = products[code];
+  const fallback = usableImage(product?.image);
+  const chosen = dominantColour(code, rows);
+  if (!chosen) return {src: fallback, fallback: ''};
+  const src = usableImage(chosen.image) || usableImage(imageForColour(product, chosen.colour)) || fallback;
+  return {src, fallback: src && fallback && src !== fallback ? fallback : ''};
+}
+
+function garmentThumb(code, rows) {
+  const {src, fallback} = garmentPhoto(code, rows);
+  if (!src) return `<span class="cap-thumb">${icon('layers')}</span>`;
+  const fallbackAttr = fallback ? ` data-fallback="${escape(fallback)}"` : '';
+  return `<img class="thumb logo-recap__photo" src="${escape(src)}"${fallbackAttr} alt="" width="42" height="42" loading="lazy" decoding="async">`;
+}
+
+function logoItemRecap() {
+  const items = Object.entries(quotas(draft)).filter(([, qty]) => Number(qty) > 0);
+  if (!items.length) return '';
+  return `<ul class="logo-recap" aria-label="Items in this bundle">${items.map(([code, required]) => {
+    const name = products[code]?.name || code;
+    const configured = allocated(draft, code);
+    const qty = configured > 0 ? configured : required;
+    return `<li class="logo-recap__card">${garmentThumb(code)}<span class="logo-recap__copy"><strong>${escape(name)}</strong><small>${escape(code)}</small></span><span class="row-quantity">× ${qty}</span></li>`;
+  }).join('')}</ul>`;
+}
+
+function cleanLogoNotes(value) {
+  const text = String(value ?? '');
+  if (/modal__sr|bundle-upload__/.test(text)) return '';
+  return text;
+}
+
 function logoMarkup() {
-  const {bundle, method, logo, notes} = draft;
-  return title('Upload your logo', 'Choose one artwork file for the whole bundle.') +
-    (bundle.methods.length > 1
-      ? `<fieldset class="method-field"><legend>Included decoration</legend><div>${bundle.methods.map(option =>
-        `<button type="button" class="button method" data-action="method" data-method="${option}" aria-pressed="${method === option}">${method === option ? icon('tick') : ''}${option}</button>`).join('')}</div></fieldset>`
-      : `<div class="info-panel method-info">${icon('tick')}<div><strong>${isInclusion(bundle)}</strong></div></div>`) +
-    `<div class="upload-area" id="upload-area">
-      <span class="upload-icon">${icon(logo ? 'file' : 'upload')}</span>
-      <strong>${pendingArtwork ? 'Checking file…' : logo ? escape(logo.name) : 'Drag your logo here'}</strong>
-      <small>PNG, JPG, PDF, SVG, AI or EPS · up to 10 MB</small>
-      <button class="button secondary compact" type="button" data-action="browse">${logo ? 'Replace file' : 'Browse files'}</button>
-      <input id="logo-file" type="file" accept=".png,.jpg,.jpeg,.pdf,.svg,.ai,.eps" aria-label="Upload your logo" hidden>
-    </div>
-    <p class="inline-error" id="file-error" role="alert" ${fileError ? '' : 'hidden'}>${escape(fileError)}</p>
+  const logo = draft.logo;
+  const notes = cleanLogoNotes(draft.notes);
+  if (notes !== draft.notes) draft.notes = notes;
+  return logoItemRecap() +
+    title('Upload your logo', 'Choose one artwork file for the whole bundle.') +
+    `<div class="info-panel method-info">${icon('tick')}<div><strong>Printing included</strong></div></div>` +
+    (builderError ? `<p class="inline-error" role="alert">${escape(builderError)}</p>` : '') +
+    bundleUploadMarkup() +
+    attachedLogoMarkup(logo) +
+    `<p class="inline-error" id="file-error" role="alert" ${fileError ? '' : 'hidden'}>${escape(fileError)}</p>
     <label class="notes-label">Notes <span>Optional</span>
       <textarea id="notes" maxlength="500" rows="3" placeholder="Add any instructions for your logo.">${escape(notes)}</textarea>
     </label>
     <p class="small-note count-note"><span id="notes-count">${notes.length}</span> / 500</p>`;
 }
 
+function attachedLogoMarkup(logo) {
+  if (!logo) return '';
+  const name = logo.name || logo.filename || 'Uploaded logo';
+  const preview = logoPreviewMarkup(logo, 'logo-preview') || `<span class="upload-icon">${icon('file')}</span>`;
+  return `<div class="logo-attached" id="logo-attached">${preview}<strong>${escape(name)}</strong></div>`;
+}
+
+function bundleUploadMarkup() {
+  return `<section class="bundle-upload" id="bundle-upload" data-state="0" data-ready="false" aria-labelledby="bundle-upload-title-0">
+    <div class="bundle-upload__header">
+      <button class="bundle-upload__close" type="button" data-action="logo-dismiss">
+        <svg class="bundle-upload__close-icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+          <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <polyline points="1,1 15,15"></polyline>
+            <polyline points="15,1 1,15"></polyline>
+          </g>
+        </svg>
+        <span class="bundle-upload__sr">Close</span>
+      </button>
+    </div>
+    <div class="bundle-upload__body">
+      <div class="bundle-upload__col">
+        <svg class="bundle-upload__icon bundle-upload__icon--blue" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+          <g fill="none" stroke="hsl(223,90%,50%)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle class="bundle-upload__sdo69" cx="12" cy="12" r="11" stroke-dasharray="69.12 69.12"></circle>
+            <polyline class="bundle-upload__sdo14" points="7 12 12 7 17 12" stroke-dasharray="14.2 14.2"></polyline>
+            <line class="bundle-upload__sdo10" x1="12" y1="7" x2="12" y2="17" stroke-dasharray="10 10"></line>
+          </g>
+        </svg>
+        <svg class="bundle-upload__icon bundle-upload__icon--red" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+          <g fill="none" stroke="hsl(3,90%,50%)" stroke-width="2" stroke-linecap="round">
+            <circle class="bundle-upload__sdo69" cx="12" cy="12" r="11" stroke-dasharray="69.12 69.12"></circle>
+            <line class="bundle-upload__sdo14" x1="7" y1="7" x2="17" y2="17" stroke-dasharray="14.2 14.2"></line>
+            <line class="bundle-upload__sdo14" x1="17" y1="7" x2="7" y2="17" stroke-dasharray="14.2 14.2"></line>
+          </g>
+        </svg>
+        <svg class="bundle-upload__icon bundle-upload__icon--green" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+          <g fill="none" stroke="hsl(138,90%,40%)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle class="bundle-upload__sdo69" cx="12" cy="12" r="11" stroke-dasharray="69.12 69.12"></circle>
+            <polyline class="bundle-upload__sdo14" points="7 12.5 10 15.5 17 8.5" stroke-dasharray="14.2 14.2"></polyline>
+          </g>
+        </svg>
+      </div>
+      <div class="bundle-upload__col">
+        <div class="bundle-upload__content">
+          <h2 class="bundle-upload__title" id="bundle-upload-title-0">Upload a File</h2>
+          <p class="bundle-upload__message">Select a file to upload from your computer or device.</p>
+          <div class="bundle-upload__actions">
+            <button class="bundle-upload__button bundle-upload__button--choose" type="button" data-action="logo-choose">Choose File</button>
+            <input id="logo-file" type="file" accept=".png,.jpg,.jpeg,.pdf,.svg,.ai,.eps" aria-label="Upload your logo" hidden>
+          </div>
+          <div class="bundle-upload__actions">
+            <svg class="bundle-upload__file-icon" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+              <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="4 1 12 1 20 8 20 23 4 23"></polygon>
+                <polyline points="12 1 12 8 20 8"></polyline>
+              </g>
+            </svg>
+            <div class="bundle-upload__file" data-file></div>
+            <button class="bundle-upload__close" type="button" data-action="logo-clear" aria-label="Remove selected file">
+              <svg class="bundle-upload__close-icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+                <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <polyline points="4,4 12,12"></polyline>
+                  <polyline points="12,4 4,12"></polyline>
+                </g>
+              </svg>
+              <span class="bundle-upload__sr">Remove</span>
+            </button>
+            <button class="bundle-upload__button" type="button" data-action="logo-upload">Upload</button>
+          </div>
+        </div>
+        <div class="bundle-upload__content">
+          <h2 class="bundle-upload__title" id="bundle-upload-title-1">Uploading…</h2>
+          <p class="bundle-upload__message">Just give us a moment to process your file.</p>
+          <div class="bundle-upload__actions">
+            <div class="bundle-upload__progress">
+              <div class="bundle-upload__progress-value" data-progress-value>0%</div>
+              <div class="bundle-upload__progress-bar"><div class="bundle-upload__progress-fill" data-progress-fill></div></div>
+            </div>
+            <button class="bundle-upload__button" type="button" data-action="logo-cancel">Cancel</button>
+          </div>
+        </div>
+        <div class="bundle-upload__content">
+          <h2 class="bundle-upload__title" id="bundle-upload-title-2">Oops!</h2>
+          <p class="bundle-upload__message">Your file could not be uploaded due to an error.</p>
+          <div class="bundle-upload__actions bundle-upload__actions--center">
+            <button class="bundle-upload__button" type="button" data-action="logo-upload">Retry</button>
+            <button class="bundle-upload__button" type="button" data-action="logo-cancel">Cancel</button>
+          </div>
+        </div>
+        <div class="bundle-upload__content">
+          <h2 class="bundle-upload__title" id="bundle-upload-title-3">Upload Successful!</h2>
+          <p class="bundle-upload__message">Your logo is attached to this bundle.</p>
+          <div class="bundle-upload__success-preview" data-success-preview></div>
+          <div class="bundle-upload__actions bundle-upload__actions--center">
+            <button class="bundle-upload__button" type="button" data-action="logo-done">Done</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>`;
+}
+
+function colourGroups(rows) {
+  const groups = [];
+  const byColour = new Map();
+  (rows || []).forEach(row => {
+    const key = String(row?.colour || '').trim().toLowerCase();
+    if (!byColour.has(key)) {
+      const group = [];
+      byColour.set(key, group);
+      groups.push(group);
+    }
+    byColour.get(key).push(row);
+  });
+  return groups;
+}
+
 function selectedItems(allocations) {
-  return `<ul class="item-list review-list">${Object.entries(allocations).filter(([, rows]) => rows.length).map(([code, rows]) => `
-    <li class="item-row">${thumb(code)}<div><strong>${sum(rows.map(row => row.quantity))} × ${escape(products[code].label)}</strong>
-      <small>${escape(code)}</small><ul class="review-variants">${rows.map(row => `<li>${colourDot(row.colour)} ${escape(row.colour)} · ${escape(row.size)} × ${row.quantity}</li>`).join('')}</ul>
-      </div></li>`).join('')}</ul>`;
+  return `<ul class="item-list review-list">${Object.entries(allocations).filter(([, rows]) => rows.length).flatMap(([code, rows]) =>
+    colourGroups(rows).map(group => `
+    <li class="item-row">${garmentThumb(code, group)}<div><strong>${sum(group.map(row => row.quantity))} × ${escape(products[code].label)}</strong>
+      <small>${escape(code)}</small><ul class="review-variants">${group.map(row => `<li>${colourDot(row.colour)} ${escape(row.colour)} · ${escape(row.size)} × ${row.quantity}</li>`).join('')}</ul>
+      </div></li>`)
+  ).join('')}</ul>`;
 }
 
 function reviewMarkup() {
@@ -980,20 +1266,67 @@ function reviewMarkup() {
     ${selectedItems(draft.allocations)}</div>
     <div class="review-section">
       <div class="review-heading"><h4>Artwork</h4><button type="button" class="text-button" data-action="step" data-step="3">Edit logo</button></div>
-      <div class="info-panel">${icon('file')}<div><strong>${escape(draft.logo?.name ?? '')}</strong><small>${draft.method} included</small></div></div>
+      <div class="info-panel artwork-panel">${logoPreviewMarkup(draft.logo, 'logo-preview logo-preview--row') || icon('file')}<div><strong>${escape(draft.logo?.name || draft.logo?.filename || '')}</strong><small>Printing included</small></div></div>
       ${draft.notes.trim() ? `<div class="review-notes"><strong>Notes</strong><p>${escape(draft.notes.trim())}</p></div>` : ''}
     </div>
     ${builderError ? `<p class="inline-error" role="alert">${escape(builderError)}</p>` : ''}`;
 }
 
+function openBundleColourPage() {
+  const components = Object.entries(quotas(draft)).map(([code, qty]) => ({
+    code,
+    qty,
+    name: products[code]?.name || code
+  })).filter(item => item.qty > 0);
+  if (!components.length) return;
+  const picks = {};
+  components.forEach(({code}) => {
+    const rows = draft.allocations?.[code];
+    if (Array.isArray(rows) && rows.length) picks[code] = structuredClone(rows);
+  });
+  sessionStorage.setItem('buk-bundle-build', JSON.stringify({
+    bundleId: draft.bundle.id,
+    slug: draft.bundle.slug || draft.bundle.id,
+    title: draft.bundle.title,
+    price: draft.bundle.price,
+    bundleNumber: draft.bundle.bundleNumber || 0,
+    itemCount: components.reduce((sum, item) => sum + Number(item.qty || 0), 0),
+    components,
+    index: 0,
+    picks,
+    lineId: draft.lineId || '',
+    method: draft.method || (draft.bundle.methods.length === 1 ? draft.bundle.methods[0] : ''),
+    notes: draft.notes || '',
+    logo: draft.logo || null,
+    returnToBasket: Boolean(returnToBasket || draft.lineId)
+  }));
+  const first = components[0];
+  const colourPage = new URL('/mobile/customize-mobile.html', location.origin);
+  colourPage.searchParams.set('code', first.code);
+  colourPage.searchParams.set('bundleBuild', '1');
+  colourPage.searchParams.set('force', 'mobile');
+  window.location.href = `${colourPage.pathname}${colourPage.search}`;
+}
+
 function renderStep({reset = true} = {}) {
+  renderingStep = true;
   scroll.innerHTML = [includedMarkup, groupsMarkup, variantsMarkup, logoMarkup, reviewMarkup][draft.step]();
+  renderingStep = false;
   if (reset) scroll.scrollTop = 0;
   renderControls();
+  bindLogoStep();
 }
 
 function goTo(step) {
   if (saving || !canReach(step)) return;
+  if (draft.step === 3 && step !== 3) {
+    invalidateLogoUpload();
+    fileError = '';
+  }
+  if (step === 2) {
+    openBundleColourPage();
+    return;
+  }
   builderError = '';
   draft.step = step;
   renderStep();
@@ -1037,38 +1370,270 @@ function removeAllocation(button) {
   announcement.textContent = 'Selection removed.';
 }
 
-async function chooseArtwork(files) {
-  if (pendingArtwork || !draft || draft.step !== 3) return;
-  const current = draft;
-  const focusBrowse = () => scroll.querySelector('[data-action="browse"]')?.focus({preventScroll: true});
-  if (files.length !== 1 || !acceptedFile(files[0])) {
-    fileError = files.length > 1 ? 'Choose exactly one logo file.' : 'Choose a supported file up to 10 MB.';
-    if (draft.logo) fileError += ' Your current logo is still attached.';
-    renderStep({reset: false});
-    focusBrowse();
+function invalidateLogoUpload() {
+  uploadGeneration += 1;
+  if (uploadAbort) {
+    uploadAbort.abort();
+    uploadAbort = null;
+  }
+  pendingArtwork = false;
+  pendingLogoFile = null;
+  shownProgress = 0;
+}
+
+function uploadRoot() {
+  return document.getElementById('bundle-upload');
+}
+
+function showFileError(message) {
+  fileError = message || '';
+  const error = $('file-error');
+  if (!error) return;
+  error.textContent = fileError;
+  error.hidden = !fileError;
+}
+
+function setReady(name) {
+  const root = uploadRoot();
+  if (!root) return;
+  root.setAttribute('data-ready', name ? 'true' : 'false');
+  const label = root.querySelector('[data-file]');
+  if (!label) return;
+  label.textContent = name || '';
+  label.title = name || '';
+  replayUploadContent(root);
+}
+
+function setProgress(ratio) {
+  shownProgress = Math.max(0, Math.min(1, Number(ratio) || 0));
+  const root = uploadRoot();
+  if (!root) return;
+  const percent = Math.round(shownProgress * 100);
+  const value = root.querySelector('[data-progress-value]');
+  const fill = root.querySelector('[data-progress-fill]');
+  if (value) value.textContent = `${percent}%`;
+  if (fill) fill.style.transform = `translateX(${percent}%)`;
+}
+
+function replayUploadIcon(root, state) {
+  const icon = root.querySelector(state === 2
+    ? '.bundle-upload__icon--red'
+    : state === 3
+      ? '.bundle-upload__icon--green'
+      : '.bundle-upload__icon--blue');
+  if (!icon) return;
+  const shapes = icon.querySelectorAll('circle, line, polyline');
+  shapes.forEach(shape => { shape.style.animation = 'none'; });
+  void icon.getBoundingClientRect();
+  shapes.forEach(shape => { shape.style.animation = ''; });
+}
+
+function replayUploadContent(root) {
+  const state = Number(root?.dataset.state || 0);
+  const content = root?.querySelectorAll('.bundle-upload__content')[state];
+  if (!content) return;
+  const parts = content.querySelectorAll(':scope > *');
+  parts.forEach(part => { part.style.animation = 'none'; });
+  void content.offsetWidth;
+  parts.forEach(part => { part.style.animation = ''; });
+}
+
+function setUploadState(state) {
+  const root = uploadRoot();
+  if (!root) return;
+  const nextState = String(state);
+  root.dataset.state = nextState;
+  root.setAttribute('aria-busy', nextState === '1' ? 'true' : 'false');
+  const title = root.querySelector(`#bundle-upload-title-${nextState}`);
+  if (title) root.setAttribute('aria-labelledby', title.id);
+  replayUploadIcon(root, Number(nextState));
+  replayUploadContent(root);
+}
+
+function bindLogoStep() {
+  if (!draft || draft.step !== 3) return;
+  const notes = cleanLogoNotes(draft.notes);
+  if (notes !== draft.notes) draft.notes = notes;
+  const notesField = $('notes');
+  if (notesField && notesField.value !== notes) notesField.value = notes;
+  const count = $('notes-count');
+  if (count) count.textContent = String(notes.length);
+  if (pendingLogoFile) setReady(pendingLogoFile.name);
+  if (pendingArtwork) {
+    setUploadState(1);
+    setProgress(shownProgress);
+  }
+}
+
+function resetLogoUploadUi() {
+  invalidateLogoUpload();
+  const input = $('logo-file');
+  if (input) input.value = '';
+  showFileError('');
+  setReady('');
+  setProgress(0);
+  setUploadState(0);
+  if (draft && builder.open) renderControls();
+}
+
+function finishLogoUpload() {
+  invalidateLogoUpload();
+  showFileError('');
+  if (!draft || draft.step !== 3) return;
+  renderStep({reset: false});
+  $('logo-attached')?.scrollIntoView({block: 'nearest'});
+}
+
+function stageLogoFile(file) {
+  if (pendingArtwork || !draft || draft.step !== 3 || !file) return;
+  if (!acceptedFile(file)) {
+    pendingLogoFile = null;
+    setReady('');
+    const input = $('logo-file');
+    if (input) input.value = '';
+    if (uploadRoot()?.dataset.state !== '0') setUploadState(0);
+    showFileError(`Choose a supported file up to 10 MB.${draft.logo ? ' Your current logo is still attached.' : ''}`);
     return;
   }
-  const file = files[0];
-  pendingArtwork = true;
-  fileError = '';
-  renderStep({reset: false});
-  try {
-    // Read only a prefix to confirm the browser can access the file.
-    await file.slice(0, 16).arrayBuffer();
-    if (draft !== current) return;
-    draft.logo = file;
-    draft.dirty = true;
-    announcement.textContent = `Logo added: ${file.name}`;
-  } catch {
-    if (draft === current) fileError = 'The file could not be read. Please choose it again.';
-  } finally {
-    if (draft === current) {
-      pendingArtwork = false;
-      if (draft.step === 3) {
-        renderStep({reset: false});
-        focusBrowse();
-      }
+  pendingLogoFile = file;
+  showFileError('');
+  void startLogoUpload();
+}
+
+function stageLogoFiles(list) {
+  if (pendingArtwork || !draft || draft.step !== 3) return;
+  const files = Array.from(list || []);
+  if (files.length !== 1) {
+    pendingLogoFile = null;
+    setReady('');
+    showFileError(files.length > 1
+      ? `Choose exactly one logo file.${draft.logo ? ' Your current logo is still attached.' : ''}`
+      : '');
+    return;
+  }
+  stageLogoFile(files[0]);
+}
+
+function readFileWithProgress(file, onProgress, signal) {
+  return new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(new DOMException('aborted', 'AbortError'));
+      return;
     }
+    const reader = new FileReader();
+    const stop = () => {
+      try { reader.abort(); } catch { /* The read may already have finished. */ }
+    };
+    signal?.addEventListener('abort', stop, {once: true});
+    reader.onprogress = event => {
+      if (event.lengthComputable && event.total > 0) onProgress(event.loaded / event.total);
+    };
+    reader.onload = () => {
+      signal?.removeEventListener('abort', stop);
+      resolve();
+    };
+    reader.onerror = () => {
+      signal?.removeEventListener('abort', stop);
+      reject(reader.error || new Error('The file could not be read.'));
+    };
+    reader.onabort = () => {
+      signal?.removeEventListener('abort', stop);
+      reject(new DOMException('aborted', 'AbortError'));
+    };
+    try {
+      reader.readAsArrayBuffer(file);
+    } catch (error) {
+      signal?.removeEventListener('abort', stop);
+      reject(error);
+    }
+  });
+}
+
+function animateProgress(target, generation) {
+  const from = shownProgress;
+  const start = performance.now();
+  // Previous fill was 900ms. Speed × 0.7 stretches the same bar to 900/0.7 ms.
+  const duration = 900 / 0.7;
+  return new Promise(resolve => {
+    const tick = now => {
+      if (generation !== uploadGeneration) {
+        resolve(false);
+        return;
+      }
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - ((1 - t) * (1 - t));
+      setProgress(from + (target - from) * eased);
+      if (t < 1) requestAnimationFrame(tick);
+      else resolve(true);
+    };
+    requestAnimationFrame(tick);
+  });
+}
+
+function showSuccessPreview() {
+  const slot = uploadRoot()?.querySelector('[data-success-preview]');
+  if (!slot) return;
+  slot.replaceChildren();
+  const src = logoPreviewSrc(draft?.logo);
+  if (!src) return;
+  const image = document.createElement('img');
+  image.className = 'bundle-upload__preview';
+  image.alt = 'Uploaded logo preview';
+  image.src = src;
+  slot.append(image);
+}
+
+async function startLogoUpload() {
+  if (pendingArtwork || !pendingLogoFile || !draft || draft.step !== 3) return;
+  const file = pendingLogoFile;
+  const current = draft;
+  if (!acceptedFile(file)) {
+    showFileError(`Choose a supported file up to 10 MB.${current.logo ? ' Your current logo is still attached.' : ''}`);
+    return;
+  }
+  const generation = ++uploadGeneration;
+  uploadAbort?.abort();
+  const controller = new AbortController();
+  uploadAbort = controller;
+  pendingArtwork = true;
+  showFileError('');
+  setUploadState(1);
+  setProgress(0);
+  renderControls();
+  announcement.textContent = 'Uploading your logo.';
+  const alive = () => generation === uploadGeneration && draft === current && current.step === 3;
+  let sawPartial = false;
+  try {
+    await readFileWithProgress(file, ratio => {
+      if (!alive() || ratio >= 0.98) return;
+      sawPartial = true;
+      setProgress(Math.min(0.9, ratio));
+    }, controller.signal);
+    if (!alive()) return;
+    // A small local file reports complete in one tick. Fill the bar only after that read succeeds.
+    if (!sawPartial) setProgress(0);
+    const finished = await animateProgress(1, generation);
+    if (!finished || !alive()) return;
+    current.logo = file;
+    rememberLogoPreview(file);
+    current.dirty = true;
+    pendingLogoFile = null;
+    pendingArtwork = false;
+    uploadAbort = null;
+    const input = $('logo-file');
+    if (input) input.value = '';
+    showSuccessPreview();
+    setUploadState(3);
+    announcement.textContent = `Logo added: ${file.name}`;
+    renderControls();
+  } catch (error) {
+    if (!alive()) return;
+    if (error?.name === 'AbortError') return;
+    pendingArtwork = false;
+    uploadAbort = null;
+    setUploadState(2);
+    announcement.textContent = 'Your file could not be uploaded due to an error.';
+    renderControls();
   }
 }
 
@@ -1104,9 +1669,7 @@ async function refreshBasket() {
   } catch {
     storeError = 'This browser could not open your basket. Check that site storage is enabled.';
   }
-  const count = $('basket-count');
-  count.textContent = String(lines.length);
-  count.hidden = lines.length === 0;
+  syncHeaderBasketCount();
   if (basket.open) renderBasket();
 }
 
@@ -1125,7 +1688,7 @@ function renderBasket() {
     const bundle = findOffer(line.bundleId);
     return `<article class="basket-line">
       <div class="basket-line-heading">
-        <div><h3>${escape(bundle.title)}</h3><p>${pieceCount(bundle)} items · ${bundle.logoCount > 1 ? `${bundle.logoCount} logos included` : 'One logo included'}</p></div>
+        <div><h3>${escape(printOnlyCopy(bundle.title))}</h3><p>${pieceCount(bundle)} items · ${bundle.logoCount > 1 ? `${bundle.logoCount} logos included` : 'One logo included'}</p></div>
         <div class="line-price">${price(bundle.price)}</div>
       </div>
       <div class="basket-line-actions">
@@ -1134,7 +1697,7 @@ function renderBasket() {
       </div>
       <details class="basket-details"><summary>View items ${icon('chevron')}</summary>
         ${selectedItems(line.allocations)}
-        <div class="info-panel">${icon('file')}<div><strong>${escape(line.logo.name)}</strong><small>${line.method} included</small></div></div>
+        <div class="info-panel">${icon('file')}<div><strong>${escape(line.logo.name)}</strong><small>Printing included</small></div></div>
         ${line.notes ? `<div class="review-notes"><strong>Notes</strong><p>${escape(line.notes)}</p></div>` : ''}
       </details>
     </article>`;
@@ -1142,56 +1705,219 @@ function renderBasket() {
 }
 
 function openBasket() {
-  renderBasket();
-  if (!basket.open) basket.showModal();
-  syncScrollLock();
-  $('basket-content').scrollTop = 0;
-  $('basket-content').querySelector('[tabindex="-1"]')?.focus({preventScroll: true});
-  void refreshBasket();
+  // Always use the shared Branded UK basket (quoteBasket), not the prototype drawer.
+  window.location.href = quoteBasketHref();
 }
 basket.addEventListener('close', syncScrollLock);
+
+function readQuoteBasket() {
+  try {
+    if (window.BrandedCart && typeof window.BrandedCart.get === 'function') {
+      const cart = window.BrandedCart.get();
+      return Array.isArray(cart) ? cart : [];
+    }
+    if (window.BrandedQuoteStorage && typeof window.BrandedQuoteStorage.loadBasket === 'function') {
+      const stored = window.BrandedQuoteStorage.loadBasket();
+      return Array.isArray(stored) ? stored : [];
+    }
+    const parsed = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeQuoteBasket(next) {
+  if (window.BrandedCart && typeof window.BrandedCart.save === 'function') {
+    window.BrandedCart.save(next);
+    return;
+  }
+  if (window.BrandedQuoteStorage && typeof window.BrandedQuoteStorage.saveBasket === 'function') {
+    window.BrandedQuoteStorage.saveBasket(next);
+  } else {
+    localStorage.setItem('quoteBasket', JSON.stringify(next));
+  }
+  try { window.dispatchEvent(new Event('basketUpdated')); } catch { /* ignore */ }
+}
+
+function syncHeaderBasketCount() {
+  const count = $('basket-count');
+  if (!count) return;
+  const basketLines = readQuoteBasket();
+  const total = window.BrandedCart && typeof window.BrandedCart.itemCount === 'function'
+    ? window.BrandedCart.itemCount()
+    : basketLines.length;
+  count.hidden = total === 0;
+  count.textContent = String(total);
+}
+
+function chosenLinesFromDraft(current) {
+  return Object.entries(current.allocations || {}).flatMap(([code, rows]) => {
+    const product = products[code];
+    return (rows || []).map(row => ({
+      code,
+      name: product?.label || code,
+      label: `${product?.label || code} · ${row.colour} · ${row.size}`,
+      colour: row.colour,
+      size: row.size,
+      quantity: row.quantity,
+      image: product?.image || ''
+    }));
+  });
+}
+
+async function persistDraftLogo(file) {
+  if (!file) return null;
+  if (!(file instanceof File)) {
+    if (file && typeof file === 'object') return {...file, method: 'dtf'};
+    return file;
+  }
+  const method = 'dtf';
+  const dataUrl = await new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ''));
+    reader.onerror = () => reject(reader.error || new Error('logo read failed'));
+    reader.readAsDataURL(file);
+  });
+  const storage = window.BrandedQuoteStorage;
+  if (!storage || typeof storage.persistLogo !== 'function' || dataUrl.indexOf('data:image') !== 0) {
+    return {
+      filename: file.name,
+      logoId: '',
+      ref: '',
+      logo: '',
+      method,
+      position: 'bundle',
+      positionLabel: 'Bundle logo'
+    };
+  }
+  try {
+    const result = await storage.persistLogo(dataUrl, file.name);
+    const logoId = result && result.logoId ? result.logoId : '';
+    const ref = logoId && storage.refFor ? storage.refFor(logoId) : '';
+    const preview = result && /^https?:/i.test(String(result.url || '')) ? result.url : (ref || dataUrl);
+    return {
+      filename: file.name,
+      logoId,
+      ref,
+      logo: preview,
+      method,
+      position: 'bundle',
+      positionLabel: 'Bundle logo',
+      included: true,
+      unitPrice: 0
+    };
+  } catch {
+    return {
+      filename: file.name,
+      logoId: '',
+      ref: '',
+      logo: '',
+      method,
+      position: 'bundle',
+      positionLabel: 'Bundle logo'
+    };
+  }
+}
+
+function quoteBasketHref() {
+  return '/basket.html#orderSummary';
+}
 
 async function addToBasket() {
   if (saving || !readyToAdd(draft) || !canReach(4) || !canLeave(4)) return;
   saving = true;
   builderError = '';
   renderControls();
-  const prior = lines.find(line => line.id === draft.lineId);
-  const line = {
-    id: draft.lineId ?? crypto.randomUUID(),
-    createdAt: prior?.createdAt ?? Date.now(),
-    bundleId: draft.bundle.id,
-    choice: draft.choice,
-    mix: draft.mix,
-    allocations: draft.allocations,
-    method: draft.method,
-    logo: draft.logo,
-    notes: draft.notes.trim()
-  };
   try {
-    const check = await validateSelection(draft.bundle, {
-      components: draft.bundle.components.map(component => ({
-        componentId: component.id,
-        selections: (draft.allocations[component.code] ?? []).map(row => ({
-          skuCode: products[component.code].skus.get(skuKey(row.colour, row.size)),
-          quantity: row.quantity
+    // Best-effort SKU check only. Never block on CMS draft / "not approved"
+    // flags — those bundles are already offered on the storefront.
+    try {
+      const check = await validateSelection(draft.bundle, {
+        components: draft.bundle.components.map(component => ({
+          componentId: component.id,
+          selections: (draft.allocations[component.code] ?? []).map(row => ({
+            skuCode: products[component.code].skus.get(skuKey(row.colour, row.size)),
+            quantity: row.quantity
+          }))
         }))
-      }))
-    });
-    if (!check.valid) {
-      builderError = check.errors.some(text => /not approved/i.test(text))
-        ? 'This bundle is no longer available to order.'
-        : 'One of the selected colours or sizes is no longer available. Please review your items.';
-      renderStep({reset: false});
-      scroll.querySelector('.inline-error')?.scrollIntoView({block: 'nearest'});
-      return;
+      });
+      const hardErrors = (check.errors || []).filter(text =>
+        !/not approved|not orderable|no longer available to order|pending.?customization|draft/i.test(String(text))
+      );
+      if (!check.valid && hardErrors.length) {
+        builderError = 'One of the selected colours or sizes is no longer available. Please review your items.';
+        renderStep({reset: false});
+        scroll.querySelector('.inline-error')?.scrollIntoView({block: 'nearest'});
+        return;
+      }
+    } catch {
+      /* Validation is optional; basket save continues. */
     }
-    await basketOperation('readwrite', store => store.put(line));
-    await refreshBasket();
+
+    const logoRecord = await persistDraftLogo(draft.logo);
+    const pounds = (Number(draft.bundle.price) || 0) / 100;
+    const firstImage = chosenLinesFromDraft(draft).find(line => line.image)?.image
+      || products[Object.keys(draft.allocations || {})[0]]?.image
+      || '';
+    const entryId = draft.lineId || (`bundle-${draft.bundle.id}-${Date.now()}`);
+    const entry = {
+      lineType: 'bundle',
+      id: entryId,
+      name: draft.bundle.title,
+      bundleId: draft.bundle.id,
+      bundleSlug: draft.bundle.slug || draft.bundle.id,
+      bundleNumber: draft.bundle.bundleNumber || 0,
+      currency: 'GBP',
+      vatExcluded: true,
+      price: pounds,
+      bundlePrice: pounds,
+      qty: 1,
+      image: firstImage,
+      chosenLines: chosenLinesFromDraft(draft),
+      logos: logoRecord ? [logoRecord] : [],
+      selection: {
+        choice: draft.choice,
+        mix: draft.mix,
+        allocations: draft.allocations,
+        method: draft.method,
+        notes: draft.notes.trim(),
+        logo: logoRecord
+      },
+      builderState: {
+        choice: draft.choice,
+        mix: draft.mix,
+        allocations: draft.allocations,
+        method: draft.method,
+        notes: draft.notes.trim()
+      }
+    };
+
+    const quote = readQuoteBasket();
+    const existing = quote.findIndex(item => item && item.lineType === 'bundle' && item.id === entryId);
+    if (existing >= 0) quote[existing] = entry;
+    else quote.push(entry);
+    writeQuoteBasket(quote);
+    syncHeaderBasketCount();
+
+    // Keep prototype IDB in sync as a local cache, but the real cart is quoteBasket.
+    try {
+      await basketOperation('readwrite', store => store.put({
+        id: entryId,
+        createdAt: Date.now(),
+        bundleId: draft.bundle.id,
+        choice: draft.choice,
+        mix: draft.mix,
+        allocations: draft.allocations,
+        method: draft.method,
+        notes: draft.notes.trim()
+      }));
+    } catch { /* optional cache */ }
+
     announcement.textContent = draft.lineId ? 'Bundle updated.' : 'Bundle added to your basket.';
-    closeBuilder(true);
+    window.location.href = quoteBasketHref();
   } catch {
-    builderError = 'We couldn\u2019t confirm or save this bundle. Your configuration is still open. Please try again.';
+    builderError = 'We couldn\u2019t save this bundle. Your configuration is still open. Please try again.';
     renderStep({reset: false});
     scroll.querySelector('.inline-error')?.scrollIntoView({block: 'nearest'});
   } finally {
@@ -1208,6 +1934,12 @@ function advance() {
   }
   const nextStep = draft.step + 1;
   draft.reached = Math.max(draft.reached, nextStep);
+  if (!canReach(nextStep)) {
+    builderError = 'Choose a colour and sizes for every garment before reviewing the bundle.';
+    renderStep({reset: false});
+    scroll.querySelector('.inline-error')?.scrollIntoView({block: 'nearest'});
+    return;
+  }
   goTo(nextStep);
 }
 
@@ -1221,15 +1953,38 @@ const actions = {
   step: button => goTo(Number(button.dataset.step)),
   next: advance,
   exclusive: button => changeChoice(button.dataset.code),
+  'pick-colour': button => {
+    variantInputs[button.dataset.code] = {colour: button.dataset.colour};
+    renderStep({reset: false});
+    scroll.querySelector(`[data-action="pick-colour"][data-code="${button.dataset.code}"][data-colour="${CSS.escape(button.dataset.colour)}"]`)?.focus({preventScroll: true});
+  },
+  'size-qty': button => {
+    const code = button.dataset.code;
+    const colour = button.dataset.colour;
+    const size = button.dataset.size;
+    const delta = Number(button.dataset.delta);
+    const current = (draft.allocations[code] ?? []).find(row => row.colour === colour && row.size === size)?.quantity ?? 0;
+    if (!setAllocation(draft, code, colour, size, Math.max(0, current + delta))) return;
+    variantInputs[code] = {colour};
+    renderStep({reset: false});
+  },
   fill: button => addAllocation(button.closest('form'), true),
   'remove-allocation': removeAllocation,
-  method: button => {
-    draft.method = button.dataset.method;
+  method: () => {
+    draft.method = 'Print';
     draft.dirty = true;
     renderStep({reset: false});
-    scroll.querySelector(`[data-method="${draft.method}"]`)?.focus();
   },
-  browse: () => $('logo-file').click(),
+  browse: () => $('logo-file')?.click(),
+  'logo-choose': () => $('logo-file')?.click(),
+  'logo-clear': () => resetLogoUploadUi(),
+  'logo-upload': () => { void startLogoUpload(); },
+  'logo-cancel': () => resetLogoUploadUi(),
+  'logo-dismiss': () => {
+    if (uploadRoot()?.dataset.state === '3') finishLogoUpload();
+    else resetLogoUploadUi();
+  },
+  'logo-done': () => finishLogoUpload(),
   edit: button => {
     const line = lines.find(entry => entry.id === button.dataset.id);
     if (line) openBuilder(findOffer(line.bundleId), button, line);
@@ -1269,34 +2024,44 @@ scroll.addEventListener('change', event => {
   if (field.name === 'size' && field.form?.matches('.allocation-form')) {
     variantInputs[field.form.dataset.code] = {colour: field.form.elements.colour.value, size: field.value};
   }
-  if (field.id === 'logo-file' && field.files.length) void chooseArtwork(field.files);
+  if (field.id === 'logo-file') {
+    if (field.files?.length) stageLogoFiles(field.files);
+    field.value = '';
+  }
 });
 scroll.addEventListener('input', event => {
-  if (event.target.id !== 'notes') return;
-  draft.notes = event.target.value;
+  if (renderingStep || event.target.id !== 'notes') return;
+  const notes = cleanLogoNotes(event.target.value);
+  if (notes !== event.target.value) event.target.value = notes;
+  draft.notes = notes;
   draft.dirty = true;
-  $('notes-count').textContent = draft.notes.length;
+  const count = $('notes-count');
+  if (count) count.textContent = String(notes.length);
 });
 scroll.addEventListener('toggle', event => {
   const card = event.target;
   if (card.matches('.variant-card') && card.open && scroll.contains(card)) draft.activeProduct = card.querySelector('summary').dataset.code;
 }, true);
+const dragHasFiles = event => Array.from(event.dataTransfer?.types || []).includes('Files');
 scroll.addEventListener('dragover', event => {
-  const upload = event.target.closest('#upload-area');
+  const upload = event.target.closest('#bundle-upload');
+  if (event.target.closest('#notes') && dragHasFiles(event)) event.preventDefault();
   if (!upload) return;
   event.preventDefault();
-  upload.classList.add('dragging');
+  if (!pendingArtwork) upload.classList.add('is-dragging');
 });
 scroll.addEventListener('dragleave', event => {
-  const upload = event.target.closest('#upload-area');
-  if (upload && !upload.contains(event.relatedTarget)) upload.classList.remove('dragging');
+  const upload = event.target.closest('#bundle-upload');
+  if (upload && !upload.contains(event.relatedTarget)) upload.classList.remove('is-dragging');
 });
 scroll.addEventListener('drop', event => {
-  const upload = event.target.closest('#upload-area');
+  const upload = event.target.closest('#bundle-upload');
+  const files = event.dataTransfer?.files;
+  if (event.target.closest('#notes') && files?.length) event.preventDefault();
   if (!upload) return;
   event.preventDefault();
-  upload.classList.remove('dragging');
-  void chooseArtwork(event.dataTransfer.files);
+  upload.classList.remove('is-dragging');
+  if (!pendingArtwork) stageLogoFiles(files);
 });
 const bundleRadial = $('bundleRadial');
 const bundleRadialAnchor = $('bundleRadialAnchor');
@@ -1319,6 +2084,36 @@ function syncRadialPicks() {
     const item = radialCatalog.find(entry => entry.id === button.dataset.filterId);
     button.classList.toggle('is-picked', Boolean(item && filterIsSet(item, appliedBundleFilters)));
   });
+  syncHorizontalFilterChips();
+}
+
+function syncHorizontalFilterChips() {
+  const row = $('bundleFilterRow');
+  if (!row) return;
+  row.querySelectorAll('[data-filter-id]').forEach(button => {
+    const item = radialCatalog.find(entry => entry.id === button.dataset.filterId);
+    const picked = Boolean(item && filterIsSet(item, appliedBundleFilters));
+    button.classList.toggle('is-picked', picked);
+    button.setAttribute('aria-pressed', String(picked));
+  });
+}
+
+function mountHorizontalFilterChips() {
+  const row = $('bundleFilterRow');
+  if (!row || row.dataset.ready === '1') return;
+  row.dataset.ready = '1';
+  radialCatalog.forEach(item => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'bundle-filter-chip';
+    button.dataset.filterId = item.id;
+    button.setAttribute('aria-pressed', 'false');
+    button.setAttribute('aria-label', `Filter by ${item.title}`);
+    button.innerHTML = `${item.icon}<span>${item.title}</span>`;
+    button.addEventListener('click', () => openRadialSheet(item));
+    row.append(button);
+  });
+  syncHorizontalFilterChips();
 }
 
 function syncRadialButton() {
@@ -1328,23 +2123,32 @@ function syncRadialButton() {
 }
 
 function placeRadialHub() {
-  const nav = bundleFiltersNav?.closest('.bottom-nav');
+  const nav = bundleFiltersNav?.closest('#branded-nav, .bottom-nav');
   if (!nav || !bundleRadialAnchor || !bundleFiltersNav) return;
-  const navRect = nav.getBoundingClientRect();
-  const btnRect = bundleFiltersNav.getBoundingClientRect();
-  const icon = bundleFiltersNav.querySelector('.nav-customise-icon');
-  const iconRect = icon ? icon.getBoundingClientRect() : btnRect;
+  const anchor = window.__bukFilterAnchor;
+  const navRect = anchor
+    ? { top: anchor.navTop, left: 0, width: window.innerWidth, height: 82, bottom: anchor.navTop + 82 }
+    : nav.getBoundingClientRect();
+  const btnRect = anchor
+    ? { left: anchor.left, top: anchor.top, width: anchor.width, height: anchor.height }
+    : bundleFiltersNav.getBoundingClientRect();
+  const disk = bundleFiltersNav.querySelector('.context-disc');
+  const icon = bundleFiltersNav.querySelector('.nav-customise-icon, .icon');
+  const iconRect = anchor ? btnRect : ((disk || icon) ? (disk || icon).getBoundingClientRect() : btnRect);
   const header = document.querySelector('.mobile-header');
   const headerBottom = header ? Math.max(0, header.getBoundingClientRect().bottom) : 0;
   const gutter = 14;
-  const labelRoom = 18;
+  const labelDrop = 18;
   const reach = 1.82;
   const topLimit = headerBottom + gutter;
-  const bottomLimit = navRect.top - gutter;
+  const indicator = nav.querySelector('.indicator');
+  const indicatorBox = indicator ? indicator.getBoundingClientRect() : null;
+  const circleTop = indicatorBox && indicatorBox.height ? indicatorBox.top - 2 : navRect.top - 18;
+  const bottomLimit = circleTop - 12;
   const availH = Math.max(0, bottomLimit - topLimit);
   const availW = Math.max(0, window.innerWidth - gutter * 2);
   const factor = reach + 0.5;
-  let plate = Math.min(availW / 2 / factor, (availH - labelRoom) / (2 * factor));
+  let plate = Math.min(availW / 2 / factor, (availH - labelDrop) / (2 * factor));
   if (!Number.isFinite(plate) || plate <= 0) plate = 56;
   plate = Math.min(70, plate);
   const hub = Math.min(64, Math.max(48, plate * 0.78));
@@ -1353,10 +2157,10 @@ function placeRadialHub() {
   bundleRadialAnchor.style.setProperty('--radial-reach', String(reach));
   bundleRadialAnchor.style.setProperty('--radial-diag', String(reach / Math.SQRT2));
   const side = plate * factor;
-  const bottomExtent = side + labelRoom;
+  const bottomExtent = side + labelDrop;
   const minX = gutter + side;
   const maxX = window.innerWidth - gutter - side;
-  const centerX = Math.min(Math.max(btnRect.left + btnRect.width / 2, minX), maxX);
+  const centerX = Math.min(Math.max(iconRect.left + iconRect.width / 2, minX), maxX);
   let centerY = bottomLimit - bottomExtent;
   if (centerY - side < topLimit) centerY = (topLimit + side + bottomLimit - bottomExtent) / 2;
   bundleRadialAnchor.style.left = `${centerX}px`;
@@ -1370,6 +2174,130 @@ function placeRadialHub() {
   if (tucked < 8) fromY += 8 - tucked;
   bundleRadialAnchor.style.setProperty('--hub-from-x', `${fromX}px`);
   bundleRadialAnchor.style.setProperty('--hub-from-y', `${fromY}px`);
+  clearFanOfBar();
+}
+
+function bukPingSpeed() {
+  try {
+    if (typeof window.__bukSyncSpeedPark === 'function') window.__bukSyncSpeedPark();
+    if (window.parent && window.parent !== window && typeof window.parent.__bukSyncSpeedPark === 'function') {
+      window.parent.__bukSyncSpeedPark();
+    }
+  } catch (error) {
+    /* the parent page owns the speed control */
+  }
+}
+
+function clearFanOfBar() {
+  if (!bundleRadial || !bundleRadialAnchor) return;
+  const nav = bundleFiltersNav?.closest('.bottom-nav') || document.querySelector('nav.bottom-nav');
+  if (!nav) return;
+  const indicator = nav.querySelector('.indicator');
+  const indicatorBox = indicator ? indicator.getBoundingClientRect() : null;
+  const circleTop = indicatorBox && indicatorBox.height ? indicatorBox.top - 2 : nav.getBoundingClientRect().top - 18;
+  const limit = circleTop - 12;
+  const hadShow = bundleRadial.classList.contains('show');
+  bundleRadial.style.visibility = 'hidden';
+  bundleRadial.classList.add('show', 'buk-radial-measure');
+  let lowest = -Infinity;
+  bundleRadial.querySelectorAll('.bundle-radial-item').forEach((item) => {
+    const box = item.getBoundingClientRect();
+    if (box.width <= 0) return;
+    const label = item.querySelector('.bundle-radial-label');
+    const labelBottom = label ? label.getBoundingClientRect().bottom : box.bottom;
+    lowest = Math.max(lowest, box.bottom, labelBottom);
+  });
+  bundleRadial.classList.remove('buk-radial-measure', 'show');
+  if (!hadShow) {
+    bundleRadial.classList.add('is-armed');
+    void bundleRadial.offsetWidth;
+    bundleRadial.classList.remove('is-armed');
+  }
+  bundleRadial.style.visibility = '';
+  if (Number.isFinite(lowest) && lowest > limit + 0.5) {
+    const current = parseFloat(bundleRadialAnchor.style.top) || 0;
+    bundleRadialAnchor.style.top = `${current - (lowest - limit)}px`;
+  }
+}
+
+function stopRadialItemMotion() {
+  bundleRadial?.querySelectorAll('.bundle-radial-item').forEach((item) => {
+    item.getAnimations().forEach((anim) => anim.cancel());
+    item.style.transform = '';
+  });
+}
+
+function radialOpenTargets() {
+  const style = getComputedStyle(bundleRadialAnchor);
+  const plate = parseFloat(style.getPropertyValue('--radial-plate')) || 70;
+  const reach = (parseFloat(style.getPropertyValue('--radial-reach')) || 1.82) * plate;
+  const diag = (parseFloat(style.getPropertyValue('--radial-diag')) || (1.82 / Math.SQRT2)) * plate;
+  return [
+    `translate(0px, ${(-reach).toFixed(2)}px) scale(1)`,
+    `translate(${diag.toFixed(2)}px, ${(-diag).toFixed(2)}px) scale(1)`,
+    `translate(${reach.toFixed(2)}px, 0px) scale(1)`,
+    `translate(${diag.toFixed(2)}px, ${diag.toFixed(2)}px) scale(1)`,
+    `translate(0px, ${reach.toFixed(2)}px) scale(1)`,
+    `translate(${(-diag).toFixed(2)}px, ${diag.toFixed(2)}px) scale(1)`,
+    `translate(${(-reach).toFixed(2)}px, 0px) scale(1)`,
+    `translate(${(-diag).toFixed(2)}px, ${(-diag).toFixed(2)}px) scale(1)`
+  ];
+}
+
+function playRadialOpen(hubAlreadyCentered) {
+  if (!bundleRadial) return;
+  stopRadialItemMotion();
+  bundleRadial.classList.remove('show', 'is-returning', 'is-tucked', 'is-opening', 'is-armed');
+  const release = () => {
+    if (!radialOpen || !bundleRadial) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const items = [...bundleRadial.querySelectorAll('.bundle-radial-item')];
+    const ends = radialOpenTargets();
+    bundleRadial.classList.remove('show', 'is-returning', 'is-tucked');
+    bundleRadial.classList.add('is-armed');
+    void bundleRadial.offsetWidth;
+    bundleRadial.classList.remove('is-armed');
+    bundleRadial.classList.add('is-opening');
+    if (reduce) {
+      bundleRadial.classList.add('show');
+      bundleRadial.classList.remove('is-opening');
+      return;
+    }
+    let pending = items.length;
+    items.forEach((item, index) => {
+      const anim = item.animate(
+        [
+          { transform: 'translate3d(0px, 0px, 0px) scale(0.46)' },
+          { transform: (ends[index] || ends[0]).replace('translate(', 'translate3d(').replace(') scale', ', 0px) scale') }
+        ],
+        {
+          duration: 420,
+          delay: index * 90,
+          easing: 'cubic-bezier(0.16, 0.84, 0.32, 1)',
+          fill: 'forwards'
+        }
+      );
+      const done = () => {
+        pending -= 1;
+        if (pending > 0 || !radialOpen || !bundleRadial) return;
+        bundleRadial.classList.add('show');
+        bundleRadial.classList.remove('is-opening');
+        items.forEach((entry) => {
+          entry.getAnimations().forEach((running) => running.cancel());
+        });
+      };
+      anim.onfinish = done;
+      anim.oncancel = () => {
+        pending -= 1;
+      };
+    });
+  };
+  if (hubAlreadyCentered) {
+    release();
+    return;
+  }
+  bundleRadialAnchor?.classList.add('show');
+  radialMotionStop = whenRadialSettles(bundleRadialHub, 'transform', 480, release);
 }
 
 function cancelRadialMotion() {
@@ -1402,11 +2330,65 @@ function finishRadialClose() {
   if (radialOpen) return;
   bundleRadialDim?.classList.remove('show');
   bundleRadialDim?.setAttribute('aria-hidden', 'true');
-  bundleRadial?.classList.remove('is-returning');
-  bundleRadial?.classList.remove('is-tucked');
+  bundleRadial?.classList.remove('is-returning', 'is-tucked', 'is-opening', 'is-armed');
+  stopRadialItemMotion();
   bundleRadialAnchor?.classList.remove('is-dropping');
   bundleRadialAnchor?.classList.remove('is-open');
   if (bundleRadialAnchor) bundleRadialAnchor.inert = true;
+  document.dispatchEvent(new CustomEvent('buk-fan-closed'));
+  try {
+    if (window.parent && window.parent !== window) {
+      window.parent.document.dispatchEvent(new CustomEvent('buk-fan-closed'));
+    }
+  } catch (error) {
+    /* the parent bar restores its own circle */
+  }
+}
+
+function playRadialClose() {
+  const items = [...(bundleRadial?.querySelectorAll('.bundle-radial-item') || [])];
+  const froms = items.map((item) => getComputedStyle(item).transform);
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  bundleRadial?.classList.add('is-returning');
+  bundleRadial?.classList.remove('show', 'is-opening', 'is-armed');
+  bundleRadial?.setAttribute('aria-hidden', 'true');
+  if (bundleRadial) bundleRadial.inert = true;
+  const done = () => {
+    if (radialOpen || !bundleRadial) return;
+    items.forEach((item) => {
+      item.getAnimations().forEach((anim) => anim.cancel());
+      item.style.transform = '';
+    });
+    bundleRadial.classList.add('is-tucked');
+    bundleRadial.classList.remove('is-returning');
+    dropHubBehindFilters();
+  };
+  if (!items.length || reduce) {
+    done();
+    return;
+  }
+  const running = [];
+  items.forEach((item, index) => {
+    const from = froms[index];
+    item.getAnimations().forEach((anim) => anim.cancel());
+    const anim = item.animate(
+      [
+        { transform: from && from !== 'none' ? from : 'translate3d(0px, 0px, 0px) scale(0.46)' },
+        { transform: 'translate3d(0px, 0px, 0px) scale(0.46)' }
+      ],
+      {
+        duration: 400,
+        delay: (items.length - 1 - index) * 100,
+        easing: 'ease-in',
+        fill: 'both'
+      }
+    );
+    running.push(anim);
+    if (index === 0) anim.onfinish = () => done();
+  });
+  radialMotionStop = () => {
+    running.forEach((anim) => anim.cancel());
+  };
 }
 
 function dropHubBehindFilters() {
@@ -1434,29 +2416,11 @@ function toggleRadial(force) {
     if (bundleRadial) bundleRadial.inert = false;
     if (bundleRadialAnchor) bundleRadialAnchor.inert = false;
     const hubAlreadyCentered = bundleRadialAnchor?.classList.contains('show');
-    if (hubAlreadyCentered) bundleRadial?.classList.add('show');
-    else {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          if (!radialOpen) return;
-          bundleRadial?.classList.add('show');
-          bundleRadialAnchor?.classList.add('show');
-        });
-      });
-    }
-  } else if (bundleRadial?.classList.contains('show')) {
-    bundleRadial?.classList.add('is-returning');
-    bundleRadial?.classList.remove('show');
-    bundleRadial?.setAttribute('aria-hidden', 'true');
-    if (bundleRadial) bundleRadial.inert = true;
-    const lastCircle = bundleRadial?.querySelector('.bundle-radial-item');
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    radialMotionStop = whenRadialSettles(lastCircle, 'transform', reduce ? 80 : 1600, () => {
-      if (radialOpen) return;
-      bundleRadial?.classList.add('is-tucked');
-      bundleRadial?.classList.remove('is-returning');
-      dropHubBehindFilters();
-    });
+    bukPingSpeed();
+    playRadialOpen(hubAlreadyCentered);
+    bukPingSpeed();
+  } else if (bundleRadial?.classList.contains('show') || bundleRadial?.classList.contains('is-opening')) {
+    playRadialClose();
   } else if (bundleRadialAnchor?.classList.contains('show') || bundleRadialAnchor?.classList.contains('is-dropping')) {
     dropHubBehindFilters();
   } else {
@@ -1561,6 +2525,7 @@ function openRadialSheet(item) {
   if (bundleRadialSheet) bundleRadialSheet.inert = false;
   document.body.classList.add('bundle-radial-sheet-open');
   renderFilterSheet();
+  bukPingSpeed();
   $('bundleRadialSheetBody')?.querySelector('.bundle-radial-option')?.focus({preventScroll: true});
 }
 
@@ -1581,6 +2546,7 @@ function closeRadialSheet(restore = true) {
     bundleRadialDim?.setAttribute('aria-hidden', 'false');
   }
   if (restore) bundleFiltersNav?.focus();
+  bukPingSpeed();
 }
 
 function applyRadialFilter() {
@@ -1633,9 +2599,21 @@ if (bundleRadial) bundleRadial.inert = true;
 if (bundleRadialAnchor) bundleRadialAnchor.inert = true;
 if (bundleRadialSheet) bundleRadialSheet.inert = true;
 
-bundleFiltersNav?.addEventListener('click', () => {
+function openBundleFiltersFromBar(force) {
   if (radialSheetOpen()) closeRadialSheet(false);
-  toggleRadial();
+  if (force === true) toggleRadial(true);
+  else if (force === false) toggleRadial(false);
+  else toggleRadial();
+}
+window.__bukOpenBundleFilters = openBundleFiltersFromBar;
+bundleFiltersNav?.addEventListener('buk-open-filters', openBundleFiltersFromBar);
+document.addEventListener('buk-close-filters', () => {
+  if (radialSheetOpen()) closeRadialSheet(false);
+  toggleRadial(false);
+});
+bundleFiltersNav?.addEventListener('click', () => {
+  if (bundleFiltersNav.closest('#branded-nav, nav.bottom-nav.nav')) return;
+  openBundleFiltersFromBar();
 });
 bundleRadialHub?.addEventListener('click', () => {
   toggleRadial(false);
@@ -1698,10 +2676,24 @@ document.addEventListener('keydown', event => {
     toggleRadial(false);
   }
 });
-$('bundleSort')?.addEventListener('change', event => {
-  catalogueSort = event.target.value || 'default';
-  renderShop();
-});
+mountHorizontalFilterChips();
+
+const bundleSortSelect = $('bundleSort');
+if (bundleSortSelect) {
+  bundleSortSelect.value = catalogueSort;
+  bundleSortSelect.addEventListener('change', event => {
+    const value = event.target.value || 'cost';
+    if (value.startsWith('filter:')) {
+      const filterId = value.slice(7);
+      const item = radialCatalog.find(entry => entry.id === filterId);
+      bundleSortSelect.value = catalogueSort;
+      if (item) openRadialSheet(item);
+      return;
+    }
+    catalogueSort = value;
+    renderShop();
+  });
+}
 
 function refreshCatalogueVatLabels() {
   document.querySelectorAll('.vat-suffix').forEach(el => {
@@ -1740,6 +2732,98 @@ function renderSoon() {
   }, 700);
 }
 
+async function resumeQuoteEdit() {
+  const params = new URLSearchParams(location.search);
+  const editId = params.get('edit') || '';
+  const bundleKey = params.get('bundle') || '';
+  if (!editId && !bundleKey) return;
+  const line = readQuoteBasket().find(item =>
+    item && item.lineType === 'bundle' &&
+    ((editId && item.id === editId) || (bundleKey && (item.bundleSlug === bundleKey || item.bundleId === bundleKey)))
+  );
+  if (!line) return;
+  const deal = [...offerById.values()].find(entry =>
+    entry.id === line.bundleId || entry.slug === line.bundleSlug || entry.id === line.bundleSlug || entry.slug === line.bundleId
+  );
+  const bundle = deal && canBuild(deal) ? asBundle(deal) : undefined;
+  if (!bundle) return;
+  const state = line.builderState || line.selection || {};
+  const logo = state.logo || (Array.isArray(line.logos) ? line.logos[0] : null);
+  if (logo && !logo.name) logo.name = logo.filename || 'Uploaded logo';
+  await openBuilder(bundle, null, {
+    id: line.id,
+    choice: state.choice || '',
+    mix: state.mix || {},
+    allocations: state.allocations || {},
+    method: state.method || '',
+    notes: state.notes || '',
+    logo
+  });
+}
+
+function logoFromBasketLine(lineId) {
+  if (!lineId) return null;
+  const line = readQuoteBasket().find(item => item && item.lineType === 'bundle' && item.id === lineId);
+  if (!line) return null;
+  const state = line.builderState || line.selection || {};
+  return state.logo || (Array.isArray(line.logos) ? line.logos[0] : null) || null;
+}
+
+async function resumeColourBuild() {
+  const params = new URLSearchParams(location.search);
+  if (params.get('resumeBuild') !== '1') return false;
+  let job = null;
+  try { job = JSON.parse(sessionStorage.getItem('buk-bundle-resume') || sessionStorage.getItem('buk-bundle-build') || 'null'); }
+  catch { job = null; }
+  if (!job) return false;
+  const deal = [...offerById.values()].find(entry =>
+    entry.id === job.bundleId || entry.slug === job.slug || entry.id === job.slug || entry.slug === job.bundleId
+  );
+  const bundle = deal && canBuild(deal) ? asBundle(deal) : undefined;
+  if (!bundle) return false;
+  try {
+    await prepareBundle(offerById.get(bundle.id));
+  } catch {
+    showNotice('We couldn\u2019t restore this bundle. Please open it again from the catalogue.');
+    return false;
+  }
+  const live = asBundle(offerById.get(bundle.id));
+  const logo = job.logo || logoFromBasketLine(job.lineId) || null;
+  if (logo && !logo.name) logo.name = logo.filename || 'Uploaded logo';
+  draft = newDraft(live, {
+    id: job.lineId || undefined,
+    allocations: job.picks || {},
+    method: job.method || (live.methods.length === 1 ? live.methods[0] : ''),
+    notes: job.notes || '',
+    logo
+  });
+  const step = Number(job.resumeStep);
+  draft.step = Number.isInteger(step) ? Math.min(4, Math.max(0, step)) : 3;
+  draft.reached = Math.max(draft.step, draft.reached || 0);
+  returnToBasket = Boolean(job.returnToBasket || job.lineId);
+  variantInputs = {};
+  invalidateLogoUpload();
+  fileError = '';
+  draft.notes = cleanLogoNotes(draft.notes);
+  builderError = '';
+  $('builder-title').textContent = printOnlyCopy(live.title);
+  $('builder-kicker').textContent = 'BUILD YOUR BUNDLE';
+  $('builder-price').innerHTML = price(live.price);
+  try {
+    sessionStorage.removeItem('buk-bundle-resume');
+    sessionStorage.removeItem('buk-bundle-build');
+  } catch { /* ignore */ }
+  renderStep();
+  builder.showModal();
+  syncScrollLock();
+  focusHeading();
+  // Drop the resume flag from the URL so refresh does not loop.
+  params.delete('resumeBuild');
+  const next = `${location.pathname}?${params.toString()}`.replace(/\?$/, '');
+  history.replaceState(null, '', next + location.hash);
+  return true;
+}
+
 async function init() {
   listState = 'loading';
   renderShop();
@@ -1756,7 +2840,16 @@ async function init() {
   renderShop();
   refreshCatalogueVatLabels();
   void hydrateBlackThumbs();
+  syncHeaderBasketCount();
+  window.addEventListener('basketUpdated', syncHeaderBasketCount);
+  window.addEventListener('storage', event => {
+    if (!event.key || event.key === 'quoteBasket') syncHeaderBasketCount();
+  });
   void refreshBasket();
+  void (async () => {
+    if (await resumeColourBuild()) return;
+    await resumeQuoteEdit();
+  })();
   // Older API builds don't return contents in the list; load them slowly.
   void loadAllDetails(deals, {onProgress: renderSoon}).then(() => {
     clearTimeout(renderTimer);
@@ -1770,6 +2863,16 @@ async function init() {
 // A broken product image falls back to a plain tile instead of a broken icon.
 document.addEventListener('error', event => {
   const image = event.target;
+  if (image?.matches?.('img.logo-recap__photo')) {
+    const fallback = image.dataset.usedFallback === '1' ? '' : (image.dataset.fallback || '');
+    if (fallback) {
+      image.dataset.usedFallback = '1';
+      image.src = fallback;
+      return;
+    }
+    image.replaceWith(Object.assign(document.createElement('span'), {className: 'cap-thumb', innerHTML: icon('layers')}));
+    return;
+  }
   if (image?.matches?.('img[data-thumb]')) {
     const code = image.dataset.thumb;
     if (products[code]) products[code].image = '';

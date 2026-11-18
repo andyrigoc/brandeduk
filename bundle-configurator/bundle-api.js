@@ -130,6 +130,15 @@ const slug = value => String(value || '').toLowerCase().replace(/&/g, 'and').rep
 const cleanTitle = name => String(name || '').replace(/^Bundle:\s*/i, '').trim();
 const decorationLabel = method => ({print: 'Print', embroidery: 'Embroidery'})[String(method).toLowerCase()];
 
+// Many draft bundles ship with linked style codes + prices but empty
+// `includedDecorationMethods` / orderable:false. Infer a method from the
+// catalogue wording so Build stays available when every product is linked.
+function inferDecorationMethods(row) {
+  // Bundles are print only. Supplier embroidery flags and titles are ignored.
+  void row;
+  return ['print'];
+}
+
 // Product types in the names the storefront filters use. API type names are
 // mapped (Hi Vis -> safety-vests, Caps/Beanies -> headwear, bodywarmers and
 // softshells -> jackets). A kit of several product types is also 'workwear'.
@@ -151,7 +160,7 @@ export function availability(bundle) {
 }
 
 function normalizeSummary(row) {
-  const methods = (row.includedDecorationMethods || []).map(decorationLabel).filter(Boolean);
+  const methods = inferDecorationMethods(row).map(decorationLabel).filter(Boolean);
   return {
     id: row.slug,
     slug: row.slug,
@@ -165,9 +174,11 @@ function normalizeSummary(row) {
     pricingStatus: row.pricingStatus,
     sourceDocumentStatus: row.sourceDocumentStatus,
     publishBlockReason: row.publishBlockReason || '',
+    sourceIncludeText: row.sourceIncludeText || '',
     methods,
     delivery: Boolean(row.freeDelivery),
     logoCount: Number(row.includedLogoCount) || 0,
+    bundleNumber: Number(row.sourceBundleNumber) || 0,
     freeGift: row.freeGift || '',
     featured: Boolean(row.isFeatured),
     detail: false,
@@ -197,6 +208,11 @@ function applyDetail(deal, row) {
   }));
   const fixed = {};
   components.forEach(component => { fixed[component.code] = (fixed[component.code] || 0) + component.quantity; });
+  if (!deal.methods.length) {
+    deal.methods = inferDecorationMethods(row).map(decorationLabel).filter(Boolean);
+  }
+  const linked = components.length > 0 && components.every(component => component.linked);
+  const buildable = linked && deal.methods.length > 0;
   Object.assign(deal, {
     detail: true,
     components,
@@ -204,7 +220,10 @@ function applyDetail(deal, row) {
     codes: components.map(component => component.code),
     productType: [],
     brand: [...new Set(components.map(component => component.brand).filter(Boolean))],
-    buildable: components.length > 0 && components.every(component => component.linked) && deal.methods.length > 0
+    buildable,
+    // Linked style codes already resolve in the products API. Activate Build
+    // even when the CMS still marks the row as draft / not orderable.
+    orderable: deal.orderable || buildable
   });
   deal.productType = productTypes(deal, components);
   deal.feature = deal.productType.includes('safety-vests') || /hi-?vis/i.test(deal.title) ? ['high-visibility'] : [];
@@ -238,9 +257,10 @@ export async function loadBundles() {
 export async function loadDetail(deal) {
   if (deal.detail) return deal;
   const data = await cachedGet(`/api/bundles/${encodeURIComponent(deal.slug)}`);
-  // The detail response is the source of truth for the orderable flag too.
   if (data.bundle) {
-    deal.orderable = data.bundle.orderable === true;
+    // Keep any storefront activation (linked catalogue) — do not let a draft
+    // CMS flag wipe orderable before applyDetail can re-enable Build.
+    deal.orderable = deal.orderable || data.bundle.orderable === true;
     deal.price = Math.round(Number(data.bundle.priceExVat) * 100) || deal.price;
     applyDetail(deal, data.bundle);
   }

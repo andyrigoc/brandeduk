@@ -38,6 +38,23 @@
         return;
     }
 
+    /* Same lockup as pc-header.css / home-pc.html. Injected as a real style
+       element before the header markup, because addStylesheet() is async and
+       the 1916×821 wordmark otherwise paints at intrinsic size for one frame. */
+    function installLockupStyle() {
+        if (document.getElementById('pc-header-lockup-critical')) return;
+        var style = document.createElement('style');
+        style.id = 'pc-header-lockup-critical';
+        style.textContent = '@media (min-width:700px){' +
+            '.site-header .searchbar-header__brand-badge-wrap{display:block;flex:0 0 auto;height:45px;width:auto;overflow:visible}' +
+            '.site-header .searchbar-header__brand-badge{display:block!important;height:45px!important;max-height:45px!important;width:auto!important;max-width:45px!important;object-fit:contain!important}' +
+            '.site-header img.searchbar-header__brand-text{display:block!important;flex:0 0 auto;height:87.36px!important;max-height:87.36px!important;width:auto!important;max-width:220px!important;margin:0!important;object-fit:contain!important;background:transparent!important}' +
+            '}';
+        (document.head || document.documentElement).appendChild(style);
+    }
+
+    installLockupStyle();
+
     function addStylesheet(href, marker) {
         var targetPath = new URL(href, window.location.href).pathname;
         var alreadyLoaded = Array.from(document.querySelectorAll('link[rel="stylesheet"][href]')).some(function (link) {
@@ -64,7 +81,7 @@
         }
         addStylesheet(new URL('css/components/header.css?v=20260220', assetsRoot).href, 'base');
         addStylesheet(new URL('css/components/promo-bar.css?v=20260425a', assetsRoot).href, 'promo');
-        addStylesheet(new URL('css/components/pc-header.css?v=20261012-more', assetsRoot).href, 'standard');
+        addStylesheet(new URL('css/components/pc-header.css?v=20261117-wordmark', assetsRoot).href, 'standard');
         addStylesheet(new URL('css/components/pc-nav-overflow.css?v=20261012-navmore', assetsRoot).href, 'nav-overflow');
         addStylesheet(new URL('css/components/pc-search.css?v=20261118-instant-search', assetsRoot).href, 'search');
         addStylesheet(new URL('css/components/header-basket-lottie.css?v=20261012-allpages', assetsRoot).href, 'basket');
@@ -379,7 +396,7 @@
         }
         // The basket page already shows the full basket, so its laptop icon does not open the drawer.
         if (!isBasketPage() && typeof window.openOrderDrawer !== 'function' && !hasScript('order-drawer-pc.js')) {
-            appendScript(new URL('order-drawer-pc.js?v=20261007-tablet-side', projectRoot).href);
+            appendScript(new URL('order-drawer-pc.js?v=20261116-bundlelogo', projectRoot).href);
         }
         if (!hasScript('header-basket-lottie.js')) {
             appendScript(new URL('js/header-basket-lottie.js?v=20261012-allpages', assetsRoot).href);
@@ -388,6 +405,7 @@
 
     function mount() {
         if (mounted) return true;
+        installLockupStyle();
         var templateSource = window.BrandedPcHeaderTemplate;
         var existingHeader = document.querySelector('.site-header');
         if (!templateSource || !existingHeader) return false;

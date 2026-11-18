@@ -1,4 +1,4 @@
-/* Pages that keep their own header on PC: the home mobile header, menu and bottom nav below 700px only. */
+/* Pages that keep their own header on PC: the home mobile header and bottom nav below 700px only. */
 @media (max-width: 699px) {
     /* Not .header-with-promo: on PC-header pages that class is the PC wrapper and gets hidden on mobile. */
     .mobile-chrome-header {
@@ -33,8 +33,6 @@
 
 @media (min-width: 700px) {
     .mobile-chrome-header,
-    body.mobile-chrome .slide-menu,
-    body.mobile-chrome .menu-overlay,
     body.mobile-chrome .bottom-nav {
         display: none !important;
     }

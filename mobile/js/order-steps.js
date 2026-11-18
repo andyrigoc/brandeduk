@@ -3,8 +3,11 @@
 (function () {
     'use strict';
 
+    // Bundle colour step uses the 5-step bundle bar. Never paint Product / Colour / Quantity / Customise.
+    if (/[?&]bundleBuild=1(?:&|$)/.test(location.search)) return;
+
     var root = document.getElementById('orderSteps');
-    if (!root) return;
+    if (!root || root.getAttribute('data-bundle-sequence') === '1') return;
 
     var colourPicked = false;
     var lastKey = '';

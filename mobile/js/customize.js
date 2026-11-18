@@ -136,20 +136,15 @@
     // Resolve at request time so api-config.js (loaded after this file) can point
     // local preview at the CORS proxy. Production still uses api.brandeduk.com.
     function brandedApiBase() {
-        var host = (window.location && window.location.hostname) || '';
-        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
-        // Local preview cannot call api.brandeduk.com (403). Use the CORS proxy
-        // even if a cached api-config.js still points at the production host.
-        if (isLocal && window.API_USE_LOCAL === true) {
-            return 'http://localhost:3004/api';
-        }
-        if (isLocal && window.API_USE_LOCAL_PROXY !== false) {
-            return 'http://127.0.0.1:3005/api';
-        }
+        // Same host the rest of the site uses. Local preview is same-origin
+        // /__api (npm run dev). Port 3005 is not that proxy, so product photos
+        // never arrived and the page kept the hoodie colour fallback.
         var root = (typeof window.resolveBrandedApiBase === 'function')
             ? window.resolveBrandedApiBase()
             : (window.API_BASE_URL || 'https://api.brandeduk.com');
-        return String(root || 'https://api.brandeduk.com').replace(/\/+$/, '') + '/api';
+        root = String(root || 'https://api.brandeduk.com').replace(/\/+$/, '');
+        if (/\/api$/i.test(root)) return root;
+        return root + '/api';
     }
     const CUSTOMIZATION_CONFIG_CACHE = new Map();
     const CUSTOMIZATION_CONFIGS = new Map();
@@ -1885,9 +1880,12 @@
 
                     if (detailRes.status === 'fulfilled' && detailRes.value.ok) {
                         productData = await detailRes.value.json();
-                        // CRITICAL: API detail endpoint doesn't return top-level 'image' (model shot)
-                        // Preserve it from the cached shop data if available
-                        if (!productData.image && cachedData && cachedData.image) {
+                        // The detail endpoint often has no hero image. Only reuse the
+                        // shop cache when it is the same product. A previous cap must
+                        // not become the jacket photo.
+                        const cachedCode = cachedData && (cachedData.code || cachedData.productCode || cachedData.sku);
+                        const sameCachedProduct = cachedCode && String(cachedCode).toUpperCase() === String(productCode).toUpperCase();
+                        if (!productData.image && sameCachedProduct && cachedData.image) {
                             productData.image = cachedData.image;
                             debugLog('🖼️ Preserved model image from shop data:', productData.image);
                         }
@@ -1901,7 +1899,7 @@
                     if (listingRes.status === 'fulfilled' && listingRes.value.ok) {
                         const listingData = await listingRes.value.json();
                         const items = listingData.items || listingData.products || [];
-                        listingProduct = items.find(p => p.code === productCode) || items[0] || null;
+                        listingProduct = items.find(p => String(p.code || p.productCode || '').toUpperCase() === String(productCode).toUpperCase()) || null;
                     }
 
                     if (productData && listingProduct && !productData.variants?.length) {
@@ -1919,9 +1917,11 @@
                         if (!productData.image && listingProduct.image) {
                             productData.image = listingProduct.image;
                         }
-                    } else if (!productData && listingProduct) {
+                    } else if (!productData && listingProduct && String(listingProduct.code || '').toUpperCase() === String(productCode).toUpperCase()) {
                         productData = listingProduct;
-                        if (!productData.image && cachedData && cachedData.image) {
+                        const cachedCode = cachedData && (cachedData.code || cachedData.productCode || cachedData.sku);
+                        const sameCachedProduct = cachedCode && String(cachedCode).toUpperCase() === String(productCode).toUpperCase();
+                        if (!productData.image && sameCachedProduct && cachedData.image) {
                             productData.image = cachedData.image;
                         }
                         // Use listing image as main image for direct links (no cached shop data)
@@ -1932,7 +1932,9 @@
                     }
 
                     if (productData) {
-                        if (cachedData) {
+                        const cachedCode = cachedData && (cachedData.code || cachedData.productCode || cachedData.sku);
+                        const sameCachedProduct = cachedCode && String(cachedCode).toUpperCase() === String(productCode).toUpperCase();
+                        if (sameCachedProduct && cachedData) {
                             if (cachedData.color) productData.color = cachedData.color;
                             if (cachedData.colorHex) productData.colorHex = cachedData.colorHex;
                             if (!productData.productType && cachedData.productType) productData.productType = cachedData.productType;
@@ -1956,6 +1958,7 @@
             if (!productData) {
                 // No product data available — leave default state (fallback product)
                 debugWarn('?? No product data available, using fallback');
+                document.documentElement.classList.add('bundle-build-live');
                 return false;
             }
 
@@ -2100,6 +2103,7 @@
             return true;
         } catch (e) {
             debugWarn('Unexpected error loading product:', e);
+            document.documentElement.classList.add('bundle-build-live');
             return false;
         }
     }
@@ -2156,8 +2160,11 @@
                 mainLogoOverlayImg.src = '';
             }
             
-            // Update gallery thumbnails - show different color images
-            renderColorThumbnails();
+            // The hero update above does not touch #colorOptions. Rebuild the swatches
+            // from the product just loaded, or a bundle step change keeps the previous
+            // garment's colour photos and "Selected" name on screen.
+            if (document.getElementById('colorOptions')) renderColorButtons();
+            else renderColorThumbnails();
 
             // Color count
             const colorCount = document.querySelector('.color-count');
@@ -2181,8 +2188,8 @@
                         const last = sizes[sizes.length - 1];
                         specs.push(`${first}-${last}`);
                     }
-                } else {
-                    specs.push('S-5XL'); // Fallback
+                } else if (!/[?&]bundleBuild=1(?:&|$)/.test(location.search)) {
+                    specs.push('S-5XL'); // Standalone customiser only. A bundle step omits a missing range.
                 }
                 
                 // Colors count
@@ -2430,6 +2437,9 @@
             }
         } catch (e) {
             debugWarn('Failed to refresh product DOM', e);
+        }
+        if (document.documentElement.classList.contains('bundle-build')) {
+            document.documentElement.classList.add('bundle-build-live');
         }
     }
 
@@ -3040,6 +3050,7 @@
             debugWarn('Early product load failed, continuing with fallback', e);
             applyFreshItemSessionIfNeeded();
             restoreCustomizationState();
+            document.documentElement.classList.add('bundle-build-live');
         }
 
         // Check if coming from shop page with selected color (apply after loading product)
@@ -4809,7 +4820,21 @@
         colorOptions.addEventListener('click', (e) => {
             const btn = e.target.closest('.color-btn');
             if (!btn) return;
-            
+
+            // Bundle colour step: select the tapped colour and open Select sizes
+            // immediately. A tap on the colour that is already selected still
+            // opens the sheet. Nothing here runs on page load.
+            if (readBundleBuild()) {
+                if (btn.dataset.color !== state.selectedColor) {
+                    persistBundleColourDraft();
+                    applyColorChange(btn);
+                    loadBundleSizesForSelectedColour();
+                    refreshSizeSummary();
+                }
+                openSizePicker();
+                return;
+            }
+
             // Check if same color is clicked
             if (btn.dataset.color === state.selectedColor) return;
 
@@ -4977,6 +5002,7 @@
         if (selectedColorEl) {
             selectedColorEl.textContent = colorData.name;
         }
+        renderSizePickerFacts();
     }
 
     // Apply color change
@@ -5060,6 +5086,18 @@
      */
     function scrollMobileCustomizeAfterColorPick() {
         if (!isCustomizeTouchViewport()) return;
+
+        // The bundle detour hides the ATC bar used as the anchor below.
+        if (readBundleBuild()) {
+            const scrollToBundleSizes = function () {
+                scrollBundleToSection(document.getElementById('sizeQtySection'));
+            };
+            requestAnimationFrame(function () {
+                requestAnimationFrame(scrollToBundleSizes);
+            });
+            setTimeout(scrollToBundleSizes, 380);
+            return;
+        }
 
         const scrollToQtyAnchor = function () {
             const totalBar = document.querySelector('.qty-total-bar');
@@ -5278,6 +5316,45 @@
             
             // Add click handler to change main image and selected color
             thumbButton.addEventListener('click', () => {
+                // Bundle build: same persist → change → load → open path as .color-btn clicks,
+                // so a gallery tap cannot re-attribute the previous colour's sizes.
+                if (readBundleBuild()) {
+                    if (color.id !== state.selectedColor) {
+                        persistBundleColourDraft();
+                        const swatch = document.querySelector('#colorOptions .color-btn[data-color="' + color.id + '"]');
+                        if (swatch) {
+                            applyColorChange(swatch);
+                        } else {
+                            state.selectedColor = color.id;
+                            state.selectedColorName = color.name;
+                            state.selectedColorImage = color.image;
+                            const mainImg = document.getElementById('mainImage');
+                            if (mainImg && color.image) {
+                                mainImg.src = '';
+                                const cacheBuster = '_t=' + Date.now();
+                                mainImg.src = color.image + (color.image.includes('?') ? '&' : '?') + cacheBuster;
+                                mainImg.alt = `${state.product?.name || 'Product'} - ${color.name}`;
+                            }
+                            syncColorSelectionUI(color.id);
+                            applyGarmentColorToLogoPreview();
+                            applyGarmentColorToPositionPreviews();
+                            updatePricingSummary();
+                        }
+                        loadBundleSizesForSelectedColour();
+                        refreshSizeSummary();
+                        if (navigator.vibrate) navigator.vibrate(10);
+                    } else {
+                        syncColorSelectionUI(color.id);
+                    }
+                    openSizePicker();
+                    return;
+                }
+
+                if (color.id === state.selectedColor) {
+                    syncColorSelectionUI(color.id);
+                    return;
+                }
+
                 state.selectedColor = color.id;
                 state.selectedColorName = color.name;
                 state.selectedColorImage = color.image;
@@ -5515,6 +5592,7 @@
 
     // === Size picker popup: every size of a multi-size product in one step ===
     const SIZE_PICKER_MAX_QTY = 999;
+    let bundleAdvanceTimer = null;
     let sizePickerDraft = {};
     let sizePickerBodyOverflow = '';
 
@@ -5577,7 +5655,10 @@
     // customize.html's order summary edits state.sizeQuantities directly; mirror it in the size section.
     function refreshSizeSummary() {
         const container = document.querySelector('.size-qty-compact');
-        if (!container || isOneSizeProduct()) return;
+        if (!container) return;
+        // Standalone one-size products use the inline quantity row. Bundle steps still
+        // rewrite this summary, otherwise the previous garment's sizes stay visible.
+        if (isOneSizeProduct() && !readBundleBuild()) return;
         renderSizeSummary(container);
         const totalSpan = document.getElementById('totalQty');
         if (totalSpan) totalSpan.textContent = state.quantity || 0;
@@ -5593,16 +5674,24 @@
         dialog.setAttribute('aria-labelledby', 'sizePickerTitle');
         dialog.innerHTML = `
             <div class="size-picker__header">
-                <div>
+                <div class="size-picker__copy">
                     <h3 class="size-picker__title" id="sizePickerTitle">Select sizes</h3>
                     <p class="size-picker__colour" hidden></p>
+                    <button type="button" class="size-picker__change-colour" hidden>Change colour</button>
                 </div>
-                <button type="button" class="size-picker__close" aria-label="Close" autofocus>
+                <div class="size-picker__aside">
+                    <div class="size-picker__colour-box" hidden></div>
+                    <div class="size-picker__identity" hidden>
+                        <span class="size-picker__brand"></span>
+                        <span class="size-picker__code"></span>
+                    </div>
+                    <button type="button" class="size-picker__close" aria-label="Close" autofocus>
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                         <line x1="18" y1="6" x2="6" y2="18"/>
                         <line x1="6" y1="6" x2="18" y2="18"/>
                     </svg>
-                </button>
+                    </button>
+                </div>
             </div>
             <ul class="size-picker__list"></ul>
             <div class="size-picker__footer">
@@ -5611,14 +5700,45 @@
             </div>`;
         document.body.appendChild(dialog);
 
-        // Every way of closing keeps the quantities, so a stray tap never loses them.
+        // Keep quantities on every close path (X, backdrop, Escape). Never clear them.
         const closeSizePicker = () => {
+            persistBundleColourDraft();
             commitSizePicker();
-            dialog.close();
+            window.clearTimeout(bundleAdvanceTimer);
+            bundleAdvanceTimer = null;
+            if (dialog.open) dialog.close();
         };
         dialog.querySelector('.size-picker__close').addEventListener('click', closeSizePicker);
+        dialog.querySelector('.size-picker__change-colour').addEventListener('click', () => {
+            persistBundleColourDraft();
+            commitSizePicker();
+            window.clearTimeout(bundleAdvanceTimer);
+            bundleAdvanceTimer = null;
+            if (dialog.open) dialog.close();
+            scrollBundleToColorSection();
+        });
         dialog.querySelector('.size-picker__done').addEventListener('click', () => {
-            closeSizePicker();
+            const job = readBundleBuild();
+            persistBundleColourDraft();
+            commitSizePicker();
+            window.clearTimeout(bundleAdvanceTimer);
+            bundleAdvanceTimer = null;
+            if (job) {
+                const required = bundleRequiredQty();
+                const total = bundleAllocatedTotal();
+                if (dialog.open) dialog.close();
+                if (total < required) {
+                    // Under target: leave the modal and let the user pick another colour.
+                    scrollBundleToColorSection();
+                    return;
+                }
+                if (total === required) {
+                    continueBundleBuild();
+                    return;
+                }
+                return;
+            }
+            if (dialog.open) dialog.close();
             // Continue confirms the sizes: add them to the basket and show the "Added to basket" popup.
             if (state.quantity > 0) addSelectionToBasket();
         });
@@ -5633,7 +5753,10 @@
         });
         // Native close requests (e.g. the Android back gesture) bypass the handlers above.
         dialog.addEventListener('close', () => {
-            if (!dialog.open) commitSizePicker();
+            persistBundleColourDraft();
+            commitSizePicker();
+            window.clearTimeout(bundleAdvanceTimer);
+            bundleAdvanceTimer = null;
         });
 
         const list = dialog.querySelector('.size-picker__list');
@@ -5641,8 +5764,16 @@
             const step = e.target.closest('.size-picker__step');
             if (!step) return;
             const row = step.closest('.size-picker__row');
-            const qty = (sizePickerDraft[row.dataset.size] || 0) + Number(step.dataset.step);
+            const delta = Number(step.dataset.step);
+            const qty = (sizePickerDraft[row.dataset.size] || 0) + delta;
+            const required = bundleRequiredQty();
+            const otherColours = bundleOtherColourTotal();
+            const nextCurrent = sizePickerTotal() - (sizePickerDraft[row.dataset.size] || 0) + Math.max(0, qty);
             if (qty < 0 || qty > SIZE_PICKER_MAX_QTY) return;
+            if (required && (otherColours + nextCurrent) > required) {
+                if (delta > 0) shakeSizePickerStep(step);
+                return;
+            }
             row.querySelector('.size-picker__qty').value = String(qty);
             setSizePickerQty(row, qty);
             if (navigator.vibrate) navigator.vibrate(10);
@@ -5650,8 +5781,16 @@
         list.addEventListener('input', (e) => {
             if (!e.target.matches('.size-picker__qty')) return;
             const digits = e.target.value.replace(/\D/g, '').replace(/^0+(?=\d)/, '').slice(0, 3);
-            if (digits !== e.target.value) e.target.value = digits;
-            setSizePickerQty(e.target.closest('.size-picker__row'), parseInt(digits, 10) || 0);
+            let qty = parseInt(digits, 10) || 0;
+            const required = bundleRequiredQty();
+            if (required) {
+                const row = e.target.closest('.size-picker__row');
+                const others = sizePickerTotal() - (sizePickerDraft[row.dataset.size] || 0);
+                const room = Math.max(0, required - bundleOtherColourTotal() - others);
+                qty = Math.max(0, Math.min(qty, room));
+            }
+            if (String(qty) !== e.target.value) e.target.value = String(qty);
+            setSizePickerQty(e.target.closest('.size-picker__row'), qty);
         });
         list.addEventListener('focusin', (e) => {
             if (e.target.matches('.size-picker__qty')) e.target.select();
@@ -5718,33 +5857,417 @@
         updateSizePickerTotal();
     }
 
+    function bundleRequiredQty() {
+        const job = readBundleBuild();
+        if (!job) return 0;
+        const item = job.components[job.index];
+        return Number(item && item.qty) || 0;
+    }
+
+    function sizePickerTotal() {
+        return Object.values(sizePickerDraft).reduce((sum, qty) => sum + qty, 0);
+    }
+
+    function currentBundleColourName() {
+        return String(state.selectedColorName || '').trim();
+    }
+
+    function bundlePicksForCurrentItem() {
+        const job = readBundleBuild();
+        if (!job) return [];
+        const item = job.components[job.index];
+        if (!item) return [];
+        return Array.isArray(job.picks[item.code]) ? job.picks[item.code] : [];
+    }
+
+    function bundleOtherColourTotal() {
+        const colour = currentBundleColourName().toLowerCase();
+        return bundlePicksForCurrentItem().reduce(function (sum, row) {
+            if (String(row.colour || '').trim().toLowerCase() === colour) return sum;
+            return sum + (Number(row.quantity) || 0);
+        }, 0);
+    }
+
+    function bundleAllocatedTotal() {
+        // Live draft for the active colour + stored rows for every other colour.
+        return bundleOtherColourTotal() + sizePickerTotal();
+    }
+
+    function persistBundleColourDraft() {
+        const job = readBundleBuild();
+        if (!job) return;
+        const item = job.components[job.index];
+        if (!item) return;
+        const colour = currentBundleColourName();
+        if (!colour) return;
+        const image = state.selectedColorImage || (state.product && (state.product.image || state.product.imageUrl)) || '';
+        const others = bundlePicksForCurrentItem().filter(function (row) {
+            return String(row.colour || '').trim().toLowerCase() !== colour.toLowerCase();
+        });
+        const rows = Object.entries(sizePickerDraft)
+            .filter(function (entry) { return Number(entry[1]) > 0; })
+            .map(function (entry) {
+                return { colour: colour, size: entry[0], quantity: Number(entry[1]), image: image };
+            });
+        job.picks[item.code] = others.concat(rows);
+        if (!job.thumbs) job.thumbs = {};
+        if (image) job.thumbs[item.code] = image;
+        try { sessionStorage.setItem('buk-bundle-build', JSON.stringify(job)); } catch (error) { /* ignore */ }
+    }
+
+    function loadBundleSizesForSelectedColour() {
+        const colour = currentBundleColourName().toLowerCase();
+        const next = {};
+        bundlePicksForCurrentItem().forEach(function (row) {
+            if (String(row.colour || '').trim().toLowerCase() !== colour) return;
+            next[row.size] = Number(row.quantity) || 0;
+        });
+        state.sizeQuantities = getPositiveSizeQuantities(next);
+        state.quantity = bundlePicksForCurrentItem().reduce(function (sum, row) {
+            return sum + (Number(row.quantity) || 0);
+        }, 0);
+        sizePickerDraft = getPositiveSizeQuantities(state.sizeQuantities);
+    }
+
+    function shakeSizePickerStep(step) {
+        const target = step.closest('.size-picker__stepper') || step;
+        target.classList.remove('is-shaking');
+        void target.offsetWidth;
+        target.classList.add('is-shaking');
+        window.setTimeout(function () { target.classList.remove('is-shaking'); }, 420);
+    }
+
     function updateSizePickerTotal() {
-        const total = Object.values(sizePickerDraft).reduce((sum, qty) => sum + qty, 0);
-        getSizePickerDialog().querySelector('.size-picker__total strong').textContent = String(total);
+        const required = bundleRequiredQty();
+        const total = required ? bundleAllocatedTotal() : sizePickerTotal();
+        const dialog = getSizePickerDialog();
+        const full = Boolean(required) && total >= required;
+        dialog.classList.toggle('is-qty-full', full);
+        dialog.querySelectorAll('.size-picker__step[data-step="1"]').forEach(function (button) {
+            button.setAttribute('aria-disabled', full ? 'true' : 'false');
+        });
+        dialog.querySelector('.size-picker__total strong').textContent = required ? (total + '/' + required) : String(total);
+        dialog.querySelector('.size-picker__total strong').classList.toggle('is-met', Boolean(required) && total === required);
+        const done = dialog.querySelector('.size-picker__done');
+        if (!done) return;
+        const job = readBundleBuild();
+        if (!job || !required) {
+            done.disabled = false;
+            return;
+        }
+        const last = job.index >= job.components.length - 1;
+        // Always keep an explicit action: change colour while under target, or confirm when met.
+        // Never auto-advance — the shopper must tap the button.
+        done.disabled = false;
+        if (total < required) {
+            done.textContent = 'Change colour';
+        } else if (!last) {
+            done.textContent = 'Next item';
+            done.insertAdjacentHTML('beforeend', ' <span aria-hidden="true">→</span>');
+        } else {
+            // Colours are done — next stop is the configurator Logo step (explicit tap only).
+            done.textContent = 'Continue to logo';
+            done.insertAdjacentHTML('beforeend', ' <span aria-hidden="true">→</span>');
+        }
+        window.clearTimeout(bundleAdvanceTimer);
+        bundleAdvanceTimer = null;
+    }
+
+    function renderBundleBuilderBar(job) {
+        if (!job) return;
+        let bar = document.getElementById('bundleBuilderBar');
+        if (!bar) {
+            bar = document.createElement('section');
+            bar.id = 'bundleBuilderBar';
+            bar.className = 'bundle-builder-bar';
+            bar.setAttribute('aria-label', 'Build your bundle');
+            const crumbs = document.getElementById('siteBreadcrumbs');
+            const steps = document.getElementById('orderSteps');
+            const anchor = crumbs || steps;
+            if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(bar, anchor);
+            else document.body.insertBefore(bar, document.body.firstChild);
+        }
+        const labels = ['Included', 'Groups', 'Colours & sizes', 'Logo', 'Review'];
+        const current = 2; // product colour/size detour is always the Colours & sizes step
+        bar.innerHTML =
+            '<div class="bundle-builder-bar__head">' +
+                '<div><p class="bundle-builder-bar__kicker">BUILD YOUR BUNDLE</p>' +
+                '<h2 class="bundle-builder-bar__title"></h2></div>' +
+                '<button type="button" class="bundle-builder-bar__close" aria-label="Close bundle builder">' +
+                    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">' +
+                        '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>' +
+                    '</svg>' +
+                '</button>' +
+            '</div>' +
+            '<ol class="bundle-builder-bar__steps" aria-label="Configuration progress">' +
+                labels.map(function (label, index) {
+                    const isCurrent = index === current;
+                    const isDone = index < current;
+                    return '<li class="bundle-builder-bar__step' + (isCurrent ? ' is-current' : '') + (isDone ? ' is-done' : '') + '">' +
+                        '<span class="bundle-builder-bar__num">' + (isDone ? '✓' : (index + 1)) + '</span>' +
+                        '<span class="bundle-builder-bar__label">' + label + '</span></li>';
+                }).join('') +
+            '</ol>';
+        bar.querySelector('.bundle-builder-bar__title').textContent = job.title || 'Bundle';
+        bar.querySelector('.bundle-builder-bar__close').addEventListener('click', function () {
+            const slug = job.slug || job.bundleId || '';
+            if (job.returnToBasket) {
+                window.location.href = '/basket.html#orderSummary';
+                return;
+            }
+            window.location.href = '/bundle-configurator/?force=mobile' + (slug ? '&bundle=' + encodeURIComponent(slug) : '');
+        });
+    }
+
+    function renderBundleSequence(job) {
+        const list = document.getElementById('orderSteps');
+        if (!list || !job) return;
+        // Full Build Your Bundle bar replaces the product order-steps strip.
+        list.hidden = true;
+        list.setAttribute('data-bundle-sequence', '1');
+        list.setAttribute('aria-hidden', 'true');
+        renderBundleBuilderBar(job);
+    }
+
+    function scrollBundleToSection(section) {
+        if (!section) return;
+        const bar = document.getElementById('bundleBuilderBar');
+        const header = document.querySelector('.mobile-header, header');
+        const offset = ((bar && bar.getBoundingClientRect().height) || 0) +
+            ((header && header.getBoundingClientRect().height) || 0) + 12;
+        const top = Math.max(0, Math.round(section.getBoundingClientRect().top + window.pageYOffset - offset));
+        if (Math.abs(top - window.pageYOffset) < 4) return;
+        window.scrollTo({ top: top, left: 0, behavior: 'smooth' });
+    }
+
+    function scrollBundleToColorSection() {
+        const colours = document.getElementById('colorOptions') || document.querySelector('.color-options');
+        if (!colours) return;
+        scrollBundleToSection(colours.closest('section') || colours);
+    }
+
+    function scheduleBundleColorAutoscroll() {
+        let tries = 0;
+        const timer = window.setInterval(function () {
+            tries += 1;
+            const colours = document.getElementById('colorOptions');
+            const ready = colours && colours.querySelector('[data-color], .color-btn');
+            if (!ready && tries < 40) return;
+            window.clearInterval(timer);
+            if (!ready) return;
+            // Product colours are ready — restore any in-progress multi-colour sizes.
+            loadBundleSizesForSelectedColour();
+            refreshSizeSummary();
+            // The garment photo is hidden, so the colour grid already sits under the
+            // breadcrumb, title, and spec line. Scrolling the grid to the top would
+            // hide that header. Explicit "Change colour" still uses scrollBundleToColorSection.
+        }, 250);
+    }
+
+    function selectBundleItemColour() {
+        const picks = bundlePicksForCurrentItem();
+        const row = picks.length ? picks[picks.length - 1] : null;
+        const wanted = row && String(row.colour || '').trim().toLowerCase();
+        if (!wanted) return;
+        const match = (PRODUCT_COLORS || []).find(function (color) {
+            return String(color.name || '').trim().toLowerCase() === wanted;
+        });
+        if (!match) return;
+        state.selectedColor = match.id;
+        state.selectedColorName = match.name;
+        state.selectedColorImage = match.image || match.thumb || state.selectedColorImage;
+    }
+
+    function refreshOpenSizePickerForBundleItem() {
+        const dialog = document.getElementById('sizePickerDialog');
+        if (!dialog) return;
+        delete dialog.dataset.sizePickerFacts;
+        if (dialog.open) {
+            const list = dialog.querySelector('.size-picker__list');
+            if (list) list.replaceChildren(...getSizePickerSizes().map(createSizePickerRow));
+            const colour = dialog.querySelector('.size-picker__colour');
+            if (colour) {
+                colour.textContent = state.selectedColorName ? 'Colour: ' + state.selectedColorName : '';
+                colour.hidden = !state.selectedColorName;
+            }
+            updateSizePickerTotal();
+        }
+        renderSizePickerFacts();
+    }
+
+    function swapBundleItem(job, next) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('code', next.code);
+        url.searchParams.set('bundleBuild', '1');
+        history.replaceState(null, '', url);
+        sessionStorage.removeItem('selectedProductData');
+        sessionStorage.removeItem('selectedColorName');
+        sessionStorage.removeItem('selectedColorUrl');
+        state.sizeQuantities = {};
+        state.quantity = 0;
+        sizePickerDraft = {};
+        state.selectedColor = null;
+        state.selectedColorName = null;
+        state.selectedColorImage = null;
+        const summary = document.getElementById('sizeSummary');
+        if (summary) {
+            summary.textContent = '';
+            summary.hidden = true;
+        }
+        const totalSpan = document.getElementById('totalQty');
+        if (totalSpan) totalSpan.textContent = '0';
+        const swapToken = (swapBundleItem.token = (swapBundleItem.token || 0) + 1);
+        loadProductFromSessionOrApi().then(function () {
+            if (swapToken !== swapBundleItem.token) return;
+            const paint = function () {
+                selectBundleItemColour();
+                refreshProductDOM();
+                renderBundleSequence(job);
+                loadBundleSizesForSelectedColour();
+                refreshSizeSummary();
+                refreshOpenSizePickerForBundleItem();
+                const note = document.getElementById('bundleBuildNote');
+                if (note) note.textContent = 'Bundle: choose colour and sizes for all ' + next.qty + ' × ' + next.code + '. Item ' + (job.index + 1) + ' of ' + job.components.length + '.';
+                scheduleBundleColorAutoscroll();
+                window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+            };
+            // Paint in place. A root view transition keeps the previous garment's
+            // colour photos on screen for the zoom, and that snapshot takes the tap
+            // (pointer-events stay auto, elementFromPoint misses .color-btn). The
+            // ring never moves to the swatch the shopper tapped.
+            paint();
+        });
     }
 
     function commitSizePicker() {
         document.body.style.overflow = sizePickerBodyOverflow;
-        const current = state.sizeQuantities || {};
-        const draftSizes = Object.keys(sizePickerDraft);
-        const unchanged = draftSizes.length === Object.keys(current).length &&
-            draftSizes.every(size => sizePickerDraft[size] === current[size]);
-        if (unchanged) return;
-        state.sizeQuantities = { ...sizePickerDraft };
+        state.sizeQuantities = { ...getPositiveSizeQuantities(sizePickerDraft) };
+        if (readBundleBuild()) {
+            // Keep page total as the full multi-colour allocation for this garment.
+            state.quantity = bundlePicksForCurrentItem().reduce(function (sum, row) {
+                return sum + (Number(row.quantity) || 0);
+            }, 0) || Object.values(state.sizeQuantities).reduce(function (sum, qty) { return sum + qty; }, 0);
+            refreshSizeSummary();
+            const totalSpan = document.getElementById('totalQty');
+            if (totalSpan) totalSpan.textContent = state.quantity || 0;
+            return;
+        }
         updateSizeQuantities();
+    }
+
+    function sizePickerColourRecord() {
+        const name = String(state.selectedColorName || '').trim();
+        const match = (PRODUCT_COLORS || []).find(function (color) {
+            return color.id === state.selectedColor ||
+                (name && String(color.name || '').trim().toLowerCase() === name.toLowerCase());
+        });
+        return {
+            name: name || (match && match.name) || '',
+            image: (match && (match.image || match.thumb)) || state.selectedColorImage || '',
+            hex: (match && match.hex) || ''
+        };
+    }
+
+    function sizePickerColourHex(record) {
+        if (isUsableColorHex(record.hex)) return record.hex;
+        if (!record.name || !window.BrandedColorHex || typeof BrandedColorHex.lookup !== 'function') return '';
+        const code = state.product && state.product.code;
+        const found = BrandedColorHex.lookup(record.name, code, record.image);
+        return isUsableColorHex(found) ? found : '';
+    }
+
+    function sizePickerIdentity() {
+        const product = state.product || {};
+        const raw = product.rawData || {};
+        const job = readBundleBuild();
+        const item = job && Array.isArray(job.components) ? job.components[job.index] : null;
+        const code = String((item && item.code) || product.code || product.sku || raw.code || '').trim();
+        let brand = String(product.brand || product.brand_name || raw.brand || raw.brand_name || '').trim();
+        if (['absolute', 'ralawise'].some(function (blocked) { return brand.toLowerCase().includes(blocked); })) {
+            brand = '';
+        }
+        return { brand: brand, code: code };
+    }
+
+    function paintSizePickerSwatch(box, hex) {
+        box.replaceChildren();
+        if (!hex) {
+            box.hidden = true;
+            box.style.backgroundColor = '';
+            box.classList.remove('is-swatch');
+            return;
+        }
+        box.style.backgroundColor = hex;
+        box.classList.add('is-swatch');
+        box.hidden = false;
+    }
+
+    function renderSizePickerFacts() {
+        const dialog = document.getElementById('sizePickerDialog');
+        if (!dialog) return;
+        const colourBox = dialog.querySelector('.size-picker__colour-box');
+        const identity = dialog.querySelector('.size-picker__identity');
+        if (!colourBox || !identity) return;
+
+        const record = sizePickerColourRecord();
+        const hex = sizePickerColourHex(record);
+        const identityText = sizePickerIdentity();
+        const signature = [record.image, hex, record.name, identityText.brand, identityText.code].join('|');
+        if (dialog.dataset.sizePickerFacts === signature) return;
+        dialog.dataset.sizePickerFacts = signature;
+
+        colourBox.classList.remove('is-swatch');
+        colourBox.style.backgroundColor = hex || '';
+        colourBox.replaceChildren();
+        colourBox.title = record.name || '';
+        if (record.image) {
+            const img = document.createElement('img');
+            img.className = 'size-picker__colour-img';
+            img.alt = '';
+            img.src = record.image;
+            colourBox.hidden = false;
+            colourBox.appendChild(img);
+            img.addEventListener('error', function () {
+                paintSizePickerSwatch(colourBox, hex);
+                dialog.dataset.sizePickerFacts = [hex, record.name, identityText.brand, identityText.code].join('|');
+            });
+        } else {
+            paintSizePickerSwatch(colourBox, hex);
+        }
+
+        const brandEl = identity.querySelector('.size-picker__brand');
+        const codeEl = identity.querySelector('.size-picker__code');
+        if (brandEl) {
+            brandEl.textContent = identityText.brand;
+            brandEl.hidden = !identityText.brand;
+        }
+        if (codeEl) {
+            codeEl.textContent = identityText.code;
+            codeEl.hidden = !identityText.code;
+        }
+        identity.hidden = !identityText.brand && !identityText.code;
+        identity.title = [identityText.brand, identityText.code].filter(Boolean).join(' · ');
     }
 
     function openSizePicker() {
         const dialog = getSizePickerDialog();
         if (dialog.open) return;
 
-        sizePickerDraft = getPositiveSizeQuantities(state.sizeQuantities);
+        if (readBundleBuild()) loadBundleSizesForSelectedColour();
+        else sizePickerDraft = getPositiveSizeQuantities(state.sizeQuantities);
+
         const list = dialog.querySelector('.size-picker__list');
         list.replaceChildren(...getSizePickerSizes().map(createSizePickerRow));
 
         const colour = dialog.querySelector('.size-picker__colour');
         colour.textContent = state.selectedColorName ? 'Colour: ' + state.selectedColorName : '';
         colour.hidden = !state.selectedColorName;
+        renderSizePickerFacts();
+        const changeColour = dialog.querySelector('.size-picker__change-colour');
+        const bundleJob = readBundleBuild();
+        if (changeColour) {
+            changeColour.hidden = !bundleJob;
+        }
         updateSizePickerTotal();
 
         sizePickerBodyOverflow = document.body.style.overflow;
@@ -6131,6 +6654,7 @@
                     
                     const method = badge.dataset.method; // 'embroidery' or 'print'
                     if (!method) return;
+                    if (method === 'embroidery' && /[?&]bundleBuild=1(?:&|$)/.test(location.search)) return;
                     
                     // Check if this is a POA badge (disabled for embroidery on large positions)
                     const isPOA = badge.classList.contains('poa-badge') || badge.querySelector('.price-value')?.textContent === 'POA';
@@ -9156,6 +9680,10 @@
         
         // --- Method picker mini popup ---
         function _showMethodPicker(position, itemIndex) {
+            if (/[?&]bundleBuild=1(?:&|$)/.test(location.search)) {
+                openDesignModal(position, 'print', 'logo');
+                return;
+            }
             // Remove existing picker if any
             let existing = document.getElementById('methodPickerOverlay');
             if (existing) existing.remove();
@@ -12021,17 +12549,22 @@
     document.addEventListener('DOMContentLoaded', () => {
         const backBtn = document.getElementById('breadcrumbBackBtn');
         if (backBtn) {
-            backBtn.addEventListener('click', () => {
+            backBtn.addEventListener('click', (event) => {
+                // Bundle detour back is owned by breadcrumbs.js (natural history / Bundles path).
+                if (readBundleBuild()) return;
+
                 // Check if coming from basket customization
                 const returnTarget = sessionStorage.getItem('returnAfterCustomize');
                 
                 // If in iframe popup, close the popup
                 if (window.parent !== window && typeof window.parent.closeCustomizePopup === 'function') {
+                    event.preventDefault();
                     sessionStorage.removeItem('customizingBasketIndex');
                     sessionStorage.removeItem('returnAfterCustomize');
                     window.parent.closeCustomizePopup();
                 } else if (returnTarget === 'basket') {
                     // Navigate back to basket
+                    event.preventDefault();
                     sessionStorage.removeItem('customizingBasketIndex');
                     sessionStorage.removeItem('returnAfterCustomize');
                     window.location.href = '../basket.html';
@@ -12046,5 +12579,195 @@
             });
         }
     });
+
+    function readBundleBuild() {
+        if (!/[?&]bundleBuild=1(?:&|$)/.test(location.search)) return null;
+        try { return JSON.parse(sessionStorage.getItem('buk-bundle-build') || 'null'); }
+        catch (error) { return null; }
+    }
+
+    function applyBundleBuildChrome() {
+        const job = readBundleBuild();
+        if (!job) return;
+        // footer.js (loaded after this script) snaps to the top on window load, seconds after
+        // the colour autoscroll; this flag makes it skip that reset on the bundle detour.
+        window.__brandedScrollTopOnReload = true;
+        document.body.classList.add('bundle-build');
+        document.querySelectorAll('.price-emb, .key-badge.embroidery').forEach(node => {
+            node.hidden = true;
+            node.style.display = 'none';
+        });
+        renderBundleSequence(job);
+        loadBundleSizesForSelectedColour();
+        ['.pricing-section', '#galleryRelatedProducts', '#custRecommendationsSection', '.action-bar'].forEach(selector => {
+            document.querySelectorAll(selector).forEach(node => { node.hidden = true; node.style.display = 'none'; });
+        });
+        const item = job.components[job.index];
+        if (item && !document.getElementById('bundleBuildNote')) {
+            const note = document.createElement('p');
+            note.id = 'bundleBuildNote';
+            note.style.cssText = 'margin:12px 16px;padding:10px 12px;border-radius:10px;background:#eef3ff;color:#162447;font-weight:700;';
+            const place = job.components.length > 1 ? ' Item ' + (job.index + 1) + ' of ' + job.components.length + '.' : '';
+            note.textContent = 'Bundle: choose colour and sizes for all ' + item.qty + ' × ' + item.code + '.' + place;
+            const colorSection = document.querySelector('.color-options');
+            if (colorSection && colorSection.parentElement) colorSection.parentElement.insertBefore(note, colorSection);
+        }
+        scheduleBundleColorAutoscroll();
+        if (typeof window.updateBreadcrumbProduct === 'function' && item && item.code) {
+            window.updateBreadcrumbProduct(item.code);
+        }
+    }
+
+    function saveBundlePick(job) {
+        // Multi-colour allocations live in job.picks; merge the active colour draft into them.
+        persistBundleColourDraft();
+        const item = job.components[job.index];
+        if (!item) return;
+        const image = state.selectedColorImage || (state.product && (state.product.image || state.product.imageUrl)) || '';
+        if (!job.thumbs) job.thumbs = {};
+        if (image) job.thumbs[item.code] = image;
+        // Ensure quantity reflects every colour already stored for this garment.
+        state.quantity = (job.picks[item.code] || []).reduce(function (sum, row) {
+            return sum + (Number(row.quantity) || 0);
+        }, 0);
+    }
+
+    async function bundleLogoRecord() {
+        const src = typeof getLogoFromState === 'function' ? getLogoFromState() : '';
+        if (!src || src === window.location.href) return null;
+        const storage = window.BrandedQuoteStorage;
+        if (storage && typeof storage.persistLogo === 'function' && String(src).indexOf('data:image') === 0) {
+            try {
+                const result = await storage.persistLogo(src, 'bundle-logo.png');
+                const logoId = result && result.logoId ? result.logoId : '';
+                const ref = logoId && storage.refFor ? storage.refFor(logoId) : '';
+                return {
+                    filename: 'bundle-logo.png',
+                    logoId: logoId,
+                    ref: ref,
+                    logo: (result && /^https?:/i.test(result.url)) ? result.url : (ref || src),
+                    method: 'print',
+                    position: 'bundle',
+                    positionLabel: 'Bundle logo'
+                };
+            } catch (error) { /* keep the preview url */ }
+        }
+        return {
+            filename: 'bundle-logo.png',
+            logo: src,
+            method: 'print',
+            position: 'bundle',
+            positionLabel: 'Bundle logo'
+        };
+    }
+
+    async function commitBundleBuild(job) {
+        const pounds = (Number(job.price) || 0) / 100;
+        const chosenLines = [];
+        const allocations = {};
+        const thumbs = [];
+        job.components.forEach(component => {
+            const rows = job.picks[component.code] || [];
+            allocations[component.code] = rows;
+            const thumb = (job.thumbs && job.thumbs[component.code]) || '';
+            if (thumb && thumbs.indexOf(thumb) === -1) thumbs.push(thumb);
+            rows.forEach(row => {
+                chosenLines.push({
+                    code: component.code,
+                    label: (component.name || component.code) + ' · ' + row.colour + ' · ' + row.size,
+                    colour: row.colour,
+                    size: row.size,
+                    quantity: row.quantity,
+                    image: row.image || thumb
+                });
+            });
+        });
+        const logo = await bundleLogoRecord();
+        const entry = {
+            lineType: 'bundle',
+            id: 'bundle-' + job.bundleId + '-' + Date.now(),
+            name: job.title,
+            bundleId: job.bundleId,
+            bundleSlug: job.slug,
+            bundleNumber: job.bundleNumber || 0,
+            itemCount: Number(job.itemCount) || job.components.reduce(function (sum, component) { return sum + Number(component.qty || 0); }, 0),
+            currency: 'GBP',
+            vatExcluded: true,
+            price: pounds,
+            bundlePrice: pounds,
+            qty: 1,
+            image: thumbs[0] || '',
+            thumbs: thumbs,
+            chosenLines: chosenLines,
+            logos: logo ? [logo] : [],
+            selection: { allocations: allocations, logo: logo },
+            builderState: { allocations: allocations }
+        };
+        let basket = [];
+        try {
+            if (window.BrandedQuoteStorage && typeof window.BrandedQuoteStorage.loadBasket === 'function') {
+                basket = window.BrandedQuoteStorage.loadBasket() || [];
+            } else {
+                basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+            }
+        } catch (error) { basket = []; }
+        if (!Array.isArray(basket)) basket = [];
+        basket.push(entry);
+        if (window.BrandedQuoteStorage && typeof window.BrandedQuoteStorage.saveBasket === 'function') {
+            window.BrandedQuoteStorage.saveBasket(basket);
+        } else {
+            localStorage.setItem('quoteBasket', JSON.stringify(basket));
+        }
+        try { window.dispatchEvent(new Event('basketUpdated')); } catch (error) { /* ignore */ }
+        sessionStorage.removeItem('buk-bundle-build');
+    }
+
+    function continueBundleBuild() {
+        const job = readBundleBuild();
+        if (!job) return false;
+        const item = job.components[job.index];
+        const required = Number(item && item.qty) || 0;
+        saveBundlePick(job);
+        const total = (job.picks[item.code] || []).reduce(function (sum, row) {
+            return sum + (Number(row.quantity) || 0);
+        }, 0);
+        if (total !== required) {
+            // Under-target is a colour-change pause, not an error — keep picks and return.
+            try { sessionStorage.setItem('buk-bundle-build', JSON.stringify(job)); } catch (error) { /* ignore */ }
+            return true;
+        }
+        try { sessionStorage.setItem('buk-bundle-build', JSON.stringify(job)); } catch (error) { /* ignore */ }
+        if (job.index < job.components.length - 1) {
+            job.index += 1;
+            sessionStorage.setItem('buk-bundle-build', JSON.stringify(job));
+            swapBundleItem(job, job.components[job.index]);
+            return true;
+        }
+        // Explicit confirm only. Prefer returning to the configurator logo step when possible.
+        const slug = job.slug || job.bundleId || '';
+        try {
+            sessionStorage.setItem('buk-bundle-resume', JSON.stringify({
+                bundleId: job.bundleId,
+                slug: job.slug,
+                title: job.title,
+                price: job.price,
+                bundleNumber: job.bundleNumber || 0,
+                itemCount: job.itemCount,
+                components: job.components,
+                picks: job.picks,
+                thumbs: job.thumbs || {},
+                lineId: job.lineId || '',
+                method: job.method || '',
+                notes: job.notes || '',
+                logo: job.logo || null,
+                returnToBasket: !!job.returnToBasket,
+                resumeStep: 3
+            }));
+        } catch (error) { /* ignore */ }
+        window.location.href = '/bundle-configurator/?force=mobile&bundle=' + encodeURIComponent(slug) + '&resumeBuild=1';
+        return true;
+    }
+
+    applyBundleBuildChrome();
 
 })();

@@ -55,19 +55,19 @@
     <link rel="canonical" href="https://www.brandeduk.com/basket">
     <meta name="description" content="Review your quote basket and submit your custom workwear order. Add logos, adjust quantities, and get instant pricing for your branded clothing.">
     <title>Your Basket - BrandedUK</title>
-    <link rel="stylesheet" href="mobile/css/mobile.css?v=20261002-logocombo">
+    <link rel="stylesheet" href="mobile/css/mobile.css?v=20261116-nohamburger">
     <link rel="stylesheet" href="mobile/css/breadcrumbs.css?v=20260403d">
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20261002-logocombo">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20261002-logocombo">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/promo-bar.css?v=20260425a">
     <script src="brandedukv15-child/assets/js/pc-header-template.js?v=20261015-nodeals"></script>
-    <script src="brandedukv15-child/assets/js/pc-header.js?v=20261030-live-search"></script>
+    <script src="brandedukv15-child/assets/js/pc-header.js?v=20261117-lockup"></script>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie_light.min.js" media="(min-width: 700px)">
     <link rel="preload" as="fetch" href="brandedukv15-child/assets/images/ui/cart-icon-loader.json" crossorigin media="(min-width: 700px)">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/cart-lottie-icon.css?v=20260927-cartlottie2">
     <script src="brandedukv15-child/assets/js/cart-lottie-icon.js?v=20260927-cartlottie2" data-header-cart></script>
-    <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20261020-noclose">
+    <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20261116-slimchat">
 
     <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260102b">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -96,6 +96,20 @@
         @media (min-width: 700px) {
             body.basket-page .basket-content {
                 padding-top: 32px !important;
+            }
+        }
+
+        /* PC only: the basket under the blue bar rises into place; the header and ticker stay still.
+           #basketContent and #emptyBasket start hidden, so the rise plays when renderBasket() shows them.
+           Keep the fill "backwards": a transform left behind would trap position:fixed and sticky children. */
+        @media (min-width: 700px) and (prefers-reduced-motion: no-preference) {
+            @keyframes basket-content-rise {
+                from { transform: translateY(100vh); }
+                to { transform: none; }
+            }
+            body.basket-page #basketContent,
+            body.basket-page #emptyBasket {
+                animation: basket-content-rise 420ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
             }
         }
 
@@ -529,7 +543,13 @@
             .empty-basket { padding: 4px 0 0; }
             .empty-basket > :not(.empty-basket-mobile) { display: none; }
             .empty-basket-mobile { display: block; }
-            .ebm-illustration svg { display: block; width: 236px; max-width: 70%; margin: 0 auto 14px; }
+            .ebm-illustration img {
+                display: block;
+                width: 86%;
+                max-width: 360px;
+                height: auto;
+                margin: 4px auto 12px;
+            }
             .empty-basket .ebm-title {
                 margin: 0 0 10px;
                 font-size: 27px;
@@ -544,20 +564,22 @@
                 color: #6b7280;
             }
             .ebm-shop-btn {
-                display: flex;
+                display: inline-flex;
                 align-items: center;
                 justify-content: center;
-                gap: 10px;
-                width: min(100%, 320px);
-                height: 54px;
+                gap: 7px;
+                width: auto;
                 margin: 0 auto 26px;
-                border-radius: 27px;
+                padding: 9px 18px;
+                border-radius: 999px;
                 background: #ff6b00;
                 color: #fff;
-                font-size: 17px;
-                font-weight: 700;
+                font-size: 14.5px;
+                font-weight: 500;
+                letter-spacing: 0.01em;
+                line-height: 1.2;
                 text-decoration: none;
-                box-shadow: 0 8px 18px rgba(255, 107, 0, .25);
+                box-shadow: 0 2px 8px rgba(255, 107, 0, 0.16);
             }
             .ebm-shop-btn:active { background: #e85f00; }
             .ebm-why {
@@ -915,7 +937,36 @@
             appearance: none;
         }
         .item-row-remove:hover { color: #dc2626; text-decoration: underline; }
-        .basket-item-row.basket-item-row--bundle { display: block; }
+        .summary-bundle-card { display: flex; flex-direction: column; gap: 8px; }
+        .summary-bundle-card[hidden] { display: none; }
+        .summary-bundle-line { display: flex; justify-content: space-between; gap: 12px; font-weight: 750; }
+        .bundle-shop-card { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 8px; align-items: center; padding: 12px 12px 12px 16px; border: 1px solid #e6ebf2; border-radius: 16px; background: #fff; box-shadow: 0 2px 10px rgba(20, 33, 59, 0.08); }
+        .bundle-shop-card__accent { position: absolute; left: 0; top: 0; bottom: 0; width: 7px; border-radius: 16px 0 0 16px; background: #e8a317; }
+        .bundle-shop-card__meta { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+        .bundle-shop-card__meta strong { font-size: 1.15rem; }
+        .bundle-shop-card__items { display: inline-flex; padding: 3px 8px; border: 1px solid #d5deec; border-radius: 999px; background: #f5f7fb; font-size: .75rem; font-weight: 750; }
+        .bundle-shop-card__preview { display: grid; justify-items: end; gap: 4px; min-width: 0; }
+        .bundle-shop-card__thumbs { display: flex; gap: 6px; justify-content: flex-end; }
+        .bundle-shop-card__thumbs img { width: 44px; height: 44px; object-fit: contain; border-radius: 7px; background: #f5f7fb; }
+        .bundle-shop-card__preview h4 { margin: 0; font-size: .78rem; line-height: 1.2; text-align: right; }
+        .bundle-shop-card__number { margin: 2px 0 0; color: #344054; font-size: 12px; font-weight: 800; line-height: 1.2; text-align: left; }
+        .bundle-shop-card__logo { position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; box-sizing: border-box; width: 112px; height: 64px; margin-top: 2px; padding: 4px; border-radius: 8px; background: #f4f6fa; }
+        .bundle-shop-card__logo-art { display: block; width: auto; height: auto; max-width: 100%; max-height: 100%; object-fit: contain; object-position: center; background: transparent; }
+        .bundle-shop-card__stamp { position: absolute; left: 50%; top: 50%; z-index: 1; display: block; width: auto; height: 86%; max-width: 86%; max-height: 86%; object-fit: contain; transform: translate(-50%, -50%) rotate(-6deg); pointer-events: none; opacity: 0.86; background: transparent; }
+        .bundle-shop-card__tools { display: flex; justify-content: flex-end; gap: 12px; margin-top: 8px; }
+        .bundle-row-kicker {
+            display: inline-block;
+            margin-right: 8px;
+            padding: 2px 7px;
+            border-radius: 999px;
+            background: #111827;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            vertical-align: middle;
+        }
         .bundle-row-banner {
             width: 96px;
             height: 42px;
@@ -1735,6 +1786,7 @@
         .copy-logo-modal .source-logo .source-info span b { color: #1f2937; }
         .copy-logo-modal .garment-list { padding: 16px 20px; overflow-y: auto; flex: 1; }
         .copy-logo-modal .garment-list h4 { font-size: 15px; font-weight: 700; color: #1f2937; margin: 0 0 12px; }
+        .copy-logo-modal .copy-logo-empty { margin: 0; font-size: 13px; line-height: 1.45; color: #6b7280; }
         .copy-logo-modal .garment-item {
             display: flex; align-items: center; gap: 12px; padding: 14px 12px;
             border: 1px solid #e5e7eb; border-radius: 10px; cursor: pointer; margin-bottom: 10px;
@@ -2628,25 +2680,14 @@
         }
     </style>
     <link rel="stylesheet" href="mobile/footer/footer.css?v=20260210">
-    <link rel="stylesheet" href="/mobile/css/header-v2.css?v=20261112-avatar125" media="(max-width: 699px)">
-    <link rel="stylesheet" href="/mobile/css/mobile-chrome.css?v=20261018">
+    <link rel="stylesheet" href="/mobile/css/header-v2.css?v=20261116-nohamburger" media="(max-width: 699px)">
+    <link rel="stylesheet" href="/mobile/css/mobile-chrome.css?v=20261116-nohamburger">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/pages/basket-mobile-summary.css?v=20261021-vat">
 </head>
 <body class="basket-page mobile-chrome">
 <div class="mobile-chrome-header">
     <header class="mobile-header mobile-header--v2">
         <div class="mh-bar">
-            <button type="button" class="mh-icon-btn" id="menuToggle" aria-label="Open menu" aria-expanded="false" aria-controls="slideMenu">
-                <svg class="mh-icon-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
-                    <line x1="4" y1="7" x2="20" y2="7"></line>
-                    <line x1="4" y1="12" x2="20" y2="12"></line>
-                    <line x1="4" y1="17" x2="20" y2="17"></line>
-                </svg>
-                <svg class="mh-icon-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                </svg>
-            </button>
             <a href="/index-mobile.html?force=mobile" class="mobile-logo-center mh-logo" aria-label="brandedUK home">
                 <img class="mobile-logo-badge" src="/brandedukv15-child/assets/videos/use-the-provided-circular-1727756126.gif?v=20261001-newgif" alt="" width="64" height="64">
                 <img class="mobile-logo-word" src="/brandedukv15-child/assets/images/ui/Branded UK Logo on Transparent Background.png?v=20261002-logocombo" alt="branded" width="120" height="52">
@@ -2928,24 +2969,13 @@
                 Browse Products
             </a>
             <div class="empty-basket-mobile">
-                <div class="ebm-illustration" aria-hidden="true">
-                    <svg viewBox="0 0 240 180" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="122" cy="92" r="80" fill="#f8efe5"/>
-                        <path d="M40 132c22 34 112 40 146 8 16-16 20-44 21-70" stroke="#1f2937" stroke-width="1.4" stroke-dasharray="2 6"/>
-                        <path d="M197 54l37-22-17 34-8-10z" fill="#fff" stroke="#1f2937" stroke-width="1.8"/>
-                        <path d="M209 56l25-24" stroke="#1f2937" stroke-width="1.8"/>
-                        <path d="M18 118h30a7 7 0 0 0-2-13.6 10.5 10.5 0 0 0-20-2.6A7.4 7.4 0 0 0 18 118z" fill="#fff" stroke="#1f2937" stroke-width="1.6"/>
-                        <path d="M184 160h30a7 7 0 0 0-2-13.6 10.5 10.5 0 0 0-20-2.6 7.4 7.4 0 0 0-8 16.2z" fill="#fff" stroke="#1f2937" stroke-width="1.6"/>
-                        <path d="M104 30l6 11M129 20v14M154 30l-6 11" stroke="#ff6b00" stroke-width="5"/>
-                        <path d="M58 56h20l17 64h70l15-50H84" stroke="#111827" stroke-width="7"/>
-                        <circle cx="106" cy="143" r="9" fill="#fff" stroke="#111827" stroke-width="6.5"/>
-                        <circle cx="156" cy="143" r="9" fill="#fff" stroke="#111827" stroke-width="6.5"/>
-                    </svg>
+                <div class="ebm-illustration">
+                    <img src="/brandedukv15-child/assets/images/basket/empty-basket-van.png" alt="Branded UK van with an operative and a pallet truck" width="1024" height="819">
                 </div>
                 <h2 class="ebm-title">Your basket is empty</h2>
                 <p class="ebm-text">Looks like you haven&rsquo;t added any products yet.<br>Let&rsquo;s create your perfect workwear.</p>
                 <a class="ebm-shop-btn" href="/index-mobile.html?force=mobile">Start Shopping
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
                 </a>
                 <section class="ebm-industries" aria-labelledby="ebmIndustriesTitle">
                     <div class="ebm-industries-head">
@@ -3080,6 +3110,7 @@
                     <div class="summary-breakdown-list" id="summarySetupBreakdown"></div>
                 </div>
                 </div>
+                <div class="summary-bundle-card" id="summaryBundleCard" hidden></div>
                 <div class="summary-delivery-card">
                 <div class="summary-row summary-card-heading">
                     <span>Delivery <small class="summary-delivery-note" id="summaryDeliveryVatLabel">(exc. VAT)</small></span>
@@ -5066,34 +5097,70 @@
     // RENDER ITEM ROWS
     // ========================
 
+    function bundleOffersFreeLogo(item) {
+        const name = String((item && (item.name || item.bundleName)) || '');
+        return /\bfree\s+(?:stitched\s+)?logos?\b/i.test(name);
+    }
+
+    function bundleBasketTitle(item) {
+        const raw = String((item && (item.name || item.bundleName)) || 'Bundle');
+        if (!bundleOffersFreeLogo(item)) return raw;
+        const cleaned = raw
+            .replace(/\s*(?:\+|\/|&|,)?\s*\bwith\s+(?:a\s+)?free\s+(?:stitched\s+)?logos?\b/gi, '')
+            .replace(/\s*(?:\+|\/|&|,)?\s*\bfree\s+(?:stitched\s+)?logos?\b/gi, '')
+            .replace(/\s{2,}/g, ' ')
+            .replace(/^[\s,.;:|+\-\u2013\u2014/&]+|[\s,.;:|+\-\u2013\u2014/&]+$/g, '')
+            .trim();
+        return cleaned || 'Bundle';
+    }
+
     function renderItems(basket) {
         const container = document.getElementById('basketItemsList');
         if (!container) return;
 
         let html = '';
         const chargedEmbroideryDesigns = new Set();
+        let bundleOrdinal = 0;
         basket.forEach((item, index) => {
             if (isBundleLine(item)) {
-                const banner = bundleBannerSrc(item);
                 const amount = bundlePriceNumber(item);
                 const priceText = amount == null ? '\u2014' : formatBundlePrice(item);
+                const title = escapeAttr(bundleBasketTitle(item));
+                const count = Number(item.itemCount) || (Array.isArray(item.chosenLines) ? item.chosenLines.reduce((sum, line) => sum + (Number(line.quantity) || 0), 0) : 0);
+                const number = bundleDisplayNumber(item, bundleOrdinal);
+                bundleOrdinal += 1;
+                const logo = Array.isArray(item.logos) && item.logos[0] ? item.logos[0] : (item.selection && item.selection.logo);
+                const logoSrc = logo ? (resolveLogoImageSource(logo) || '') : '';
+                const thumbSources = []
+                    .concat(Array.isArray(item.thumbs) ? item.thumbs : [])
+                    .concat(Array.isArray(item.chosenLines) ? item.chosenLines.map(line => line && line.image).filter(Boolean) : [])
+                    .concat(item.image ? [item.image] : []);
+                const thumbs = [...new Set(thumbSources.filter(src => src && src !== logoSrc))].slice(0, 3).map(src => `<img src="${escapeAttr(src)}" alt="">`).join('');
+                const stampHtml = bundleOffersFreeLogo(item) && logoSrc
+                    ? `<img class="bundle-shop-card__stamp" src="brandedukv15-child/assets/images/bundles/free-logo-stamp.png" alt="" aria-hidden="true">`
+                    : '';
+                const logoHtml = logoSrc
+                    ? `<div class="bundle-shop-card__logo"><img class="bundle-shop-card__logo-art" src="${escapeAttr(logoSrc)}" alt="Your logo">${stampHtml}</div>`
+                    : '';
                 html += `
                 <div class="basket-item-row basket-item-row--bundle" data-index="${index}" data-line-type="bundle">
-                    <div class="item-row-header">
-                        <div class="item-row-top">
-                            ${banner ? `<div class="bundle-row-banner"><img src="${escapeAttr(banner)}" alt=""></div>` : ''}
-                            <div class="item-row-head-text">
-                                <div class="item-row-title-line">
-                                    <h4 class="item-row-title">${escapeAttr(item.name || 'Bundle')}</h4>
-                                    <button type="button" class="item-row-remove" onclick="event.stopPropagation(); removeItem(${index})">Remove</button>
-                                </div>
-                                <div class="bundle-row-price">
-                                    <span class="bundle-row-price-label">Offer price</span>
-                                    <span class="bundle-row-price-value">${priceText}</span>
-                                </div>
-                                <button type="button" class="bundle-row-edit" onclick="event.stopPropagation(); modifyBundle(${index})">Modifica bundle</button>
-                            </div>
+                    <article class="bundle-shop-card">
+                        <span class="bundle-shop-card__accent" aria-hidden="true"></span>
+                        <div class="bundle-shop-card__meta">
+                            <strong>${priceText}</strong>
+                            <span>Team of ${count || 1}</span>
+                            <span class="bundle-shop-card__items">${count || 1} items</span>
+                            <p class="bundle-shop-card__number">Bundle n\u00B0 ${escapeAttr(number)}</p>
                         </div>
+                        <div class="bundle-shop-card__preview">
+                            <div class="bundle-shop-card__thumbs">${thumbs}</div>
+                            <h4>${title}</h4>
+                            ${logoHtml}
+                        </div>
+                    </article>
+                    <div class="bundle-shop-card__tools">
+                        <button type="button" class="bundle-row-edit" onclick="event.stopPropagation(); modifyBundle(${index})">Modifica bundle</button>
+                        <button type="button" class="item-row-remove" onclick="event.stopPropagation(); removeItem(${index})">Remove</button>
                     </div>
                 </div>`;
                 return;
@@ -5441,11 +5508,21 @@
         return normalizeDecorationMethod(logo && logo.method) === 'embroidery';
     }
 
+    function bundleDisplayNumber(item, index) {
+        const explicit = Number(item && (item.bundleNumber || item.sourceBundleNumber));
+        if (Number.isFinite(explicit) && explicit > 0) return String(explicit);
+        const slug = String((item && (item.bundleSlug || item.bundleId)) || '');
+        const match = slug.match(/(?:^|-)(\d+)(?:-|$)/);
+        return match ? match[1] : String(index + 1);
+    }
+
     function computeBasketTotals(basket) {
         let productCosts = 0;
         let logoCosts = 0;
+        let bundleCosts = 0;
         let unpricedBundleCount = 0;
         let bundleCount = 0;
+        const bundleLines = [];
         const uniqueEmbroideryDesigns = new Set();
         const customisationGroups = new Map();
         const setupBreakdown = [];
@@ -5462,8 +5539,10 @@
             if (isBundleLine(item)) {
                 bundleCount += 1;
                 const bundleAmount = bundlePriceNumber(item);
+                const number = bundleDisplayNumber(item, bundleCount - 1);
                 if (bundleAmount == null) unpricedBundleCount += 1;
-                else productCosts += bundleAmount;
+                else bundleCosts += bundleAmount;
+                bundleLines.push({ number, amount: bundleAmount });
                 return;
             }
             const qty = item.qty || 0;
@@ -5519,13 +5598,15 @@
         const embroideryDesignCount = uniqueEmbroideryDesigns.size;
         const digitizingFee = embroideryDesignCount * DIGITIZING_FEE_PER_DESIGN;
         // Goods only: the minimum order check must not count delivery.
-        const subtotalExVat = productCosts + logoCosts + digitizingFee;
+        const subtotalExVat = productCosts + bundleCosts + logoCosts + digitizingFee;
         const order = window.brandedOrderTotals(subtotalExVat, basket.length);
         const orderRules = window.brandedCheckOrderRules(basket, subtotalExVat);
-
         const pricedGoods = (basket || []).filter((item) => !isBundleLine(item)).length;
+
         return {
             productCosts,
+            bundleCosts,
+            bundleLines,
             logoCosts,
             digitizingFee,
             unpricedBundleOnly: bundleCount > 0 && unpricedBundleCount === bundleCount && pricedGoods === 0 && logoCosts === 0 && digitizingFee === 0,
@@ -5585,6 +5666,7 @@
         }
         const {
             productCosts,
+            bundleLines = [],
             logoCosts,
             digitizingFee,
             embroideryDesignCount,
@@ -5603,6 +5685,19 @@
         document.querySelectorAll('[data-summary-vat-label]').forEach(label => {
             label.textContent = summaryVatLabel;
         });
+        const pricedGoods = (basket || []).filter(item => !isBundleLine(item)).length;
+        const productCard = document.querySelector('.summary-product-card');
+        const customCard = document.querySelector('.summary-customisation-card');
+        if (productCard) productCard.hidden = pricedGoods === 0;
+        if (customCard) customCard.hidden = pricedGoods === 0;
+        const bundleCard = el('summaryBundleCard');
+        if (bundleCard) {
+            bundleCard.hidden = bundleLines.length === 0;
+            bundleCard.innerHTML = bundleLines.map(line => {
+                const amount = line.amount == null ? '\u2014' : formatCurrency(line.amount);
+                return `<div class="summary-row summary-bundle-line"><span>Bundle ${escapeAttr(line.number)}</span><span class="summary-val">${amount}</span></div>`;
+            }).join('');
+        }
         if (el('summaryProductCosts')) el('summaryProductCosts').textContent = formatCurrency(productCosts);
         if (el('summaryLogoCosts')) el('summaryLogoCosts').textContent = formatCurrency(logoCosts);
         if (el('summaryCustomisationWithSetup')) el('summaryCustomisationWithSetup').textContent = formatCurrency(logoCosts + digitizingFee);
@@ -6306,11 +6401,21 @@
 
         const listEl = document.getElementById('copyLogoGarmentList');
         let listHtml = '<h4>Choose Garment</h4>';
+        let offeredGarments = 0;
+        let hiddenBundles = 0;
+        let otherProducts = 0;
         basket.forEach((item, idx) => {
             if (idx === sourceItemIndex) return;
+            // Bundles are edited only from Edit bundle. Never offer one as a replicate target.
+            if (isBundleLine(item)) {
+                hiddenBundles += 1;
+                return;
+            }
+            otherProducts += 1;
             // Skip if item already has a logo at this position
             if (item.logos && item.logos.some(l => l.position === logo.position)) return;
 
+            offeredGarments += 1;
             const img = item.colorImage || item.image || 'brandedukv15-child/assets/images/products/default.jpg';
             listHtml += `
                 <label class="garment-item">
@@ -6325,6 +6430,9 @@
                 </label>
             `;
         });
+        if (offeredGarments === 0 && hiddenBundles > 0 && otherProducts === 0) {
+            listHtml += '<p class="copy-logo-empty">Bundles can only be changed from Edit bundle</p>';
+        }
         listEl.innerHTML = listHtml;
 
         const overlay = document.getElementById('copyLogoOverlay');
@@ -6364,6 +6472,7 @@
             const targetIdx = parseInt(cb.dataset.targetIndex);
             if (targetIdx < 0 || targetIdx >= basket.length) return;
             const targetItem = basket[targetIdx];
+            if (!targetItem || isBundleLine(targetItem)) return;
             const adapted = adaptLogoForTargetItem(logo, targetItem);
             if (!adapted.logo) return;
             if (!targetItem.logos) targetItem.logos = [];
@@ -7236,12 +7345,12 @@
 <script src="brandedukv15-child/assets/js/storage/quote-storage.js?v=20261103-quote-artwork"></script>
 <script src="brandedukv15-child/assets/js/cart.js?v=20261025-storage"></script>
 <script src="brandedukv15-child/assets/js/header.js?v=20261020-suggest"></script>
-<script src="brandedukv15-child/assets/js/api-config.js?v=20260530"></script>
+<script src="brandedukv15-child/assets/js/api-config.js?v=20261118-localapi"></script>
 <script src="brandedukv15-child/assets/js/color-eyedropper.js?v=20260610n"></script>
 <script src="brandedukv15-child/assets/js/color-hex.js?v=20260704a"></script>
 <script src="brandedukv15-child/assets/js/variant-pricing.js?v=20261104"></script>
 <script src="brandedukv15-child/assets/js/api.js?v=20260731a"></script>
-<script src="mobile/js/whatsapp.js?v=20261027-no-attach"></script>
+<script src="mobile/js/whatsapp.js?v=20261116-prechat"></script>
 <script src="brandedukv15-child/assets/js/upload/logo-upload.js?v=20261028-fit-upload"></script>
 <script>
 // Basket page: search + shop links → correct shop per device
@@ -7283,105 +7392,6 @@ document.addEventListener('DOMContentLoaded', function() {
     <script src="mobile/footer/footer.js?v=20261020-noclose" defer></script>
     <script src="mobile/js/breadcrumbs.js?v=20261018-basket"></script>
 
-    <div class="menu-overlay" id="menuOverlay"></div>
-    <nav class="slide-menu slide-menu--v2" id="slideMenu" aria-label="Menu">
-        <div class="mh-drawer-top">
-            <button type="button" class="mh-icon-btn mh-back" id="mhBack" hidden aria-label="Back to menu">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18 9 12l6-6"></path></svg>
-            </button>
-            <a href="/index-mobile.html?force=mobile" class="mobile-logo-center mh-logo" aria-label="brandedUK home">
-                <img class="mobile-logo-badge" src="/brandedukv15-child/assets/videos/use-the-provided-circular-1727756126.gif?v=20261001-newgif" alt="" width="64" height="64">
-                <img class="mobile-logo-word" src="/brandedukv15-child/assets/images/ui/Branded UK Logo on Transparent Background.png?v=20261002-logocombo" alt="branded" width="120" height="52">
-            </a>
-            <button type="button" class="mh-icon-btn close-menu" id="closeMenu" aria-label="Close menu">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                </svg>
-            </button>
-        </div>
-        <div class="mh-panels">
-        <div class="mh-view" data-mh-view="main">
-        <div class="mh-view-scroll">
-            <div class="mh-menu-block">
-            <button type="button" class="mh-row" data-mh-open="products"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-product" src="/brandedukv15-child/assets/images/icons/menu/shop-product.png?v=20261016-file" alt="" width="46" height="46"></span>Shop by Product<span class="mh-chev" aria-hidden="true"></span></button>
-            <button type="button" class="mh-row" data-mh-open="industries"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-industry" src="/brandedukv15-child/assets/images/icons/menu/shop-by-industry.png?v=20261016-file" alt="" width="46" height="46"></span>Shop by Industry<span class="mh-chev" aria-hidden="true"></span></button>
-            <a class="mh-row" href="/bundles.html"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-deals" src="/brandedukv15-child/assets/images/icons/menu/deals-bundles.png?v=20261016-nobg" alt="" width="46" height="46"></span>Deals &amp; Bundles<span class="mh-chev" aria-hidden="true"></span></a>
-            </div>
-            <div class="mh-menu-block">
-            <button type="button" class="mh-row" data-mh-open="help"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M9.4 9.6a2.6 2.6 0 1 1 3.4 2.5c-.8.4-1.3 1-1.3 1.9"/></svg></span>Help &amp; Support<span class="mh-chev" aria-hidden="true"></span></button>
-            <button type="button" class="mh-row" data-mh-quote><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3.5h7.2L19 8.2V20.5H7z"/><path d="M14.2 3.5V8.2H19"/><path d="M9.5 13h5"/><path d="M9.5 16.5h5"/></svg></span>Request a Quote</button>
-            <a class="mh-row" href="/track-order.html"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="2.5" y="8" width="11" height="7.5" rx="1"/><path d="M13.5 11H17l3 2.6v1.9h-6.5"/><circle cx="6.5" cy="17.8" r="1.5"/><circle cx="17.2" cy="17.8" r="1.5"/></svg></span>Track Your Order<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="/about.html"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 11v5"/><path d="M12 8h.01"/></svg></span>About Us<span class="mh-chev" aria-hidden="true"></span></a>
-            <button type="button" class="mh-row" data-mh-quote><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>Contact Us</button>
-            <div class="mh-contact-stack">
-            <a class="mh-contact mh-contact--call" href="tel:02089742722">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                <span><strong>Call Us</strong><small>020 8974 2722</small></span>
-            </a>
-            <a class="mh-contact mh-contact--email" href="mailto:info@brandeduk.com">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                <span><strong>Email Us</strong><small>info@brandeduk.com</small></span>
-            </a>
-            </div>
-            </div>
-        </div>
-        </div>
-        <div class="mh-view" data-mh-view="products" hidden>
-            <div class="mh-section-title"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-product" src="/brandedukv15-child/assets/images/icons/menu/shop-product.png?v=20261016-file" alt="" width="46" height="46"></span>Shop by Product</div>
-            <div class="mh-view-scroll">
-            <a class="mh-row" href="/shop-pc.html?productType=tshirts"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="/brandedukv15-child/assets/images/ui/icons/categories/icon-shirt-71%201.png" alt=""></span>T-Shirts<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="/shop-pc.html?productType=polos"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="/brandedukv15-child/assets/images/ui/icons/categories/Polo.png" alt=""></span>Polo Shirts<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="/shop-pc.html?productType[]=hoodies&amp;productType[]=sweatshirts"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="/brandedukv15-child/assets/images/ui/icons/categories/icon-hoodies-71%201.png" alt=""></span>Hoodies &amp; Sweatshirts<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="/shop-pc.html?productType[]=jackets&amp;productType[]=softshells"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="/brandedukv15-child/assets/images/ui/icons/categories/Jacket.png" alt=""></span>Jackets &amp; Softshell<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="/shop-pc.html?productType=safety-vests"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="/brandedukv15-child/assets/images/ui/icons/categories/Hi%20Vis.png" alt=""></span>Hi-Vis Clothing<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="/shop-pc.html?productType=trousers"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="/brandedukv15-child/assets/images/ui/icons/categories/Trousers.png" alt=""></span>Work Trousers<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="/shop-pc.html?productType=aprons"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="/brandedukv15-child/assets/images/ui/icons/categories/Apron.png" alt=""></span>Work &amp; Uniforms<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="/shop-pc.html?productType=fleece"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="/brandedukv15-child/assets/images/ui/icons/categories/Fleece.png" alt=""></span>Fleeces<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="/shop-pc.html?productType=caps"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="/brandedukv15-child/assets/images/ui/icons/categories/Cap.png" alt=""></span>Headwear<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row mh-row--eco" href="/shop-pc.html?accreditation=recycled"><span class="mh-row-icon mh-row-icon--pc" aria-hidden="true"><img src="/brandedukv15-child/assets/images/ui/icons/categories/Recycle.png" alt=""></span>Sustainable / Recycled &amp; Organic<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="/shop-pc.html">View All Categories<span class="mh-chev" aria-hidden="true"></span></a>
-                <div class="mh-sibling-group">
-            <button type="button" class="mh-row" data-mh-open="industries"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-industry" src="/brandedukv15-child/assets/images/icons/menu/shop-by-industry.png?v=20261016-file" alt="" width="46" height="46"></span>Shop by Industry<span class="mh-chev" aria-hidden="true"></span></button>
-            <a class="mh-row" href="/bundles.html"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-deals" src="/brandedukv15-child/assets/images/icons/menu/deals-bundles.png?v=20261016-nobg" alt="" width="46" height="46"></span>Deals &amp; Bundles<span class="mh-chev" aria-hidden="true"></span></a>
-            <button type="button" class="mh-row" data-mh-open="help"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M9.4 9.6a2.6 2.6 0 1 1 3.4 2.5c-.8.4-1.3 1-1.3 1.9"/></svg></span>Help &amp; Support<span class="mh-chev" aria-hidden="true"></span></button>
-                </div>
-            </div>
-        </div>
-        <div class="mh-view" data-mh-view="industries" hidden>
-            <div class="mh-section-title"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-industry" src="/brandedukv15-child/assets/images/icons/menu/shop-by-industry.png?v=20261016-file" alt="" width="46" height="46"></span>Shop by Industry</div>
-            <div class="mh-view-scroll">
-            <a class="mh-row" href="/industries/construction.html"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 15.5a7 7 0 0 1 14 0"/><path d="M3.5 15.5h17v2.2h-17z"/></svg></span>Construction<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="/industries/hospitality.html"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4v6.2a2 2 0 1 0 2 0V4"/><path d="M8 12.2V20"/><path d="M15 4c2.2 1.6 2.2 4 0 5.6V20"/></svg></span>Hospitality<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="/industries/healthcare.html"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10 4.5h4v15h-4z"/><path d="M4.5 10h15v4h-15z"/></svg></span>Healthcare<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="/industries/education.html"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 6l9 4.5L12 15z"/><path d="M7 12.2v3.6c1.6 1.6 8.4 1.6 10 0v-3.6"/></svg></span>Schools &amp; Leavers<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="/industries/corporate.html"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="8" width="17" height="11" rx="1.6"/><path d="M8.5 8V6.2A1.8 1.8 0 0 1 10.3 4.4h3.4A1.8 1.8 0 0 1 15.5 6.2V8"/></svg></span>Corporate<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="/industries/sports.html"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 4.5h8v5.2a4 4 0 0 1-8 0z"/><path d="M12 13.7V16.5"/><path d="M9.2 19.5h5.6"/></svg></span>Sports<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="/industries/cleaning.html">Cleaning<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="/industries/logistics.html">Logistics<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="/industries/retail.html">Retail<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="/industries.html">View All Industries<span class="mh-chev" aria-hidden="true"></span></a>
-                <div class="mh-sibling-group">
-            <button type="button" class="mh-row" data-mh-open="products"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-product" src="/brandedukv15-child/assets/images/icons/menu/shop-product.png?v=20261016-file" alt="" width="46" height="46"></span>Shop by Product<span class="mh-chev" aria-hidden="true"></span></button>
-            <a class="mh-row" href="/bundles.html"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-deals" src="/brandedukv15-child/assets/images/icons/menu/deals-bundles.png?v=20261016-nobg" alt="" width="46" height="46"></span>Deals &amp; Bundles<span class="mh-chev" aria-hidden="true"></span></a>
-            <button type="button" class="mh-row" data-mh-open="help"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M9.4 9.6a2.6 2.6 0 1 1 3.4 2.5c-.8.4-1.3 1-1.3 1.9"/></svg></span>Help &amp; Support<span class="mh-chev" aria-hidden="true"></span></button>
-                </div>
-            </div>
-        </div>
-        <div class="mh-view" data-mh-view="help" hidden>
-            <div class="mh-section-title"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M9.4 9.6a2.6 2.6 0 1 1 3.4 2.5c-.8.4-1.3 1-1.3 1.9"/></svg></span>Help &amp; Support</div>
-            <div class="mh-view-scroll">
-            <a class="mh-row" href="/index-mobile.html?force=mobile#faq"><span class="mh-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M9.4 9.6a2.6 2.6 0 1 1 3.4 2.5c-.8.4-1.3 1-1.3 1.9"/></svg></span>Help &amp; FAQs<span class="mh-chev" aria-hidden="true"></span></a>
-            <a class="mh-row" href="/pricing-guide.html">Delivery &amp; Returns<span class="mh-chev" aria-hidden="true"></span></a>
-                <div class="mh-sibling-group">
-            <button type="button" class="mh-row" data-mh-open="products"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-product" src="/brandedukv15-child/assets/images/icons/menu/shop-product.png?v=20261016-file" alt="" width="46" height="46"></span>Shop by Product<span class="mh-chev" aria-hidden="true"></span></button>
-            <button type="button" class="mh-row" data-mh-open="industries"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-industry" src="/brandedukv15-child/assets/images/icons/menu/shop-by-industry.png?v=20261016-file" alt="" width="46" height="46"></span>Shop by Industry<span class="mh-chev" aria-hidden="true"></span></button>
-            <a class="mh-row" href="/bundles.html"><span class="mh-row-icon" aria-hidden="true"><img class="mh-bag mh-deals" src="/brandedukv15-child/assets/images/icons/menu/deals-bundles.png?v=20261016-nobg" alt="" width="46" height="46"></span>Deals &amp; Bundles<span class="mh-chev" aria-hidden="true"></span></a>
-                </div>
-            </div>
-        </div>
-        </div>
-    </nav>
-    <script src="/mobile/js/header-menu.js?v=20261018-drawer"></script>
+    <script src="/mobile/js/header-menu.js?v=20261116-nohamburger"></script>
 </body>
 </html>

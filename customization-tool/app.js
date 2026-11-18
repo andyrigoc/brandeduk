@@ -5396,11 +5396,16 @@ function attachSavedLogoPointerDrag(button, logoSrc, options = {}) {
   });
 }
 
+function uploadPanelFitsViewport() {
+  return !(window.matchMedia && window.matchMedia("(max-width: 699px)").matches);
+}
+
 function syncInlineLogoPanels() {
   const hasLogo = Boolean(state.uploadedLogo);
-  const keepUploadPanel = isPcOrderEmbed && hasConfiguredPositionPicker();
-  if (inlineLogoUpload) inlineLogoUpload.hidden = keepUploadPanel ? false : hasLogo;
-  if (inlineLogoSettings) inlineLogoSettings.hidden = keepUploadPanel ? true : !hasLogo;
+  const panelFits = uploadPanelFitsViewport();
+  const keepUploadPanel = panelFits && isPcOrderEmbed && hasConfiguredPositionPicker();
+  if (inlineLogoUpload) inlineLogoUpload.hidden = !panelFits || (keepUploadPanel ? false : hasLogo);
+  if (inlineLogoSettings) inlineLogoSettings.hidden = !panelFits || (keepUploadPanel ? true : !hasLogo);
 
   if (!inlineUploadLibrary || !inlineUploadLibraryItems) return;
   const library = getSessionLogoLibrary();
@@ -5451,6 +5456,12 @@ function syncInlineLogoPanels() {
       onSelect: selectThisLogo
     });
     inlineUploadLibraryItems.appendChild(button);
+  });
+}
+
+if (window.matchMedia) {
+  window.matchMedia("(max-width: 699px)").addEventListener("change", () => {
+    syncInlineLogoPanels();
   });
 }
 

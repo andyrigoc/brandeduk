@@ -1670,15 +1670,17 @@
     display: none;
   }
 
-  body.is-pc-order-embed .inline-logo-upload,
-  body.is-pc-order-embed .inline-logo-settings {
-    position: fixed;
-    z-index: 30;
-    top: 86px;
-    right: 16px;
-    bottom: 16px;
-    left: auto;
-    width: min(356px, calc(27vw - 16px));
+  @media (min-width: 700px) {
+    body.is-pc-order-embed .inline-logo-upload,
+    body.is-pc-order-embed .inline-logo-settings {
+      position: fixed;
+      z-index: 30;
+      top: 86px;
+      right: 16px;
+      bottom: 16px;
+      left: auto;
+      width: min(356px, calc(27vw - 16px));
+    }
   }
 
   body.is-pc-order-embed .design-layer,
@@ -3289,4 +3291,14 @@ body.is-pc-order-embed.has-pc-editor-toolbar #mainEditor .editor-top .tab-bar {
   border-radius: 10px;
   background: #fff;
   cursor: pointer;
+}
+
+/* Phone width has no third column. Hide the desktop upload panel instead of letting it cover the cards. */
+@media (max-width: 699px) {
+  #inlineLogoUpload,
+  #inlineLogoSettings,
+  body.is-pc-order-embed .inline-logo-upload,
+  body.is-pc-order-embed .inline-logo-settings {
+    display: none !important;
+  }
 }

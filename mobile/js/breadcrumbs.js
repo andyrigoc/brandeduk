@@ -277,6 +277,20 @@
                         }
                     } catch (e) { /* ignore parse errors */ }
                 }
+                // Bundle colour/size detour: Home > Bundles > Category > Code
+                if (isBundleBuildPage()) {
+                    crumbs.push({
+                        label: 'Bundles',
+                        href: '/bundle-configurator/?force=mobile'
+                    });
+                    if (enrichedCat) {
+                        crumbs.push({ label: catDisplay, href: null });
+                    }
+                    if (enrichedProduct) {
+                        crumbs.push({ label: enrichedProduct, href: null });
+                    }
+                    break;
+                }
                 if (enrichedCat) {
                     crumbs.push({
                         label: catDisplay,
@@ -317,11 +331,30 @@
         return crumbs;
     }
 
+    function isBundleBuildPage() {
+        return /[?&]bundleBuild=1(?:&|$)/.test(window.location.search || '');
+    }
+
+    function bundleBuildBackUrl() {
+        var slug = '';
+        try {
+            var job = JSON.parse(sessionStorage.getItem('buk-bundle-build') || 'null');
+            slug = (job && (job.slug || job.bundleId)) || '';
+        } catch (e) { /* ignore */ }
+        var url = '/bundle-configurator/?force=mobile';
+        if (slug) url += '&bundle=' + encodeURIComponent(slug);
+        return url;
+    }
+
     /* ── Back button target ────────────────────────── */
 
     function getBackTarget(page) {
         var prefix = rootPrefix();
         var category = resolveCategory();
+
+        if ((page === 'product' || page === 'customize') && isBundleBuildPage()) {
+            return bundleBuildBackUrl();
+        }
 
         switch (page) {
             case 'shop':
@@ -366,6 +399,11 @@
             backBtn.parentNode.replaceChild(newBtn, backBtn);
             newBtn.addEventListener('click', function (e) {
                 e.preventDefault();
+                // Bundle detour: prefer history so Included/Groups → product feels natural.
+                if (isBundleBuildPage() && window.history.length > 1) {
+                    window.history.back();
+                    return;
+                }
                 window.location.href = backTarget;
             });
         }

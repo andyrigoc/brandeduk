@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Branded UK — anteprima mobile locale</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:Arial,sans-serif;background:#edf1f4;color:#152d3a}
+body{display:flex;flex-direction:column}header{flex-shrink:0;background:#fff;border-bottom:1px solid #dce3e8;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13px}
+header small{display:block;font-size:11px;color:#576878;margin-top:4px}button,select{padding:8px;border:1px solid #cbd5df;background:white;border-radius:6px;color:#152d3a;cursor:pointer}
+main{flex:1;min-height:0;display:flex;justify-content:center}iframe{height:100%;width:412px;max-width:100%;border:0;background:white;box-shadow:0 0 20px #0c283415}
+@media(max-width:520px){header{padding:7px 9px}header select{display:none}iframe{width:100%}}
+</style>
+</head>
+<body>
+<header><div><strong>Branded UK · Mobile</strong><small>Test locale: messaggi e upload simulati</small></div><div><select aria-label="Larghezza anteprima"><option value="412">Mobile 412 px</option><option value="360">Mobile 360 px</option><option value="360x640">Mobile 360 × 640 px</option><option value="100%">Desktop</option></select> <button type="button" id="reset">Ricomincia</button></div></header>
+<main><iframe id="site" title="Sito Branded UK locale con nuova chat" src="/index-mobile.html?prechat-preview=1"></iframe></main>
+<script>
+const frame=document.getElementById('site');
+document.querySelector('select').addEventListener('change',event=>{
+  const desktop=event.target.value==='100%';
+  const size=event.target.value.split('x');
+  frame.style.width=desktop?'100%':size[0]+'px';
+  frame.style.height=size[1]?size[1]+'px':'100%';
+  const page=desktop?'/home-pc.html':'/index-mobile.html';
+  if(new URL(frame.contentWindow.location.href).pathname!==page)frame.src=page+'?prechat-preview=1';
+});
+document.getElementById('reset').addEventListener('click',()=>frame.contentWindow.postMessage({type:'prechat-preview-reset'},location.origin));
+</script>
+</body></html>
