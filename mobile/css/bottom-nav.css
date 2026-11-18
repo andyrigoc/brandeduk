@@ -141,6 +141,12 @@ html.buk-filters-settled .bottom-nav.nav.is-bundles {
     -webkit-mask-composite: source-in;
     mask-composite: intersect;
 }
+/* The hole is only cut once the circle is placed. Pages with no active tab
+   (product pages) never place it, so the bar stays solid there. */
+.bottom-nav.nav:not(.ready):not(.is-ready)::before {
+    -webkit-mask-image: none;
+    mask-image: none;
+}
 .bottom-nav.nav.dark {
     --bar: #0b2d3a;
     --ink: #fff;

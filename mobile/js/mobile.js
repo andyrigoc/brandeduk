@@ -333,10 +333,79 @@ function filterSuggestByTitle(products, query) {
     });
 }
 
+// Catalogue codes are one word with a digit (RX101, GD01B) or five digits (47200).
+// Letter-only codes exist too, but those queries look like words and keep the results page.
+const PRODUCT_CODE_QUERY = /^(?=.*\d)[a-z0-9]+$/i;
+
+function ensureSearchLookupStyles() {
+    if (document.getElementById('searchLookupStyle')) return;
+    const style = document.createElement('style');
+    style.id = 'searchLookupStyle';
+    style.textContent = '.search-wrapper-expand.is-looking-up .search-suggestions{display:none!important;}.search-wrapper-expand.is-looking-up .search-icon-expand{box-sizing:border-box;border:2px solid rgba(55,65,81,.2);border-top-color:currentColor;border-radius:50%;animation:searchLookupSpin .7s linear infinite;}.search-wrapper-expand.is-looking-up .search-icon-expand>*{visibility:hidden;}@keyframes searchLookupSpin{from{transform:translateY(-50%) rotate(0deg);}to{transform:translateY(-50%) rotate(360deg);}}';
+    document.head.appendChild(style);
+}
+
+function setSearchLookupBusy(input, busy) {
+    const wrapper = input.closest('.search-wrapper-expand') || input.parentElement;
+    if (wrapper) wrapper.classList.toggle('is-looking-up', busy);
+    input.readOnly = busy;
+    if (busy) input.setAttribute('aria-busy', 'true');
+    else input.removeAttribute('aria-busy');
+}
+
+// Same URL as the suggestions dropdown request, so the browser usually answers it from its cache.
+async function findProductByExactCode(query) {
+    const apiBase = (typeof window.resolveBrandedApiBase === 'function'
+        ? window.resolveBrandedApiBase()
+        : (window.API_BASE_URL || 'https://api.brandeduk.com')).replace(/\/+$/, '');
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 4000);
+    try {
+        const res = await fetch(`${apiBase}/api/products/suggest?q=${encodeURIComponent(query)}`, { signal: controller.signal });
+        if (!res.ok) return null;
+        const data = await res.json();
+        const wanted = query.toUpperCase();
+        return (data.products || []).find((p) => String(p.value || '').toUpperCase() === wanted) || null;
+    } catch (err) {
+        return null;
+    } finally {
+        clearTimeout(timer);
+    }
+}
+
+// An exact product code opens that product; everything else, or a failed lookup, lists results.
+async function submitMobileSearch(input, query) {
+    const resultsUrl = getCanonicalShopUrl(`q=${encodeURIComponent(query)}`);
+    if (!PRODUCT_CODE_QUERY.test(query)) {
+        window.location.href = resultsUrl;
+        return;
+    }
+    if (input.getAttribute('aria-busy') === 'true') return;
+    ensureSearchLookupStyles();
+    setSearchLookupBusy(input, true);
+    const product = await findProductByExactCode(query);
+    if (!product) {
+        window.location.href = resultsUrl;
+        return;
+    }
+    const code = String(product.value);
+    try {
+        sessionStorage.setItem('selectedProduct', code);
+        sessionStorage.setItem('selectedProductData', JSON.stringify({ code, name: product.label || '' }));
+        sessionStorage.setItem('customizeFreshItem', '1');
+    } catch (e) { /* the ?code= in the URL is enough */ }
+    window.location.href = `${getMobileBaseUrl()}customize-mobile.html?code=${encodeURIComponent(code)}`;
+}
+
 function initSearch() {
     const searchInput = document.getElementById('searchInput');
     const searchNavBtn = document.getElementById('searchNavBtn');
     const _HIDDEN_BRANDS = ['absolute apparel', 'ralawise'];
+
+    // Back from the product page can restore this page from the back/forward cache mid-lookup.
+    window.addEventListener('pageshow', () => {
+        document.querySelectorAll('.search-input-expand[aria-busy="true"]').forEach((input) => setSearchLookupBusy(input, false));
+    });
 
     if (searchNavBtn) {
         searchNavBtn.addEventListener('click', (e) => {
@@ -475,13 +544,14 @@ function initSearch() {
             }
         });
 
-        // Enter key → go to shop
+        // Enter key → product page for an exact code, otherwise shop results
         inputEl.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 const query = e.target.value.trim();
                 if (query) {
+                    clearTimeout(debounceTimer);
                     suggestionBox.classList.remove('active');
-                    window.location.href = getCanonicalShopUrl(`q=${encodeURIComponent(query)}`);
+                    submitMobileSearch(inputEl, query);
                 }
             }
         });
@@ -509,7 +579,7 @@ function initSearch() {
         const performSearch = () => {
             const query = input.value.trim();
             if (query) {
-                window.location.href = getCanonicalShopUrl(`q=${encodeURIComponent(query)}`);
+                submitMobileSearch(input, query);
             }
         };
 
