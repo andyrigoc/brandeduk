@@ -321,6 +321,23 @@
   .buk-footer__watermark-uk {
     color: rgb(255 106 0 / 28%);
   }
+
+  .buk-footer__watermark > span:first-child {
+    position: relative;
+  }
+
+  /* Hat on the big footer wordmark, scaled with the type. */
+  .buk-footer__watermark > span:first-child::before {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    top: -0.05em;
+    width: 0.68em;
+    height: 0.757em;
+    background: url("/brandedukv15-child/assets/images/ui/santa-hat.png") 0 0 / 100% 100% no-repeat;
+    pointer-events: none;
+  }
 }
 
 @media (max-width: 699px) {

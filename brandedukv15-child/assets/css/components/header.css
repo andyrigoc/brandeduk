@@ -2464,20 +2464,21 @@ body {
     object-fit: contain;
 }
 .mobile-logo-center .mobile-logo-badge {
-    height: 52px !important;
-    max-height: 52px !important;
+    height: calc(64px * 452 / 821) !important;
+    max-height: calc(64px * 452 / 821) !important;
     width: auto !important;
-    max-width: 52px !important;
+    max-width: calc(64px * 452 / 821) !important;
+    transform: translateY(calc(-64px * 57 / 821));
     display: block;
     flex: 0 0 auto;
     object-fit: contain;
 }
 .mobile-logo-center .mobile-logo-word {
-    height: 52px !important;
-    max-height: 52px !important;
+    height: 64px !important;
+    max-height: 64px !important;
     width: auto !important;
     max-width: 260px !important;
-    transform: translateY(4px);
+    transform: none;
     display: block;
     flex: 0 1 auto;
     min-width: 0;

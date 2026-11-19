@@ -46,8 +46,8 @@
         var style = document.createElement('style');
         style.id = 'pc-header-lockup-critical';
         style.textContent = '@media (min-width:700px){' +
-            '.site-header .searchbar-header__brand-badge-wrap{display:block;flex:0 0 auto;height:45px;width:auto;overflow:visible}' +
-            '.site-header .searchbar-header__brand-badge{display:block!important;height:45px!important;max-height:45px!important;width:auto!important;max-width:45px!important;object-fit:contain!important}' +
+            '.site-header .searchbar-header__brand-badge-wrap{display:block;flex:0 0 auto;height:calc(87.36px * 452 / 821);width:auto;overflow:visible;transform:translateY(calc(-87.36px * 57 / 821))}' +
+            '.site-header .searchbar-header__brand-badge{display:block!important;height:100%!important;max-height:none!important;width:auto!important;max-width:none!important;object-fit:contain!important}' +
             '.site-header img.searchbar-header__brand-text{display:block!important;flex:0 0 auto;height:87.36px!important;max-height:87.36px!important;width:auto!important;max-width:220px!important;margin:0!important;object-fit:contain!important;background:transparent!important}' +
             '}';
         (document.head || document.documentElement).appendChild(style);
@@ -81,7 +81,7 @@
         }
         addStylesheet(new URL('css/components/header.css?v=20260220', assetsRoot).href, 'base');
         addStylesheet(new URL('css/components/promo-bar.css?v=20260425a', assetsRoot).href, 'promo');
-        addStylesheet(new URL('css/components/pc-header.css?v=20261118-minibasket', assetsRoot).href, 'standard');
+        addStylesheet(new URL('css/components/pc-header.css?v=20261119-santahat', assetsRoot).href, 'standard');
         addStylesheet(new URL('css/components/pc-nav-overflow.css?v=20261012-navmore', assetsRoot).href, 'nav-overflow');
         addStylesheet(new URL('css/components/pc-search.css?v=20261118-instant-search', assetsRoot).href, 'search');
         addStylesheet(new URL('css/components/header-basket-lottie.css?v=20261012-allpages', assetsRoot).href, 'basket');

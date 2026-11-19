@@ -1,12 +1,12 @@
 /* Mobile header: account, logo, phone, cart, search. */
 body.home-page,
 body:has(.mobile-header--v2) {
-    --header-height: 136px;
+    --header-height: 150px;
 }
 
 .mobile-header--v2 {
     height: var(--header-height);
-    padding: 6px 8px 8px 3px;
+    padding: 20px 8px 8px 3px;
     box-sizing: border-box;
     border-bottom: 1px solid #eef0f4;
     background: #fff;
@@ -16,7 +16,7 @@ body:has(.mobile-header--v2) {
     position: fixed;
     top: 0 !important;
     height: var(--header-height) !important;
-    padding: 6px 8px 8px 3px !important;
+    padding: 20px 8px 8px 3px !important;
     overflow: visible !important;
     box-sizing: border-box !important;
 }
@@ -47,21 +47,24 @@ body:has(.mobile-header--v2) {
     gap: 3px;
 }
 
+/* Circle matches the B plus the line under "branded", not the UK.
+   Wordmark canvas is 821px: letters start at 128, the line ends at 579. */
 .mobile-header--v2 .mh-logo .mobile-logo-badge,
 .mobile-header--v2 .mobile-logo-center .mobile-logo-badge {
-    height: 46px !important;
-    max-height: 46px !important;
+    height: calc(64px * 452 / 821) !important;
+    max-height: calc(64px * 452 / 821) !important;
     width: auto !important;
-    max-width: 46px !important;
+    max-width: calc(64px * 452 / 821) !important;
+    transform: translateY(calc(-64px * 57 / 821));
 }
 
 .mobile-header--v2 .mh-logo .mobile-logo-word,
 .mobile-header--v2 .mobile-logo-center .mobile-logo-word {
-    height: 52px !important;
-    max-height: 52px !important;
+    height: 64px !important;
+    max-height: 64px !important;
     width: auto !important;
     max-width: 260px !important;
-    transform: translateY(4px);
+    transform: none;
 }
 
 .mobile-header--v2 .mh-actions {
@@ -204,15 +207,16 @@ body:has(.mobile-header--v2) {
 
     .mobile-header--v2 .mh-logo .mobile-logo-badge,
     .mobile-header--v2 .mobile-logo-center .mobile-logo-badge {
-        height: 40px !important;
-        max-height: 40px !important;
-        max-width: 40px !important;
+        height: calc(52px * 452 / 821) !important;
+        max-height: calc(52px * 452 / 821) !important;
+        max-width: calc(52px * 452 / 821) !important;
+        transform: translateY(calc(-52px * 57 / 821));
     }
 
     .mobile-header--v2 .mh-logo .mobile-logo-word,
     .mobile-header--v2 .mobile-logo-center .mobile-logo-word {
-        height: 44px !important;
-        max-height: 44px !important;
+        height: 52px !important;
+        max-height: 52px !important;
     }
 }
 
@@ -453,4 +457,20 @@ body:has(.mobile-header--v2) .mobile-header--v2:has(.search-suggestions.active) 
 .mh-search-vat.is-on .vat-label--inc {
     color: #FD7F47;
     font-weight: 600;
+}
+
+/* Santa hat on the bd circle. Overlay only — the GIF keeps animating underneath.
+   25% larger than the first placement, and higher so the brim sits on the rim. */
+.mobile-header--v2 .mobile-logo-center::after {
+    content: "";
+    position: absolute;
+    z-index: 3;
+    left: calc(-13px * 64 / 87.36);
+    top: calc((64px - 64px * 452 / 821) / 2 - 64px * 57 / 821 - 23px * 64 / 87.36);
+    width: calc(49.6px * 64 / 87.36);
+    height: calc(56px * 64 / 87.36);
+    background: url("/brandedukv15-child/assets/images/ui/santa-hat.png") 0 0 / 100% 100% no-repeat;
+    transform: scaleX(-1) rotate(15deg);
+    transform-origin: center;
+    pointer-events: none;
 }

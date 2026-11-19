@@ -1,0 +1,147 @@
+/* Homepage only. Falling snow stays inside the header and the hero banners.
+   Settled snow is the caps on header controls and the drift on the banner's lower rim.
+   Depth is --buk-snow (0 to 1), written by home-snow.js from visit time. */
+
+:root {
+    --buk-snow: 0;
+}
+
+.buk-snow-field,
+.buk-snow-fall,
+.buk-snow-drift,
+.buk-snow-hat,
+.buk-snow-letter,
+.buk-snow-field *,
+.buk-snow-fall *,
+.buk-snow-drift *,
+.buk-snow-hat * {
+    pointer-events: none !important;
+}
+
+.buk-snow-field {
+    position: absolute;
+    inset: 0;
+    z-index: 12;
+    overflow: hidden;
+    border-radius: inherit;
+}
+
+.buk-snow-fall {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    z-index: 1;
+    --travel: 180px;
+}
+
+.hero-banner > .buk-snow-fall {
+    z-index: 6;
+}
+
+/* Same idea as the reference snowfall: small soft circles, varied speed, a full spin as they fall. */
+.buk-snow-flake {
+    position: absolute;
+    z-index: 2;
+    left: var(--buk-flake-x);
+    top: -18px;
+    width: var(--s);
+    height: var(--s);
+    aspect-ratio: 1;
+    margin-left: calc(var(--s) * -0.5);
+    border-radius: 50%;
+    background-color: #fffafa;
+    opacity: var(--o);
+    box-shadow: 0 0 0 1px rgba(156, 168, 184, 0.9);
+    animation: buk-home-snow-fall var(--d) linear infinite;
+    animation-delay: var(--delay);
+}
+
+.hero-banner:not(.hero-banner--active) .buk-snow-flake {
+    animation-play-state: paused;
+}
+
+@keyframes buk-home-snow-fall {
+    0% { transform: translate3d(0, 0, 0) rotate(0deg); }
+    100% { transform: translate3d(var(--drift), var(--travel), 0) rotate(360deg); }
+}
+
+.buk-snow-letter {
+    position: absolute;
+    z-index: 5;
+    background: #fff;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.buk-snow-lumps {
+    position: absolute;
+    left: 6%;
+    right: 6%;
+    top: 0;
+    height: 0;
+    z-index: 6;
+    pointer-events: none;
+    overflow: visible;
+}
+
+.buk-snow-lumps i {
+    position: absolute;
+    bottom: -4px;
+    background: #fff;
+    border-radius: 50%;
+}
+
+/* Same box and rotation as the Santa hat ::after, so blobs land on the hat. */
+.buk-snow-hat {
+    position: absolute;
+    z-index: 4;
+    left: -13px;
+    top: -23px;
+    width: 49.6px;
+    height: 56px;
+    transform: scaleX(-1) rotate(15deg);
+    transform-origin: center;
+}
+
+html.buk-snow-mobile .buk-snow-hat {
+    left: calc(-13px * 64 / 87.36);
+    top: calc((64px - 64px * 452 / 821) / 2 - 64px * 57 / 821 - 23px * 64 / 87.36);
+    width: calc(49.6px * 64 / 87.36);
+    height: calc(56px * 64 / 87.36);
+}
+
+.buk-snow-hat i {
+    position: absolute;
+    background: #fff;
+    border-radius: 50%;
+}
+
+/* Uneven drift along the bottom rim of a hero banner only. */
+.buk-snow-drift {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 7;
+    height: calc(10px + var(--buk-snow) * 28px);
+    background: none;
+    opacity: 1;
+    filter: none;
+}
+
+.buk-snow-drift svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+html.buk-snow-mobile .buk-snow-drift {
+    height: calc(8px + var(--buk-snow) * 20px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .buk-snow-flake {
+        animation: none !important;
+        opacity: 0 !important;
+    }
+}

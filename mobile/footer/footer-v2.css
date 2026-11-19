@@ -387,7 +387,7 @@ a.mfooter__card:active {
   display: block;
   margin-top: 14px;
   padding: 0 8px 6px;
-  overflow: hidden;
+  overflow: visible;
   font-size: clamp(56px, 19.5vw, 150px);
   font-weight: 900;
   line-height: 0.86;
@@ -405,7 +405,20 @@ a.mfooter__card:active {
 }
 
 .mfooter__watermark-word {
+  position: relative;
   background-image: linear-gradient(180deg, #5a5a5a 0%, #333 100%);
+}
+
+.mfooter__watermark-word::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  left: -0.01em;
+  top: -0.30em;
+  width: 0.52em;
+  height: 0.579em;
+  background: url("/brandedukv15-child/assets/images/ui/santa-hat.png") 0 0 / 100% 100% no-repeat;
+  pointer-events: none;
 }
 
 .mfooter__watermark-uk {

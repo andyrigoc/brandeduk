@@ -1,5 +1,5 @@
 ﻿<!-- Footer - BrandedUK (mobile). Links, contacts and company details mirror footer-dev/pc-footer.js. -->
-<link rel="stylesheet" href="/mobile/footer/footer-v2.css?v=20261018-dark3">
+<link rel="stylesheet" href="/mobile/footer/footer-v2.css?v=20261119-santahat">
 
 <footer class="quote-footer mfooter" aria-label="Branded UK website footer">
     <div class="mfooter__inner">

@@ -529,20 +529,21 @@ img {
 }
 
 .mobile-logo-center .mobile-logo-badge {
-    height: 52px !important;
-    max-height: 52px !important;
+    height: calc(64px * 452 / 821) !important;
+    max-height: calc(64px * 452 / 821) !important;
     width: auto !important;
-    max-width: 52px !important;
+    max-width: calc(64px * 452 / 821) !important;
+    transform: translateY(calc(-64px * 57 / 821));
     object-fit: contain;
     flex: 0 0 auto;
 }
 
 .mobile-logo-center .mobile-logo-word {
-    height: 52px !important;
-    max-height: 52px !important;
+    height: 64px !important;
+    max-height: 64px !important;
     width: auto !important;
     max-width: 260px !important;
-    transform: translateY(4px);
+    transform: none;
     object-fit: contain;
     flex: 0 1 auto;
     min-width: 0;
@@ -12833,4 +12834,23 @@ a.continue-shopping {
 .positions-grid[data-show-preview] .position-card .position-preview,
 #positionOptions[data-show-preview] .position-card .position-preview {
     display: flex !important;
+}
+
+/* Basket mobile header does not load header-v2.css. Same hat overlay as that file. */
+.mobile-header--v2 .mobile-logo-center {
+    overflow: visible !important;
+}
+
+.mobile-header--v2 .mobile-logo-center::after {
+    content: "";
+    position: absolute;
+    z-index: 3;
+    left: calc(-13px * 64 / 87.36);
+    top: calc((64px - 64px * 452 / 821) / 2 - 64px * 57 / 821 - 23px * 64 / 87.36);
+    width: calc(49.6px * 64 / 87.36);
+    height: calc(56px * 64 / 87.36);
+    background: url("/brandedukv15-child/assets/images/ui/santa-hat.png") 0 0 / 100% 100% no-repeat;
+    transform: scaleX(-1) rotate(15deg);
+    transform-origin: center;
+    pointer-events: none;
 }
