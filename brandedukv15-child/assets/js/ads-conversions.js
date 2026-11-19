@@ -9,9 +9,10 @@
  *   It refuses 'purchase': a Purchase can only be sent by window.brandedAdsPurchase().
  *
  * Wired automatically:
- *   - generate_lead : successful POST to /api/contact or /api/quotes (contact popup,
+ *   - generate_lead : analytics event only for successful POST to /api/contact or /api/quotes (contact popup,
  *                     basket / checkout quote request, design tool quote), except the
  *                     quote that is created as the first step of a card payment.
+ *   - quote_request: confirmed successful quote submissions only (Google Ads).
  *   - add_to_cart   : the basket (localStorage quoteBasket) gains lines.
  *   - begin_checkout: checkout pages call it on load.
  *   - phone_click   : any click on a tel: link (header, sticky bar, footer, etc.).
@@ -38,6 +39,7 @@
   // "AW-438771987/" in send_to). Leave '' to send only the recommended event.
   var CONVERSION_LABELS = {
     generate_lead: '',
+    quote_request: '_I-uCLDB0rsdEJPCnNEB',
     add_to_cart: '',
     begin_checkout: '',
     // Website conversion counting clicks on tel: links (Google Ads: "Phone number
@@ -45,7 +47,7 @@
     phone_click: '',
     // Purchase action. If it is ever emptied, payment-success sends
     // gtag('event','purchase') only, not gtag('event','conversion',{send_to:...}).
-    purchase: 'PzEFCL7kkpgdEJPCnNEB'
+    purchase: '_N5MCK3B0rsdEJPCnNEB'
   };
 
   // "Calls to a phone number on your website" conversion (Goals > Conversions >
@@ -312,13 +314,18 @@
   }
 
   function checkoutIsQuoteMode() {
-    try { return window.sessionStorage.getItem('checkoutMode') === 'quote'; } catch (e) { return false; }
+    try {
+      if (typeof window.coIsQuoteMode === 'function') return !!window.coIsQuoteMode();
+      var mode = new URLSearchParams(window.location.search).get('mode');
+      if (mode) return mode.toLowerCase() === 'quote';
+      return window.sessionStorage.getItem('checkoutMode') === 'quote';
+    } catch (e) { return false; }
   }
 
-  function onSubmitted(kind, data) {
+  function onSubmitted(kind, data, json, cardFlow) {
     if (data && data.quoteData && typeof data.quoteData === 'object') data = data.quoteData;
     var contact = findContact(data);
-    if (kind === 'quote' && isCheckoutPage() && !checkoutIsQuoteMode()) {
+    if (kind === 'quote' && cardFlow) {
       // Card payment flow: not a lead. Keep the customer's email/phone (only with
       // ad_user_data consent) for enhanced conversions on the verified Purchase.
       try {
@@ -327,11 +334,14 @@
       } catch (e) {}
       return;
     }
-    window.brandedAdsConversion('generate_lead', {
-      lead_source: kind === 'contact' ? 'contact_form' : 'quote_request',
-      currency: CURRENCY,
-      user_data: contact
-    });
+    // Only a confirmed genuine quote is a Google Ads quote conversion.
+    var id = json && (json.quoteId || (json.data && json.data.quoteId) || json.id || (json.quote && (json.quote.quoteId || json.quote.id)));
+    var confirmed = !!(json && json.success !== false && (json.success === true || id));
+    if (kind === 'quote' && !confirmed) return;
+    var params = { lead_source: kind === 'contact' ? 'contact_form' : 'quote_request', currency: CURRENCY, user_data: contact };
+    if (kind === 'quote' && id) params.transaction_id = String(id);
+    window.brandedAdsConversion('generate_lead', params);
+    if (kind === 'quote') window.brandedAdsConversion('quote_request', params);
   }
 
   if (typeof window.fetch === 'function' && !window.fetch.__bukAdsWrapped) {
@@ -344,14 +354,15 @@
         var kind = method === 'POST' ? (CONTACT_RE.test(url) ? 'contact' : (QUOTE_RE.test(url) ? 'quote' : '')) : '';
         if (kind) {
           var data = parseBody(init && init.body);
+          var cardFlow = kind === 'quote' && isCheckoutPage() && !checkoutIsQuoteMode();
           promise.then(function (response) {
             if (!response || !response.ok) return;
             // Some endpoints answer 200 with { success: false }; those are not leads.
             response.clone().json().then(function (json) {
               if (json && json.success === false) return;
-              onSubmitted(kind, data, json);
+              onSubmitted(kind, data, json, cardFlow);
             }, function () {
-              onSubmitted(kind, data, null);
+              onSubmitted(kind, data, null, cardFlow);
             });
           }, function () {});
         }
