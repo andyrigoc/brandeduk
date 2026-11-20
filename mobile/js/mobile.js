@@ -2282,6 +2282,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const n = banners.length;
     const HOLD_MS = 7000;
     const AXIS_LOCK_PX = 6;
+    // A deliberate swipe should change slide well before the finger crosses
+    // the halfway point of the banner — most real swipes are short.
+    const SWIPE_DISTANCE_FRACTION = 0.12;
+    // A fast flick commits to the next/previous slide even if the finger
+    // only moved a few pixels (px per ms; ~0.3 matches a quick flick).
+    const FLICK_VELOCITY_PX_MS = 0.3;
 
     let position = 0;
     let currentBanner = 0;
@@ -2294,6 +2300,9 @@ document.addEventListener('DOMContentLoaded', function() {
     let startPos = 0;
     let width = 1;
     let axisLocked = null; // null | 'x' | 'y'
+    let lastMoveTime = 0;
+    let lastMoveX = 0;
+    let lastVelocity = 0; // px per ms, sign matches clientX direction
 
     function normalizeIndex(i) {
         return ((Math.round(i) % n) + n) % n;
@@ -2358,6 +2367,9 @@ document.addEventListener('DOMContentLoaded', function() {
         startX = clientX;
         startY = clientY;
         startPos = position;
+        lastMoveTime = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+        lastMoveX = clientX;
+        lastVelocity = 0;
         container.classList.add('is-dragging');
         container.classList.remove('is-snapping');
     }
@@ -2385,6 +2397,14 @@ document.addEventListener('DOMContentLoaded', function() {
         if (event && event.cancelable) event.preventDefault();
         if (Math.abs(dx) > 3) dragMoved = true;
 
+        // Track instantaneous velocity so a fast flick commits the slide
+        // change even when the finger only travelled a short distance.
+        const now = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+        const dt = now - lastMoveTime;
+        if (dt > 0) lastVelocity = (clientX - lastMoveX) / dt;
+        lastMoveTime = now;
+        lastMoveX = clientX;
+
         // 1:1 scrub — finger right reveals previous, finger left reveals next.
         position = startPos - (dx / width);
         render(position, false);
@@ -2396,7 +2416,19 @@ document.addEventListener('DOMContentLoaded', function() {
         isDragging = false;
         container.classList.remove('is-dragging');
 
-        const snapped = Math.round(position);
+        // Default: snap to whichever slide the scrub position is closer to.
+        let snapped = Math.round(position);
+        const moved = position - startPos;
+        const isFlick = Math.abs(lastVelocity) > FLICK_VELOCITY_PX_MS && Math.abs(moved) > 0.01;
+
+        // A short but deliberate swipe (or a fast flick) that didn't cross the
+        // halfway point would otherwise snap back to the start — commit to the
+        // next/previous slide instead so the carousel feels responsive.
+        if (snapped === startPos && (Math.abs(moved) > SWIPE_DISTANCE_FRACTION || isFlick)) {
+            const dir = moved !== 0 ? Math.sign(moved) : -Math.sign(lastVelocity);
+            snapped = startPos + dir;
+        }
+
         showBanner(snapped, true);
 
         if (dragMoved) {
