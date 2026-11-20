@@ -236,7 +236,7 @@ body:has(.mobile-header--v2) {
     padding: 0 10px 0 12px;
     border: 1px solid #ff7a00;
     border-radius: 999px;
-    background: linear-gradient(180deg, #fafafa, #f1f2f4);
+    background: #F3F4F6;
     box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
     box-sizing: border-box;
 }

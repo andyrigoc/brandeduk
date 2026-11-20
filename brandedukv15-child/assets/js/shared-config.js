@@ -789,18 +789,6 @@ window.BrandedConfig = (function () {
             mobile: { src: 'brandeduk.com/assets/Screenshot%202026-09-15%20185936.png' }
         },
         {
-            id: 'mumbles',
-            enabled: true,
-            views: ['pc', 'mobile'],
-            kind: 'image',
-            hrefPc: '/shop-pc?brand=mumbles',
-            hrefMobile: '/shop?brand=mumbles',
-            label: 'Show Mumbles banner',
-            alt: 'Mumbles Halloween plush collection',
-            pc: { src: 'brandeduk.com/assets/ral17790---mumbles-halloween_banner.webp' },
-            mobile: { src: 'brandeduk.com/assets/Screenshot%202026-09-15%20185849.png' }
-        },
-        {
             id: 'anthem',
             enabled: true,
             views: ['pc', 'mobile'],
@@ -874,22 +862,6 @@ window.BrandedConfig = (function () {
             label: 'Show Make Awesome banner'
         },
         {
-            id: 'onlyboards',
-            enabled: true,
-            views: ['pc', 'mobile'],
-            kind: 'image',
-            hrefPc: 'https://www.onlyboards.co.uk/',
-            hrefMobile: 'https://www.onlyboards.co.uk/',
-            external: true,
-            label: 'Show Only Boards banner',
-            alt: 'Only Boards - Proud partners. Made to stand out. High-impact printed boards and signage for every project.',
-            pc: {
-                src: 'brandeduk.com/assets/only-boards-desktop.webp',
-                srcNarrow: 'brandeduk.com/assets/only-boards-mobile.webp'
-            },
-            mobile: { src: 'brandeduk.com/assets/ChatGPT%20Image%20Sep%2023%2C%202026%2C%2011_18_04%20AM.png' }
-        },
-        {
             id: 'premier',
             enabled: true,
             views: ['pc'],
@@ -944,7 +916,7 @@ window.BrandedConfig = (function () {
 
     function renderHeroBannerInner(banner, view) {
         if (banner.kind === 'branded') {
-            return '<div class="hero-bounce-container"><div class="hero-bounce-headline" data-bounce-text="branded">branded</div></div>';
+            return '<div class="hero-bounce-container"><div class="hero-bounce-headline" data-bounce-text="branded">branded</div><div class="hero-bounce-tagline">WORKWEAR &amp; UNIFORMS</div></div>';
         }
         if (banner.kind === 'contact') {
             return '<div class="neon-container"><div class="neon-text">GET IN</div><div class="flux-text">TOUCH</div></div>';
@@ -1026,20 +998,18 @@ window.BrandedConfig = (function () {
         var selected = index === 0 ? 'true' : 'false';
         var label = escapeBannerText(banner.label || ('Show banner ' + (index + 1)));
         var thumb = '';
-        if (view === 'pc') {
-            if (banner.kind === 'branded') {
-                thumb = '<span class="banner-thumb banner-thumb-branded">branded</span>';
-            } else if (banner.kind === 'contact') {
-                thumb = '<span class="banner-thumb banner-thumb-contact">Get in<br>touch</span>';
-            } else if (banner.kind === 'awesome') {
-                thumb = '<span class="banner-thumb banner-thumb-make">Make<br>awesome</span>';
-            } else if (banner.kind === 'halloween') {
-                thumb = '<span class="banner-thumb banner-thumb-halloween">Happy<br>Halloween</span>';
-            } else {
-                var media = banner.pc || banner.mobile || {};
-                var src = resolveBannerAsset(media.src || banner.thumb);
-                if (src) thumb = '<img class="banner-thumb" src="' + escapeBannerText(src) + '" alt="">';
-            }
+        if (banner.kind === 'branded') {
+            thumb = '<span class="banner-thumb banner-thumb-branded">branded</span>';
+        } else if (banner.kind === 'contact') {
+            thumb = '<span class="banner-thumb banner-thumb-contact">Get in<br>touch</span>';
+        } else if (banner.kind === 'awesome') {
+            thumb = '<span class="banner-thumb banner-thumb-make">Make<br>awesome</span>';
+        } else if (banner.kind === 'halloween') {
+            thumb = '<span class="banner-thumb banner-thumb-halloween">Happy<br>Halloween</span>';
+        } else {
+            var media = (view === 'mobile' ? (banner.mobile || banner.pc) : (banner.pc || banner.mobile)) || {};
+            var src = resolveBannerAsset(media.src || banner.thumb);
+            if (src) thumb = '<img class="banner-thumb" src="' + escapeBannerText(src) + '" alt="">';
         }
         return '<button class="banner-dot' + active + '" role="tab" type="button" data-banner="' + index + '" aria-label="' + label + '" aria-selected="' + selected + '">' + thumb + '</button>';
     }

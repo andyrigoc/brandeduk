@@ -10,7 +10,8 @@
 .buk-snow-fall,
 .buk-snow-drift,
 .buk-snow-hat,
-.buk-snow-letter,
+.buk-snow-letterdrift,
+.buk-snow-edge,
 .buk-snow-field *,
 .buk-snow-fall *,
 .buk-snow-drift *,
@@ -38,69 +39,92 @@
     z-index: 6;
 }
 
-/* Same idea as the reference snowfall: small soft circles, varied speed, a full spin as they fall. */
-.buk-snow-flake {
+.buk-snow-canvas {
     position: absolute;
-    z-index: 2;
-    left: var(--buk-flake-x);
-    top: -18px;
-    width: var(--s);
-    height: var(--s);
-    aspect-ratio: 1;
-    margin-left: calc(var(--s) * -0.5);
-    border-radius: 50%;
-    background-color: #fffafa;
-    opacity: var(--o);
-    box-shadow: 0 0 0 1px rgba(156, 168, 184, 0.9);
-    animation: buk-home-snow-fall var(--d) linear infinite;
-    animation-delay: var(--delay);
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    display: block;
 }
 
-.hero-banner:not(.hero-banner--active) .buk-snow-flake {
-    animation-play-state: paused;
-}
-
-@keyframes buk-home-snow-fall {
-    0% { transform: translate3d(0, 0, 0) rotate(0deg); }
-    100% { transform: translate3d(var(--drift), var(--travel), 0) rotate(360deg); }
-}
-
-.buk-snow-letter {
+.buk-snow-letterpile {
     position: absolute;
-    z-index: 5;
-    background: #fff;
-    border-radius: 50%;
+    z-index: 40;
     pointer-events: none;
 }
 
-.buk-snow-lumps {
+.mobile-header--v2 .mh-logo,
+.mobile-header--v2 .mobile-logo-center {
+    z-index: 20;
+}
+
+/* One jagged drift over the wordmark. No circle, no outline. */
+.buk-snow-letterdrift {
     position: absolute;
-    left: 6%;
-    right: 6%;
-    top: 0;
-    height: 0;
-    z-index: 6;
+    z-index: 8;
     pointer-events: none;
     overflow: visible;
 }
 
-.buk-snow-lumps i {
+.buk-snow-letterdrift path,
+.buk-snow-hat path,
+.buk-snow-edge path,
+.buk-snow-drift path {
+    fill: #ffffff;
+    stroke: none;
+}
+
+/* Thin jagged drift along a control's top edge only. The box itself
+   stays on the rim; overflow hidden stops the shape entering the field. */
+.buk-snow-edge {
     position: absolute;
-    bottom: -4px;
-    background: #fff;
-    border-radius: 50%;
+    left: 0;
+    right: 0;
+    top: auto;
+    bottom: calc(100% - 2px);
+    height: 6px;
+    max-height: 6px;
+    transform: none;
+    z-index: 6;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.buk-snow-edge--rim {
+    left: 0;
+    right: 0;
+    bottom: auto;
+    max-height: 6px;
+    overflow: hidden;
+}
+
+.buk-snow-edge svg,
+.buk-snow-hat svg,
+.buk-snow-letterdrift {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+/* Search row sits above the header flake canvas so falling snow
+   cannot paint across the placeholder. */
+.mobile-header--v2 .mh-search {
+    position: relative;
+    z-index: 14;
 }
 
 /* Same box and rotation as the Santa hat ::after, so blobs land on the hat. */
 .buk-snow-hat {
     position: absolute;
-    z-index: 4;
+    z-index: 6;
     left: -13px;
     top: -23px;
     width: 49.6px;
     height: 56px;
     transform: scaleX(-1) rotate(15deg);
     transform-origin: center;
+    pointer-events: none;
 }
 
 html.buk-snow-mobile .buk-snow-hat {
@@ -110,10 +134,23 @@ html.buk-snow-mobile .buk-snow-hat {
     height: calc(56px * 64 / 87.36);
 }
 
-.buk-snow-hat i {
-    position: absolute;
-    background: #fff;
-    border-radius: 50%;
+.buk-snow-hatpile {
+    display: block;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+/* Hero snow stays inside the slide, including while it translates. */
+.hero-banners-container,
+.hero-banner {
+    overflow: hidden;
+}
+
+.hero-banner > .buk-snow-fall,
+.hero-banner > .buk-snow-drift {
+    overflow: hidden;
+    max-height: 100%;
 }
 
 /* Uneven drift along the bottom rim of a hero banner only. */
@@ -121,9 +158,12 @@ html.buk-snow-mobile .buk-snow-hat {
     position: absolute;
     left: 0;
     right: 0;
+    top: auto;
     bottom: 0;
     z-index: 7;
-    height: calc(10px + var(--buk-snow) * 28px);
+    height: calc(var(--buk-snow) * 8px);
+    max-height: 8px;
+    overflow: hidden;
     background: none;
     opacity: 1;
     filter: none;
@@ -136,12 +176,12 @@ html.buk-snow-mobile .buk-snow-hat {
 }
 
 html.buk-snow-mobile .buk-snow-drift {
-    height: calc(8px + var(--buk-snow) * 20px);
+    height: calc(var(--buk-snow) * 8px);
+    max-height: 8px;
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .buk-snow-flake {
-        animation: none !important;
-        opacity: 0 !important;
+    .buk-snow-canvas {
+        display: none !important;
     }
 }

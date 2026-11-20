@@ -1053,8 +1053,10 @@
   width: 100%;
   height: 100%;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 8px;
   background: #ffeb00;
 }
 
@@ -1064,6 +1066,22 @@
   font-size: clamp(56px, 14vw, 160px);
   line-height: 1;
   color: #000000;
+}
+
+.hero-bounce-tagline {
+  margin: 0;
+  padding: 0 12px;
+  color: #000;
+  font-family: 'Lexend Deca', 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: clamp(11px, 3.1vw, 18px);
+  line-height: 1;
+  letter-spacing: 0.18em;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  animation: none;
+  transform: none;
 }
 
 .hero-bounce-char {

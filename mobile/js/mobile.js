@@ -2717,7 +2717,7 @@ function initFiltersDropup() {
 // include the account panel. The photo swap has to run for that button too.
 // ============================================
 const MOBILE_ACCOUNT_SESSION_KEY = 'brandeduk-user-session';
-const MOBILE_BRANDED_MARK_URL = '/brandedukv15-child/assets/images/ui/bd-mark-orange.png';
+const MOBILE_BRANDED_MARK_URL = '/brandedukv15-child/assets/images/ui/bd-mark-orange.png?v=20261120-mark';
 
 function parseStoredAccountUser(key) {
     try {

@@ -6685,6 +6685,70 @@ body.bundle-build .product-info {
     min-height: 12px !important;
 }
 
+/* Homepage hero previews match the PC thumbnail strip, then the fixed Only Boards box. */
+.home-page .hero-banner-dots {
+    justify-content: flex-start;
+    gap: 6px;
+    padding: 8px 10px 0;
+    overflow-x: auto;
+}
+
+.home-page .hero-banner-dots .banner-dot {
+    flex: 1 1 0;
+    width: auto !important;
+    height: 52px !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    overflow: hidden;
+    border: 2px solid transparent !important;
+    border-radius: 6px !important;
+    background: #111 !important;
+    filter: grayscale(1) brightness(.56);
+}
+
+.home-page .hero-banner-dots .banner-dot--active {
+    width: auto !important;
+    height: 52px !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    border-radius: 6px !important;
+    border-color: #111 !important;
+    background: #111 !important;
+    filter: none;
+}
+
+.home-page .hero-banner-dots .banner-thumb {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    object-fit: cover;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1.05;
+    text-align: center;
+}
+
+.home-page .banner-thumb-branded { background: #ffeb00; color: #000; }
+.home-page .banner-thumb-contact { background: #111; color: #dbff2a; text-transform: uppercase; }
+.home-page .banner-thumb-make { background: #fff; color: #111; text-transform: uppercase; }
+
+.home-page .fixed-partner-banner {
+    display: block;
+    width: 100%;
+    margin: 10px 0 16px;
+    background: #111;
+    line-height: 0;
+}
+
+.home-page .fixed-partner-banner > img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
 /* Quick Actions */
 .quick-actions {
     display: grid;
@@ -10835,14 +10899,56 @@ a.continue-shopping {
 
 /* ============================================
    CATEGORIES - INFINITE MARQUEE CAROUSEL
+   Transform animation (not scrollLeft) so the row keeps moving while
+   the main thread is busy. padding-right on each set matches the gap
+   so translateX(-50%) lands on the duplicate set with no jump.
    ============================================ */
 .categories-scroll-auto {
     display: flex;
     gap: 5px;
-    overflow-x: auto;
+    overflow: hidden;
     padding: 0 0 8px;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+}
+
+.categories-scroll-track {
+    display: flex;
+    width: max-content;
+    flex: 0 0 auto;
+    animation: industryMarquee 43s linear infinite;
+    will-change: transform;
+}
+
+.categories-scroll-set {
+    display: flex;
+    flex: 0 0 auto;
+    gap: 10px;
+    padding-right: 10px;
+}
+
+.categories-scroll-auto.is-paused .categories-scroll-track,
+.categories-scroll-auto.is-offscreen .categories-scroll-track,
+.categories-scroll-auto.is-hidden .categories-scroll-track {
+    animation-play-state: paused;
+}
+
+@keyframes industryMarquee {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(-50%, 0, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .categories-scroll-track {
+        animation: none;
+        transform: none;
+    }
+
+    .categories-scroll-auto {
+        overflow-x: auto;
+        touch-action: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
 }
 
 .home-category-section {
@@ -10865,7 +10971,9 @@ a.continue-shopping {
 }
 
 .home-industry-section .categories-scroll-auto {
-    gap: 10px;
+    gap: 0;
+    padding-left: 0;
+    padding-right: 0;
 }
 
 .home-industry-section .see-all-link {

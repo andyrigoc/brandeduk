@@ -84,7 +84,7 @@ window.BrandedAccountPanel = (function () {
         return typeof url === 'string' ? url.trim() : '';
     }
 
-    var BRANDED_MARK_URL = '/brandedukv15-child/assets/images/ui/bd-mark-orange.png';
+    var BRANDED_MARK_URL = '/brandedukv15-child/assets/images/ui/bd-mark-orange.png?v=20261120-mark';
 
     function isBrandedMarkAccount(user) {
         if (!user) return false;
