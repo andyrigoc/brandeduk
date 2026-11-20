@@ -266,8 +266,13 @@
         <!-- Hero Banners Carousel (Separate section with dots) -->
         <div class="hero-banners-wrapper">
             <div class="hero-banners-container" data-hero-banners>
-                <!-- Banner 1 - Get in Touch Neon -->
-                <div class="hero-banner hero-banner--active" id="heroBanner1" onclick="openContactPopup()" style="cursor: pointer;">
+                <!-- Banner 1 - Workwear specialists (mobile only) -->
+                <a class="hero-banner hero-banner-image hero-banner--active" id="heroBannerWorkwear" data-hero-id="workwear-specialists" href="/services" aria-label="Workwear specialists">
+                    <picture><source type="image/avif" srcset="../brandeduk.com/assets/branded-uk-workwear-specialists.avif?v=20261120-avif"><img src="../brandeduk.com/assets/branded-uk-workwear-specialists.jpg?v=20261120-workwear" alt="Branded UK specialists in workwear — embroidery, DTF printing and screen printing" width="682" height="1024" style="object-position: center top;"></picture>
+                </a>
+
+                <!-- Banner 2 - Get in Touch Neon -->
+                <div class="hero-banner" id="heroBanner1" onclick="openContactPopup()" style="cursor: pointer;">
                     <div class="neon-container">
                         <div class="neon-text">GET IN</div>
                         <div class="flux-text">TOUCH</div>
@@ -290,7 +295,7 @@
                 <!-- Banner 3 - Regatta mobile campaign -->
                 <div class="hero-banner hero-banner-regatta-mobile" id="heroBanner3">
                     <a href="/shop?brand=regatta-professional" aria-label="Shop Regatta Professional">
-                        <img src="../brandeduk.com/assets/Screenshot%202026-09-15%20190009.png" alt="Regatta Professional Dover jacket offer" width="503" height="605">
+                        <picture><source type="image/avif" srcset="../brandeduk.com/assets/Screenshot%202026-09-15%20190009.avif?v=20261120-avif"><img src="../brandeduk.com/assets/Screenshot%202026-09-15%20190009.png" alt="Regatta Professional Dover jacket offer" width="503" height="605"></picture>
                     </a>
                 </div>
 
@@ -299,7 +304,8 @@
 
             <!-- Banner Dots Navigation -->
             <div class="hero-banner-dots" data-hero-banner-dots>
-                <button class="banner-dot banner-dot--active" data-banner="1" aria-label="Banner 1"></button>
+                <button class="banner-dot banner-dot--active" data-banner="0" aria-label="Workwear specialists banner" aria-selected="true" style="overflow:hidden"><img class="banner-thumb" src="../brandeduk.com/assets/branded-uk-workwear-specialists.thumb.avif?v=20261120-avif" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></button>
+                <button class="banner-dot" data-banner="1" aria-label="Banner 1"></button>
                 <button class="banner-dot" data-banner="2" aria-label="Banner 2"></button>
                 <button class="banner-dot" data-banner="3" aria-label="Regatta banner"></button>
             </div>
@@ -1461,7 +1467,7 @@
         </div>
     </div>
 
-    <script src="../brandedukv15-child/assets/js/shared-config.js?v=20260927-bannerorder"></script>
+    <script src="../brandedukv15-child/assets/js/shared-config.js?v=20261120-poster"></script>
     <script src="js/mobile.js?v=20261118-codejump"></script>
     <script src="/brandeduk.com/js/home-snow.js?v=20261120-logocenter"></script>
     <script src="js/header-menu.js?v=20261116-nohamburger"></script>

@@ -706,6 +706,21 @@ window.BrandedConfig = (function () {
     // ──────────────────────────────────────────────
     const HERO_BANNERS = [
         {
+            id: 'workwear-specialists',
+            enabled: true,
+            views: ['mobile'],
+            kind: 'image',
+            hrefMobile: 'services',
+            label: 'Show Workwear specialists banner',
+            alt: 'Branded UK specialists in workwear — embroidery, DTF printing and screen printing',
+            thumb: 'brandeduk.com/assets/branded-uk-workwear-specialists.thumb.avif?v=20261120-avif',
+            mobile: {
+                src: 'brandeduk.com/assets/branded-uk-workwear-specialists.jpg?v=20261120-workwear',
+                avif: 'brandeduk.com/assets/branded-uk-workwear-specialists.avif?v=20261120-avif',
+                objectPosition: 'center top'
+            }
+        },
+        {
             id: 'branded',
             enabled: true,
             views: ['pc', 'mobile'],
@@ -724,11 +739,17 @@ window.BrandedConfig = (function () {
             openContact: true,
             label: 'Show Leonart banner',
             alt: 'Professional workwear for building teams — Leonart Building Interiors',
-            pc: { src: 'brandeduk.com/assets/Professional%20Workwear%20for%20Building%20Teams.png' },
-            // Keep left-side copy and Get a Quote button in frame on the tall mobile crop.
-            mobile: {
+            thumb: 'brandeduk.com/assets/Professional%20Workwear%20for%20Building%20Teams.thumb.avif?v=20261120-avif',
+            pc: {
                 src: 'brandeduk.com/assets/Professional%20Workwear%20for%20Building%20Teams.png',
-                objectPosition: '18% center'
+                avif: 'brandeduk.com/assets/Professional%20Workwear%20for%20Building%20Teams.avif?v=20261120-avif'
+            },
+            // Portrait poster. Desktop keeps the wide banner above.
+            mobile: {
+                src: 'brandeduk.com/assets/professional-workwear-building-teams.jpg?v=20261120-poster',
+                avif: 'brandeduk.com/assets/professional-workwear-building-teams.avif?v=20261120-poster',
+                thumb: 'brandeduk.com/assets/professional-workwear-building-teams.thumb.avif?v=20261120-poster',
+                objectPosition: 'center center'
             }
         },
         {
@@ -739,18 +760,24 @@ window.BrandedConfig = (function () {
             // Slide itself is not a link — only the CTA hotspot below is clickable.
             label: 'Show Hospitality banner',
             alt: 'Custom hospitality uniforms in a warm café',
-            pc: { src: 'brandeduk.com/assets/Custom%20Hospitality%20Uniforms%20in%20a%20Warm%20Caf%C3%A9.png' },
-            // Keep the baked-in "Get a Quote" button in frame on the tall mobile crop.
-            mobile: {
+            thumb: 'brandeduk.com/assets/Custom%20Hospitality%20Uniforms%20in%20a%20Warm%20Caf%C3%A9.thumb.avif?v=20261120-avif',
+            pc: {
                 src: 'brandeduk.com/assets/Custom%20Hospitality%20Uniforms%20in%20a%20Warm%20Caf%C3%A9.png',
-                objectPosition: '78% center'
+                avif: 'brandeduk.com/assets/Custom%20Hospitality%20Uniforms%20in%20a%20Warm%20Caf%C3%A9.avif?v=20261120-avif'
+            },
+            // Portrait poster. Desktop keeps the wide banner above.
+            mobile: {
+                src: 'brandeduk.com/assets/custom-hospitality-uniforms.jpg?v=20261120-poster',
+                avif: 'brandeduk.com/assets/custom-hospitality-uniforms.avif?v=20261120-poster',
+                thumb: 'brandeduk.com/assets/custom-hospitality-uniforms.thumb.avif?v=20261120-poster',
+                objectPosition: 'center center'
             },
             cta: {
                 label: 'Shop Premier Aprons',
                 hrefPc: '/shop-pc?productType=aprons&brand=premier',
                 hrefMobile: '/shop?category=aprons&brand=premier',
                 pc: { left: '67.2%', top: '58.5%', width: '23.2%', height: '12%' },
-                mobile: { left: '11%', top: '58%', width: '82%', height: '13%' }
+                mobile: { left: '26%', top: '79.5%', width: '48%', height: '8%' }
             }
         },
         {
@@ -760,8 +787,16 @@ window.BrandedConfig = (function () {
             kind: 'image',
             label: 'Show Branded Digital banner',
             alt: 'Branded Digital - Websites built for coffee shops, gyms and building companies',
-            pc: { src: 'brandeduk.com/assets/ChatGPT%20Image%20Sep%2021%2C%202026%2C%2011_06_11%20PM.png' },
-            mobile: { src: 'brandeduk.com/assets/ChatGPT%20Image%20Sep%2021%2C%202026%2C%2011_50_14%20PM.png' }
+            thumb: 'brandeduk.com/assets/ChatGPT%20Image%20Sep%2021%2C%202026%2C%2011_06_11%20PM.thumb.avif?v=20261120-avif',
+            pc: {
+                src: 'brandeduk.com/assets/ChatGPT%20Image%20Sep%2021%2C%202026%2C%2011_06_11%20PM.png',
+                avif: 'brandeduk.com/assets/ChatGPT%20Image%20Sep%2021%2C%202026%2C%2011_06_11%20PM.avif?v=20261120-avif'
+            },
+            mobile: {
+                src: 'brandeduk.com/assets/ChatGPT%20Image%20Sep%2021%2C%202026%2C%2011_50_14%20PM.png',
+                avif: 'brandeduk.com/assets/ChatGPT%20Image%20Sep%2021%2C%202026%2C%2011_50_14%20PM.avif?v=20261120-avif',
+                thumb: 'brandeduk.com/assets/ChatGPT%20Image%20Sep%2021%2C%202026%2C%2011_50_14%20PM.thumb.avif?v=20261120-avif'
+            }
         },
         {
             id: 'regatta',
@@ -773,7 +808,11 @@ window.BrandedConfig = (function () {
             label: 'Show Regatta banner',
             alt: 'Regatta Professional Dover jacket offer',
             pc: { src: 'brandeduk.com/assets/ral17774-regatta-1.50-off-banners-dropbox-12.webp' },
-            mobile: { src: 'brandeduk.com/assets/Screenshot%202026-09-15%20190009.png' }
+            mobile: {
+                src: 'brandeduk.com/assets/Screenshot%202026-09-15%20190009.png',
+                avif: 'brandeduk.com/assets/Screenshot%202026-09-15%20190009.avif?v=20261120-avif',
+                thumb: 'brandeduk.com/assets/Screenshot%202026-09-15%20190009.thumb.avif?v=20261120-avif'
+            }
         },
         {
             id: 'awdis',
@@ -786,7 +825,11 @@ window.BrandedConfig = (function () {
             label: 'Show AWDis banner',
             alt: 'AWDis College Hoodie 2.0',
             pc: { src: 'brandeduk.com/assets/ral17788---the-best-got-bigger_desktop-banner-1.webp' },
-            mobile: { src: 'brandeduk.com/assets/Screenshot%202026-09-15%20185936.png' }
+            mobile: {
+                src: 'brandeduk.com/assets/Screenshot%202026-09-15%20185936.png',
+                avif: 'brandeduk.com/assets/Screenshot%202026-09-15%20185936.avif?v=20261120-avif',
+                thumb: 'brandeduk.com/assets/Screenshot%202026-09-15%20185936.thumb.avif?v=20261120-avif'
+            }
         },
         {
             id: 'anthem',
@@ -798,7 +841,11 @@ window.BrandedConfig = (function () {
             label: 'Show Anthem banner',
             alt: 'Anthem heavy bass hoodie collection',
             pc: { src: 'brandeduk.com/assets/ral17804-anthem-hoodies-banners-v3_01_1920-x-630.webp' },
-            mobile: { src: 'brandeduk.com/assets/Screenshot%202026-09-15%20185951.png' }
+            mobile: {
+                src: 'brandeduk.com/assets/Screenshot%202026-09-15%20185951.png',
+                avif: 'brandeduk.com/assets/Screenshot%202026-09-15%20185951.avif?v=20261120-avif',
+                thumb: 'brandeduk.com/assets/Screenshot%202026-09-15%20185951.thumb.avif?v=20261120-avif'
+            }
         },
         {
             id: 'dtf',
@@ -809,7 +856,11 @@ window.BrandedConfig = (function () {
             openContact: true,
             label: 'Show DTF printing banner',
             alt: 'DTF printing service — full-colour Direct to Film prints for custom workwear and apparel',
-            pc: { src: 'brandeduk.com/assets/DTF%20Printing%20Service%20Studio%20Banner.png' }
+            thumb: 'brandeduk.com/assets/DTF%20Printing%20Service%20Studio%20Banner.thumb.avif?v=20261120-avif',
+            pc: {
+                src: 'brandeduk.com/assets/DTF%20Printing%20Service%20Studio%20Banner.png',
+                avif: 'brandeduk.com/assets/DTF%20Printing%20Service%20Studio%20Banner.avif?v=20261120-avif'
+            }
         },
         {
             id: 'gildan',
@@ -868,7 +919,11 @@ window.BrandedConfig = (function () {
             kind: 'image',
             label: 'Show Premier Workwear banner',
             alt: 'Premier Workwear about us',
-            pc: { src: 'brandeduk.com/assets/Premier%202026.jpg' }
+            thumb: 'brandeduk.com/assets/Premier%202026.thumb.avif?v=20261120-avif',
+            pc: {
+                src: 'brandeduk.com/assets/Premier%202026.jpg',
+                avif: 'brandeduk.com/assets/Premier%202026.avif?v=20261120-avif'
+            }
         }
     ];
 
@@ -942,10 +997,15 @@ window.BrandedConfig = (function () {
         }
         var media = (view === 'mobile' ? banner.mobile : banner.pc) || banner.pc || banner.mobile || {};
         var src = resolveBannerAsset(media.src);
+        var avif = media.avif ? resolveBannerAsset(media.avif) : '';
         var alt = escapeBannerText(banner.alt || '');
         var imgStyle = media.objectPosition ? ' style="object-position: ' + escapeBannerText(media.objectPosition) + ';"' : '';
+        var avifSource = avif ? '<source type="image/avif" srcset="' + escapeBannerText(avif) + '">' : '';
         if (view === 'pc' && media.srcNarrow) {
-            return '<picture><source media="(max-width: 767px)" srcset="' + escapeBannerText(resolveBannerAsset(media.srcNarrow)) + '"><img class="onlyboards-banner-image" src="' + escapeBannerText(src) + '" alt="' + alt + '"' + imgStyle + '></picture>';
+            return '<picture>' + avifSource + '<source media="(max-width: 767px)" srcset="' + escapeBannerText(resolveBannerAsset(media.srcNarrow)) + '"><img class="onlyboards-banner-image" src="' + escapeBannerText(src) + '" alt="' + alt + '"' + imgStyle + '></picture>';
+        }
+        if (avifSource) {
+            return '<picture>' + avifSource + '<img class="onlyboards-banner-image" src="' + escapeBannerText(src) + '" alt="' + alt + '"' + imgStyle + '></picture>';
         }
         return '<img class="onlyboards-banner-image" src="' + escapeBannerText(src) + '" alt="' + alt + '"' + imgStyle + '>';
     }
@@ -1008,7 +1068,7 @@ window.BrandedConfig = (function () {
             thumb = '<span class="banner-thumb banner-thumb-halloween">Happy<br>Halloween</span>';
         } else {
             var media = (view === 'mobile' ? (banner.mobile || banner.pc) : (banner.pc || banner.mobile)) || {};
-            var src = resolveBannerAsset(media.src || banner.thumb);
+            var src = resolveBannerAsset(media.thumb || banner.thumb || media.avif || media.src);
             if (src) thumb = '<img class="banner-thumb" src="' + escapeBannerText(src) + '" alt="">';
         }
         return '<button class="banner-dot' + active + '" role="tab" type="button" data-banner="' + index + '" aria-label="' + label + '" aria-selected="' + selected + '">' + thumb + '</button>';
