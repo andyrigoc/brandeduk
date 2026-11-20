@@ -712,11 +712,11 @@ window.BrandedConfig = (function () {
             kind: 'image',
             hrefMobile: 'services',
             label: 'Show Workwear specialists banner',
-            alt: 'BrandedUK professional workwear for building teams',
-            thumb: 'brandeduk.com/assets/branded-uk-workwear-specialists.thumb.avif?v=20261120-workwear2',
+            alt: 'Branded UK specialists in workwear, embroidery, DTF and screen printing',
+            thumb: 'brandeduk.com/assets/branded-uk-workwear-specialists.thumb.avif?v=20261120-workwear3',
             mobile: {
-                src: 'brandeduk.com/assets/branded-uk-workwear-specialists.jpg?v=20261120-workwear2',
-                avif: 'brandeduk.com/assets/branded-uk-workwear-specialists.avif?v=20261120-workwear2',
+                src: 'brandeduk.com/assets/branded-uk-workwear-specialists.jpg?v=20261120-workwear3',
+                avif: 'brandeduk.com/assets/branded-uk-workwear-specialists.avif?v=20261120-workwear3',
                 objectPosition: 'center top'
             }
         },
