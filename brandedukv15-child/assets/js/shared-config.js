@@ -712,11 +712,11 @@ window.BrandedConfig = (function () {
             kind: 'image',
             hrefMobile: 'services',
             label: 'Show Workwear specialists banner',
-            alt: 'Branded UK specialists in workwear — embroidery, DTF printing and screen printing',
-            thumb: 'brandeduk.com/assets/branded-uk-workwear-specialists.thumb.avif?v=20261120-avif',
+            alt: 'BrandedUK professional workwear for building teams',
+            thumb: 'brandeduk.com/assets/branded-uk-workwear-specialists.thumb.avif?v=20261120-workwear2',
             mobile: {
-                src: 'brandeduk.com/assets/branded-uk-workwear-specialists.jpg?v=20261120-workwear',
-                avif: 'brandeduk.com/assets/branded-uk-workwear-specialists.avif?v=20261120-avif',
+                src: 'brandeduk.com/assets/branded-uk-workwear-specialists.jpg?v=20261120-workwear2',
+                avif: 'brandeduk.com/assets/branded-uk-workwear-specialists.avif?v=20261120-workwear2',
                 objectPosition: 'center top'
             }
         },
@@ -767,9 +767,9 @@ window.BrandedConfig = (function () {
             },
             // Portrait poster. Desktop keeps the wide banner above.
             mobile: {
-                src: 'brandeduk.com/assets/custom-hospitality-uniforms.jpg?v=20261120-poster',
-                avif: 'brandeduk.com/assets/custom-hospitality-uniforms.avif?v=20261120-poster',
-                thumb: 'brandeduk.com/assets/custom-hospitality-uniforms.thumb.avif?v=20261120-poster',
+                src: 'brandeduk.com/assets/custom-hospitality-uniforms.jpg?v=20261120-hospitality2',
+                avif: 'brandeduk.com/assets/custom-hospitality-uniforms.avif?v=20261120-hospitality2',
+                thumb: 'brandeduk.com/assets/custom-hospitality-uniforms.thumb.avif?v=20261120-hospitality2',
                 objectPosition: 'center center'
             },
             cta: {
@@ -793,9 +793,9 @@ window.BrandedConfig = (function () {
                 avif: 'brandeduk.com/assets/ChatGPT%20Image%20Sep%2021%2C%202026%2C%2011_06_11%20PM.avif?v=20261120-avif'
             },
             mobile: {
-                src: 'brandeduk.com/assets/ChatGPT%20Image%20Sep%2021%2C%202026%2C%2011_50_14%20PM.png',
-                avif: 'brandeduk.com/assets/ChatGPT%20Image%20Sep%2021%2C%202026%2C%2011_50_14%20PM.avif?v=20261120-avif',
-                thumb: 'brandeduk.com/assets/ChatGPT%20Image%20Sep%2021%2C%202026%2C%2011_50_14%20PM.thumb.avif?v=20261120-avif'
+                src: 'brandeduk.com/assets/ChatGPT%20Image%20Sep%2021%2C%202026%2C%2011_50_14%20PM.png?v=20261120-digital2',
+                avif: 'brandeduk.com/assets/ChatGPT%20Image%20Sep%2021%2C%202026%2C%2011_50_14%20PM.avif?v=20261120-digital2',
+                thumb: 'brandeduk.com/assets/ChatGPT%20Image%20Sep%2021%2C%202026%2C%2011_50_14%20PM.thumb.avif?v=20261120-digital2'
             }
         },
         {
