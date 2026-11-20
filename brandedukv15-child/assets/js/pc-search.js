@@ -355,10 +355,12 @@
         '</a>';
     }
 
-    function asideLink(label, count, href, kind) {
+    // No product counts here: category pages such as Hi-Vis, Caps and Chef jackets
+    // merge extra products on the page itself, so a count from the search index
+    // would not match the number the shopper sees after clicking.
+    function asideLink(label, href, kind) {
         return '<a class="pcs-aside__link" data-nav data-kind="' + kind + '" href="' + escapeHtml(href) + '">' +
             '<span class="pcs-aside__label">' + escapeHtml(label) + '</span>' +
-            (count ? '<span class="pcs-aside__count">' + Number(count).toLocaleString('en-GB') + '</span>' : '') +
         '</a>';
     }
 
@@ -404,13 +406,13 @@
             if (types.length) {
                 html += '<div class="pcs-section-title">Categories</div>';
                 types.forEach(function (type) {
-                    html += asideLink(type.label, type.count, typeUrl(type.value || type.slug || ''), 'type');
+                    html += asideLink(type.label, typeUrl(type.value || type.slug || ''), 'type');
                 });
             }
             if (brands.length) {
                 html += '<div class="pcs-section-title">Brands</div>';
                 brands.forEach(function (brand) {
-                    html += asideLink(brand.label, brand.count, brandUrl(brand.label || brand.value || ''), 'brand');
+                    html += asideLink(brand.label, brandUrl(brand.label || brand.value || ''), 'brand');
                 });
             }
             html += '</aside>';
