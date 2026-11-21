@@ -56,9 +56,11 @@
         var width = box && box.clientWidth ? box.clientWidth : 800;
         var height = box && box.clientHeight ? box.clientHeight : 160;
         var area = Math.max(1, width * height);
-        var count = Math.round(area / (kind === 'header' ? 2800 : 4200));
-        var cap = kind === 'header' ? 160 : 140;
-        var floor = kind === 'header' ? 70 : 50;
+        // Double the snowfall density (100% more flakes): half the area divisor
+        // and double the floor/cap so the extra flakes aren't clipped away.
+        var count = Math.round(area / (kind === 'header' ? 1400 : 2100));
+        var cap = kind === 'header' ? 320 : 280;
+        var floor = kind === 'header' ? 140 : 100;
         return Math.max(floor, Math.min(cap, count));
     }
 
@@ -497,9 +499,10 @@
             if (letterH < 6) continue;
             var stem = surfaceY < height * 0.25;
             var wobble = 0.78 + 0.22 * (0.5 + 0.5 * Math.sin(x * 0.55 + 1.1));
-            var ratio = (stem ? 0.07 : 0.05) * wobble;
+            // 50% deeper build-up on the logo lettering.
+            var ratio = (stem ? 0.105 : 0.075) * wobble;
             var cover = Math.max(2, Math.round(letterH * ratio * reveal));
-            var maxCover = Math.max(2, Math.round(letterH * (stem ? 0.08 : 0.055)));
+            var maxCover = Math.max(2, Math.round(letterH * (stem ? 0.12 : 0.0825)));
             if (cover > maxCover) cover = maxCover;
             var start = Math.floor(surfaceY);
             for (y = 0; y < cover; y += 1) {
@@ -560,8 +563,9 @@
             var surfaceY = snow.surface[x];
             if (surfaceY >= snow.height) continue;
             var wobble = 0.8 + 0.2 * (0.5 + 0.5 * Math.sin(x * 0.7));
-            var cover = Math.max(1, Math.round(snow.height * 0.06 * wobble * reveal));
-            if (cover > Math.round(snow.height * 0.08)) cover = Math.round(snow.height * 0.08);
+            // 50% deeper build-up on the Santa hat.
+            var cover = Math.max(1, Math.round(snow.height * 0.09 * wobble * reveal));
+            if (cover > Math.round(snow.height * 0.12)) cover = Math.round(snow.height * 0.12);
             for (y = 0; y < cover; y += 1) {
                 var py = Math.floor(surfaceY) + y;
                 if (py < 0 || py >= snow.height) continue;
